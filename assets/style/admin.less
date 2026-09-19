@@ -1,0 +1,1252 @@
+@import "var.less";
+
+/* ============================================================
+   金玉主题 · 后台设置中心样式（高端品牌版 v2）
+   设计语言：珊瑚橙品牌色（#FF6B35）+ 中性灰白体系 + 卡片化分区
+   设计令牌集中在 .jinyu-setting-wrap，暗色模式靠令牌覆盖，零重复
+   ============================================================ */
+
+/* 外壳对齐完全交给 WP 原生：#wpcontent 的 margin-left 由 WP 按菜单状态自适应
+   （展开 160px / 折叠 36px / ≤782px 移动端 0）。此前在此写死 160px，特异性压过
+   WP 的移动端归零规则，导致手机端整页被强行右移 160px（内容挤成右侧细条、
+   左半屏空白）＝完全错位。勿再写死。 */
+
+/* 修复 iOS Safari sticky 全面失效：WP 后台 common.css 给 body 设了 overflow-x:hidden，
+   Safari 会因此把 body 当作 sticky 的基准滚动容器（内容滚动时 body 自身不动，
+   一切 position:sticky 都「跟着页面滚走」）；Chrome 会把 body 的 overflow 传播给
+   视口所以不受影响——这就是「桌面正常、iPhone 失效」的根因。改用 clip：
+   同样裁掉横向溢出，但不创建滚动容器，sticky 继续相对视口生效。
+   （不支持 clip 的老浏览器会忽略本条回落 WP 原样，不劣化。） */
+body.toplevel_page_jinyu-options { overflow-x: clip; }
+
+.toplevel_page_jinyu-options #wpbody-content,
+.toplevel_page_jinyu-options .wrap {
+    padding-left: 0;
+    margin-left: 0;
+}
+.wrap.jinyu-setting-wrap {
+    max-width: none;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/* 盒模型基线：WP 后台只给 button/input 设了 border-box，nav/div/header 等仍是 content-box。
+   本页「width:100% + 横向 padding」的容器在 content-box 下会被 padding 撑破父级
+   （.jinyu-nav 移动端横向溢出 ~24px、右缘被裁）。在设置页作用域内显式统一为 border-box，
+   自愈且不依赖外部环境。 */
+.jinyu-setting-wrap,
+.jinyu-setting-wrap *,
+.jinyu-setting-wrap *::before,
+.jinyu-setting-wrap *::after { box-sizing: border-box; }
+
+/* 侧栏独立滚动的细滚动条 */
+.jinyu-nav::-webkit-scrollbar { width: 8px; }
+.jinyu-nav::-webkit-scrollbar-thumb { background: #d3d8df; border-radius: 8px; }
+.jinyu-nav::-webkit-scrollbar-thumb:hover { background: #b9c0c9; }
+.jinyu-nav::-webkit-scrollbar-track { background: transparent; }
+
+/* ---------------- 设计令牌 ---------------- */
+.jinyu-setting-wrap {
+    --jh-topbar-h: 76px;
+
+    /* 品牌主色（与主题 style_color_primary 一致的珊瑚橙） */
+    --ja-primary: #ff6b35;
+    --ja-primary-600: #f2571f;   /* hover/active */
+    --ja-primary-700: #d8491a;
+    --ja-primary-soft: #fff1ea;  /* 激活态浅底 */
+    --ja-primary-soft-2: #ffe1d4;
+    --ja-primary-ring: rgba(255, 107, 53, .20);
+    --ja-primary-ring-strong: rgba(255, 107, 53, .35);
+    --ja-on-primary: #ffffff;
+
+    /* 中性表面与文本 */
+    --ja-page-bg: #eaeef2;       /* 页面大背景（更明确的冷灰，衬托白卡浮起） */
+    --ja-surface: #ffffff;       /* 卡片/面板 */
+    --ja-surface-2: #f5f7fa;     /* 次级表面（输入框底、hover 行、多选框等） */
+    --ja-border: #e6e9ee;
+    --ja-border-strong: #d8dde4;
+    --ja-text: #1f2329;
+    --ja-text-2: #4a5159;
+    --ja-text-3: #8a9099;       /* 描述/辅助 */
+    --ja-text-inv: #e6e8eb;
+
+    /* 语义色 */
+    --ja-success: #18a058;
+    --ja-danger: #e5484d;
+    --ja-danger-soft: #fdecec;
+
+    /* 圆角 / 阴影 / 动效 */
+    --ja-r-sm: 10px;
+    --ja-r: 12px;
+    --ja-r-lg: 16px;
+    --ja-r-pill: 999px;
+    --ja-shadow-sm: 0 1px 2px rgba(16, 24, 40, .05), 0 1px 3px rgba(16, 24, 40, .08);
+    --ja-shadow: 0 10px 30px rgba(16, 24, 40, .10), 0 2px 6px rgba(16, 24, 40, .05);
+    --ja-shadow-lg: 0 16px 44px rgba(16, 24, 40, .14);
+    --ja-ease: cubic-bezier(.16, 1, .3, 1);
+    --ja-dur: .22s;
+
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    color: var(--ja-text);
+    font-size: 14px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    background: var(--ja-page-bg);
+}
+
+/* 暗色令牌覆盖（跟随系统 + 手动 .is-dark 双通路，避免重复声明） */
+.ja-dark-tokens() {
+    --ja-page-bg: #0f1115;
+    --ja-surface: #1a1d22;
+    --ja-surface-2: #15181d;
+    --ja-border: #272b31;
+    --ja-border-strong: #30353d;
+    --ja-text: #e6e8eb;
+    --ja-text-2: #c4c9d1;
+    --ja-text-3: #8a9099;
+    --ja-text-inv: #e6e8eb;
+    --ja-primary-soft: #3a2418;
+    --ja-primary-soft-2: #4a2c1c;
+    --ja-primary-ring: rgba(255, 138, 92, .22);
+    --ja-primary-ring-strong: rgba(255, 138, 92, .38);
+    --ja-shadow-sm: 0 1px 2px rgba(0, 0, 0, .4);
+    --ja-shadow: 0 6px 20px rgba(0, 0, 0, .45);
+    --ja-shadow-lg: 0 18px 48px rgba(0, 0, 0, .6);
+    --ja-success-soft: #16301f;
+    --ja-danger-soft: #3a2226;
+}
+@media (prefers-color-scheme: dark) {
+    .jinyu-setting-wrap { .ja-dark-tokens(); }
+}
+.jinyu-setting-wrap.is-dark { .ja-dark-tokens(); }
+
+/* 全局平滑滚动 */
+.toplevel_page_jinyu-options { scroll-behavior: smooth; }
+
+/* ---------------- 顶栏 ---------------- */
+.jinyu-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 28px;
+    background: var(--ja-surface);
+    border: none;
+    border-bottom: 1px solid var(--ja-border);
+    border-radius: 0;
+    box-shadow: var(--ja-shadow-sm);
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    flex-wrap: wrap;
+}
+/* 顶栏不再加渐变装饰线（克制、去模板感，品牌识别靠左侧品牌块） */
+.jinyu-brand { display: flex; align-items: center; gap: 13px; }
+.jinyu-brand > .dashicons {
+    font-size: 24px;
+    width: 46px;
+    height: 46px;
+    color: #fff;
+    background: linear-gradient(135deg, var(--ja-primary), #ff935e);
+    border-radius: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 16px var(--ja-primary-ring);
+}
+.jinyu-brand-title { font-size: 18px; font-weight: 800; margin: 0; line-height: 1.25; letter-spacing: .2px; }
+.jinyu-brand-sub { font-size: 12px; color: var(--ja-text-3); }
+.jinyu-topbar-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.jinyu-search-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-width: 210px;
+    flex: 1 1 120px;
+}
+.jinyu-search {
+    width: 100%;
+    height: 40px;
+    padding: 0 36px 0 14px;
+    border: 1px solid var(--ja-border-strong);
+    border-radius: var(--ja-r-pill);
+    background: var(--ja-surface-2);
+    font-size: 13px;
+    color: var(--ja-text);
+    transition: border-color var(--ja-dur), background var(--ja-dur), box-shadow var(--ja-dur);
+}
+.jinyu-search-clear {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    border-radius: 50%;
+    color: var(--ja-text-3);
+    cursor: pointer;
+    transition: background var(--ja-dur), color var(--ja-dur);
+}
+.jinyu-search-clear:hover { background: var(--ja-surface-2); color: var(--ja-text); }
+.jinyu-search-clear > .dashicons { font-size: 17px; line-height: 1; }
+.jinyu-search:focus {
+    outline: none;
+    border-color: var(--ja-primary);
+    background: #fff;
+    box-shadow: 0 0 0 4px var(--ja-primary-ring);
+}
+/* 关掉 Chrome 自带的 search 清除按钮，避免与我们自定义的 × 重复 */
+.jinyu-search::-webkit-search-cancel-button { display: none; }
+.jinyu-topbar .button-primary {
+    background: linear-gradient(135deg, var(--ja-primary), #ff935e);
+    border: none;
+    color: #fff;
+    border-radius: var(--ja-r-sm);
+    font-weight: 600;
+    box-shadow: 0 4px 14px var(--ja-primary-ring);
+    transition: filter var(--ja-dur), box-shadow var(--ja-dur), transform .06s;
+}
+.jinyu-topbar .button-primary:hover { filter: brightness(1.05); box-shadow: 0 6px 18px var(--ja-primary-ring-strong); }
+.jinyu-topbar .button-primary:active { transform: translateY(1px); }
+
+/* ---------------- 主体布局 ---------------- */
+.jinyu-layout {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    margin-top: 0;
+}
+
+/* 侧边栏导航：吸顶（与右侧面板头顶部对齐、不随页面滚动）；整条菜单直接显示，
+   仅当视口矮到放不下时才出现兜底内部滚动（绝大多数笔记本一次看全） */
+.jinyu-nav {
+    width: 300px;
+    flex-shrink: 0;
+    background: var(--ja-surface);
+    border: none;
+    border-right: 1px solid var(--ja-border);
+    border-radius: 0;
+    padding: 16px 18px;
+    position: sticky;
+    /* 吸顶需避让两层：WP 固定管理栏（官方变量 32/46px）+ 主题自绘顶栏（--jh-topbar-h 实测）。
+       只减自绘顶栏会让侧栏底部多出管理栏高度，导致超出视口。 */
+    top: calc(var(--jh-topbar-h, 0px) + var(--wp-admin--admin-bar--height, 32px));
+    /* 撑满全屏：从顶栏到视口底部，15 个分组用 space-between 均匀分布，
+       一眼看全、不滚动；极端矮屏 overflow-y 兜底（平时不触发）。
+       用 100vh 而非 100dvh：桌面端无移动浏览器地址栏伸缩问题，兼容性更好。 */
+    min-height: calc(100vh - var(--jh-topbar-h, 0px) - var(--wp-admin--admin-bar--height, 32px));
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow-y: auto;
+    overflow-anchor: none;
+    box-shadow: 1px 0 0 var(--ja-border), 10px 0 26px -22px rgba(16, 24, 40, .35);
+}
+
+/* 菜单项 */
+.jinyu-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 14px;
+    margin: 0;
+    border: none;
+    background: transparent;
+    border-radius: 10px;
+    color: var(--ja-text-2);
+    font-size: 13.5px;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    position: relative;
+    transition: background var(--ja-dur) var(--ja-ease), color var(--ja-dur) var(--ja-ease), transform var(--ja-dur) var(--ja-ease), box-shadow var(--ja-dur) var(--ja-ease);
+}
+/* 图标：去掉橙色底块，改为深色矢量图标（dashicons 为矢量字体，渲染等同黑色 SVG 图标）。
+   克制风格——未激活深灰、激活态与文字同橙；激活信号只保留浅橙胶囊底，不再叠左侧竖条。 */
+.jinyu-nav-item > .dashicons {
+    font-size: 17px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ja-text-2);
+    background: transparent;
+    border-radius: 0;
+    flex-shrink: 0;
+    transition: color var(--ja-dur) var(--ja-ease);
+}
+.jinyu-nav-item:hover {
+    background: var(--ja-surface-2);
+    color: var(--ja-text);
+}
+.jinyu-nav-item:hover > .dashicons { color: var(--ja-text); }
+.jinyu-nav-item.is-active {
+    background: var(--ja-primary-soft);
+    color: var(--ja-primary-700);
+    font-weight: 600;
+}
+.jinyu-nav-item.is-active::before { display: none; }
+.jinyu-nav-item.is-active > .dashicons {
+    color: var(--ja-primary-700);
+}
+
+/* 主内容区（浅灰底衬托白卡） */
+.jinyu-main {
+    flex: 1;
+    min-width: 0;
+    background: var(--ja-page-bg);
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+}
+.jinyu-panels { padding: 0 32px 44px; min-height: 360px; }
+.jinyu-search-empty { padding: 56px 0 32px; text-align: center; font-size: 14px; color: var(--ja-text-3); }
+/* hidden 属性必须显式命中：.jinyu-field 是 grid、.jinyu-nav-item 是 flex，
+   作者 display 规则会覆盖 UA 默认的 [hidden]{display:none}，漏写会导致搜索过滤"算了不显示" */
+.jinyu-field[hidden] { display: none; }
+.jinyu-nav-item[hidden] { display: none; }
+/* 搜索过滤后剩余项变少，space-between 会把首尾甩到两端、中间大片留白；搜索态改为顶部堆叠 */
+.jinyu-nav.is-searching { justify-content: flex-start; gap: 2px; padding: 4px 0; }
+/* 命中项之间加细分隔线（box-shadow 不破坏圆角背景），让搜索结果成组更清晰 */
+.jinyu-nav.is-searching .jinyu-nav-item:not(:last-child) { box-shadow: 0 1px 0 var(--ja-border); border-radius: 8px; }
+/* 搜索态命中项统一收紧内边距，与全量态的舒展间距区分 */
+.jinyu-nav.is-searching .jinyu-nav-item { padding-top: 7px; padding-bottom: 7px; }
+.jinyu-panel { display: none; }
+.jinyu-panel.is-active { display: block; animation: jinyu-fade var(--ja-dur) var(--ja-ease); }
+@keyframes jinyu-fade {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+/* 面板头 = 与下方设置卡同宽的圆角白卡（吸顶时呈圆角工具卡钉在顶部）
+   顶部 padding 15px 与左侧 .jinyu-nav 顶部 24px 配对：
+   两边标题到吸顶线的距离同为 32px（15+17 图标半高 = 24+8 标题半行），吸顶前后都对齐 */
+.jinyu-panel-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px 20px 14px;
+    border: 1px solid var(--ja-border);
+    border-radius: var(--ja-r-lg);
+    margin: 0 0 18px;
+    position: sticky;
+    top: var(--jh-topbar-h);
+    background: var(--ja-surface);
+    box-shadow: var(--ja-shadow-sm);
+    z-index: 5;
+}
+.jinyu-panel-icon {
+    flex-shrink: 0;
+    font-size: 18px;
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ja-primary);
+    /* 浅橙软底无边框：比白底描边块更有品牌感，不再像空白色块 */
+    background: var(--ja-primary-soft);
+    border-radius: 10px;
+}
+.jinyu-panel-headtext { flex: 1; min-width: 0; }
+.jinyu-panel-title {
+    font-size: 17px;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.3;
+}
+.jinyu-panel-desc {
+    margin: 3px 0 0;
+    font-size: 12px;
+    color: var(--ja-text-3);
+    /* 分组说明限两行：防止个别组（如邮件 SMTP）超长文案把吸顶头撑出多行 */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+
+/* 后台固定顶栏 #wpadminbar（高 32px）会覆盖 sticky 元素，统一下移 32px */
+.admin-bar .jinyu-topbar { top: 32px; }
+.admin-bar .jinyu-panel-head { top: calc(var(--jh-topbar-h, 0px) + 32px); }
+.admin-bar .jinyu-nav { top: calc(var(--jh-topbar-h, 0px) + 32px); }
+
+/* 设置分组 = 白卡片浮于浅灰底（大气感关键） */
+.jinyu-panel-body {
+    background: var(--ja-surface);
+    border: 1px solid var(--ja-border);
+    border-radius: var(--ja-r-lg);
+    box-shadow: var(--ja-shadow);
+    padding: 4px 30px;
+    transition: box-shadow var(--ja-dur) var(--ja-ease);
+}
+
+/* 分组重置按钮（面板头右侧，幽灵样式：不抢视觉，悬停才显危险色） */
+.jinyu-panel-reset {
+    margin-left: auto;
+    flex-shrink: 0;
+    font-size: 12px;
+    color: var(--ja-text-3);
+    background: transparent;
+    border: none;
+    border-radius: 7px;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: color var(--ja-dur), background var(--ja-dur);
+}
+.jinyu-panel-reset:hover { color: var(--ja-danger); background: var(--ja-danger-soft); }
+
+/* 扁平导航：15 个分组项直接平铺，不再用分区分隔标题（用户要求去掉「基础设置/内容展示/…」等分组条） */
+
+/* 已保存时间戳 */
+.jinyu-saved-time {
+    font-size: 12px;
+    color: var(--ja-text-3);
+    margin-right: 4px;
+    white-space: nowrap;
+}
+
+/* 字段说明「?」悬浮提示 */
+.jinyu-field-tip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 15px; height: 15px;
+    margin-left: 6px;
+    border-radius: 50%;
+    background: var(--ja-surface-2);
+    color: var(--ja-text-3);
+    font-size: 10px;
+    font-style: italic;
+    font-weight: 700;
+    cursor: help;
+    vertical-align: middle;
+    transition: background var(--ja-dur), color var(--ja-dur);
+}
+.jinyu-field-tip:hover { background: var(--ja-primary); color: #fff; }
+
+/* 颜色预设色板 */
+.jinyu-color-presets { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.jinyu-color-preset {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    border: 1px solid rgba(0,0,0,.12);
+    cursor: pointer;
+    padding: 0;
+    transition: transform var(--ja-dur);
+}
+.jinyu-color-preset:hover { transform: scale(1.14); }
+
+/* 上传字段「移除」按钮 */
+.jinyu-upload-remove { margin-left: 6px; }
+.jinyu-upload-remove[hidden] { display: none; }
+
+/* ---------------- 字段（两栏式：标签左 / 控件右） ---------------- */
+.jinyu-field {
+    display: grid;
+    grid-template-columns: minmax(200px, 260px) minmax(0, 1fr);
+    column-gap: 32px;
+    align-items: start;
+    padding: 18px 16px;
+    margin: 0 -16px;
+    border-radius: 12px;
+    border-bottom: none;
+    transition: background var(--ja-dur) var(--ja-ease);
+}
+.jinyu-field:hover { background: var(--ja-surface-2); }
+.jinyu-field:last-child { border-bottom: none; }
+.jinyu-field-label {
+    grid-column: 1;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--ja-text);
+    padding-top: 2px;
+    line-height: 1.5;
+}
+.jinyu-field-body { grid-column: 2; min-width: 0; }
+.jinyu-field-desc {
+    grid-column: 2;
+    margin: 8px 0 0;
+    font-size: 12px;
+    color: var(--ja-text-3);
+    line-height: 1.65;
+}
+/* 开关 / 信息 / 拖拽列表 保持整行 */
+.jinyu-field--switch,
+.jinyu-field.jinyu-info,
+.jinyu-field--dynlist { display: block; }
+.jinyu-field--switch .jinyu-field-head--switch {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+.jinyu-field-labelwrap { flex: 1; min-width: 0; }
+.jinyu-info .jinyu-field-label { display: none; }
+
+.jinyu-input {
+    width: 100%;
+    max-width: 480px;
+    height: 40px;
+    padding: 0 13px;
+    border: 1px solid var(--ja-border-strong);
+    border-radius: var(--ja-r-sm);
+    font-size: 13px;
+    color: var(--ja-text);
+    background: var(--ja-surface);
+    transition: border-color var(--ja-dur), box-shadow var(--ja-dur);
+}
+.jinyu-input:focus {
+    outline: none;
+    border-color: var(--ja-primary);
+    box-shadow: 0 0 0 4px var(--ja-primary-ring);
+}
+
+/* 密码字段：显示/隐藏切换 */
+.jinyu-password { position: relative; max-width: 480px; }
+.jinyu-password .jinyu-input { padding-right: 42px; }
+.jinyu-pw-toggle {
+    position: absolute; top: 0; right: 0; height: 40px; width: 40px;
+    border: 0; background: transparent; cursor: pointer; color: var(--ja-text-3);
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: color var(--ja-dur);
+}
+.jinyu-pw-toggle:hover { color: var(--ja-primary); }
+
+/* 多选（分类复选树） */
+/* ===== 多选 chip 选择器（category-multi / checkboxes / page-multi） ===== */
+.jinyu-field-labelrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    .jinyu-field-label { margin-bottom: 0; }
+}
+.jinyu-multi-count {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ja-primary-700);
+    background: var(--ja-primary-soft);
+    padding: 2px 10px;
+    border-radius: 999px;
+}
+.jinyu-multi-clear {
+    margin-left: auto;
+    border: none;
+    background: transparent;
+    padding: 3px 8px;
+    font-size: 12px;
+    color: var(--ja-text-3);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: color var(--ja-dur) var(--ja-ease), background var(--ja-dur) var(--ja-ease);
+    &:hover { color: var(--ja-danger); background: var(--ja-surface-2); }
+}
+.jinyu-field--multi .jinyu-multi-box {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    max-width: 720px;
+    padding: 12px;
+    border: 1px solid var(--ja-border);
+    border-radius: var(--ja-r-lg);
+    background: var(--ja-surface-2);
+    max-height: 264px;
+    overflow: auto;
+}
+.jinyu-multi-item {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--ja-border-strong);
+    background: var(--ja-surface);
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--ja-text-2);
+    cursor: pointer;
+    user-select: none;
+    transition: color var(--ja-dur) var(--ja-ease),
+                border-color var(--ja-dur) var(--ja-ease),
+                background var(--ja-dur) var(--ja-ease),
+                box-shadow var(--ja-dur) var(--ja-ease),
+                transform var(--ja-dur) var(--ja-ease);
+    /* 隐藏原生 checkbox（保留可访问性，JS 读 .checked） */
+    input {
+        position: absolute;
+        width: 1px; height: 1px;
+        margin: 0; padding: 0;
+        opacity: 0;
+        pointer-events: none;
+        accent-color: transparent;   /* 防 WP 后台原生蓝色勾选透出 */
+        outline: none;
+    }
+    /* 前置圆点指示器 */
+    .jinyu-multi-txt::before {
+        content: '';
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--ja-border-strong);
+        flex-shrink: 0;
+        transition: background var(--ja-dur) var(--ja-ease), transform var(--ja-dur) var(--ja-ease);
+    }
+    &:hover {
+        border-color: var(--ja-primary);
+        color: var(--ja-text);
+        transform: translateY(-1px);
+    }
+    &:focus-within {
+        border-color: var(--ja-primary);
+        box-shadow: 0 0 0 3px var(--ja-primary-ring);
+    }
+    /* 选中态：醒目珊瑚橙实心渐变药丸 + 白色勾号（由 JS 加 .is-checked，兼容所有浏览器，不依赖 :has） */
+    &.is-checked {
+        background: linear-gradient(135deg, var(--ja-primary), #ff8a5c);
+        border-color: transparent;
+        color: var(--ja-on-primary);
+        font-weight: 600;
+        box-shadow: 0 4px 14px var(--ja-primary-ring-strong);
+        transform: translateY(-1px);
+        .jinyu-multi-txt::before {
+            content: '\2713';            /* ✓ 白色勾号 */
+            background: transparent;
+            width: auto; height: auto;
+            border-radius: 0;
+            color: var(--ja-on-primary);
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1;
+            transform: none;
+        }
+    }
+}
+
+
+.jinyu-textarea {
+    height: auto;
+    min-height: 96px;
+    padding: 10px 13px;
+    line-height: 1.7;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 13.5px;
+    color: var(--ja-text);
+}
+/* 代码类文本域（广告/注入 CSS·JS/统计代码）：等宽字体、不折行、关闭拼写检查红线 */
+.jinyu-textarea--code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    font-size: 12.5px;
+    line-height: 1.6;
+    tab-size: 4;
+    white-space: pre;
+    background: var(--ja-surface-2);
+}
+/* ===== 自定义下拉（替代原生 select 的浏览器默认外观） ===== */
+/* 数据源 select：视觉隐藏，仅供 JS 读写值 */
+.jinyu-select-src { display: none !important; }
+.jinyu-selectwrap { position: relative; max-width: 420px; }
+.jinyu-select { position: relative; }
+.jinyu-select-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 9px 12px;
+    background: var(--ja-surface);
+    border: 1px solid var(--ja-border-strong);
+    border-radius: var(--ja-r);
+    color: var(--ja-text);
+    font-size: 13.5px;
+    line-height: 1.4;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color var(--ja-dur), box-shadow var(--ja-dur);
+    .jinyu-select-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .jinyu-select-caret { flex-shrink: 0; color: var(--ja-text-3); font-size: 18px; transition: transform .18s ease; }
+    &:hover { border-color: var(--ja-primary); }
+    &:focus-visible { outline: none; border-color: var(--ja-primary); box-shadow: 0 0 0 3px var(--ja-primary-ring); }
+}
+.jinyu-select.is-open .jinyu-select-btn {
+    border-color: var(--ja-primary);
+    box-shadow: 0 0 0 3px var(--ja-primary-ring);
+    .jinyu-select-caret { transform: rotate(180deg); color: var(--ja-primary); }
+}
+.jinyu-select-pop {
+    position: absolute;
+    z-index: 30;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    max-height: 264px;
+    overflow-y: auto;
+    background: var(--ja-surface);
+    border: 1px solid var(--ja-border-strong);
+    border-radius: var(--ja-r);
+    box-shadow: 0 12px 32px rgba(15, 23, 42, .14);
+    padding: 5px;
+    animation: jyPop .14s ease both;
+}
+@keyframes jyPop {
+    from { opacity: 0; transform: translateY(-4px) scale(.985); }
+    to { opacity: 1; transform: none; }
+}
+.jinyu-select-opt {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 10px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    color: var(--ja-text-2);
+    font-size: 13.5px;
+    text-align: left;
+    cursor: pointer;
+    transition: background var(--ja-dur), color var(--ja-dur);
+    .jinyu-select-opt-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .jinyu-select-check { flex-shrink: 0; font-size: 16px; color: var(--ja-primary); }
+    &:hover { background: var(--ja-surface-2); color: var(--ja-text); }
+}
+.jinyu-select-opt.is-active {
+    background: var(--ja-primary-soft);
+    color: var(--ja-primary-700);
+    font-weight: 600;
+}
+@media (prefers-reduced-motion: reduce) {
+    .jinyu-select-pop { animation: none; }
+    .jinyu-select-btn .jinyu-select-caret { transition: none; }
+}
+.jinyu-unit { margin-left: 8px; font-size: 12px; color: var(--ja-text-3); }
+
+/* 开关 */
+.jinyu-switch {
+    position: relative;
+    display: inline-block;
+    width: 46px;
+    height: 26px;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+.jinyu-switch input { position: absolute; opacity: 0; width: 0; height: 0; }
+.jinyu-switch-track {
+    position: absolute;
+    inset: 0;
+    background: #cfd4db;
+    border-radius: 26px;
+    transition: background var(--ja-dur) var(--ja-ease);
+}
+.jinyu-switch-track::before {
+    content: '';
+    position: absolute;
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    top: 3px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform var(--ja-dur) var(--ja-ease);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .25);
+}
+.jinyu-switch input:checked + .jinyu-switch-track { background: linear-gradient(135deg, var(--ja-primary), #ff935e); }
+.jinyu-switch input:checked + .jinyu-switch-track::before { transform: translateX(20px); }
+.jinyu-switch input:focus-visible + .jinyu-switch-track { box-shadow: 0 0 0 4px var(--ja-primary-ring); }
+
+/* 单选 */
+.jinyu-radios { display: flex; flex-wrap: wrap; gap: 10px 20px; }
+.jinyu-radio { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; font-size: 13px; }
+.jinyu-radio input { accent-color: var(--ja-primary); width: 16px; height: 16px; }
+
+/* 颜色 */
+.jinyu-color { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.jinyu-color-swatch {
+    width: 46px;
+    height: 40px;
+    padding: 3px;
+    border: 1px solid var(--ja-border-strong);
+    border-radius: var(--ja-r-sm);
+    background: var(--ja-surface);
+    cursor: pointer;
+    transition: border-color var(--ja-dur);
+}
+.jinyu-color-swatch:hover { border-color: var(--ja-primary); }
+.jinyu-color-text { max-width: 170px; }
+.jinyu-color-clear { height: 40px; }
+
+/* 上传 */
+.jinyu-upload { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.jinyu-upload-url { flex: 1; min-width: 220px; }
+.jinyu-upload-preview { margin-top: 10px; min-height: 4px; }
+.jinyu-upload-preview img {
+    max-width: 220px;
+    max-height: 140px;
+    border-radius: var(--ja-r-sm);
+    border: 1px solid var(--ja-border);
+    padding: 4px;
+    background: var(--ja-surface-2);
+}
+
+/* 滑块 */
+.jinyu-range { display: flex; align-items: center; gap: 14px; max-width: 500px; }
+.jinyu-range-input {
+    flex: 1;
+    height: 6px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: var(--ja-border-strong);
+    border-radius: 6px;
+    cursor: pointer;
+}
+.jinyu-range-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    border: 4px solid var(--ja-primary);
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .2);
+    transition: transform var(--ja-dur);
+}
+.jinyu-range-input::-webkit-slider-thumb:hover { transform: scale(1.12); }
+.jinyu-range-input::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    border: 4px solid var(--ja-primary);
+    cursor: pointer;
+}
+.jinyu-range-num { max-width: 100px; flex-shrink: 0; }
+
+/* 信息框 */
+.jinyu-info-box {
+    padding: 14px 16px;
+    background: var(--ja-primary-soft);
+    border-left: 3px solid var(--ja-primary);
+    border-radius: 0 10px 10px 0;
+    font-size: 13px;
+    color: var(--ja-primary-700);
+    line-height: 1.65;
+}
+
+/* 检查更新 */
+.jinyu-field--update .jinyu-field-body { margin-top: 2px; }
+.jinyu-update-box { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.jinyu-update-status { font-size: 13px; color: var(--ja-text-3); }
+.jinyu-update-status.ok { color: var(--ja-success); font-weight: 600; }
+.jinyu-update-status.err { color: var(--ja-danger); font-weight: 600; }
+.jinyu-update-detail { margin-top: 12px; font-size: 13px; }
+.jinyu-update-cl {
+    padding: 12px 14px;
+    background: var(--ja-surface-2);
+    border: 1px solid var(--ja-border-strong);
+    border-radius: var(--ja-r);
+    color: var(--ja-text-2);
+    line-height: 1.7;
+    white-space: pre-wrap;
+    margin-bottom: 12px;
+}
+.jinyu-update-detail .jinyu-btn { margin-right: 8px; }
+
+/* 主题按钮（品牌化，与前端设计语言一致） */
+.jinyu-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1;
+    border: 1px solid transparent;
+    border-radius: var(--ja-r-sm);
+    background: var(--ja-surface-2);
+    color: var(--ja-text-2);
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform var(--ja-dur) var(--ja-ease), box-shadow var(--ja-dur) var(--ja-ease), background var(--ja-dur) var(--ja-ease), border-color var(--ja-dur) var(--ja-ease);
+}
+.jinyu-btn:hover { transform: translateY(-1px); }
+.jinyu-btn-primary {
+    background: linear-gradient(135deg, var(--ja-primary), #ff8a5c);
+    color: #fff;
+    box-shadow: 0 4px 14px var(--ja-primary-ring);
+}
+.jinyu-btn-primary:hover { box-shadow: 0 6px 20px var(--ja-primary-ring-strong); }
+.jinyu-btn[disabled] { opacity: .6; cursor: not-allowed; transform: none; }
+
+
+/* ---------------- 维护工具（行式列表：一行一工具，左图标右动作） ---------------- */
+.jinyu-tools-list {
+    background: var(--ja-surface);
+    border: 1px solid var(--ja-border-strong);
+    border-radius: var(--ja-r-lg);
+    box-shadow: var(--ja-shadow-sm);
+    overflow: hidden;
+}
+.jinyu-tool-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 15px 20px;
+    transition: background var(--ja-dur) var(--ja-ease);
+
+    & + .jinyu-tool-row { border-top: 1px solid var(--ja-border); }
+    &:hover { background: var(--ja-surface-2); }
+}
+.jinyu-tool-ico {
+    flex: none;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    color: var(--ja-text-2);
+    background: var(--ja-surface-2);
+    border: 1px solid var(--ja-border);
+}
+.jinyu-tool-ico .dashicons { font-size: 20px; width: 20px; height: 20px; }
+
+.jinyu-tool-main { flex: 1 1 auto; min-width: 0; }
+.jinyu-tool-title { margin: 0; font-size: 14px; font-weight: 600; color: var(--ja-text); }
+.jinyu-tool-desc {
+    margin: 3px 0 0;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--ja-text-3);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+.jinyu-tool-side {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.jinyu-tool-state { font-size: 12.5px; font-weight: 600; color: var(--ja-text-3); }
+.jinyu-tool-state.on { color: var(--ja-success); }
+.jinyu-tool-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border: 1px solid var(--ja-border-strong);
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    color: var(--ja-text-2);
+    background: var(--ja-surface);
+    cursor: pointer;
+    transition: color var(--ja-dur) var(--ja-ease),
+                border-color var(--ja-dur) var(--ja-ease),
+                background var(--ja-dur) var(--ja-ease),
+                transform var(--ja-dur) var(--ja-ease);
+}
+.jinyu-tool-btn:hover {
+    color: var(--ja-primary-600);
+    border-color: var(--ja-primary);
+    background: var(--ja-primary-soft);
+}
+.jinyu-tool-btn:active { transform: translateY(1px); }
+.jinyu-tool-btn[disabled] { opacity: .55; cursor: not-allowed; transform: none; }
+.jinyu-tools-tip { font-size: 12px; color: var(--ja-text-3); min-height: 16px; }
+.jinyu-tools-tip.ok { color: var(--ja-success); font-weight: 600; }
+.jinyu-tools-tip.err { color: var(--ja-danger); font-weight: 600; }
+
+/* 动作区结果提示：带底色 + 图标的状态胶囊，结果一眼可见 */
+.jinyu-tool-side .jinyu-tools-tip {
+    max-width: 240px;
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 6px;
+    min-height: 0;
+    font-size: 12.5px;
+    line-height: 1.5;
+    word-break: break-word;
+}
+.jinyu-tool-side .jinyu-tools-tip:not(:empty) {
+    padding: 6px 12px;
+    border-radius: var(--ja-r-pill);
+    background: var(--ja-surface-2);
+    color: var(--ja-text-2);
+}
+.jinyu-tool-side .jinyu-tools-tip.ok:not(:empty) {
+    background: var(--ja-success-soft);
+    color: var(--ja-success);
+}
+.jinyu-tool-side .jinyu-tools-tip.err:not(:empty) {
+    background: var(--ja-danger-soft);
+    color: var(--ja-danger);
+}
+.jinyu-tool-side .jinyu-tools-tip.ok:not(:empty)::before { content: '✓'; font-weight: 700; }
+.jinyu-tool-side .jinyu-tools-tip.err:not(:empty)::before { content: '✕'; font-weight: 700; }
+
+@media (max-width: 720px) {
+    .jinyu-tool-row { flex-wrap: wrap; }
+    .jinyu-tool-side { width: 100%; padding-left: 54px; justify-content: flex-start; }
+}
+
+/* 对象存储：推送 / 拉回 进度 */
+.jinyu-storage-progress {
+    margin-top: var(--ja-r);
+    padding: 16px 18px;
+    background: var(--ja-surface);
+    border: 1px solid var(--ja-border-strong);
+    border-radius: var(--ja-r-lg);
+}
+.jinyu-storage-bar {
+    height: 10px;
+    border-radius: 999px;
+    background: var(--ja-border);
+    overflow: hidden;
+}
+.jinyu-storage-bar > span {
+    display: block;
+    height: 100%;
+    width: 0;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--ja-primary), #ff8a5c);
+    transition: width var(--ja-dur) var(--ja-ease);
+}
+.jinyu-storage-progress-text { margin: 10px 0 0; font-size: 13px; color: var(--ja-text-2); }
+.jinyu-storage-note { margin: 16px 0 0; font-size: 12.5px; line-height: 1.7; color: var(--ja-text-3); }
+
+/* 暗色模式 */
+.is-dark {
+    .jinyu-tool-row:hover { background: rgba(255, 255, 255, .04); }
+    .jinyu-storage-progress { background: var(--ja-surface-2); }
+}
+
+/* ---------------- 未保存提示条 ---------------- */
+.jinyu-dirtybar {
+    position: fixed;
+    left: 50%;
+    bottom: 26px;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 11px 18px;
+    background: #1f2329;
+    color: #fff;
+    border-radius: var(--ja-r-pill);
+    box-shadow: var(--ja-shadow-lg);
+    z-index: 9999;
+    font-size: 13px;
+}
+.jinyu-dirtybar[hidden] { display: none; }
+.jinyu-dirty-actions { display: flex; align-items: center; gap: 10px; }
+.jinyu-dirty-actions .button-link { color: #b9c0cc; }
+
+/* ---------------- Toast ---------------- */
+.jinyu-admin-toast {
+    position: fixed;
+    right: 28px;
+    bottom: 28px;
+    z-index: 9999;
+    padding: 14px 26px;
+    border-radius: var(--ja-r);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: .4px;
+    color: #fff;
+    box-shadow: var(--ja-shadow-lg);
+    display: none;
+    border-left: 5px solid rgba(255, 255, 255, .9);
+    animation: jinyu-toast-in .3s var(--ja-ease);
+}
+.jinyu-admin-toast.ok {
+    background: linear-gradient(135deg, #19b562, #15a057);
+    animation: jinyu-toast-in .3s var(--ja-ease), jinyu-toast-pulse 1.2s ease-out .3s;
+}
+.jinyu-admin-toast.err { background: linear-gradient(135deg, #ef5350, #e53935); }
+@keyframes jinyu-toast-in {
+    from { opacity: 0; transform: translateY(16px) scale(.95); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes jinyu-toast-pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(25, 181, 98, .55); }
+    100% { box-shadow: 0 0 0 14px rgba(25, 181, 98, 0); }
+}
+
+/* ---------------- 响应式 ---------------- */
+@media (max-width: 900px) {
+    .jinyu-layout { flex-direction: column; }
+    .jinyu-main { width: 100%; }
+    /* 移动端：分组导航改为顶部「横向滚动标签条」，吸顶点选即切，
+       只占一行高度，不再把 14 个分组竖排堆满首屏。 */
+    .jinyu-nav {
+        width: 100%;
+        position: sticky;
+        top: 0;
+        max-height: none;
+        /* 重置桌面「撑满全屏」规则：移动端是顶部横向标签条，不能被 100vh 撑成一整屏高 */
+        min-height: 0;
+        justify-content: flex-start;
+        overflow-x: auto;
+        overflow-y: hidden;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: 8px;
+        padding: 9px 12px;
+        border-right: none;
+        border-bottom: 1px solid var(--ja-border);
+        /* 吸顶工具栏：冷灰底与内容白卡拉开层次，仅用 1px 下边框分隔，
+           不加投影——避免「白条贴白卡」的误贴感，也不要悬浮投影的浮层观感 */
+        background: var(--ja-page-bg);
+        z-index: 40;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    /* 移动端自绘顶栏是 static（随页滚走），标签条吸顶只避让 WP 固定管理栏
+       （WP 官方变量：桌面 32px、≤782px 自动变 46px）。不可用 --jh-topbar-h——
+       那是顶栏自身高度，顶栏滚走后标签条会悬空漏出上方滚动内容。 */
+    .admin-bar .jinyu-nav { top: var(--wp-admin--admin-bar--height, 32px); }
+    .jinyu-nav::-webkit-scrollbar { display: none; }
+
+    .jinyu-nav-item {
+        width: auto;
+        flex: 0 0 auto;
+        white-space: nowrap;
+        padding: 6px 13px;
+        font-size: 13px;
+        border-radius: 999px;
+        /* 纯文字胶囊：白底描边，轻量不压内容 */
+        background: var(--ja-surface);
+        border: 1px solid var(--ja-border);
+    }
+    .jinyu-nav-item > .dashicons { display: none; }
+    .jinyu-nav-item:hover { transform: none; background: var(--ja-surface); border-color: var(--ja-border-strong); }
+    .jinyu-nav-item::before { display: none; }
+    .jinyu-nav-item.is-active {
+        background: var(--ja-primary-soft);
+        border-color: transparent;
+        box-shadow: 0 0 0 1px var(--ja-primary-ring-strong) inset;
+    }
+    .jinyu-panels { padding: 8px 18px 18px; }
+    .jinyu-topbar { position: static; }
+    .jinyu-field { grid-template-columns: minmax(0, 1fr); }
+    .jinyu-field-body, .jinyu-field-desc { grid-column: 1; }
+    .jinyu-panel-head { position: static; margin: 0 0 14px; padding: 12px 14px; border-radius: var(--ja-r); }
+}
+
+/* 手机竖屏：进一步收紧内边距，搜索框可收缩换行 */
+@media (max-width: 600px) {
+    .jinyu-topbar { padding: 12px 16px; gap: 10px; }
+    .jinyu-search-wrap { min-width: 0; flex: 1 1 120px; }
+    .jinyu-search { border-radius: 999px; }
+    .jinyu-nav { padding: 10px 12px; }
+    .jinyu-panels { padding: 6px 12px 14px; }
+    .jinyu-panel-body { padding: 2px 16px; }
+    .jinyu-field { padding: 14px 12px; margin: 0 -12px; }
+    /* ≤600px 时 WP 把管理栏改为 absolute（会随页面滚走，见 admin-bar.css），
+       标签条吸顶不再避让 46px——直接贴视口顶，否则管理栏滚走后上方漏一条内容。 */
+    .admin-bar .jinyu-nav { top: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .jinyu-admin-toast.ok { animation: jinyu-toast-in .2s ease; }
+    .jinyu-panel.is-active { animation: none; }
+    * { scroll-behavior: auto !important; }
+}
+
+/* ============ 动态列表（拖拽构建器） ============ */
+.jinyu-field--dynlist {
+    border: 1px solid var(--ja-border);
+    border-radius: var(--ja-r-lg);
+    padding: 16px;
+    background: var(--ja-surface-2);
+}
+.jinyu-field--dynlist > .jinyu-field-label { display: block; margin-bottom: 12px; font-weight: 600; }
+.jinyu-dynlist { display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px; }
+.jinyu-dyn-item {
+    border: 1px solid var(--ja-border-strong);
+    border-radius: var(--ja-r);
+    background: var(--ja-surface);
+    box-shadow: var(--ja-shadow-sm);
+    overflow: hidden;
+    transition: box-shadow var(--ja-dur) ease, opacity var(--ja-dur) ease;
+}
+.jinyu-dyn-item.jinyu-dyn-dragging { opacity: .5; box-shadow: 0 8px 20px rgba(16, 24, 40, .18); }
+.jinyu-dyn-item-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    background: var(--ja-surface-2);
+    border-bottom: 1px solid var(--ja-border);
+    cursor: default;
+}
+.jinyu-dyn-grip { cursor: grab; color: #99a0ab; font-size: 16px; line-height: 1; user-select: none; }
+.jinyu-dyn-grip:active { cursor: grabbing; }
+.jinyu-dyn-title {
+    flex: 1;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--ja-text-2);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.jinyu-dyn-actions { display: flex; gap: 4px; }
+.jinyu-dyn-btn {
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--ja-border-strong);
+    background: var(--ja-surface);
+    border-radius: 7px;
+    color: var(--ja-text-2);
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    transition: all var(--ja-dur) ease;
+}
+.jinyu-dyn-btn:hover { background: var(--ja-surface-2); color: var(--ja-primary); border-color: var(--ja-primary); }
+.jinyu-dyn-del:hover { background: var(--ja-danger-soft); color: var(--ja-danger); border-color: var(--ja-danger); }
+.jinyu-dyn-copy:hover { background: #eaf7ee; color: #1c9b53; border-color: #1c9b53; }
+.jinyu-dyn-count { font-size: 12px; color: var(--ja-text-3); font-weight: 400; }
+.jinyu-dyn-add:disabled { opacity: .5; cursor: not-allowed; }
+.jinyu-dyn-item-body { padding: 12px; display: grid; gap: 8px; }
+.jinyu-dyn-subrow { display: flex; align-items: center; gap: 12px; }
+.jinyu-dyn-sublabel { flex: 0 0 92px; font-size: 12px; color: var(--ja-text-2); text-align: right; }
+.jinyu-dyn-subrow .jinyu-input { flex: 1; }
+.jinyu-dyn-subrow .jinyu-upload { flex: 1; display: flex; gap: 8px; }
+.jinyu-dyn-subrow .jinyu-upload .jinyu-input { flex: 1; }
+.jinyu-dyn-add { margin-top: 2px; }
+
+/* 动态列表内的小开关 */
+.jinyu-switch--sm { width: 36px; height: 20px; }
+.jinyu-switch--sm .jinyu-switch-track { border-radius: 20px; }
+.jinyu-switch--sm .jinyu-switch-track::before { width: 14px; height: 14px; left: 3px; top: 3px; }
+.jinyu-switch--sm input:checked + .jinyu-switch-track::before { transform: translateX(16px); }
+
+/* 小工具表单内的字段说明 */
+.jinyu-widget-hint {
+    display: block;
+    margin-top: 4px;
+    font-size: 12px;
+    color: #8a929c;
+    line-height: 1.5;
+}

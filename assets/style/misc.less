@@ -1,0 +1,356 @@
+@import "var.less";
+
+/* ==========================================================================
+   日期归档 / 标签页 / 随机 / 站点地图 等独立页样式
+   ========================================================================== */
+
+.jinyu-archive-head { margin-bottom: @s-5; }
+.jinyu-archive-title {
+    font-size: @fs-xl;
+    color: @text-1;
+    font-weight: 700;
+    padding-left: @s-3;
+    border-left: 3px solid @primary;
+}
+
+/* 标签大全 */
+.jinyu-tags-page {
+    display: flex;
+    flex-wrap: wrap;
+    gap: @s-3;
+    margin: @s-5 0;
+
+    .jinyu-tag-item {
+        display: inline-flex;
+        align-items: center;
+        gap: @s-2;
+        padding: @s-2 @s-4;
+        background: @bg-subtle;
+        border: 1px solid @border;
+        border-radius: @radius-pill;
+        color: @text-2;
+        font-size: @fs-sm;
+        transition: all @transition-fast;
+
+        &:hover { border-color: @primary; color: @primary; transform: translateY(-2px); }
+    }
+    .jinyu-tag-count {
+        font-size: @fs-xs;
+        color: @text-4;
+        background: @bg-card;
+        border-radius: @radius-pill;
+        padding: 0 @s-2;
+    }
+}
+
+/* 随机文章 */
+.jinyu-random-box {
+    display: flex;
+    flex-direction: column;
+    gap: @s-4;
+    margin: @s-5 0;
+
+    .jinyu-random-current {
+        display: flex;
+        flex-direction: column;
+        gap: @s-2;
+        padding: @s-5;
+        border: 1px solid @border;
+        border-radius: @radius-lg;
+        background: linear-gradient(135deg, @primary-light, @bg-subtle);
+        transition: all @transition-fast;
+        &:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.1); }
+    }
+    .jinyu-random-label { font-size: @fs-sm; color: @primary; font-weight: 600; }
+    .jinyu-random-title { font-size: @fs-lg; color: @text-1; font-weight: 700; }
+}
+.jinyu-random-list-title { margin: @s-6 0 @s-3; font-size: @fs-md; color: @text-1; }
+.jinyu-random-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: @s-3 0;
+        border-bottom: 1px solid @border;
+        a { color: @text-2; &:hover { color: @primary; } }
+    }
+    .jinyu-random-date { font-size: @fs-xs; color: @text-4; }
+}
+
+/* 站点地图 */
+.jinyu-sitemap { margin: @s-5 0; }
+.jinyu-sitemap-sec { margin-bottom: @s-6; h2 { font-size: @fs-lg; color: @text-1; border-left: 3px solid @primary; padding-left: @s-3; margin-bottom: @s-4; } }
+.jinyu-sitemap-cat {
+    margin-bottom: @s-5;
+    h3 { font-size: @fs-md; margin: 0 0 @s-2; a { color: @text-1; } span { color: @text-4; font-weight: 400; font-size: @fs-sm; } }
+    ul { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: @s-2 @s-5; }
+    li a { color: @text-2; font-size: @fs-sm; &:hover { color: @primary; } }
+}
+.jinyu-sitemap-pages { list-style: none; padding: 0; margin: 0; columns: 2; li { padding: @s-2 0; a { color: @text-2; &:hover { color: @primary; } } } }
+
+@media (max-width: 576px) {
+    .jinyu-sitemap-cat ul, .jinyu-sitemap-pages { columns: 1; grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ==========================================================================
+   书单/推荐阅读
+   ========================================================================== */
+.jinyu-book-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: @s-5;
+    margin: @s-5 0;
+}
+.jinyu-book-card {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid @border;
+    border-radius: @radius-lg;
+    overflow: hidden;
+    background: @bg-card;
+    text-decoration: none;
+    color: @text-1;
+    transition: all @transition-fast;
+    &:hover { transform: translateY(-4px); box-shadow: 0 10px 28px rgba(0,0,0,.12); border-color: @primary; }
+    .jinyu-book-cover { aspect-ratio: 3/2; overflow: hidden; background: @bg-subtle;
+        img { width: 100%; height: 100%; object-fit: cover; } }
+    .jinyu-book-meta { padding: @s-3 @s-4; }
+    .jinyu-book-title { font-weight: 600; font-size: @fs-sm; .text-ellipsis(1); }
+    .jinyu-book-author { font-size: @fs-xs; color: @text-4; margin-top: 4px; }
+}
+@media (max-width: 768px) { .jinyu-book-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (max-width: 480px) { .jinyu-book-grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* 手气不错 */
+.jinyu-luck-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: @s-5;
+    padding: @s-8 0;
+    text-align: center;
+}
+.jinyu-luck-tip { color: @text-3; font-size: @fs-sm; }
+.jinyu-luck-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: @s-2;
+    padding: @s-4 @s-8;
+    border: 0;
+    border-radius: @radius-pill;
+    background: @primary;
+    color: @text-invert;
+    font-size: @fs-md;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background @transition-fast, transform @transition-fast;
+    &:hover { background: @primary-dark; transform: scale(1.03); }
+    &.is-loading { opacity: .7; cursor: wait; }
+}
+
+/* 说说/动态 */
+.jinyu-moments { margin: @s-5 0; padding-left: @s-6; border-left: 2px solid @border; }
+.jinyu-moment { position: relative; padding: 0 0 @s-6 @s-5; }
+.jinyu-moment-dot {
+    position: absolute;
+    left: -(@s-6 + 5px);
+    top: 6px;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: @primary;
+    box-shadow: 0 0 0 3px @primary-light;
+}
+.jinyu-moment-text { color: @text-2; font-size: @fs-sm; line-height: 1.8; }
+.jinyu-moment-thumb { margin: @s-2 0; }
+.jinyu-moment-thumb img { max-width: 100%; border-radius: @radius-sm; }
+.jinyu-moment-meta { font-size: @fs-xs; color: @text-4; margin-top: @s-2; }
+.jinyu-moment-meta a { color: @text-4; &:hover { color: @primary; } }
+
+/* 页脚公司信息 / 备案 */
+.jinyu-footer-contact {
+    list-style: none; padding: 0; margin: 0;
+    li { padding: @s-1 0; color: @text-3; font-size: @fs-sm; }
+    a { color: @text-3; &:hover { color: @primary; } }
+    i { width: 18px; color: @primary; }
+}
+.jinyu-footer-icp { margin-left: @s-3; }
+
+/* 评论 UA 解析展示 */
+.jinyu-comment-ua {
+    display: flex;
+    gap: @s-2;
+    margin-top: @s-2;
+    font-size: @fs-xs;
+    color: @text-4;
+    flex-wrap: wrap;
+}
+.jinyu-ua-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: @radius-pill;
+    background: @bg-subtle;
+    transition: @transition;
+    &:hover { background: rgba(0, 0, 0, .04); color: @primary; }
+}
+.jinyu-ua-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px; height: 16px;
+    flex-shrink: 0;
+}
+
+/* 标签页拼音分组 */
+.jinyu-tags-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: @s-3;
+    padding: @s-2;
+    background: @bg-subtle;
+    border-radius: @radius-md;
+}
+.jinyu-tag-nav-item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px; height: 32px;
+    font-size: 14px;
+    font-weight: 600;
+    color: @text-2;
+    text-decoration: none;
+    border-radius: @radius-sm;
+    transition: @transition;
+    &:hover { color: #fff; background: @primary; }
+    &.disabled { opacity: .35; pointer-events: none; }
+}
+.jinyu-tags-groups { margin-top: @s-3; }
+.jinyu-tag-group {
+    margin-bottom: @s-4;
+    &:last-child { margin-bottom: 0; }
+}
+.jinyu-tag-group-title {
+    display: flex;
+    align-items: baseline;
+    gap: @s-2;
+    margin-bottom: @s-2;
+    padding-bottom: @s-1;
+    border-bottom: 1px solid @border;
+}
+.jinyu-tag-group-letter {
+    font-size: 22px;
+    font-weight: 700;
+    color: @primary;
+}
+.jinyu-tag-group-count {
+    font-size: @fs-xs;
+    color: @text-4;
+}
+.jinyu-tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: @s-2;
+}
+
+/* ========== CMS 首页模块 ========== */
+.jinyu-cms-grid {
+    display: grid;
+    /* 必须 minmax(0,1fr)：裸 1fr 的最小值是内容宽度，长标题会把列撑破视口（曾导致 390px 横向溢出） */
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: @s-3;
+    margin-bottom: @s-5;
+}
+.jinyu-cms-grid-item {
+    position: relative;
+    display: block;
+    border-radius: @radius-md;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    background: @bg-subtle;
+    box-shadow: 0 1px 3px rgba(20, 30, 50, .06);
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+.jinyu-cms-grid-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(20, 30, 50, .14);
+}
+.jinyu-cms-grid-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.jinyu-cms-grid-cap {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    padding: @s-3;
+    color: #fff;
+    font-size: @fs-sm;
+    font-weight: 600;
+    background: linear-gradient(to top, rgba(0, 0, 0, .62), rgba(0, 0, 0, 0));
+}
+.jinyu-cms-2box {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: @s-4;
+    margin-bottom: @s-5;
+}
+.jinyu-cms-box {
+    min-width: 0;               /* grid item 允许收缩，否则长标题撑破列宽 */
+    background: @bg-card;
+    border: 1px solid @border;
+    border-radius: @radius-md;
+    padding: @s-4;
+}
+.jinyu-cms-box-title {
+    margin: 0 0 @s-3;
+    font-size: @fs-md;
+    font-weight: 700;
+    padding-bottom: @s-2;
+    border-bottom: 2px solid @primary;
+    display: inline-block;
+}
+.jinyu-cms-box-title a { color: @text-1; text-decoration: none; }
+.jinyu-cms-box-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: @s-2;
+}
+.jinyu-cms-box-list li {
+    display: flex;
+    align-items: baseline;
+    gap: @s-2;
+    min-width: 0;               /* flex item 允许收缩，配合 a 的 ellipsis 生效 */
+}
+.jinyu-cms-box-list li::before {
+    content: '';
+    flex: 0 0 4px;
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: @primary;
+    transform: translateY(-2px);
+}
+.jinyu-cms-box-list a {
+    flex: 1 1 auto;
+    min-width: 0;               /* 无此则 nowrap 文本不可收缩，整行溢出 */
+    color: @text-2;
+    text-decoration: none;
+    font-size: @fs-sm;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.jinyu-cms-box-list a:hover { color: @primary; }
+
+@media (max-width: 768px) {
+    .jinyu-cms-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .jinyu-cms-2box { grid-template-columns: minmax(0, 1fr); }
+}

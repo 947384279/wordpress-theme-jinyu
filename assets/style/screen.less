@@ -1,0 +1,143 @@
+@import "var.less";
+
+/* ==========================================================================
+   响应式断点：xs 480 / sm 576 / md 768 / lg 1024 / xl 1240
+   移动优先的增量覆写，按断点从大到小排列。
+   前台只用这 5 个值（782 仅用于 admin-bar 偏移，见 common.less/critical.less）。
+   ========================================================================== */
+
+/* ---------- 流式排版：标题随视口平滑缩放（替代固定 px 硬切，提升大屏/小屏观感） ----------
+   注意：Less 会把 `rem + vw` 误算成定值（3.6rem 之类），故中间值只用 vw，
+   再用 clamp 的 min/max 钳住上下限。基准视口按 1280 设计。 */
+.jinyu-banner-title      { font-size: clamp(22px, 2.8vw, 36px); }
+.jinyu-article-title     { font-size: clamp(20px, 2vw, 30px); }
+.jinyu-term-header h1,
+.jinyu-author-header h1  { font-size: clamp(22px, 2.5vw, 32px); }
+
+/* ---------- ≤1240px：收窄容器 + 导航折叠为抽屉 ---------- */
+@media (max-width: 1240px) {
+    :root { --jinyu-gutter: @s-4; }
+    .jinyu-single { padding: @s-6; }
+
+    /* 容器收窄后「Logo + 长菜单 + 工具区」在一行内放不下：
+       导航折叠为全屏浮层，头部始终保持单行（等价 Bootstrap 的 navbar-expand-xl）。
+       工具区用 order 重排到 Logo 右侧（见 common.less / critical.less 的 ≤1240 块），
+       此处只保证汉堡显示，避免重复声明 margin-left:auto 与 order 冲突。 */
+    .jinyu-nav-toggle { display: inline-flex; }
+}
+
+/* ---------- ≤1024px（或宽屏触摸设备）：手机 / 平板不显示侧栏小工具 ---------- */
+/* 侧栏是"桌面增强"：一旦进入手机/平板形态就整列移除，主内容恢复全宽。
+   1024 覆盖 iPad 竖屏(768/834)与横屏(1024)；`(hover:none)` 兜底覆盖 iPad Air/Pro 横屏
+   (1180/1194) 这类"宽度够但纯触摸"的设备，同时不会误伤桌面窄窗口。 */
+@media (max-width: 1024px), (hover: none) and (max-width: 1240px) {
+    .jinyu-main-wrap { flex-direction: column; gap: @s-5; }
+    .jinyu-sidebar { display: none; }
+    .jinyu-single-wrap { max-width: none; }
+}
+
+/* ---------- ≤1024px：网格降列 ----------
+   必须与上面「侧栏隐藏」同为 1024：侧栏一撤主内容即恢复全宽，若网格拖到 992 才降列，
+   993~1024px 区间就会出现「侧栏没了、网格却还是桌面列数」的半吊子布局。 */
+@media (max-width: 1024px) {
+    .jinyu-relevant-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .jinyu-footer-inner { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .jinyu-banner { height: 260px; }
+}
+
+/* ---------- ≤768px ---------- */
+@media (max-width: 768px) {
+    /* 用 min-height 覆写基础层的 min-height:64px —— 写 height 会被 min-height 顶回去，长期以来没生效 */
+    .jinyu-header-inner { min-height: 58px; height: 58px; gap: @s-3; }
+    .jinyu-logo {
+        font-size: @fs-md;
+        .jinyu-logo-icon { width: 30px; height: 30px; font-size: 15px; }
+    }
+    .jinyu-logo-sub { display: none; }
+
+    /* 标题栏空间紧张：隐藏页眉社交图标（页脚已有社交区），避免与搜索/月亮/登录/汉堡挤破 390 标题栏 */
+    .jinyu-header-social { display: none; }
+
+    .jinyu-banner {
+        height: 220px;
+        .jinyu-banner-overlay { padding: @s-4 @s-5; }
+    }
+    .jinyu-banner-title { font-size: @fs-xl; }
+    .jinyu-banner-excerpt { display: none; }
+
+    .jinyu-single { padding: @s-5; }
+    .jinyu-article-title { font-size: @fs-xl; }
+
+    .jinyu-post-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: @s-4; }
+    .jinyu-post-info { padding: @s-4; }
+
+    .jinyu-relevant-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: @s-3; }
+
+    .jinyu-comment-list .children { padding-left: @s-5; }
+    .comments-area { padding: @s-5 @s-4; }
+
+    /* 手机端目录不再隐藏：改为置顶可折叠卡片（由 common.less 的 ≤768 折叠逻辑配合），与"独立在文章框架外"一致 */
+    .jinyu-share-btns { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+    /* 注：社交图标原本在手机端隐藏（旧方案里它挤在头部栏）。工具区已改为浮层底部独立一行，
+       空间充裕，这里不再隐藏；若后台未开启 header_social_enable 则本就不会输出。 */
+
+    /* 长站名在窄屏可收缩并省略，防止撑破头部 flex 布局 */
+    .jinyu-logo { flex-shrink: 1; min-width: 0; }
+    .jinyu-logo-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+
+    /* 标题栏按钮在手机端略微缩小，给 Logo 与汉堡留出空间 */
+    .jinyu-header-tools .jinyu-icon-btn { width: 32px; height: 32px; font-size: 15px; }
+    .jinyu-header-tools .jinyu-user-btn { height: 32px; padding: 0 @s-1; }
+    .jinyu-header-tools .jinyu-user-avatar { width: 24px; height: 24px; }
+    .jinyu-header-tools .jinyu-login-btn { height: 32px; padding: 0 @s-3; }
+
+    /* 手机端首页：隐藏电脑端首页装饰模块（轮播/置顶横幅/四宫格/两栏），
+       只留文章列表 + 翻页 + 页脚版权部分 */
+    .home .jinyu-carousel,
+    .home .jinyu-banner,
+    .home .jinyu-cms-grid,
+    .home .jinyu-cms-2box { display: none; }
+}
+
+/* ---------- ≤576px：单列 ---------- */
+@media (max-width: 576px) {
+    :root { --jinyu-gutter: @s-3; }
+    .jinyu-main-wrap { padding-top: @s-4; gap: @s-4; }
+
+    .jinyu-post-grid { grid-template-columns: minmax(0, 1fr); }
+    .jinyu-relevant-grid { grid-template-columns: minmax(0, 1fr); }
+    .jinyu-footer-inner { grid-template-columns: minmax(0, 1fr); }
+
+    .jinyu-single { padding: @s-4; }
+    .jinyu-article-title { font-size: @fs-lg; }
+    .jinyu-article-meta { gap: @s-3; font-size: @fs-xs; }
+
+    .jinyu-post-actions { gap: @s-2; padding: @s-4 0; }
+    .jinyu-action-btn { padding: @s-2 @s-4; font-size: @fs-xs; }
+
+    .jinyu-pagination a,
+    .jinyu-pagination span { min-width: 34px; height: 34px; font-size: @fs-xs; }
+
+    .jinyu-scroll-util { right: 16px; bottom: 16px; }
+    .jinyu-scroll-btn { width: 40px; height: 40px; font-size: 15px; }
+
+    .jinyu-search-panel { padding: @s-4; }
+    .jinyu-search-form { flex-direction: column; button { width: 100%; } }
+}
+
+/* ---------- 打印 ---------- */
+@media print {
+    .jinyu-header,
+    .jinyu-footer,
+    .jinyu-sidebar,
+    .jinyu-post-actions,
+    .jinyu-relevant,
+    .jinyu-comment-respond,
+    .jinyu-scroll-util,
+    .jinyu-read-bar { display: none !important; }
+
+    body { background: #fff; color: #000; }
+    .jinyu-single { box-shadow: none; padding: 0; border: 0; }
+    a { color: #000; text-decoration: underline; }
+}

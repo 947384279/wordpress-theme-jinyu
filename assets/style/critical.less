@@ -1,0 +1,607 @@
+@import "var.less";
+
+/* ==========================================================================
+   首屏关键 CSS（内联，避免阻塞渲染；其余样式由 style.min.css 延迟加载）
+   说明：本文件不含 light :root（品牌色变量由 dynamic-style.php 在 wp_head 注入，
+        确保与后台「主题色」设置一致）；仅补一份 dark 令牌，避免主样式加载前暗色闪烁。
+   ========================================================================== */
+
+/* ===== 基础重置 ===== */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+/* 与 common.less 保持一致：离屏固定抽屉会撑宽布局视口，用 clip 兜底（勿用 hidden） */
+html, body { overflow-x: clip; }
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Jinyu Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Inter,
+                 "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    font-size: @fs-base;
+    line-height: 1.7;
+    color: @text-2;
+    background: @bg-body;
+    -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; height: auto; display: block; }
+a { color: @primary; text-decoration: none; }
+button { font-family: inherit; }
+
+/* 跳转到主内容（WCAG 2.4.1）：与 common.less 同步。
+   该元素是 <body> 后第一个节点，不在首屏关键 CSS 里隐藏的话会先闪出来再跳走 */
+.jinyu-skip-link {
+    position: fixed;
+    top: -999px;
+    left: 8px;
+    z-index: @z-pinned;
+    padding: 8px 16px;
+    border-radius: 6px;
+    background: @primary;
+    color: #fff;
+    font-size: 14px;
+    text-decoration: none;
+    transition: top .15s @ease-out-expo;
+}
+.jinyu-skip-link:focus,
+.jinyu-skip-link:active {
+    top: 8px;
+    color: #fff;
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+}
+
+/* 仅供屏幕阅读器：视觉隐藏但保留在无障碍树中（勿改成 display:none / visibility:hidden） */
+.jinyu-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* ===== 布局骨架 ===== */
+.jinyu-container { max-width: @container-max; margin: 0 auto; padding: 0 @gutter; }
+.jinyu-main-wrap { display: flex; gap: @gap; padding: @s-6 @gutter @s-12; }
+.jinyu-content { flex: 1 1 auto; min-width: 0; }
+.jinyu-sidebar { width: @sidebar-w; flex-shrink: 0; align-self: flex-start; position: sticky; top: calc(var(--jinyu-head-h, 65px) + var(--jinyu-ab-h, 0px) + @s-4); }
+@media (max-width: 1024px) { .jinyu-sidebar { position: static; } }
+body.jinyu-sidebar-left .jinyu-sidebar { order: -1; }
+body.jinyu-no-sidebar .jinyu-sidebar { display: none; }
+/* 手机 / 平板不显示侧栏小工具（与 screen.less 保持同源条件，避免首屏先闪出再消失） */
+@media (max-width: 1024px), (hover: none) and (max-width: 1240px) {
+    .jinyu-main-wrap { flex-direction: column; }
+    .jinyu-sidebar { display: none; }
+}
+body.jinyu-no-sidebar .jinyu-single-wrap { max-width: 860px; margin: 0 auto; }
+
+/* ===== 顶部导航 ===== */
+.jinyu-header {
+    position: sticky;
+    top: 0;
+    z-index: @z-header;
+    background: @bg-header;
+    border-bottom: 1px solid @border;
+    backdrop-filter: saturate(180%) blur(16px);
+    -webkit-backdrop-filter: saturate(180%) blur(16px);
+    transition: background .3s @ease-out-expo, box-shadow .3s @ease-out-expo;
+
+    &.jinyu-header-scrolled {
+        background: @bg-header;
+        border-bottom-color: @border;
+        box-shadow: @shadow-header;
+    }
+}
+/* 关闭毛玻璃（后台「全局设置 › 导航栏毛玻璃效果」关闭）：与 common.less 同步 */
+body.jinyu-no-nav-blur .jinyu-header {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+body.admin-bar .jinyu-header { top: 32px; }
+@media (max-width: 782px) { body.admin-bar .jinyu-header { top: 46px; } }
+
+.jinyu-header-inner { display: flex; align-items: center; flex-wrap: nowrap; min-height: 64px; gap: @s-6; min-width: 0; }
+
+.jinyu-logo {
+    display: flex;
+    align-items: center;
+    gap: @s-2;
+    font-weight: 700;
+    font-size: 20px;
+    color: @text-1;
+    flex-shrink: 0;
+    min-width: 0;
+
+    .jinyu-logo-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, @primary, @primary-dark);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: @text-invert;
+        font-size: 18px;
+        box-shadow: 0 4px 12px rgba(var(--jinyu-c-primary-rgb), .3);
+        img { width: 100%; height: 100%; object-fit: contain; border-radius: 10px; }
+    }
+    /* 站名 + 副标题纵向堆叠：副标题不再占用横向预算 */
+    .jinyu-logo-text-wrap { display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+    .jinyu-logo-text { line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+    .jinyu-logo-sub {
+        font-size: @fs-xs; color: @text-3; font-weight: 400;
+        line-height: 1.3; margin-left: 0;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
+    }
+    .jinyu-logo-img { height: 32px; width: auto; }
+}
+
+/* 双 Logo 切换：必须与 .jinyu-logo 同级（嵌进去会变成后代选择器，永匹配不到，两张会同时显示） */
+.jinyu-logo--dual .jinyu-logo-dark { display: none; }
+html[data-theme="dark"] .jinyu-logo--dual .jinyu-logo-light { display: none; }
+html[data-theme="dark"] .jinyu-logo--dual .jinyu-logo-dark { display: block; }
+
+.jinyu-nav-panel { margin-left: auto; flex: 0 1 auto; min-width: 0; }
+
+.jinyu-nav {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+
+    > li {
+        position: relative;
+        display: flex;
+        align-items: center;
+        min-width: 0;
+
+        > a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 36px;
+            padding: 0 6px;
+            font-size: 14px;
+            color: @text-2;
+            font-weight: 500;
+            border-radius: @radius-sm;
+            transition: all @transition-fast;
+            white-space: nowrap;
+            line-height: 1;
+            min-width: 0;
+            overflow: hidden;
+
+            &:hover { color: @primary; background: @primary-light; }
+        }
+        &.current-menu-item > a,
+        &.current_page_item > a,
+        &.jinyu-active > a { color: @primary; background: @primary-light; }
+    }
+}
+
+.jinyu-header-tools {
+    display: flex;
+    align-items: center;
+    gap: @s-1;
+    flex: 0 0 auto;
+
+    .jinyu-icon-btn {
+        width: 36px;
+        height: 36px;
+        border: 0;
+        background: transparent;
+        border-radius: @radius-sm;
+        cursor: pointer;
+        color: @text-2;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all @transition-fast;
+
+        i { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; line-height: 1; }
+        &:hover { color: @primary; background: @primary-light; }
+        &.jinyu-d-none { display: none; }
+    }
+}
+
+.jinyu-nav-toggle {
+    display: none;
+    width: 38px;
+    height: 38px;
+    border: 0;
+    background: transparent;
+    border-radius: @radius-sm;
+    cursor: pointer;
+    color: @text-2;
+    align-items: center;
+    justify-content: center;
+    &:hover { color: @primary; background: @primary-light; }
+}
+
+/* 汉堡三条线的最小骨架：首屏关键 CSS 里必须有，否则主样式到位前按钮是空心的 */
+.jinyu-burger {
+    position: relative;
+    display: block;
+    width: 18px;
+    height: 12px;
+
+    span {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        border-radius: 2px;
+        background: currentColor;
+    }
+    span:nth-child(1) { top: 0; }
+    span:nth-child(2) { top: 5px; }
+    span:nth-child(3) { top: 10px; }
+}
+
+/* 导航在容器收窄到放不下菜单时折叠为全屏浮层（overlay）。
+   两种入口共用同一份 mixin：静态断点 ≤1240、JS 自适应折叠 html.jinyu-nav-collapse
+   （jinyu.js 检测到内联菜单放不下时给 <html> 加类，见 common.less 同名块）。
+   规则统一挂在 .jinyu-header 作用域下（jinyu.js 把菜单克隆到 body 下测自然宽度，
+   挂在 header 下保证克隆节点匹配不到折叠样式）。必须与主样式保持一致，否则窄屏首屏会先闪出错位。
+   这里只放「不闪错位」所必需的最小集合：面板必须隐藏、必须从头部下沿开始、必须去掉毛玻璃。 */
+.jinyu-nav-overlay-min() {
+    .jinyu-nav-toggle { display: inline-flex; }
+    /* 工具区常驻标题栏右侧：重排为 Logo(1) → 工具(2) → 汉堡(3)（与 common.less 一致，避免首屏闪错位） */
+    .jinyu-logo { order: 1; }
+    .jinyu-header-tools { order: 2; margin: 0; }
+    .jinyu-nav-toggle { order: 3; }
+
+    .jinyu-nav-panel {
+        position: fixed;
+        top: calc(var(--jinyu-head-h) + var(--jinyu-ab-h));
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        margin-left: 0;
+        background: @bg-body;
+        z-index: @z-overlay;
+        overflow: hidden;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transform: translateY(-10px);
+
+        &.jinyu-menu-open {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+    }
+    .jinyu-nav {
+        flex: 1 1 auto;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 2px;
+        padding: @s-4 @s-5 @s-5;
+        overflow-y: auto;
+
+        ul { max-height: 0; opacity: 0; overflow: hidden; }
+        /* 必须与 common.less 同形（带 > li）：触摸端 :hover 粘住时，只有同形且位于其后的规则才能靠源序胜出 */
+        > li.jinyu-has-sub.jinyu-sub-open > ul { max-height: 1200px; opacity: 1; }
+    }
+}
+
+/* 头部高度变量（与 common.less 同源）：65 = .jinyu-header-inner 的 64px + header 1px 下边框。
+   admin-bar 偏移与 ≤768 的头部高度必须逐条同源，否则主样式未就位时首屏浮层 top 会偏 32~46px。 */
+@media (max-width: 1240px) {
+    :root { --jinyu-head-h: 65px; --jinyu-ab-h: 0px; }
+    body.admin-bar { --jinyu-ab-h: 32px; }
+    @media (max-width: 782px) {
+        body.admin-bar { --jinyu-ab-h: 46px; }
+    }
+    @media (max-width: 768px) {
+        :root { --jinyu-head-h: 59px; }
+    }
+
+    .jinyu-header {
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        background: @bg-card;
+
+        .jinyu-nav-overlay-min();
+    }
+}
+
+/* 桌面端不再切浮层：菜单始终平铺，溢出由 jinyu.js 流体缩放 + 工具区兜底（.jinyu-tools-compact）消化，
+   见 jinyu.js nav 模块。此处仅保留移动端 ≤1240 的汉堡浮层。 */
+
+/* ===== 公告条：标题栏下方的独立圆角卡片行（与 common.less 镜像同步） ===== */
+.jinyu-top-notice {
+    padding: @s-4 0;
+    .jinyu-top-notice-card {
+        display: flex;
+        align-items: center;
+        gap: @s-3;
+        min-height: 52px;
+        padding: @s-3 @s-4;
+        background: @bg-card;
+        border: 1px solid @border;
+        border-radius: @radius-md;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, .04);
+    }
+    i {
+        flex-shrink: 0;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        color: @text-invert;
+        background: linear-gradient(135deg, @primary, @primary-dark);
+    }
+    span {
+        color: @text-1;
+        line-height: 1.6;
+        min-width: 0;
+    }
+}
+
+/* ===== 面包屑 / 归档头部 ===== */
+.jinyu-breadcrumbs {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    row-gap: 2px;
+    font-size: @fs-sm;
+    color: @text-4;
+    margin-bottom: @s-5;
+    min-width: 0;
+
+    a,
+    .jinyu-bread-current {
+        display: inline-flex;
+        align-items: center;
+        min-width: 0;
+        max-width: 100%;
+        padding: 2px @s-2;
+        border-radius: @radius-sm;
+        line-height: 1.6;
+    }
+    a {
+        color: @text-3;
+        text-decoration: none;
+        transition: color .15s ease, background-color .15s ease;
+        &:hover { color: @primary; background: @bg-body; }
+    }
+    .jinyu-bread-home i { font-size: @fs-xs; margin-right: @s-1; opacity: .75; }
+    .jinyu-bread-sep { display: inline-flex; align-items: center; color: @text-4; opacity: .55; font-size: @fs-xs; }
+    .jinyu-bread-current { color: @text-2; font-weight: 600; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+}
+.jinyu-term-header {
+    margin-bottom: @s-6;
+    padding-left: @s-4;
+    border-left: 4px solid @primary;
+    h1 { font-size: @fs-2xl; font-weight: 800; color: @text-1; margin: 0; }
+    .jinyu-term-desc { margin-top: @s-3; color: @text-3; font-size: @fs-sm; line-height: 1.6; }
+}
+.jinyu-author-header {
+    display: flex;
+    align-items: center;
+    gap: @s-5;
+    border-left: 0;
+    padding-left: 0;
+    .jinyu-author-avatar-img {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+        border: 3px solid @bg-card;
+        box-shadow: @shadow-card;
+    }
+    .jinyu-author-meta { min-width: 0; }
+    h1 { margin: 0; }
+}
+
+/* ===== 文章卡片（首屏） ===== */
+.jinyu-post-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--jinyu-post-cols, 2), minmax(0, 1fr));
+    gap: @gap;
+}
+.jinyu-post-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    background: @bg-card;
+    border: 1px solid @border;
+    border-radius: @radius-md;
+    overflow: hidden;
+    box-shadow: @shadow-card;
+    transition: transform .4s @ease-out-expo, box-shadow .4s @ease-out-expo, border-color @transition-fast;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: @shadow-hover;
+        border-color: transparent;
+        .jinyu-post-cover img { transform: scale(1.05); }
+        .jinyu-post-title { color: @primary; }
+        .jinyu-post-cover::after { opacity: 1; }
+    }
+}
+.jinyu-post-cover {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: @bg-subtle;
+    .jinyu-post-cover-link { display: block; width: 100%; height: 100%; }
+    img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s @ease-std; }
+    &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,.15) 100%);
+        opacity: 0;
+        transition: opacity .3s @ease-out-expo;
+        pointer-events: none;
+    }
+    .jinyu-post-sticky {
+        position: absolute;
+        top: @s-3;
+        right: @s-3;
+        z-index: @z-in-card;
+        background: @primary;
+        color: @text-invert;
+        font-size: @fs-xs;
+        padding: 4px @s-3;
+        border-radius: @radius-sm;
+        font-weight: 600;
+    }
+    .jinyu-post-cover-ph {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, rgba(var(--jinyu-c-primary-rgb), .16), rgba(var(--jinyu-c-primary-rgb), .06));
+        color: @primary;
+        font-size: 28px;
+        opacity: .9;
+    }
+}
+.jinyu-post-info { padding: @s-5; display: flex; flex-direction: column; flex: 1; }
+.jinyu-post-title {
+    font-size: @fs-lg;
+    font-weight: 700;
+    color: @text-1;
+    line-height: 1.4;
+    margin: 0 0 @s-2;
+    transition: color @transition-fast;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.jinyu-post-excerpt {
+    font-size: @fs-sm;
+    color: @text-3;
+    line-height: 1.6;
+    margin: 0 0 @s-3;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.jinyu-post-meta {
+    display: flex;
+    gap: @s-4;
+    font-size: @fs-xs;
+    color: @text-4;
+    margin-top: auto;
+    padding-top: @s-3;
+    i { margin-right: 4px; }
+}
+.jinyu-post-cat {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    align-self: flex-start;
+    margin-bottom: @s-2;
+    font-size: @fs-xs;
+    font-weight: 600;
+    line-height: 1.6;
+    color: var(--c, @primary);
+    background: rgba(var(--c-rgb, var(--jinyu-c-primary-rgb)), .14);
+    padding: 2px 8px;
+    border-radius: @radius-sm;
+    transition: background @transition-fast;
+    &:hover { background: rgba(var(--c-rgb, var(--jinyu-c-primary-rgb)), .24); }
+    i { font-size: 11px; }
+}
+.jinyu-cat-0  { --c: #ff6b35; --c-rgb: 255, 107, 53; }
+.jinyu-cat-1  { --c: #1c60f3; --c-rgb: 28, 96, 243; }
+.jinyu-cat-2  { --c: #00b074; --c-rgb: 0, 176, 116; }
+.jinyu-cat-3  { --c: #9b59b6; --c-rgb: 155, 89, 182; }
+.jinyu-cat-4  { --c: #16b5c4; --c-rgb: 22, 181, 196; }
+.jinyu-cat-5  { --c: #e84393; --c-rgb: 232, 67, 147; }
+.jinyu-cat-6  { --c: #f0a30a; --c-rgb: 240, 163, 10; }
+.jinyu-cat-7  { --c: #2d98da; --c-rgb: 45, 152, 218; }
+.jinyu-cat-8  { --c: #e74c3c; --c-rgb: 231, 76, 60; }
+.jinyu-cat-9  { --c: #27ae60; --c-rgb: 39, 174, 96; }
+.jinyu-cat-10 { --c: #8e44ad; --c-rgb: 142, 68, 173; }
+.jinyu-cat-11 { --c: #fd7e14; --c-rgb: 253, 126, 20; }
+
+/* ===== 头部用户菜单（首屏） ===== */
+.jinyu-user-menu { position: relative; }
+.jinyu-user-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: @s-2;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    padding: 0 @s-2;
+    height: 36px;
+    border-radius: @radius-pill;
+    color: @text-1;
+    vertical-align: middle;
+    i { display: flex; align-items: center; justify-content: center; line-height: 1; }
+    &:hover { background: @bg-subtle; }
+}
+.jinyu-user-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: @bg-subtle;
+    display: inline-block;
+    vertical-align: middle;
+}
+.jinyu-login-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 36px;
+    padding: 0 @s-4;
+    border: 1px solid @primary;
+    border-radius: @radius-pill;
+    background: transparent;
+    color: @primary;
+    cursor: pointer;
+    font-size: @fs-sm;
+    line-height: 1;
+    vertical-align: middle;
+    &:hover { background: @primary; color: @text-invert; }
+}
+
+/* ===== 暗色令牌（主样式延迟加载期间避免暗色闪烁） ===== */
+html[data-theme='dark'] {
+    color-scheme: dark;
+    --jinyu-c-primary: #ff8a5c; --jinyu-c-primary-dark: #ff6b35; --jinyu-c-primary-light: rgba(255,107,53,.14); --jinyu-c-primary-rgb: 255,138,92;
+    --jinyu-c-bg: #0f1115; --jinyu-c-bg-card: #16181d; --jinyu-c-bg-subtle: #1f2229; --jinyu-c-bg-input: #0f1115; --jinyu-c-bg-code: #0b0d10; --jinyu-c-bg-code-bar: #171a1f; --jinyu-c-bg-header: rgba(20,22,28,.72); --jinyu-c-bg-footer: #0f1115; --jinyu-c-bg-mask: rgba(0,0,0,.6);
+    --jinyu-c-text-1: #e5e7eb; --jinyu-c-text-2: #d1d5db; --jinyu-c-text-3: #9ca3af; --jinyu-c-text-4: #8a93a3; --jinyu-c-text-invert: #fff; --jinyu-c-text-footer-strong: #fff; --jinyu-c-text-footer: #9ca3af;
+    --jinyu-c-border: rgba(255,255,255,.08); --jinyu-c-border-strong: rgba(255,255,255,.14); --jinyu-c-border-footer: #2a2d32;
+    --jinyu-shadow-card: 0 4px 20px rgba(0,0,0,.35); --jinyu-shadow-hover: 0 12px 32px rgba(var(--jinyu-c-primary-rgb),.22); --jinyu-shadow-float: 0 16px 44px rgba(0,0,0,.45); --jinyu-shadow-header: 0 4px 24px rgba(0,0,0,.4);
+}
+@media (prefers-color-scheme: dark) {
+    html:not([data-theme='light']) {
+        color-scheme: dark;
+        --jinyu-c-primary: #ff8a5c; --jinyu-c-primary-dark: #ff6b35; --jinyu-c-primary-light: rgba(255,107,53,.14); --jinyu-c-primary-rgb: 255,138,92;
+        --jinyu-c-bg: #0f1115; --jinyu-c-bg-card: #16181d; --jinyu-c-bg-subtle: #1f2229; --jinyu-c-bg-input: #0f1115; --jinyu-c-bg-code: #0b0d10; --jinyu-c-bg-code-bar: #171a1f; --jinyu-c-bg-header: rgba(20,22,28,.72); --jinyu-c-bg-footer: #0f1115; --jinyu-c-bg-mask: rgba(0,0,0,.6);
+        --jinyu-c-text-1: #e5e7eb; --jinyu-c-text-2: #d1d5db; --jinyu-c-text-3: #9ca3af; --jinyu-c-text-4: #8a93a3; --jinyu-c-text-invert: #fff; --jinyu-c-text-footer-strong: #fff; --jinyu-c-text-footer: #9ca3af;
+        --jinyu-c-border: rgba(255,255,255,.08); --jinyu-c-border-strong: rgba(255,255,255,.14); --jinyu-c-border-footer: #2a2d32;
+        --jinyu-shadow-card: 0 4px 20px rgba(0,0,0,.35); --jinyu-shadow-hover: 0 12px 32px rgba(var(--jinyu-c-primary-rgb),.22); --jinyu-shadow-float: 0 16px 44px rgba(0,0,0,.45); --jinyu-shadow-header: 0 4px 24px rgba(0,0,0,.4);
+    }
+}

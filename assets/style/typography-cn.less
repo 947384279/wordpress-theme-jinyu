@@ -1,0 +1,60 @@
+@import "var.less";
+
+/* ==========================================================================
+   中文排版优化
+   作用域：<body class="jinyu-cn">。开启后为正文提供更舒适的中文阅读排版。
+   ========================================================================== */
+
+.jinyu-cn {
+    /* 正文段落 */
+    .jinyu-article-content,
+    .jinyu-comment-content,
+    .jinyu-single .jinyu-article-content {
+        line-height: 1.95;
+        text-align: justify;
+        text-justify: inter-character;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+
+        /* 标点挤压：清理中英文之间的多余空白 */
+        text-spacing: trim-start;
+
+        /* 标题也做两端对齐更规整 */
+        h1, h2, h3, h4, h5, h6 {
+            letter-spacing: .01em;
+            text-align: start;
+        }
+
+        p {
+            margin: 0 0 @s-5;
+            text-indent: 0;
+        }
+
+        /* 首行缩进（仅纯文本段落，引用/列表不缩进） */
+        > p {
+            text-indent: 2em;
+        }
+
+        /* 行内标点优化 */
+        blockquote p { text-indent: 0; }
+
+        /* 更好的中英文混排间距 */
+        code, kbd, pre {
+            text-align: start;
+            text-indent: 0;
+        }
+    }
+
+    /* 列表项中文阅读更舒适 */
+    .jinyu-article-content li {
+        line-height: 2;
+    }
+}
+
+/* 还原列表/引用/代码块等容器内的首行缩进，避免误缩进 */
+.jinyu-cn .jinyu-article-content {
+    ul, ol, blockquote, pre, table, figure, .jinyu-tip, .jinyu-code-wrap, details {
+        > p, > li { text-indent: 0; }
+    }
+    ul, ol { padding-left: 2em; }
+}

@@ -1,0 +1,65 @@
+@import "var.less";
+
+/* ==========================================================================
+   首页轮播（Swiper）
+   ========================================================================== */
+
+.jinyu-carousel {
+    position: relative;
+    margin-bottom: @s-6;
+    border-radius: @radius-lg;
+    overflow: hidden;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, .08);
+
+    .swiper-slide { aspect-ratio: 21 / 9; background: @bg-subtle; }
+
+    .jinyu-carousel-slide {
+        display: block;
+        width: 100%;
+        height: 100%;
+        position: relative;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            margin: 0;
+            transition: transform .6s @ease-out-expo;
+        }
+        &:hover img { transform: scale(1.04); }
+    }
+
+    .jinyu-carousel-cap {
+        position: absolute;
+        left: 0; right: 0; bottom: 0;
+        padding: @s-8 @s-6 @s-5;
+        background: linear-gradient(to top, rgba(0,0,0,.72), rgba(0,0,0,0));
+        pointer-events: none;
+
+        span {
+            color: #fff;
+            font-size: @fs-lg;
+            font-weight: 700;
+            text-shadow: 0 1px 4px rgba(0,0,0,.4);
+        }
+    }
+
+    /* Swiper 控件配色跟随主色 */
+    --swiper-theme-color: @primary;
+    --swiper-navigation-size: 22px;
+
+    .swiper-pagination { bottom: @s-3; }
+    .swiper-button-prev, .swiper-button-next {
+        width: 40px; height: 40px;
+        background: rgba(0,0,0,.35);
+        border-radius: 50%;
+        color: #fff;
+        &::after { font-size: 18px; font-weight: 700; }
+        &:hover { background: rgba(0,0,0,.55); }
+    }
+
+    @media (max-width: 576px) {
+        .swiper-slide { aspect-ratio: 16 / 10; }
+        .jinyu-carousel-cap span { font-size: @fs-md; }
+    }
+}

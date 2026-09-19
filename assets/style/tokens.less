@@ -1,0 +1,115 @@
+/* ==========================================================================
+   金玉主题 · 设计令牌（CSS 自定义属性）
+
+   亮色为默认值；暗色通过 <html data-theme="dark"> 生效，
+   未显式选择时跟随系统 prefers-color-scheme。
+   var.less 中的 Less 变量统一指向这里的自定义属性，
+   因此组件样式只写一遍即可自动适配明暗，无需再写 dark 覆写块。
+   ========================================================================== */
+
+.jinyu-dark-tokens() {
+    color-scheme: dark;
+
+    --jinyu-c-primary: #ff8a5c;
+    --jinyu-c-primary-dark: #ff6b35;
+    --jinyu-c-primary-light: rgba(255, 107, 53, .14);
+    --jinyu-c-primary-rgb: 255, 138, 92;
+
+    --jinyu-c-bg: #0f1115;
+    --jinyu-c-bg-card: #16181d;
+    --jinyu-c-bg-subtle: #1f2229;
+    --jinyu-c-bg-input: #0f1115;
+    --jinyu-c-bg-code: #0b0d10;
+    --jinyu-c-bg-code-bar: #171a1f;
+    --jinyu-c-bg-header: rgba(20, 22, 28, .72);
+    --jinyu-c-bg-footer: #0f1115;
+    --jinyu-c-bg-mask: rgba(0, 0, 0, .6);
+
+    --jinyu-c-text-1: #e5e7eb;
+    --jinyu-c-text-2: #d1d5db;
+    --jinyu-c-text-3: #9ca3af;
+    /* 暗色元信息灰：原 #6b7280 在 #16181d 卡上约 3.6:1，调深到 #8a93a3(5.6:1) 达标 */
+    --jinyu-c-text-4: #8a93a3;
+    --jinyu-c-text-invert: #fff;
+    --jinyu-c-text-footer-strong: #fff;
+    --jinyu-c-text-footer: #9ca3af;
+
+    --jinyu-c-border: rgba(255, 255, 255, .08);
+    --jinyu-c-border-strong: rgba(255, 255, 255, .14);
+    --jinyu-c-border-footer: #2a2d32;
+
+    --jinyu-shadow-card: 0 4px 20px rgba(0, 0, 0, .35);
+    --jinyu-shadow-hover: 0 12px 32px rgba(var(--jinyu-c-primary-rgb), .22);
+    --jinyu-shadow-float: 0 16px 44px rgba(0, 0, 0, .45);
+    --jinyu-shadow-header: 0 4px 24px rgba(0, 0, 0, .4);
+}
+
+:root {
+    color-scheme: light;
+
+    /* 品牌色 */
+    --jinyu-c-primary: #ff6b35;
+    --jinyu-c-primary-dark: #e85a2b;
+    --jinyu-c-primary-light: #fff3ec;
+    --jinyu-c-primary-rgb: 255, 107, 53;
+
+    /* 语义色 */
+    --jinyu-c-success: #00b74a;
+    --jinyu-c-success-rgb: 0, 183, 74;
+    --jinyu-c-warning: #fc651f;
+    --jinyu-c-danger: #dc3545;
+    --jinyu-c-info: #17a2b8;
+
+    /* 背景 */
+    --jinyu-c-bg: #f5f6f8;
+    --jinyu-c-bg-card: #fff;
+    --jinyu-c-bg-subtle: #f5f6f8;
+    --jinyu-c-bg-input: #fafbfc;
+    --jinyu-c-bg-code: #1e1e1e;
+    --jinyu-c-bg-code-bar: #2a2a2a;
+    --jinyu-c-bg-header: rgba(255, 255, 255, .72);
+    /* 页脚：亮色模式改浅底深字（参考主流主题浅色页脚），暗色模式由 .jinyu-dark-tokens 覆盖 */
+    --jinyu-c-bg-footer: #f7f8fa;
+    --jinyu-c-bg-mask: rgba(0, 0, 0, .5);
+
+    /* 文本 */
+    --jinyu-c-text-1: #1a1d21;
+    --jinyu-c-text-2: #4a4e58;
+    /* 调深：原 #808695(3.6:1)/#b0b3ba(2:1) 在白卡上远低于 WCAG AA 4.5:1，
+       元信息（日期/阅读量/作者）小字看不清。现 #5f6772(5.7:1)/#6b7280(4.8:1) 达标。 */
+    --jinyu-c-text-3: #5f6772;
+    --jinyu-c-text-3-rgb: 95, 103, 114;
+    --jinyu-c-text-4: #6b7280;
+    --jinyu-c-text-invert: #fff;
+    --jinyu-c-text-footer-strong: #1a1d21;
+    --jinyu-c-text-footer: #6b7280;
+
+    /* 边框 */
+    --jinyu-c-border: #eef0f3;
+    --jinyu-c-border-strong: #dde0e5;
+    --jinyu-c-border-footer: #e5e7eb;
+
+    /* 阴影 */
+    --jinyu-shadow-card: 0 4px 20px rgba(0, 0, 0, .06);
+    --jinyu-shadow-hover: 0 12px 32px rgba(var(--jinyu-c-primary-rgb), .18);
+    --jinyu-shadow-float: 0 16px 44px rgba(0, 0, 0, .12);
+    --jinyu-shadow-header: 0 4px 24px rgba(0, 0, 0, .08);
+
+    /* 布局：内容区左右留白（各断点在 screen.less 覆写，全站唯一来源） */
+    --jinyu-gutter: 20px;
+}
+
+html[data-theme='dark'] {
+    .jinyu-dark-tokens();
+}
+
+@media (prefers-color-scheme: dark) {
+    html:not([data-theme='light']) {
+        .jinyu-dark-tokens();
+    }
+}
+
+/* 全站灰度（哀悼模式） */
+html.jinyu-grey {
+    filter: grayscale(100%);
+}

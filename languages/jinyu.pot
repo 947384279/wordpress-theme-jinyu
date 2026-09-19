@@ -1,0 +1,2989 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: jinyu 1.0.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-16 19:35:33+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Domain: jinyu\n"
+
+#: inc/fun/template-tags.php:58
+msgid "%d 分钟阅读"
+msgstr ""
+
+#: inc/seo.php:89
+msgid "%s 分类"
+msgstr ""
+
+#: pages/template-moments.php:48
+msgid "%s 条评论"
+msgstr ""
+
+#: inc/seo.php:91
+msgid "%s 标签"
+msgstr ""
+
+#: inc/seo.php:95
+msgid "%s 的全部文章"
+msgstr ""
+
+#: inc/fun/comment.php:109 inc/fun/comment.php:147
+msgid "%s前"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCarousel.php:22
+msgid "0 为不自动播放"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionSeo.php:30
+msgid "404 自定义内容"
+msgstr ""
+
+#: inc/fun/widget.php:233 inc/fun/widget.php:243
+msgid "<i class=\"fa-regular fa-calendar-days\"></i> 归档"
+msgstr ""
+
+#: inc/fun/widget.php:594 inc/fun/widget.php:602
+msgid "<i class=\"fa-regular fa-clock\"></i> 最近浏览"
+msgstr ""
+
+#: inc/fun/widget.php:1102
+msgid "<i class=\"fa-regular fa-clock\"></i> 本站时间"
+msgstr ""
+
+#: inc/fun/widget.php:256 inc/fun/widget.php:270
+msgid "<i class=\"fa-regular fa-comment-dots\"></i> 最新评论"
+msgstr ""
+
+#: inc/fun/widget.php:492 inc/fun/widget.php:529
+msgid "<i class=\"fa-regular fa-comment-dots\"></i> 热评文章"
+msgstr ""
+
+#: inc/fun/widget.php:333 inc/fun/widget.php:349
+msgid "<i class=\"fa-regular fa-folder-open\"></i> 分类"
+msgstr ""
+
+#: inc/fun/widget.php:632 inc/fun/widget.php:696
+msgid "<i class=\"fa-regular fa-images\"></i> 推荐"
+msgstr ""
+
+#: inc/fun/widget.php:152 inc/fun/widget.php:158
+msgid "<i class=\"fa-solid fa-bullhorn\"></i> 公告"
+msgstr ""
+
+#: inc/fun/widget.php:394 inc/fun/widget.php:412
+msgid "<i class=\"fa-solid fa-chart-simple\"></i> 站点统计"
+msgstr ""
+
+#: inc/fun/widget.php:171 inc/fun/widget.php:197
+msgid "<i class=\"fa-solid fa-fire\"></i> 热门"
+msgstr ""
+
+#: inc/fun/widget.php:1047
+msgid "<i class=\"fa-solid fa-gauge-high\"></i> 站点性能"
+msgstr ""
+
+#: inc/fun/widget.php:362 inc/fun/widget.php:381
+msgid "<i class=\"fa-solid fa-link\"></i> 友情链接"
+msgstr ""
+
+#: inc/fun/widget.php:312 inc/fun/widget.php:322
+msgid "<i class=\"fa-solid fa-magnifying-glass\"></i> 搜索"
+msgstr ""
+
+#: inc/fun/widget.php:753 inc/fun/widget.php:778
+msgid "<i class=\"fa-solid fa-quote-left\"></i> 每日一句"
+msgstr ""
+
+#: inc/fun/widget.php:981
+msgid "<i class=\"fa-solid fa-server\"></i> 网站概况"
+msgstr ""
+
+#: inc/fun/widget.php:283 inc/fun/widget.php:299
+msgid "<i class=\"fa-solid fa-shuffle\"></i> 随机文章"
+msgstr ""
+
+#: inc/fun/widget.php:210 inc/fun/widget.php:220
+msgid "<i class=\"fa-solid fa-tags\"></i> 标签"
+msgstr ""
+
+#: inc/fun/widget.php:426 inc/fun/widget.php:453
+msgid "<i class=\"fa-solid fa-thumbs-up\"></i> 相关文章"
+msgstr ""
+
+#: inc/fun/widget.php:812
+msgid "<i class=\"fa-solid fa-user-astronaut\"></i> 访客信息"
+msgstr ""
+
+#: inc/fun/widget.php:872
+msgid "<i class=\"fa-solid fa-user-plus\"></i> 最近加入"
+msgstr ""
+
+#: inc/fun/widget.php:544 inc/fun/widget.php:581
+msgid "<i class=\"fa-solid fa-users\"></i> 读者墙"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionAi.php:13
+msgid "AI 对话"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionAi.php:18
+msgid "API Key"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionAi.php:17
+msgid "API 地址"
+msgstr ""
+
+#: inc/fun/short-code.php:174
+msgid "CODE"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:38
+msgid "Cookie 合规提示条"
+msgstr ""
+
+#: functions.php:303
+msgid "Cookie 提示"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:30
+msgid "Cravatar（国内）"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:47
+msgid "GitHub Client ID"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:48
+msgid "GitHub Client Secret"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:49
+msgid "Gitee Client ID"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:50
+msgid "Gitee Client Secret"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:29
+msgid "Gravatar（默认）"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:21
+msgid "H2–H3"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:22
+msgid "H2–H4"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionFooter.php:29
+msgid "ICP 备案号"
+msgstr ""
+
+#: inc/fun/widget.php:830
+msgid "IP"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:33
+msgid "Loli（国内）"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionSeo.php:23
+msgid "Open Graph 站点名称"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionStyle.php:26
+msgid "PHP 级处理：在中英文/数字边界自动插入空格（保护 HTML 标签与链接，不影响已排版内容）"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:48
+msgid "QQ"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:45
+msgid "QQ App ID"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:46
+msgid "QQ App Key"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:49
+msgid "QQ空间"
+msgstr ""
+
+#: inc/fun/security.php:23
+msgid "REST API 已对未登录用户关闭。"
+msgstr ""
+
+#: inc/fun/category-seo.php:18 inc/fun/category-seo.php:40
+msgid "SEO 关键字"
+msgstr ""
+
+#: inc/fun/category-seo.php:19 inc/fun/category-seo.php:41
+msgid "SEO 描述"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionSeo.php:13
+msgid "SEO 搜索优化"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionEmail.php:17
+msgid "SMTP 主机"
+msgstr ""
+
+#: inc/setting/Jinyu_Setting.php:106
+msgid "SMTP 测试与缓存清理等运维操作，不写入主题设置。"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:32
+msgid "V2EX（国内）"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:31
+msgid "WeAvatar（国内）"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:35
+msgid "WebP.se（国内）"
+msgstr ""
+
+#: inc/setting/template.php:12
+msgid "WordPress 7+ · 全功能设置中心"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionSeo.php:20
+msgid "WordPress,博客,技术分享,教程"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionExtend.php:17
+msgid "XML-RPC 是常见的暴破与 pingback 攻击面，默认关闭更安全（仅在使用依赖它的第三方应用时才开启）"
+msgstr ""
+
+#: inc/ajax/user.php:166
+msgid "[%s] 密码重置"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionFooter.php:25
+msgid "© {year} {name} 版权所有 · 保留所有权利"
+msgstr ""
+
+#: inc/fun/widget.php:709
+msgid "— 全部分类（按最新）—"
+msgstr ""
+
+#: inc/fun/widget.php:480
+msgid "— 选择菜单 —"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionExtend.php:18
+msgid "⚠️ 关闭后可能影响区块编辑器（Gutenberg）及依赖 REST 的插件/应用，请确认无依赖后再关闭"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionStyle.php:20
+msgid "「默认深灰」更柔和耐看；「纯黑」对比更强、更省电，适合 OLED 屏"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionFooter.php:19
+msgid "一句话介绍你的站点，留空则显示站点副标题"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:34
+msgid "七牛云（国内）"
+msgstr ""
+
+#: single.php:31 templates/post-nav.php:16
+msgid "上一篇"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:40
+msgid "上一篇 / 下一篇"
+msgstr ""
+
+#: templates/post-nav.php:13
+msgid "上一篇下一篇"
+msgstr ""
+
+#: pages/template-user.php:190
+msgid "上传头像"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionBasic.php:25
+msgid "上传微信收款二维码图片；留空则不显示该渠道"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionBasic.php:26
+msgid "上传支付宝收款二维码图片；留空则不显示该渠道"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionResource.php:23
+msgid "上传时自动生成 WebP"
+msgstr ""
+
+#: single.php:33 templates/post-nav.php:22
+msgid "下一篇"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:48
+msgid "不显示"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:46
+msgid "与上方 App ID 成对填写，缺一不可"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:48 inc/setting/options/Jinyu_OptionUser.php:50
+msgid "与上方 Client ID 成对填写，缺一不可"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionEmail.php:20
+msgid "与下方「加密方式」配对：465 对应 SSL，587 对应 TLS（STARTTLS）。配错会连接失败或报 530/535。"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionEmail.php:30
+msgid "与端口配对：选 SSL 时端口用 465，选 TLS 时端口用 587；选「无」可能被服务商拒绝发信。"
+msgstr ""
+
+#: inc/ajax/user.php:97
+msgid "两次输入的密码不一致"
+msgstr ""
+
+#: inc/ajax/user.php:243
+msgid "两次输入的新密码不一致"
+msgstr ""
+
+#: pages/template-user.php:208
+msgid "个人简介"
+msgstr ""
+
+#: pages/template-user.php:205
+msgid "个人网站"
+msgstr ""
+
+#: pages/template-tags.php:116
+msgid "个标签"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionStyle.php:25
+msgid "中文排版优化"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionStyle.php:26
+msgid "中英文自动加空格"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionSeo.php:25
+msgid "为 AI 助理（ChatGPT/Claude/Perplexity/元宝 等）提供结构化站点内容地图，利于被 AI 搜索引用；关闭后访问 /llms.txt 返回 404"
+msgstr ""
+
+#: pages/template-random.php:38
+msgid "为你随机推荐"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionSeo.php:24
+msgid "为单篇文章补充 twitter:card / twitter:title / twitter:image 等标签"
+msgstr ""
+
+#: inc/fun/sidebar.php:10
+msgid "主侧边栏"
+msgstr ""
+
+#: functions.php:49
+msgid "主导航菜单"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionStyle.php:17
+msgid "主题主色"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionStyle.php:30
+msgid "主题模式"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionAbout.php:14
+msgid "主题版本、更新服务器与检查更新。"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionStyle.php:14
+msgid "主题色、明暗模式、圆角与字体等视觉风格。"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionSeo.php:18
+msgid "主题默认输出 Article/Breadcrumb/FAQ 等结构化数据；已用 SEO 插件接管时开启"
+msgstr ""
+
+#: inc/fun/widget.php:134 inc/fun/widget.php:87
+msgid "了解更多"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:53 templates/post-actions.php:55
+msgid "二维码"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:20
+msgid "仅 H2"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionAi.php:18
+msgid "仅存储于数据库，仅管理员可在后台查看"
+msgstr ""
+
+#: inc/ajax/user.php:280
+msgid "仅支持 JPG / PNG / WebP / GIF"
+msgstr ""
+
+#: inc/fun/widget.php:534
+msgid "仅近 N 天（0 = 不限）"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCarousel.php:37
+msgid "仅首页第一页显示，位置在幻灯片下方"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:26
+msgid "代码高亮"
+msgstr ""
+
+#: inc/fun/widget.php:834
+msgid "以上为本次访问的信息，仅你可见"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:42
+msgid "作用于全站文章列表网格，有侧边栏时建议 2 列"
+msgstr ""
+
+#: inc/fun/comment.php:144
+msgid "作者"
+msgstr ""
+
+#: inc/fun/widget.php:77
+msgid "作者信息卡片"
+msgstr ""
+
+#: inc/fun/comment-notify.php:30
+msgid "你在《%s》下的评论有了新回复"
+msgstr ""
+
+#: pages/template-user.php:67
+msgid "你好，%s，欢迎回来。"
+msgstr ""
+
+#: inc/fun/widget.php:825
+msgid "你好，朋友"
+msgstr ""
+
+#: inc/fun/comment-notify.php:42
+msgid "你的文章《%s》有新评论"
+msgstr ""
+
+#: 404.php:11
+msgid "你访问的页面不存在或已被移动，试试搜索或返回首页。"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:27
+msgid "使用区块小工具"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:45
+msgid "侧边栏位置"
+msgstr ""
+
+#: inc/setting/template.php:31
+msgid "保存"
+msgstr ""
+
+#: inc/setting/Jinyu_Setting.php:230
+msgid "保存成功"
+msgstr ""
+
+#: inc/setting/template.php:19
+msgid "保存设置"
+msgstr ""
+
+#: pages/template-user.php:209
+msgid "保存资料"
+msgstr ""
+
+#: pages/template-user.php:213
+msgid "修改密码"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionResource.php:18
+msgid "停止加载 wp-embed.min.js"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionStyle.php:35
+msgid "允许切换主题模式"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:42
+msgid "允许前台投稿"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:13
+msgid "全局设置"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCode.php:19
+msgid "全站底部广告代码"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:50
+msgid "全站灰度 (哀悼模式)"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCode.php:18
+msgid "全站顶部广告代码"
+msgstr ""
+
+#: inc/fun/series.php:19
+msgid "全部系列"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionAbout.php:13
+msgid "关于"
+msgstr ""
+
+#: inc/fun/comment.php:240
+msgid "关于作者"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionFooter.php:18
+msgid "关于区块标题"
+msgstr ""
+
+#: footer.php:30 inc/setting/options/Jinyu_OptionFooter.php:18
+msgid "关于本站"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionFooter.php:19
+msgid "关于本站介绍"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionExtend.php:24
+msgid "关评天数阈值"
+msgstr ""
+
+#: templates/auth-modal.php:18
+msgid "关闭"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionSeo.php:18
+msgid "关闭 JSON-LD 结构化数据"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionExtend.php:18
+msgid "关闭 REST API"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionExtend.php:17
+msgid "关闭 XML-RPC"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:29
+msgid "关闭全站评论功能"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:28
+msgid "关闭后全站不展示特色图；单篇仍可用「隐藏封面」覆盖"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionStyle.php:35
+msgid "关闭后前台隐藏明暗切换按钮，访客仅使用上方设定的默认模式"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:17
+msgid "关闭后将不再显示登录/注册入口"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:27
+msgid "关闭时强制经典小工具（默认），开启后使用 WordPress 区块小工具编辑器"
+msgstr ""
+
+#: header.php:44
+msgid "关闭菜单"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionAi.php:17
+msgid "兼容 OpenAI Chat Completions 格式的接口地址"
+msgstr ""
+
+#: inc/fun/widget.php:1063
+msgid "内存"
+msgstr ""
+
+#: inc/fun/widget.php:161
+msgid "内容"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:13
+msgid "内容增强"
+msgstr ""
+
+#: inc/fun/widget.php:994
+msgid "分"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:45 templates/post-actions.php:41
+msgid "分享"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:46
+msgid "分享渠道"
+msgstr ""
+
+#: inc/fun/widget.php:401
+msgid "分类"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCarousel.php:46
+msgid "分类两栏·分类"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCarousel.php:47
+msgid "分类两栏·每栏数量"
+msgstr ""
+
+#: sidebar.php:73
+msgid "分类目录"
+msgstr ""
+
+#: inc/setting/Jinyu_Setting.php:307
+msgid "分组不存在"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCarousel.php:23
+msgid "切换效果"
+msgstr ""
+
+#: inc/fun/widget.php:782
+msgid "切换方式"
+msgstr ""
+
+#: header.php:127
+msgid "切换明暗模式"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:30
+msgid "列表/归档页自动摘要长度"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:18
+msgid "列表风格"
+msgstr ""
+
+#: inc/fun/captcha.php:157
+msgid "刷新验证码"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionEmail.php:25
+msgid "加密方式"
+msgstr ""
+
+#: inc/fun/template-tags.php:28
+msgid "加载更多"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCarousel.php:35
+msgid "勾选的分类不会出现在首页主循环（最新文章）中"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCarousel.php:46
+msgid "勾选要展示的分类（按分类分两栏）"
+msgstr ""
+
+#: inc/fun/sidebar.php:32
+msgid "单篇文章下方，阅读推荐"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:23
+msgid "博客模式显示加载更多"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCarousel.php:29
+msgid "卡片"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:19
+msgid "卡片风格"
+msgstr ""
+
+#: footer.php:104
+msgid "去底部"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionSeo.php:21
+msgid "去除分类链接中的 category 前缀"
+msgstr ""
+
+#: inc/ajax/index.php:316
+msgid "参数无效"
+msgstr ""
+
+#: inc/setting/Jinyu_Setting.php:301
+msgid "参数错误"
+msgstr ""
+
+#: footer.php:52
+msgid "友情链接"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionEmail.php:31
+msgid "发件人地址"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionExtend.php:27
+msgid "发布/更新文章时主动推送 URL 到百度站长平台（需填写下方接口调用地址）"
+msgstr ""
+
+#: inc/ext/moments.php:19 inc/ext/moments.php:20
+msgid "发表%s"
+msgstr ""
+
+#: comments.php:34
+msgid "发表评论"
+msgstr ""
+
+#: inc/fun/email.php:56
+msgid "发送失败："
+msgstr ""
+
+#: templates/auth-modal.php:86
+msgid "发送重置链接"
+msgstr ""
+
+#: inc/fun/widget.php:950
+msgid "可用占位符：{name} 名称、{date} 日期"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionEmail.php:32
+msgid "可选。留空则默认用「用户名」作为发件地址；部分服务商要求发件人与登录账号一致，否则发信失败。"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:46
+msgid "右侧"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:52
+msgid "同一 IP 浏览量冷却秒数"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:24
+msgid "同一 IP 连续登录失败 5 次锁定 15 分钟，防范暴力破解"
+msgstr ""
+
+#: functions.php:305
+msgid "同意"
+msgstr ""
+
+#: inc/fun/widget.php:136
+msgid "名称"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionResource.php:20
+msgid "后台文章/页面改用经典编辑器撰写，关闭区块（Gutenberg）编辑器。仅影响撰写界面，不影响已发布内容"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:38
+msgid "向访客展示 Cookie/隐私提示，点击「同意」后不再显示（30 天）"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionExtend.php:19
+msgid "启用 PJAX 无刷新导航"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionSeo.php:17
+msgid "启用主题内置 SEO"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:17
+msgid "启用用户中心"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionExtend.php:20
+msgid "启用短链跳转 go"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionSeo.php:29
+msgid "启用站点地图页"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:44
+msgid "启用第三方登录"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionExtend.php:21
+msgid "启用评论防垃圾"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionResource.php:29
+msgid "启用页面缓存"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCarousel.php:18
+msgid "启用首页轮播"
+msgstr ""
+
+#: inc/fun/widget.php:1061
+msgid "响应耗时"
+msgstr ""
+
+#: footer.php:107
+msgid "回到顶部"
+msgstr ""
+
+#: inc/fun/comment.php:181
+msgid "回复"
+msgstr ""
+
+#: inc/fun/comment.php:89
+msgid "回复了 %s："
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:37
+msgid "国内源（Cravatar / WeAvatar / 七牛云 / WebP.se 等）兼容 Gravatar 协议、国内访问更快，评论与作者头像均生效；letter 模式不依赖任何头像服务器，离线也能显示"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCarousel.php:40
+msgid "图片"
+msgstr ""
+
+#: inc/ajax/user.php:273
+msgid "图片不能超过 2MB"
+msgstr ""
+
+#: inc/fun/widget.php:628
+msgid "图片推荐 / 广告位；手动填图或自动取分类缩略图"
+msgstr ""
+
+#: inc/fun/widget.php:703
+msgid "图片来源"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionResource.php:26
+msgid "图片缺 alt 时用文章标题补全（利于 SEO）"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionStyle.php:43
+msgid "圆体（幼圆/微软雅黑）"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionStyle.php:18
+msgid "圆角大小"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:26
+msgid "在评论中展示评论者的浏览器与操作系统（基于 User-Agent 解析）"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:34
+msgid "在页眉工具区展示社交账号（格式同页脚：每行 平台|链接）"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionFooter.php:30
+msgid "在页脚展示上方填写的备案号"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionExtend.php:22
+msgid "垃圾评论关键词"
+msgstr ""
+
+#: inc/fun/widget.php:591
+msgid "基于本地存储的浏览足迹（匿名可用）"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionBasic.php:13
+msgid "基础设置"
+msgstr ""
+
+#: inc/fun/short-code.php:178
+msgid "复制"
+msgstr ""
+
+#: inc/fun/short-code.php:178
+msgid "复制代码"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:50
+msgid "复制链接"
+msgstr ""
+
+#: inc/fun/meta-fields.php:38
+msgid "外链地址（跳转）"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionStyle.php:27
+msgid "外链新窗口 + nofollow"
+msgstr ""
+
+#: inc/fun/category-seo.php:20 inc/fun/category-seo.php:42
+msgid "多个关键字使用英文逗号分隔，留空则默认显示分类名称"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionEmail.php:24
+msgid "多数邮箱（QQ、163 等）此处填「授权码」而非登录密码：需先在网页邮箱「设置 → 账户」中开启 SMTP 服务并获取授权码。Gmail 同理使用应用专用密码。"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:51
+msgid "多选，留空则全部显示"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:20
+msgid "大图通栏"
+msgstr ""
+
+#: inc/fun/widget.php:992 inc/setting/options/Jinyu_OptionExtend.php:24
+msgid "天"
+msgstr ""
+
+#: inc/fun/widget.php:138
+msgid "头像图片地址"
+msgstr ""
+
+#: inc/ajax/user.php:300
+msgid "头像已更新"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:28
+msgid "头像来源"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionStyle.php:36
+msgid "头部导航的半透明磨砂玻璃效果；浏览器不支持 backdrop-filter 时自动降级为纯色"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCode.php:24
+msgid "头部注入 CSS"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCode.php:25
+msgid "头部注入 JS"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionAi.php:19
+msgid "如 deepseek-chat / gpt-4o-mini 等"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionResource.php:22
+msgid "如 https://cdn.example.com ，仅替换上传目录附件 URL"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionFooter.php:25
+msgid "如 © {year} {name} 版权所有，留空使用默认版权"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionFooter.php:29
+msgid "如 京ICP备12345678号"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionBasic.php:24
+msgid "如果觉得文章对你有帮助，欢迎打赏支持～"
+msgstr ""
+
+#: inc/ajax/user.php:157 inc/ajax/user.php:175
+msgid "如账号存在，重置链接已发送至邮箱"
+msgstr ""
+
+#: inc/fun/meta-fields.php:35
+msgid "如：转载自xxx / 原创"
+msgstr ""
+
+#: inc/fun/template-tags.php:70
+msgid "字"
+msgstr ""
+
+#: pages/template-tags.php:101
+msgid "字母导航"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionStyle.php:41
+msgid "宋体 / 衬线"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionEmail.php:22
+msgid "完整邮箱地址，如 123456@qq.com。"
+msgstr ""
+
+#: inc/fun/widget.php:806
+msgid "实时展示当前访客的 IP / 系统 / 浏览器 / 归属地（经 Ajax 取回，不进缓存）"
+msgstr ""
+
+#: inc/fun/widget.php:1041
+msgid "实时展示站点响应耗时 / 数据库查询 / 内存占用心跳"
+msgstr ""
+
+#: inc/fun/comment.php:150
+msgid "审核中"
+msgstr ""
+
+#: inc/fun/short-code.php:288 inc/setting/options/Jinyu_OptionEmail.php:23 templates/auth-modal.php:42
+msgid "密码"
+msgstr ""
+
+#: inc/ajax/user.php:251
+msgid "密码已修改"
+msgstr ""
+
+#: inc/ajax/user.php:94
+msgid "密码至少 6 位"
+msgstr ""
+
+#: templates/auth-modal.php:66
+msgid "密码（至少 6 位）"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionResource.php:29
+msgid "对未登录访客输出整页缓存，显著提速；内容更新自动失效"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionExtend.php:21
+msgid "对访客评论做关键词/频率/长度过滤，管理员评论不过滤"
+msgstr ""
+
+#: inc/setting/Jinyu_Setting.php:285
+msgid "导入成功"
+msgstr ""
+
+#: inc/setting/Jinyu_Setting.php:250
+msgid "导出成功"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionStyle.php:36
+msgid "导航栏毛玻璃效果"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionExtend.php:20
+msgid "将正文外链改写为 /go/ 短链统一跳转（便于统计与防泄漏）"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionStyle.php:24
+msgid "屏蔽前台 Admin Bar"
+msgstr ""
+
+#: header.php:43 header.php:45
+msgid "展开菜单"
+msgstr ""
+
+#: inc/fun/widget.php:866
+msgid "展示最近注册会员或近期评论者"
+msgstr ""
+
+#: inc/fun/widget.php:975
+msgid "展示站点已稳定运行的天 / 时 / 分 / 秒"
+msgstr ""
+
+#: inc/fun/widget.php:359
+msgid "展示站点的友情链接"
+msgstr ""
+
+#: inc/fun/widget.php:541
+msgid "展示近期评论读者的头像墙"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:47
+msgid "左侧"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionSeo.php:17
+msgid "已安装 Yoast/RankMath 时请关闭"
+msgstr ""
+
+#: templates/post-actions.php:34
+msgid "已收藏"
+msgstr ""
+
+#: inc/fun/email.php:63
+msgid "已清理 %d 条缓存"
+msgstr ""
+
+#: inc/ajax/index.php:41 inc/ajax/index.php:48
+msgid "已点赞"
+msgstr ""
+
+#: pages/template-user.php:240
+msgid "已绑定"
+msgstr ""
+
+#: pages/template-user.php:234
+msgid "已绑定账号"
+msgstr ""
+
+#: inc/setting/Jinyu_Setting.php:238
+msgid "已重置"
+msgstr ""
+
+#: inc/setting/Jinyu_Setting.php:314
+msgid "已重置本组"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCode.php:15
+msgid "广告位与头部 / 底部注入的自定义 CSS、JS 代码。"
+msgstr ""
+
+#: inc/fun/sidebar.php:20
+msgid "底部小工具"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCode.php:26
+msgid "底部注入 CSS"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCode.php:27
+msgid "底部注入 JS"
+msgstr ""
+
+#: inc/fun/widget.php:1016
+msgid "建站日期（留空自动取最早文章）"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionBasic.php:18
+msgid "建议使用透明背景 PNG；暗色模式会自动切换下方「暗色模式」Logo，未填则复用本图"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCarousel.php:40
+msgid "建议四张图片尺寸比例一致"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionFooter.php:29
+msgid "开启下方「显示 ICP 备案号」后展示于页脚"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionStyle.php:25
+msgid "开启两端对齐、标点挤压、舒适行距等中文排版增强"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionSeo.php:21
+msgid "开启后分类URL变为 /分类名/，首次开启后会自动刷新重写规则（或到「设置→固定链接」保存一次）"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:44
+msgid "开启后前台登录弹窗显示第三方登录入口"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionSeo.php:29
+msgid "开启后可通过 /sitemap 或「页面模板=站点地图」查看站点地图"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionBasic.php:22
+msgid "开启后文章底部显示打赏按钮；需至少配置一个收款码才会出现"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:20
+msgid "开启后每次登录都需验证码；未开启则仅失败 3 次后才要求"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:42
+msgid "开启后登录用户可在用户中心投稿，文章进入待审核队列"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:30
+msgid "开启后非管理员访问站点将看到「网站维护中」页（HTTP 503）"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionBasic.php:22
+msgid "开启文章打赏"
+msgstr ""
+
+#: pages/template-user.php:218
+msgid "当前密码"
+msgstr ""
+
+#: inc/ajax/user.php:237
+msgid "当前密码不正确"
+msgstr ""
+
+#: inc/fun/widget.php:420
+msgid "当前文章的相关推荐（仅在文章页显示）"
+msgstr ""
+
+#: pages/template-user.php:179
+msgid "当前未开放投稿"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionAbout.php:17
+msgid "当前版本"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionExtend.php:22
+msgid "彩票,色情,赌博,代写,刷量,贷款,发票,办证,加微信,返利,兼职,代运营"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCarousel.php:21
+msgid "循环播放"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionBasic.php:25
+msgid "微信收款码"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:47
+msgid "微博"
+msgstr ""
+
+#: footer.php:37
+msgid "快速导航"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCarousel.php:27
+msgid "快速翻转"
+msgstr ""
+
+#: inc/setting/template.php:18
+msgid "恢复默认"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:39
+msgid "我们使用 Cookie 来提升您的浏览体验。继续浏览即表示您同意我们使用 Cookie。"
+msgstr ""
+
+#: inc/fun/user.php:55 pages/template-user.php:132
+msgid "我的收藏"
+msgstr ""
+
+#: inc/fun/user.php:53 pages/template-user.php:90
+msgid "我的文章"
+msgstr ""
+
+#: inc/fun/user.php:54 pages/template-user.php:111
+msgid "我的评论"
+msgstr ""
+
+#: pages/template-user.php:195
+msgid "或填写头像图片 URL"
+msgstr ""
+
+#: inc/fun/widget.php:706
+msgid "手动列表（每行：图片地址|跳转链接|标题）"
+msgstr ""
+
+#: inc/fun/widget.php:704
+msgid "手动填写"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCarousel.php:31
+msgid "手动指定轮播（可选）"
+msgstr ""
+
+#: pages/template-luck.php:20
+msgid "手气不错"
+msgstr ""
+
+#: templates/post-actions.php:66
+msgid "打赏"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionBasic.php:24
+msgid "打赏文案"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionBasic.php:23
+msgid "打赏标题"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionExtend.php:13
+msgid "扩展及兼容"
+msgstr ""
+
+#: templates/auth-modal.php:30
+msgid "找回密码"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:22
+msgid "找回密码验证码"
+msgstr ""
+
+#: header.php:152 inc/fun/user.php:59 pages/template-user.php:155
+msgid "投稿"
+msgstr ""
+
+#: inc/ajax/user.php:348
+msgid "投稿成功，请等待审核"
+msgstr ""
+
+#: inc/ajax/user.php:318
+msgid "投稿过于频繁，请稍后再试"
+msgstr ""
+
+#: templates/content-none.php:8
+msgid "抱歉，没有找到相关文章。"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCarousel.php:41
+msgid "指向链接"
+msgstr ""
+
+#: header.php:181
+msgid "按 Esc 关闭"
+msgstr ""
+
+#: inc/fun/widget.php:230
+msgid "按月归档"
+msgstr ""
+
+#: inc/fun/widget.php:168
+msgid "按浏览量排序"
+msgstr ""
+
+#: inc/fun/widget.php:489
+msgid "按评论数排序的热门文章"
+msgstr ""
+
+#: inc/fun/widget.php:140
+msgid "按钮文字"
+msgstr ""
+
+#: pages/template-random.php:42
+msgid "换一篇"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionAi.php:14
+msgid "接入大模型 API（DeepSeek 等），配置接口地址、密钥与模型。"
+msgstr ""
+
+#: index.php:80
+msgid "推荐"
+msgstr ""
+
+#: inc/fun/widget.php:137
+msgid "描述"
+msgstr ""
+
+#: pages/template-user.php:175
+msgid "提交投稿"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:39
+msgid "提示文案"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCode.php:18
+msgid "插入 wp_body_open 之后"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCode.php:24
+msgid "插入 wp_head 中"
+msgstr ""
+
+#: comments.php:11
+msgid "插入表情"
+msgstr ""
+
+#: header.php:121 inc/fun/widget.php:316 inc/fun/widget.php:317 searchform.php:10 searchform.php:14 sidebar.php:115 sidebar.php:117 sidebar.php:118
+msgid "搜索"
+msgstr ""
+
+#: inc/ext/moments.php:24
+msgid "搜索%s"
+msgstr ""
+
+#: inc/fun/template-tags.php:97
+msgid "搜索:"
+msgstr ""
+
+#: inc/seo-jsonld.php:73
+msgid "搜索: "
+msgstr ""
+
+#: inc/fun/widget.php:316
+msgid "搜索…"
+msgstr ""
+
+#: inc/fun/series.php:17
+msgid "搜索系列"
+msgstr ""
+
+#: search.php:10
+msgid "搜索结果"
+msgstr ""
+
+#: inc/setting/template.php:17
+msgid "搜索设置…"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:30
+msgid "摘要字数"
+msgstr ""
+
+#: inc/ajax/user.php:69
+msgid "操作过于频繁，请稍后再试"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionBasic.php:26
+msgid "支付宝收款码"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionSeo.php:30
+msgid "支持 HTML，将显示在 404 标题下方；留空则只显示默认提示"
+msgstr ""
+
+#: pages/template-user.php:193
+msgid "支持 JPG / PNG / WebP / GIF，≤2MB"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:44 pages/template-user.php:44 templates/post-actions.php:34
+msgid "收藏"
+msgstr ""
+
+#: single.php:41
+msgid "放大字号"
+msgstr ""
+
+#: inc/setting/template.php:30
+msgid "放弃更改"
+msgstr ""
+
+#: inc/fun/widget.php:937
+msgid "数据来源"
+msgstr ""
+
+#: inc/setting/Jinyu_Setting.php:224 inc/setting/Jinyu_Setting.php:264
+msgid "数据格式错误"
+msgstr ""
+
+#: inc/fun/widget.php:200 inc/fun/widget.php:223 inc/fun/widget.php:246 inc/fun/widget.php:273 inc/fun/widget.php:302 inc/fun/widget.php:384 inc/fun/widget.php:456 inc/fun/widget.php:533 inc/fun/widget.php:584
+msgid "数量"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:27
+msgid "文末作者信息卡"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionBasic.php:21
+msgid "文末版权声明"
+msgstr ""
+
+#: inc/fun/widget.php:948
+msgid "文案模板"
+msgstr ""
+
+#: inc/fun/comment.php:251 inc/fun/widget.php:398 pages/template-user.php:42
+msgid "文章"
+msgstr ""
+
+#: inc/fun/widget.php:391
+msgid "文章/页面/评论/分类/标签统计"
+msgstr ""
+
+#: inc/ajax/index.php:32 inc/ajax/index.php:75
+msgid "文章不存在"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCode.php:20
+msgid "文章中部广告"
+msgstr ""
+
+#: pages/template-sitemap.php:23
+msgid "文章分类"
+msgstr ""
+
+#: inc/fun/widget.php:330
+msgid "文章分类列表"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:42
+msgid "文章列表列数"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:17
+msgid "文章列表风格"
+msgstr ""
+
+#: inc/fun/meta-fields.php:30
+msgid "文章副标题"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:28
+msgid "文章封面图（全局）"
+msgstr ""
+
+#: inc/fun/sidebar.php:30
+msgid "文章底部"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:27
+msgid "文章底部展示作者头像、简介与文章/评论数"
+msgstr ""
+
+#: inc/fun/template-tags.php:217
+msgid "文章归档"
+msgstr ""
+
+#: inc/fun/meta-fields.php:34
+msgid "文章来源"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionStyle.php:19
+msgid "文章正文基准字号"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:18
+msgid "文章目录 TOC"
+msgstr ""
+
+#: inc/fun/series.php:15 inc/fun/series.php:26 taxonomy-jinyu_series.php:11
+msgid "文章系列"
+msgstr ""
+
+#: inc/fun/sidebar.php:12
+msgid "文章页 / 分类页 / 首页右侧"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:15
+msgid "文章页的阅读增强（目录/面包屑/进度条等）与底部模块开关。"
+msgstr ""
+
+#: inc/ext/moments.php:22
+msgid "新%s"
+msgstr ""
+
+#: inc/ajax/user.php:240
+msgid "新密码至少 6 位"
+msgstr ""
+
+#: pages/template-user.php:222
+msgid "新密码（至少 6 位）"
+msgstr ""
+
+#: inc/fun/series.php:22
+msgid "新建系列"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCarousel.php:42
+msgid "新标签打开"
+msgstr ""
+
+#: inc/fun/series.php:23
+msgid "新系列名"
+msgstr ""
+
+#: inc/setting/options/Jinyu_BaseOptionItem.php:23 inc/setting/options/Jinyu_OptionEmail.php:28
+msgid "无"
+msgstr ""
+
+#: inc/ajax/user.php:315
+msgid "无投稿权限"
+msgstr ""
+
+#: inc/fun/email.php:20
+msgid "无法确定收件人邮箱，请先在个人资料中填写邮箱"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:29
+msgid "无特色图且正文无图片时的兜底缩略图（留空即用主题内置的「七彩云」渐变默认图，此处在需要换图时覆盖）"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionStyle.php:31
+msgid "日光模式"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionExtend.php:23
+msgid "旧文章自动关评"
+msgstr ""
+
+#: inc/fun/widget.php:993
+msgid "时"
+msgstr ""
+
+#: inc/ext/moments.php:14
+msgid "时光圈"
+msgstr ""
+
+#: pages/template-user.php:201
+msgid "昵称"
+msgstr ""
+
+#: inc/ajax/user.php:199
+msgid "昵称不能为空"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionFooter.php:30
+msgid "显示 ICP 备案号"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionFooter.php:17
+msgid "显示「关于」区块"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionFooter.php:22
+msgid "显示「友情链接」区块"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionFooter.php:21
+msgid "显示「快速导航」区块"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCarousel.php:45
+msgid "显示分类两栏"
+msgstr ""
+
+#: inc/fun/meta-fields.php:31
+msgid "显示在标题下方"
+msgstr ""
+
+#: inc/fun/widget.php:944
+msgid "显示数量"
+msgstr ""
+
+#: inc/fun/widget.php:253
+msgid "显示最新评论及对应文章"
+msgstr ""
+
+#: inc/fun/widget.php:1096
+msgid "显示站点本地时间的可爱时钟"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCarousel.php:37
+msgid "显示首页四宫格"
+msgstr ""
+
+#: inc/ext/moments.php:25
+msgid "暂无%s"
+msgstr ""
+
+#: pages/template-book.php:46 templates/content-none.php:7
+msgid "暂无内容"
+msgstr ""
+
+#: sidebar.php:89
+msgid "暂无分类"
+msgstr ""
+
+#: pages/template-moments.php:58
+msgid "暂无动态，请在后台「时光圈」中发表。"
+msgstr ""
+
+#: inc/fun/widget.php:376
+msgid "暂无友情链接"
+msgstr ""
+
+#: inc/fun/widget.php:1001
+msgid "暂无建站时间数据"
+msgstr ""
+
+#: inc/fun/widget.php:920
+msgid "暂无数据"
+msgstr ""
+
+#: pages/template-tags.php:131
+msgid "暂无标签"
+msgstr ""
+
+#: inc/fun/widget.php:191 sidebar.php:65
+msgid "暂无热门文章"
+msgstr ""
+
+#: inc/fun/widget.php:265 inc/fun/widget.php:523 sidebar.php:100
+msgid "暂无评论"
+msgstr ""
+
+#: inc/fun/widget.php:576
+msgid "暂无读者"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionStyle.php:20
+msgid "暗色配色方案"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionStyle.php:32
+msgid "暗黑模式"
+msgstr ""
+
+#: single.php:17
+msgid "更新于"
+msgstr ""
+
+#: pages/template-user.php:228
+msgid "更新密码"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionAbout.php:18
+msgid "更新服务器地址"
+msgstr ""
+
+#: inc/setting/Jinyu_Setting.php:342
+msgid "更新服务器返回状态码："
+msgstr ""
+
+#: inc/fun/series.php:21
+msgid "更新系列"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCarousel.php:44
+msgid "最多显示前 4 个未隐藏且已设置图片的项目，可拖拽排序"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionAi.php:20
+msgid "最大 Token 数"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCarousel.php:35
+msgid "最新文章排除分类"
+msgstr ""
+
+#: pages/template-user.php:70 sidebar.php:96
+msgid "最新评论"
+msgstr ""
+
+#: inc/fun/comment-notify.php:22
+msgid "有新的评论回复"
+msgstr ""
+
+#: inc/setting/template.php:28
+msgid "有未保存的更改"
+msgstr ""
+
+#: single.php:71 single.php:72
+msgid "有用"
+msgstr ""
+
+#: templates/post-nav.php:33
+msgid "本文由 %1$s 创作，转载请注明来源：%2$s（%3$s）"
+msgstr ""
+
+#: functions.php:301
+msgid "本站点使用 Cookie 以提升浏览体验，继续浏览即表示您同意我们的隐私政策。"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:21
+msgid "杂志混排"
+msgstr ""
+
+#: inc/fun/email.php:16 inc/fun/email.php:61 inc/setting/Jinyu_Setting.php:222 inc/setting/Jinyu_Setting.php:236 inc/setting/Jinyu_Setting.php:247 inc/setting/Jinyu_Setting.php:261 inc/setting/Jinyu_Setting.php:298 inc/setting/Jinyu_Setting.php:324
+msgid "权限不足"
+msgstr ""
+
+#: inc/fun/short-code.php:289
+msgid "查看"
+msgstr ""
+
+#: inc/ext/moments.php:23
+msgid "查看%s"
+msgstr ""
+
+#: inc/fun/comment.php:245
+msgid "查看主页"
+msgstr ""
+
+#: single.php:47
+msgid "查看原文"
+msgstr ""
+
+#: inc/fun/comment-notify.php:33
+msgid "查看回复"
+msgstr ""
+
+#: inc/fun/comment-notify.php:44
+msgid "查看文章"
+msgstr ""
+
+#: inc/fun/widget.php:1062
+msgid "查询"
+msgstr ""
+
+#: inc/fun/widget.php:402
+msgid "标签"
+msgstr ""
+
+#: inc/fun/widget.php:207 sidebar.php:108
+msgid "标签云"
+msgstr ""
+
+#: pages/template-user.php:174
+msgid "标签，逗号分隔"
+msgstr ""
+
+#: inc/fun/widget.php:1012 inc/fun/widget.php:1075 inc/fun/widget.php:1133 inc/fun/widget.php:160 inc/fun/widget.php:199 inc/fun/widget.php:222 inc/fun/widget.php:245 inc/fun/widget.php:272 inc/fun/widget.php:301 inc/fun/widget.php:323 inc/fun/widget.php:351 inc/fun/widget.php:383 inc/fun/widget.php:413 inc/fun/widget.php:455 inc/fun/widget.php:478 inc/fun/widget.php:532 inc/fun/widget.php:583 inc/fun/widget.php:603 inc/fun/widget.php:702 inc/fun/widget.php:781 inc/fun/widget.php:845 inc/fun/widget.php:933 inc/setting/options/Jinyu_OptionCarousel.php:39
+msgid "标题"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionSeo.php:14
+msgid "标题关键词描述、sitemap 与搜索引擎收录设置。"
+msgstr ""
+
+#: inc/ajax/user.php:327
+msgid "标题长度需为 4-100 个字符"
+msgstr ""
+
+#: pages/template-user.php:161
+msgid "标题（4-100 字）"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionExtend.php:28
+msgid "格式：http://data.zz.baidu.com/urls?site=你的域名&token=你的token"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionAbout.php:19
+msgid "检查更新"
+msgstr ""
+
+#: inc/fun/user.php:52 pages/template-user.php:65
+msgid "概览"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionAi.php:19
+msgid "模型名称"
+msgstr ""
+
+#: inc/fun/widget.php:86
+msgid "欢迎来到我的博客"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionFooter.php:19
+msgid "欢迎访问本站！这里分享 ……（用一两句话介绍你的站点定位、特色与更新方向）"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionSeo.php:19
+msgid "欢迎访问本站，这里专注于分享 ……（用一句话概括站点主题，将作为搜索引擎结果中的描述摘要）"
+msgstr ""
+
+#: pages/template-user.php:172
+msgid "正文内容（至少 20 字）"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionStyle.php:27
+msgid "正文外链新窗口打开并加 rel=\"nofollow noopener\""
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionStyle.php:39
+msgid "正文字体"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionStyle.php:19
+msgid "正文字号"
+msgstr ""
+
+#: inc/ajax/user.php:330
+msgid "正文至少 20 个字符"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionSeo.php:26
+msgid "正文里出现的其它文章标题自动转为站内链接，打通站内权重、利于收录；单篇最多链 5 处、每词仅首次出现时链、跳过标题/代码块；发文章后自动重建索引"
+msgstr ""
+
+#: inc/fun/widget.php:783
+msgid "每天固定一条"
+msgstr ""
+
+#: date.php:19
+msgid "每年归档：%s"
+msgstr ""
+
+#: date.php:17
+msgid "每日归档：%s"
+msgstr ""
+
+#: date.php:18
+msgid "每月归档：%s"
+msgstr ""
+
+#: inc/fun/widget.php:784
+msgid "每次刷新随机"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionFooter.php:27
+msgid "每行一个，格式：平台|链接。例如：GitHub|https://github.com/xxx 。自动识别图标：GitHub、Gitee、微博、微信、QQ、邮箱、Telegram、X、Twitter、知乎、B站、RSS、抖音、豆瓣、今日头条"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:35
+msgid "每行一个，格式：平台|链接。留空则复用页脚社交账号"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCarousel.php:31
+msgid "每行一条，格式：标题|图片URL|链接。留空则自动取最新文章。"
+msgstr ""
+
+#: inc/fun/widget.php:715
+msgid "每行几张"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:40
+msgid "每页评论数"
+msgstr ""
+
+#: inc/ext/moments.php:26
+msgid "没有已遗弃的%s"
+msgstr ""
+
+#: inc/ajax/index.php:163
+msgid "没有更多了"
+msgstr ""
+
+#: single.php:74 single.php:75
+msgid "没用"
+msgstr ""
+
+#: templates/auth-modal.php:29 templates/auth-modal.php:73
+msgid "注册"
+msgstr ""
+
+#: inc/fun/widget.php:940
+msgid "注册会员"
+msgstr ""
+
+#: inc/ajax/user.php:126
+msgid "注册成功，正在跳转…"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:23
+msgid "注册时通知管理员"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:21
+msgid "注册验证码"
+msgstr ""
+
+#: inc/fun/email.php:54
+msgid "测试邮件已发送至 %s"
+msgstr ""
+
+#: inc/fun/widget.php:832
+msgid "浏览器"
+msgstr ""
+
+#: templates/post-actions.php:48
+msgid "海报"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:52
+msgid "海报生成"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCarousel.php:25
+msgid "淡入淡出"
+msgstr ""
+
+#: inc/fun/series.php:25
+msgid "添加或移除系列"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionResource.php:31
+msgid "清理缓存"
+msgstr ""
+
+#: inc/fun/widget.php:463
+msgid "渲染指定的导航菜单"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:51
+msgid "滚动到底部自动加载"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionResource.php:31
+msgid "点击下方「维护工具 › 清理主题缓存」可立即清空全部主题缓存"
+msgstr ""
+
+#: pages/template-luck.php:18
+msgid "点击按钮，随机跳转到一篇站内文章。"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:43 templates/post-actions.php:22
+msgid "点赞"
+msgstr ""
+
+#: 404.php:30 sidebar.php:42
+msgid "热门文章"
+msgstr ""
+
+#: inc/fun/series.php:18
+msgid "热门系列"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionFooter.php:25
+msgid "版权信息文案"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionFooter.php:24
+msgid "版权信息标题"
+msgstr ""
+
+#: pages/template-sitemap.php:41
+msgid "独立页面"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionAbout.php:18
+msgid "用于「检查更新」拉取版本信息。需返回 JSON：{\"version\":\"1.1.0\",\"changelog\":\"更新说明\",\"download_url\":\"https://...\"}"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCarousel.php:39
+msgid "用于图片替代文本"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:13
+msgid "用户与登录"
+msgstr ""
+
+#: header.php:149
+msgid "用户中心"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:18
+msgid "用户中心页面"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionEmail.php:21
+msgid "用户名"
+msgstr ""
+
+#: inc/ajax/user.php:82
+msgid "用户名含非法字符"
+msgstr ""
+
+#: templates/auth-modal.php:38 templates/auth-modal.php:83
+msgid "用户名或邮箱"
+msgstr ""
+
+#: inc/ajax/user.php:79
+msgid "用户名长度需为 3-30 个字符"
+msgstr ""
+
+#: templates/auth-modal.php:58
+msgid "用户名（3-30 位）"
+msgstr ""
+
+#: header.php:135
+msgid "用户菜单"
+msgstr ""
+
+#: inc/fun/series.php:24
+msgid "用逗号分隔多个系列"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:31 inc/setting/options/Jinyu_OptionGlobal.php:39
+msgid "留空使用默认文案"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionBasic.php:20
+msgid "留空则不显示公告条"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionBasic.php:17
+msgid "留空则使用 WordPress 站点标题"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionFooter.php:19
+msgid "留空则使用站点副标题"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionSeo.php:23
+msgid "留空则使用站点标题"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionBasic.php:21
+msgid "留空则使用默认声明。支持占位符：{url} 文章链接、{title} 标题、{author} 作者、{date} 日期"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionFooter.php:25
+msgid "留空则使用默认版权。支持占位符：{year} 年份、{name} 站点名"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionBasic.php:19
+msgid "留空则暗色模式复用亮色 Logo"
+msgstr ""
+
+#: inc/fun/widget.php:138
+msgid "留空则自动使用站点图标（外观 › 自定义 › 站点身份）；未设置时按全站「头像来源」显示"
+msgstr ""
+
+#: inc/fun/category-seo.php:21 inc/fun/category-seo.php:43
+msgid "留空则默认显示分类描述"
+msgstr ""
+
+#: header.php:159 templates/auth-modal.php:28 templates/auth-modal.php:49
+msgid "登录"
+msgstr ""
+
+#: pages/template-user.php:28
+msgid "登录 / 注册"
+msgstr ""
+
+#: pages/template-user.php:26
+msgid "登录后即可管理你的文章、收藏与资料。"
+msgstr ""
+
+#: inc/fun/short-code.php:51
+msgid "登录后可见"
+msgstr ""
+
+#: inc/fun/security.php:114
+msgid "登录尝试过于频繁，已被临时锁定，请 %d 分钟后再试。"
+msgstr ""
+
+#: inc/fun/short-code.php:243
+msgid "登录并验证邮箱后可见"
+msgstr ""
+
+#: inc/ajax/user.php:50
+msgid "登录成功，正在跳转…"
+msgstr ""
+
+#: templates/auth-modal.php:16
+msgid "登录或注册"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:24
+msgid "登录防暴破"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:36
+msgid "登录页 Logo"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:37
+msgid "登录页背景图"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:20
+msgid "登录验证码"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionExtend.php:27
+msgid "百度主动推送"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionExtend.php:28
+msgid "百度推送接口地址"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionExtend.php:30
+msgid "百度统计 / Google Analytics 等的完整代码（含 <script> 标签），将输出到 </head> 前。与「头部注入 JS」不同，此处仅用于统计"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:19
+msgid "目录标题层级"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:33
+msgid "相关文章"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:35
+msgid "相关文章依据"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:34
+msgid "相关文章数量"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:37
+msgid "相同分类"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:36
+msgid "相同标签"
+msgstr ""
+
+#: templates/auth-modal.php:70
+msgid "确认密码"
+msgstr ""
+
+#: pages/template-user.php:226
+msgid "确认新密码"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionFooter.php:27
+msgid "社交账号"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionResource.php:18
+msgid "禁用 wp-embed"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionResource.php:19
+msgid "禁用前台古登堡样式"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionResource.php:20
+msgid "禁用古腾堡编辑器"
+msgstr ""
+
+#: inc/fun/widget.php:995
+msgid "秒"
+msgstr ""
+
+#: inc/fun/short-code.php:244 inc/fun/short-code.php:52
+msgid "立即登录"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCarousel.php:26
+msgid "立方体"
+msgstr ""
+
+#: header.php:178
+msgid "站内搜索"
+msgstr ""
+
+#: inc/fun/widget.php:309
+msgid "站内搜索框"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionExtend.php:19
+msgid "站内链接无刷新切换内容（实验性，建议先小流量验证）"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionBasic.php:18
+msgid "站点 Logo（亮色模式）"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionBasic.php:19
+msgid "站点 Logo（暗色模式）"
+msgstr ""
+
+#: footer.php:84 inc/setting/options/Jinyu_OptionFooter.php:24
+msgid "站点信息"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionBasic.php:14
+msgid "站点信息、Logo、顶部公告、文末版权与文章打赏。"
+msgstr ""
+
+#: inc/fun/widget.php:147
+msgid "站点公告"
+msgstr ""
+
+#: pages/template-sitemap.php:51
+msgid "站点地图功能已关闭。"
+msgstr ""
+
+#: inc/ajax/user.php:64
+msgid "站点已关闭注册"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionBasic.php:17
+msgid "站点标题"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionEmail.php:19
+msgid "端口"
+msgstr ""
+
+#: single.php:32
+msgid "第 %1$d / %2$d 篇"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionExtend.php:14
+msgid "第三方服务接入与功能兼容性开关。"
+msgstr ""
+
+#: templates/auth-modal.php:91
+msgid "第三方登录"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionStyle.php:42
+msgid "等宽"
+msgstr ""
+
+#: inc/fun/series.php:16
+msgid "系列"
+msgstr ""
+
+#: inc/fun/widget.php:831
+msgid "系统"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionAi.php:21
+msgid "系统提示词"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionStyle.php:40
+msgid "系统无衬线（默认）"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionStyle.php:22
+msgid "纯黑"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionResource.php:21
+msgid "给主题脚本加 defer，加快首屏"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionExtend.php:30
+msgid "统计代码"
+msgstr ""
+
+#: inc/fun/maintenance.php:30
+msgid "维护中"
+msgstr ""
+
+#: inc/setting/Jinyu_Setting.php:105
+msgid "维护工具"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:31
+msgid "维护提示文案"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:30
+msgid "维护模式"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:14
+msgid "维护模式、登录页外观、社交账号与 Cookie 提示等全站行为。"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionResource.php:30
+msgid "缓存有效期 (秒)"
+msgstr ""
+
+#: inc/ext/moments.php:21
+msgid "编辑%s"
+msgstr ""
+
+#: inc/fun/series.php:20
+msgid "编辑系列"
+msgstr ""
+
+#: single.php:40
+msgid "缩小字号"
+msgstr ""
+
+#: inc/fun/maintenance.php:25
+msgid "网站正在维护中，请稍后再访。"
+msgstr ""
+
+#: inc/fun/maintenance.php:38
+msgid "网站维护中"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:31
+msgid "网站维护中，敬请期待恢复。给您带来的不便，我们深表歉意。"
+msgstr ""
+
+#: templates/module-post.php:26
+msgid "置顶"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionResource.php:21
+msgid "脚本延迟加载 (defer)"
+msgstr ""
+
+#: inc/fun/widget.php:997
+msgid "自 %s 已稳定运行"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionSeo.php:26
+msgid "自动内链"
+msgstr ""
+
+#: inc/fun/widget.php:705
+msgid "自动取分类缩略图"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:18
+msgid "自动提取正文 H2/H3/H4 生成目录并滚动高亮"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCarousel.php:22
+msgid "自动播放间隔 (ms)"
+msgstr ""
+
+#: inc/fun/widget.php:708
+msgid "自动模式：分类"
+msgstr ""
+
+#: inc/fun/widget.php:714
+msgid "自动模式：数量"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionResource.php:26
+msgid "自动补充图片 alt"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:36
+msgid "自定义 WP 登录页 Logo 图片"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:37
+msgid "自定义 WP 登录页背景图"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCode.php:13
+msgid "自定义代码"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionExtend.php:22
+msgid "英文逗号分隔，评论内容命中即标记为垃圾"
+msgstr ""
+
+#: pages/template-user.php:45
+msgid "获赞"
+msgstr ""
+
+#: inc/fun/widget.php:479
+msgid "菜单"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionStyle.php:44
+msgid "覆盖正文与界面全局字体栈"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCarousel.php:28
+msgid "覆盖流"
+msgstr ""
+
+#: templates/auth-modal.php:46
+msgid "记住我"
+msgstr ""
+
+#: inc/fun/comment.php:253 inc/fun/widget.php:400 pages/template-user.php:43
+msgid "评论"
+msgstr ""
+
+#: comments.php:17
+msgid "评论 (%d)"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:53
+msgid "评论 Ajax 提交（无刷新）"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:39
+msgid "评论分页"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCode.php:21
+msgid "评论区上方广告"
+msgstr ""
+
+#: inc/fun/short-code.php:63
+msgid "评论后可见，请先登录并评论"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:14
+msgid "评论头像、UA 徽标、登录注册与用户互动。"
+msgstr ""
+
+#: inc/fun/comment-ajax.php:40
+msgid "评论已发布"
+msgstr ""
+
+#: inc/fun/comment-ajax.php:41
+msgid "评论已提交，等待审核"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:26
+msgid "评论显示 UA"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionExtend.php:25
+msgid "评论框提供表情面板，点击插入表情"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionExtend.php:25
+msgid "评论表情选择器"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:39
+msgid "评论较多时分页展示，避免单页过长"
+msgstr ""
+
+#: inc/ajax/user.php:85
+msgid "该用户名已被占用"
+msgstr ""
+
+#: inc/ajax/user.php:91
+msgid "该邮箱已注册"
+msgstr ""
+
+#: inc/fun/widget.php:785
+msgid "语录（每行：内容|出处；出处可省。留空用内置语录）"
+msgstr ""
+
+#: comments.php:33 inc/fun/comment.php:204
+msgid "说点什么吧..."
+msgstr ""
+
+#: inc/setting/Jinyu_Setting.php:330
+msgid "请先在「更新服务器地址」填写版本信息 JSON 地址"
+msgstr ""
+
+#: inc/fun/email.php:42
+msgid "请先在「邮件 SMTP」填写 SMTP 主机并保存，再发送测试邮件。"
+msgstr ""
+
+#: inc/ajax/index.php:68 inc/ajax/user.php:188 inc/ajax/user.php:228 inc/ajax/user.php:265 inc/ajax/user.php:361 pages/template-user.php:25
+msgid "请先登录"
+msgstr ""
+
+#: inc/fun/email.php:56
+msgid "请检查 SMTP 主机/端口/账号或服务器发信权限"
+msgstr ""
+
+#: inc/setting/Jinyu_Setting.php:338
+msgid "请求失败："
+msgstr ""
+
+#: inc/ajax/user.php:143
+msgid "请输入用户名或邮箱"
+msgstr ""
+
+#: inc/ajax/user.php:28
+msgid "请输入账号和密码"
+msgstr ""
+
+#: inc/fun/short-code.php:255
+msgid "请输入阅读密码"
+msgstr ""
+
+#: inc/ajax/user.php:268
+msgid "请选择图片文件"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionFooter.php:21
+msgid "调用「页脚菜单」导航"
+msgstr ""
+
+#: inc/ajax/user.php:45
+msgid "账号或密码错误"
+msgstr ""
+
+#: header.php:154
+msgid "账号设置"
+msgstr ""
+
+#: inc/ajax/user.php:215
+msgid "资料已保存"
+msgstr ""
+
+#: inc/fun/user.php:56 pages/template-user.php:183
+msgid "资料设置"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionResource.php:13
+msgid "资源优化"
+msgstr ""
+
+#: functions.php:200 inc/setting/options/Jinyu_OptionBasic.php:23
+msgid "赞赏作者"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionExtend.php:23
+msgid "超过指定天数的文章自动关闭评论"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionStyle.php:33
+msgid "跟随系统"
+msgstr ""
+
+#: header.php:23
+msgid "跳到主内容"
+msgstr ""
+
+#: sidebar.php:117
+msgid "输入关键词"
+msgstr ""
+
+#: searchform.php:12
+msgid "输入关键词搜索..."
+msgstr ""
+
+#: templates/auth-modal.php:80
+msgid "输入用户名或邮箱，重置链接将发送到你的邮箱。"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionSeo.php:25
+msgid "输出 /llms.txt (GEO)"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionSeo.php:24
+msgid "输出 Twitter Card"
+msgstr ""
+
+#: inc/fun/widget.php:939
+msgid "近期评论者"
+msgstr ""
+
+#: 404.php:26
+msgid "返回上一页"
+msgstr ""
+
+#: inc/setting/Jinyu_Setting.php:346
+msgid "返回数据格式不正确（缺少 version 字段）"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:25
+msgid "返回顶部按钮"
+msgstr ""
+
+#: 404.php:25
+msgid "返回首页"
+msgstr ""
+
+#: pages/template-user.php:107
+msgid "还没有发布文章"
+msgstr ""
+
+#: inc/ajax/user.php:366 pages/template-user.php:151
+msgid "还没有收藏任何文章"
+msgstr ""
+
+#: pages/template-user.php:128 pages/template-user.php:86
+msgid "还没有评论"
+msgstr ""
+
+#: single.php:70
+msgid "这篇有帮助吗？"
+msgstr ""
+
+#: header.php:155 pages/template-user.php:58
+msgid "退出登录"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:18
+msgid "选择一个「用户中心」页面模板，未选则跳转后台个人资料"
+msgstr ""
+
+#: pages/template-user.php:165
+msgid "选择分类"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionEmail.php:13
+msgid "邮件 SMTP"
+msgstr ""
+
+#: templates/auth-modal.php:62
+msgid "邮箱"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionEmail.php:18
+msgid "邮箱服务商的 SMTP 服务器地址，如 QQ 邮箱为 smtp.qq.com，163 邮箱为 smtp.163.com，Gmail 为 smtp.gmail.com。"
+msgstr ""
+
+#: inc/ajax/user.php:88
+msgid "邮箱格式不正确"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionEmail.php:15
+msgid "配置站点发信（评论通知、测试邮件等）。常见服务商：QQ 邮箱 smtp.qq.com / 端口 465 / SSL；163 邮箱 smtp.163.com / 端口 465 / SSL；Gmail smtp.gmail.com / 端口 465 / SSL。注意：QQ、163 等国内邮箱的「密码」需填邮箱网页端设置里开启 SMTP 后生成的「授权码」，不是邮箱登录密码。填好后点右侧「发送测试邮件」即可验证，会直接读取本表单当前值，无需先保存。"
+msgstr ""
+
+#: inc/fun/widget.php:1054
+msgid "采集中"
+msgstr ""
+
+#: inc/ajax/user.php:162
+msgid "重置失败，请联系管理员"
+msgstr ""
+
+#: single.php:42
+msgid "重置字号"
+msgstr ""
+
+#: inc/fun/meta-fields.php:13
+msgid "金玉 · 文章扩展字段"
+msgstr ""
+
+#: inc/fun/widget.php:77
+msgid "金玉·作者卡"
+msgstr ""
+
+#: inc/fun/widget.php:147
+msgid "金玉·公告"
+msgstr ""
+
+#: inc/fun/widget.php:330
+msgid "金玉·分类目录"
+msgstr ""
+
+#: inc/fun/widget.php:359
+msgid "金玉·友情链接"
+msgstr ""
+
+#: inc/fun/widget.php:628
+msgid "金玉·图文推荐位"
+msgstr ""
+
+#: inc/fun/widget.php:230
+msgid "金玉·归档"
+msgstr ""
+
+#: inc/fun/widget.php:309
+msgid "金玉·搜索"
+msgstr ""
+
+#: inc/fun/widget.php:1094
+msgid "金玉·时钟"
+msgstr ""
+
+#: inc/fun/widget.php:253
+msgid "金玉·最新评论"
+msgstr ""
+
+#: inc/fun/widget.php:864
+msgid "金玉·最近加入"
+msgstr ""
+
+#: inc/fun/widget.php:591
+msgid "金玉·最近浏览"
+msgstr ""
+
+#: inc/fun/widget.php:207
+msgid "金玉·标签云"
+msgstr ""
+
+#: inc/fun/widget.php:733
+msgid "金玉·每日一句"
+msgstr ""
+
+#: inc/fun/widget.php:489
+msgid "金玉·热评文章"
+msgstr ""
+
+#: inc/fun/widget.php:168
+msgid "金玉·热门文章"
+msgstr ""
+
+#: inc/fun/widget.php:420
+msgid "金玉·相关文章"
+msgstr ""
+
+#: inc/fun/widget.php:1039
+msgid "金玉·站点性能"
+msgstr ""
+
+#: inc/fun/widget.php:391
+msgid "金玉·站点统计"
+msgstr ""
+
+#: inc/fun/widget.php:973
+msgid "金玉·网站概况"
+msgstr ""
+
+#: inc/fun/widget.php:463
+msgid "金玉·自定义菜单"
+msgstr ""
+
+#: inc/fun/widget.php:804
+msgid "金玉·访客信息"
+msgstr ""
+
+#: inc/fun/widget.php:541
+msgid "金玉·读者墙"
+msgstr ""
+
+#: inc/fun/widget.php:280
+msgid "金玉·随机文章"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionAbout.php:17
+msgid "金玉主题 v1.0.9 · PHP 8.0+ · WordPress 7.1+"
+msgstr ""
+
+#: functions.php:240
+msgid "金玉主题缺少 PHP 扩展：%s"
+msgstr ""
+
+#: functions.php:17
+msgid "金玉主题要求 PHP 8.0+，当前版本 %s"
+msgstr ""
+
+#: inc/setting/Jinyu_Setting.php:22 inc/setting/Jinyu_Setting.php:23
+msgid "金玉主题配置"
+msgstr ""
+
+#: inc/fun/widget.php:139
+msgid "链接"
+msgstr ""
+
+#: single.php:38
+msgid "阅读字号调节"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:27
+msgid "阅读进度条"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:52
+msgid "防止狂刷"
+msgstr ""
+
+#: pages/template-random.php:45
+msgid "随便逛逛"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:38
+msgid "随机"
+msgstr ""
+
+#: inc/fun/widget.php:280
+msgid "随机推荐文章"
+msgstr ""
+
+#: inc/fun/widget.php:733
+msgid "随机显示一条语录；不依赖外部 API"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCarousel.php:43
+msgid "隐藏"
+msgstr ""
+
+#: inc/fun/short-code.php:73
+msgid "隐藏内容，仅管理员可见"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCarousel.php:43
+msgid "隐藏后将不会显示"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:28
+msgid "隐藏文章浏览量"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCarousel.php:20
+msgid "隐藏标题"
+msgstr ""
+
+#: inc/fun/meta-fields.php:42
+msgid "隐藏正文特色封面图"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:47
+msgid "需先开启上方「启用第三方登录」，并在 GitHub 申请 OAuth App 后填写"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:49
+msgid "需先开启上方「启用第三方登录」，并在 Gitee 申请应用后填写"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:45
+msgid "需先开启上方「启用第三方登录」，并在 QQ 互联（connect.qq.com）申请应用后填写"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionResource.php:23
+msgid "需服务器开启 GD 扩展，上传 jpg/png 时同步生成 webp"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionResource.php:22
+msgid "静态资源 CDN 域名"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionResource.php:14
+msgid "静态资源、脚本加载与性能优化选项。"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionResource.php:17
+msgid "非管理员移除 Dashicons"
+msgstr ""
+
+#: inc/fun/template-tags.php:83 inc/setting/options/Jinyu_OptionContent.php:24
+msgid "面包屑导航"
+msgstr ""
+
+#: inc/fun/short-code.php:208
+msgid "音乐"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:34
+msgid "页眉显示社交图标"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:35
+msgid "页眉社交账号"
+msgstr ""
+
+#: inc/fun/sidebar.php:22
+msgid "页脚上方，建议 3-4 个"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionFooter.php:17
+msgid "页脚左侧的站点介绍区块"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionFooter.php:14
+msgid "页脚栏目、社交链接与版权备案信息。"
+msgstr ""
+
+#: functions.php:50
+msgid "页脚菜单"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionFooter.php:13
+msgid "页脚设置"
+msgstr ""
+
+#: inc/fun/widget.php:399
+msgid "页面"
+msgstr ""
+
+#: 404.php:10
+msgid "页面走丢了"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionBasic.php:20
+msgid "顶部公告"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionStyle.php:13
+msgid "风格外观"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:36
+msgid "首字母占位图"
+msgstr ""
+
+#: inc/fun/template-tags.php:216 inc/fun/template-tags.php:84
+msgid "首页"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCarousel.php:38
+msgid "首页四宫格列表"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCarousel.php:13
+msgid "首页模块"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCarousel.php:15
+msgid "首页顶部版块：幻灯片、四宫格、分类两栏，以及首页主循环排除分类。"
+msgstr ""
+
+#: inc/fun/captcha.php:155 inc/fun/captcha.php:161
+msgid "验证码"
+msgstr ""
+
+#: inc/fun/captcha.php:137
+msgid "验证码不正确或已过期"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCarousel.php:24 single.php:42
+msgid "默认"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionSeo.php:20
+msgid "默认关键词 (逗号分隔)"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionStyle.php:30
+msgid "默认明暗：日光 / 暗黑 / 跟随系统。开启下方「允许切换主题模式」后，访客可手动切换并记忆选择。"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionStyle.php:21
+msgid "默认深灰"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionSeo.php:19
+msgid "默认站点描述"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:29
+msgid "默认缩略图"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionCarousel.php:19
+msgid "鼠标滚轮切换"
+msgstr ""
+
+#: inc/fun/comment.php:113
+msgid "（无正文）"
+msgstr ""
+
+#: inc/setting/Jinyu_Setting.php:287
+msgid "；%d 个加密字段（API Key / 密码等）无法跨站解密，已跳过，请重新填写"
+msgstr ""

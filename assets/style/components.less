@@ -1,0 +1,203 @@
+/* ==========================================================================
+   金玉主题 · 组件层：文章页互动 / 模态框 / 404
+   ========================================================================== */
+
+/* ---------- 上一篇 / 下一篇 ---------- */
+.jinyu-post-nav {
+    display: grid;
+    /* minmax(0,..)：长标题不撑破两列 */
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: @s-3;
+    margin: @s-6 0 @s-4;
+
+    &-item {
+        display: flex;
+        flex-direction: column;
+        gap: @s-1;
+        padding: @s-4;
+        background: @bg-card;
+        border: 1px solid @border;
+        border-radius: @radius-md;
+        color: @text-2;
+        transition: border-color @transition, transform @transition;
+        text-decoration: none;
+
+        &:hover { border-color: @primary; transform: translateY(-2px); }
+    }
+    &-next { text-align: right; }
+    &-label {
+        font-size: @fs-xs;
+        color: @text-3;
+        display: flex;
+        align-items: center;
+        gap: @s-1;
+        justify-content: flex-start;
+
+        .jinyu-post-nav-next & { justify-content: flex-end; }
+    }
+    &-title {
+        font-size: @fs-base;
+        font-weight: 600;
+        color: @text-1;
+        line-height: 1.4;
+        .text-ellipsis(2);
+    }
+}
+
+/* ---------- 版权声明 ---------- */
+.jinyu-copyright {
+    margin: @s-4 0 0;
+    border: 1px dashed @border-strong;
+    border-radius: @radius-md;
+    background: @bg-subtle;
+    padding: @s-3 @s-4;
+    display: flex;
+    align-items: flex-start;
+    gap: @s-2;
+
+    > i { color: @primary; margin-top: 2px; flex: 0 0 auto; }
+    &-text { margin: 0; font-size: @fs-sm; color: @text-3; line-height: 1.7; }
+}
+
+/* ---------- 通用模态框 ---------- */
+.jinyu-generic-modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: @s-4;
+    z-index: @z-mask;
+}
+.jinyu-modal-card {
+    width: min(92vw, 420px);
+    max-height: 88vh;
+    overflow: auto;
+    background: @bg-card;
+    border: 1px solid @border;
+    border-radius: @radius-lg;
+    box-shadow: @shadow-float;
+    animation: jinyu-modal-in .2s @ease-out-expo;
+}
+@keyframes jinyu-modal-in {
+    from { opacity: 0; transform: translateY(12px) scale(.98); }
+    to   { opacity: 1; transform: none; }
+}
+.jinyu-modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: @s-3 @s-4;
+    border-bottom: 1px solid @border;
+}
+.jinyu-modal-title { font-size: @fs-lg; font-weight: 700; color: @text-1; }
+.jinyu-modal-close {
+    border: 0;
+    background: @bg-subtle;
+    width: 32px; height: 32px;
+    border-radius: @radius-pill;
+    cursor: pointer;
+    color: @text-3;
+    transition: background @transition, color @transition;
+    &:hover { background: @primary-light; color: @primary; }
+}
+.jinyu-modal-body { padding: @s-4; }
+.jinyu-modal-loading { text-align: center; color: @text-3; padding: @s-6 0; i { margin-right: @s-2; } }
+
+/* ---------- 海报 ---------- */
+.jinyu-poster-img { width: 100%; display: block; border: 1px solid @border; border-radius: @radius-md; }
+.jinyu-poster-actions { display: flex; gap: @s-3; margin-top: @s-4; }
+.jinyu-poster-actions .jinyu-btn { flex: 1; justify-content: center; }
+.jinyu-poster-modal .jinyu-modal-body { padding: @s-3; }
+
+/* ---------- 二维码 ---------- */
+.jinyu-qr-box {
+    display: flex;
+    justify-content: center;
+    padding: @s-4 0;
+
+    svg, img { width: 220px; height: 220px; border-radius: @radius-sm; }
+}
+.jinyu-qr-url { text-align: center; font-size: @fs-xs; color: @text-3; word-break: break-all; }
+
+/* ---------- 打赏 ---------- */
+.jinyu-donate-text { text-align: center; font-size: @fs-sm; color: @text-2; margin: 0 0 @s-4; }
+.jinyu-donate-item {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: @s-2;
+
+    img {
+        width: 180px; height: 180px;
+        object-fit: contain;
+        border: 1px solid @border;
+        border-radius: @radius-md;
+        padding: @s-2;
+        background: #fff;
+    }
+    .jinyu-donate-name { font-weight: 600; color: @text-1; }
+    span { font-size: @fs-xs; color: @text-3; }
+}
+.jinyu-donate-modal .jinyu-modal-body {
+    display: flex;
+    flex-wrap: wrap;
+    gap: @s-4;
+    justify-content: center;
+}
+
+/* ---------- 404 ---------- */
+.jinyu-404 {
+    text-align: center;
+    padding: @s-12 @s-4;
+    max-width: 640px;
+    margin: 0 auto;
+
+    &-code {
+        font-size: 96px;
+        font-weight: 800;
+        line-height: 1;
+        color: @primary;
+        letter-spacing: 4px;
+    }
+    &-title { font-size: @fs-2xl; margin: @s-3 0 @s-2; color: @text-1; }
+    &-desc { color: @text-3; margin-bottom: @s-6; }
+    &-search {
+        display: flex;
+        max-width: 440px;
+        margin: 0 auto @s-5;
+        border: 1px solid @border-strong;
+        border-radius: @radius-pill;
+        overflow: hidden;
+        background: @bg-card;
+
+        input { flex: 1; border: 0; outline: 0; padding: 0 @s-5; background: transparent; color: @text-1; }
+        button {
+            border: 0; cursor: pointer;
+            padding: 0 @s-6;
+            background: @primary; color: @text-invert;
+            transition: background @transition;
+            &:hover { background: @primary-dark; }
+        }
+    }
+    &-actions { display: flex; gap: @s-3; justify-content: center; margin-bottom: @s-8; }
+    &-hot {
+        text-align: left;
+        background: @bg-card;
+        border: 1px solid @border;
+        border-radius: @radius-md;
+        padding: @s-5;
+        &-title { font-size: @fs-lg; margin: 0 0 @s-3; display: flex; align-items: center; gap: @s-2; i { color: @primary; } }
+        &-list { list-style: none; margin: 0; padding: 0; }
+        &-list li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: @s-2 0;
+            border-bottom: 1px solid @border;
+            &:last-child { border-bottom: 0; }
+            a { color: @text-2; text-decoration: none; transition: color @transition; .text-ellipsis(1); }
+            a:hover { color: @primary; }
+        }
+        &-views { font-size: @fs-xs; color: @text-4; flex-shrink: 0; margin-left: @s-3; }
+    }
+}

@@ -1,0 +1,113 @@
+@import "var.less";
+
+/* ==========================================================================
+   古登堡区块样式（前台）
+   作用域：.jinyu-article-content（文章正文）内的 .wp-block-* 元素
+   ========================================================================== */
+
+.jinyu-article-content {
+    /* 宽幅 / 全宽对齐 */
+    .alignwide  { width: 100%; max-width: calc(@container-max + 200px); margin-left: 50%; transform: translateX(-50%); }
+    .alignfull  { width: 100vw; max-width: 100vw; margin-left: 50%; transform: translateX(-50%); }
+    .aligncenter { margin-left: auto; margin-right: auto; }
+
+    /* 区块间距统一 */
+    .wp-block-group,
+    .wp-block-columns,
+    .wp-block-image,
+    .wp-block-gallery,
+    .wp-block-quote,
+    .wp-block-pullquote,
+    .wp-block-table,
+    .wp-block-code,
+    .wp-block-preformatted,
+    .wp-block-cover,
+    .wp-block-media-text { margin: @s-5 0; }
+
+    /* 引用块 */
+    .wp-block-quote {
+        border-left: 4px solid @primary;
+        padding: @s-4 @s-5;
+        background: @primary-light;
+        border-radius: 0 @radius-md @radius-md 0;
+        p { margin: 0 0 @s-2; &:last-child { margin-bottom: 0; } }
+        cite { color: @text-3; font-style: normal; }
+    }
+    .wp-block-pullquote {
+        border-top: 4px solid @primary;
+        border-bottom: 4px solid @primary;
+        padding: @s-5 0;
+        text-align: center;
+        blockquote { margin: 0; }
+    }
+
+    /* 图片块 */
+    .wp-block-image {
+        figure { margin: @s-5 0; }
+        img { border-radius: @radius-sm; }
+        figcaption { font-size: @fs-sm; color: @text-3; text-align: center; margin-top: @s-2; }
+        &.alignleft  { float: left;  margin: 0 @s-4 @s-3 0; max-width: 50%; }
+        &.alignright { float: right; margin: 0 0 @s-3 @s-4; max-width: 50%; }
+        &.aligncenter { display: block; margin-left: auto; margin-right: auto; }
+    }
+
+    /* 画廊 */
+    .wp-block-gallery {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: @s-3;
+        padding: 0;
+        .wp-block-image { margin: 0; }
+        &.columns-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        &.columns-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        img { width: 100%; border-radius: @radius-sm; }
+        figcaption { text-align: center; }
+    }
+
+    /* 代码块 */
+    .wp-block-code {
+        background: @bg-code;
+        border-radius: @radius-md;
+        padding: @s-4;
+        overflow-x: auto;
+        code { background: none; padding: 0; color: inherit; font-family: "JetBrains Mono", Menlo, Consolas, monospace; }
+    }
+    .wp-block-preformatted { white-space: pre-wrap; }
+
+    /* 分隔 */
+    .wp-block-separator {
+        border: 0; border-top: 1px solid @border; margin: @s-8 0;
+        &.is-style-wide { border-top-width: 2px; }
+        &.is-style-dots { border: 0; text-align: center; }
+    }
+
+    /* 按钮 */
+    .wp-block-button {
+        .wp-block-button__link {
+            display: inline-flex; align-items: center; gap: @s-2;
+            padding: @s-2 @s-5; border-radius: @radius-pill;
+            background: @primary; color: @text-invert; font-weight: 500;
+            &:hover { background: @primary-dark; }
+        }
+        &.is-style-outline .wp-block-button__link {
+            background: transparent; color: @primary; border: 1px solid @primary;
+        }
+    }
+
+    /* 表格：直接沿用正文 .jinyu-article-content table 样式，无需重复 */
+
+    /* 媒体文本 */
+    .wp-block-media-text {
+        display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: @s-5; align-items: center;
+        .wp-block-media-text__media img { border-radius: @radius-sm; width: 100%; }
+        @media (max-width: 768px) { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    /* 标签云 / 分类列表 */
+    .wp-block-tag-cloud a, .wp-block-categories li a { color: @primary; }
+
+    /* 最新文章 / 评论列表 */
+    .wp-block-latest-posts, .wp-block-latest-comments {
+        padding-left: 1.4em; li { margin-bottom: @s-2; }
+    }
+}

@@ -1,0 +1,544 @@
+/* ==========================================================================
+   用户中心 / 登录注册弹窗
+   ========================================================================== */
+
+/* ---- 通用：按钮 / 输入框 / 空态 ---- */
+.jinyu-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: @s-2;
+    height: 42px;
+    padding: 0 @s-5;
+    border: 1px solid @border;
+    border-radius: @radius-md;
+    background: @bg-card;
+    color: @text-1;
+    font-size: @fs-base;
+    cursor: pointer;
+    transition: border-color @transition, background @transition, color @transition, transform @transition;
+
+    &:hover { border-color: @primary; color: @primary; }
+    &:active { transform: translateY(1px); }
+}
+.jinyu-btn-primary {
+    background: @primary;
+    border-color: @primary;
+    color: @text-invert;
+
+    &:hover { background: @primary-dark; border-color: @primary-dark; color: @text-invert; }
+}
+.jinyu-btn-ghost { background: transparent; }
+
+.jinyu-field {
+    display: flex;
+    align-items: center;
+    gap: @s-2;
+    border: 1px solid @border;
+    border-radius: @radius-md;
+    background: @bg-input;
+    padding: 0 @s-3;
+    height: 46px;
+    transition: border-color @transition;
+
+    > i { color: @text-3; width: 16px; text-align: center; flex-shrink: 0; }
+
+    > input,
+    > select {
+        flex: 1;
+        min-width: 0;
+        height: 100%;
+        border: 0;
+        background: transparent;
+        color: @text-1;
+        font-size: @fs-base;
+        outline: none;
+    }
+    &:focus-within { border-color: @primary; }
+    &.is-error { border-color: @danger; }
+}
+.jinyu-field-label { font-size: @fs-sm; color: @text-2; flex-shrink: 0; }
+.jinyu-field-hint { font-size: @fs-xs; color: @text-3; margin: 0; line-height: 1.6; }
+.jinyu-empty { color: @text-3; font-size: @fs-sm; padding: @s-6 0; text-align: center; }
+
+.jinyu-grid {
+    display: grid;
+    gap: @s-5;
+}
+.jinyu-grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+/* ---- 登录 / 注册弹窗 ---- */
+.jinyu-auth {
+    width: 100%;
+    max-width: 380px;
+    background: @bg-card;
+    border-radius: @radius-lg;
+    padding: @s-6;
+    box-shadow: @shadow-float;
+    position: relative;
+    animation: jinyu-pop-in .25s @ease-out-expo;
+}
+.jinyu-auth-close {
+    position: absolute;
+    top: @s-3;
+    right: @s-3;
+    width: 32px;
+    height: 32px;
+    border: 0;
+    border-radius: @radius-sm;
+    background: transparent;
+    color: @text-3;
+    cursor: pointer;
+    font-size: @fs-lg;
+
+    &:hover { color: @text-1; background: @bg-subtle; }
+}
+.jinyu-auth-head { text-align: center; margin-bottom: @s-4; }
+.jinyu-auth-logo {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto @s-3;
+    border-radius: @radius-lg;
+    background: linear-gradient(135deg, @primary, @primary-dark);
+    color: @text-invert;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+.jinyu-auth-head h3 { font-size: @fs-lg; }
+
+.jinyu-auth-tabs {
+    display: flex;
+    background: @bg-subtle;
+    border-radius: @radius-md;
+    padding: 4px;
+    margin-bottom: @s-4;
+
+    button {
+        flex: 1;
+        height: 38px;
+        border: 0;
+        background: transparent;
+        color: @text-2;
+        border-radius: @radius-sm;
+        cursor: pointer;
+        font-size: @fs-sm;
+        transition: background @transition, color @transition;
+    }
+    button.is-active { background: @bg-card; color: @text-1; box-shadow: @shadow-card; }
+}
+
+.jinyu-auth-form { display: flex; flex-direction: column; gap: @s-3; }
+.jinyu-auth-form[hidden] { display: none; }
+
+.jinyu-auth-remember {
+    display: flex;
+    align-items: center;
+    gap: @s-2;
+    font-size: @fs-sm;
+    color: @text-2;
+    margin: -@s-1 0;
+}
+.jinyu-auth-hint { font-size: @fs-sm; color: @text-3; margin: 0 0 @s-2; }
+.jinyu-auth-submit { height: 46px; font-size: @fs-md; }
+
+.jinyu-auth-tip {
+    font-size: @fs-sm;
+    min-height: 18px;
+    margin: 0;
+    &[data-jinyu-state="ok"] { color: @success; }
+    &[data-jinyu-state="err"] { color: @danger; }
+}
+
+/* ---- 验证码 ---- */
+.jinyu-captcha-row {
+    display: flex;
+    align-items: center;
+    gap: @s-2;
+
+    .jinyu-captcha-img {
+        height: 42px;
+        border-radius: @radius-sm;
+        border: 1px solid @border;
+        cursor: pointer;
+        background: @bg-subtle;
+    }
+    .jinyu-captcha-refresh {
+        width: 42px;
+        height: 42px;
+        border: 1px solid @border;
+        border-radius: @radius-sm;
+        background: @bg-input;
+        color: @text-2;
+        cursor: pointer;
+        flex-shrink: 0;
+
+        &:hover { color: @primary; border-color: @primary; }
+    }
+    input {
+        flex: 1;
+        min-width: 0;
+        height: 42px;
+        border: 1px solid @border;
+        border-radius: @radius-sm;
+        background: @bg-input;
+        color: @text-1;
+        text-align: center;
+        letter-spacing: 4px;
+        outline: none;
+
+        &:focus { border-color: @primary; }
+    }
+}
+.jinyu-captcha-row[hidden] { display: none; }
+
+/* ---- 第三方登录 ---- */
+.jinyu-auth-divider {
+    display: flex;
+    align-items: center;
+    gap: @s-3;
+    color: @text-3;
+    font-size: @fs-xs;
+    margin: @s-4 0;
+
+    &::before, &::after { content: ''; flex: 1; height: 1px; background: @border; }
+}
+.jinyu-oauth-btns { display: flex; gap: @s-3; }
+.jinyu-oauth-btn {
+    flex: 1;
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: @s-2;
+    border-radius: @radius-md;
+    color: #fff;
+    text-decoration: none;
+    font-size: @fs-sm;
+
+    &.jinyu-oauth-qq { background: #12b7f5; }
+    &.jinyu-oauth-github { background: #24292e; }
+    &.jinyu-oauth-gitee { background: #c71d23; }
+    &:hover { opacity: .9; color: #fff; }
+}
+
+/* ---- 未登录门禁 ---- */
+.jinyu-user-gate {
+    text-align: center;
+    padding: @s-12 @s-4;
+    background: @bg-card;
+    border-radius: @radius-lg;
+    box-shadow: @shadow-card;
+
+    i { font-size: 40px; color: @text-3; }
+    h2 { margin: @s-3 0 @s-2; }
+    p { color: @text-3; margin-bottom: @s-5; }
+}
+
+/* ---- 用户中心布局 ---- */
+.jinyu-user-center {
+    display: grid;
+    /* 260px 固定 + 内容列：内容列必须 minmax(0,1fr)，裸 1fr 的最小值是内容宽度，长标题/长 URL 会把整栏撑破视口 */
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: @s-6;
+    align-items: start;
+}
+
+.jinyu-user-side {
+    position: sticky;
+    top: 84px;
+    background: @bg-card;
+    border-radius: @radius-lg;
+    box-shadow: @shadow-card;
+    padding: @s-5;
+}
+.jinyu-user-card { text-align: center; padding-bottom: @s-4; border-bottom: 1px solid @border; }
+.jinyu-user-card-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid @bg-card;
+    box-shadow: 0 0 0 2px @primary-light;
+}
+.jinyu-user-card-name { font-size: @fs-md; margin: @s-3 0 @s-1; }
+.jinyu-user-card-meta { color: @text-3; font-size: @fs-sm; }
+
+.jinyu-user-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: @s-2;
+    list-style: none;
+    margin: @s-4 0;
+    padding: 0;
+
+    li {
+        text-align: center;
+        background: @bg-subtle;
+        border-radius: @radius-md;
+        padding: @s-3 0;
+
+        b { display: block; font-size: @fs-lg; color: @text-1; }
+        span { font-size: @fs-xs; color: @text-3; }
+    }
+}
+
+.jinyu-user-nav { display: flex; flex-direction: column; gap: 2px; }
+.jinyu-user-nav-item {
+    display: flex;
+    align-items: center;
+    gap: @s-3;
+    padding: @s-3 @s-3;
+    border-radius: @radius-md;
+    color: @text-2;
+    text-decoration: none;
+    font-size: @fs-base;
+    transition: background @transition, color @transition;
+
+    i { width: 18px; text-align: center; }
+    &:hover { background: @bg-subtle; color: @text-1; }
+    &.is-active { background: @primary-light; color: @primary-dark; font-weight: 600; }
+}
+.jinyu-user-nav-logout:hover { color: @danger; }
+
+.jinyu-user-main {
+    background: @bg-card;
+    border-radius: @radius-lg;
+    box-shadow: @shadow-card;
+    padding: @s-6;
+    min-height: 420px;
+}
+.jinyu-user-title { font-size: @fs-xl; margin: 0 0 @s-4; }
+.jinyu-user-subtitle { font-size: @fs-md; margin: @s-6 0 @s-3; padding-top: @s-4; border-top: 1px solid @border; }
+.jinyu-user-welcome { color: @text-2; margin-bottom: @s-5; }
+
+.jinyu-user-summary {
+    background: @bg-subtle;
+    border-radius: @radius-md;
+    padding: @s-2 @s-5;
+    margin-bottom: @s-5;
+}
+.jinyu-user-summary-row {
+    display: flex;
+    align-items: center;
+    gap: @s-4;
+    padding: @s-3 0;
+
+    &:not(:last-child) { border-bottom: 1px solid @border; }
+}
+.jinyu-user-summary-label { color: @text-3; font-size: @fs-sm; width: 42px; flex-shrink: 0; }
+.jinyu-user-summary-value { color: @text-1; font-size: @fs-sm; word-break: break-all; }
+
+.jinyu-user-actions { display: flex; flex-wrap: wrap; gap: @s-3; margin-bottom: @s-6; }
+
+.jinyu-user-post-list { list-style: none; margin: 0; padding: 0; }
+.jinyu-user-post-item {
+    display: flex;
+    align-items: center;
+    gap: @s-3;
+    padding: @s-3 0;
+    border-bottom: 1px solid @border;
+
+    &:last-child { border-bottom: 0; }
+}
+.jinyu-user-post-title { flex: 1; color: @text-1; text-decoration: none; }
+.jinyu-user-post-title:hover { color: @primary; }
+.jinyu-user-post-date { font-size: @fs-xs; color: @text-3; }
+.jinyu-post-del {
+    height: 32px;
+    padding: 0 @s-3;
+    font-size: @fs-sm;
+    margin-left: auto;
+    flex-shrink: 0;
+
+    &:hover { color: @danger; border-color: @danger; }
+}
+.jinyu-user-post-status {
+    font-size: @fs-xs;
+    padding: 1px @s-2;
+    border-radius: @radius-pill;
+    background: @bg-subtle;
+    color: @text-2;
+    &.jinyu-status-publish { color: @success; background: rgba(0, 183, 74, .1); }
+    &.jinyu-status-pending, &.jinyu-status-draft { color: @warning; background: rgba(252, 101, 31, .1); }
+}
+
+.jinyu-user-comments { display: flex; flex-direction: column; gap: @s-3; }
+.jinyu-comment-item {
+    padding: @s-3 @s-4;
+    background: @bg-subtle;
+    border-radius: @radius-md;
+}
+.jinyu-comment-content { margin: 0 0 @s-2; color: @text-1; font-size: @fs-sm; }
+.jinyu-comment-meta { margin: 0; font-size: @fs-xs; color: @text-3; }
+
+/* ---- 资料 / 投稿表单 ---- */
+.jinyu-profile-form, .jinyu-submit-form { display: flex; flex-direction: column; gap: @s-3; width: 100%; }
+.jinyu-profile-form textarea, .jinyu-submit-form textarea {
+    border: 1px solid @border;
+    border-radius: @radius-md;
+    background: @bg-input;
+    color: @text-1;
+    padding: @s-3;
+    font-size: @fs-base;
+    font-family: inherit;
+    outline: none;
+    resize: vertical;
+
+    &:focus { border-color: @primary; }
+    &.is-error { border-color: @danger; }
+}
+
+/* 投稿成功（审核中）面板 */
+.jinyu-submit-success {
+    text-align: center;
+    padding: @s-8 @s-4;
+    background: @bg-subtle;
+    border: 1px solid @border;
+    border-radius: @radius-lg;
+
+    > i { font-size: 44px; color: @success; display: block; }
+    h3 { margin: @s-3 0 @s-2; font-size: @fs-lg; color: @text-1; }
+    p { margin: 0 0 @s-5; color: @text-2; font-size: @fs-sm; line-height: 1.7; }
+    &-actions { display: flex; gap: @s-3; justify-content: center; flex-wrap: wrap; }
+}
+.jinyu-avatar-edit { display: flex; gap: @s-4; align-items: center; margin-bottom: @s-2; }
+.jinyu-avatar-preview {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: @bg-subtle;
+    display: block;
+}
+.jinyu-avatar-side {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: @s-2;
+}
+.jinyu-avatar-side .jinyu-field-hint { margin: 0; }
+.jinyu-avatar-pick { cursor: pointer; }
+.jinyu-avatar-url { width: 100%; margin-top: 0; }
+
+.jinyu-bind-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: @s-2; }
+.jinyu-bind-list li {
+    display: flex;
+    align-items: center;
+    gap: @s-3;
+    padding: @s-3 @s-4;
+    background: @bg-subtle;
+    border-radius: @radius-md;
+}
+.jinyu-bind-on { margin-left: auto; font-size: @fs-xs; color: @success; }
+
+/* ---- 头部用户菜单 ---- */
+.jinyu-user-menu { position: relative; }
+.jinyu-user-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: @s-2;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    padding: 0 @s-2;
+    height: 36px;
+    border-radius: @radius-pill;
+    color: @text-1;
+    vertical-align: middle;
+    transition: background .15s ease, transform .12s ease;
+
+    /* 按下：轻微缩放，给出点击触感反馈 */
+    &:active { transform: scale(.94); }
+    /* 展开态：仅留极淡底色（不再用描边线，用户反馈线条丑），与下拉呼应 */
+    &[aria-expanded="true"] { background: @bg-subtle; }
+}
+.jinyu-user-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: @bg-subtle;
+    display: inline-block;
+    vertical-align: middle;
+    transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+}
+/* 悬停动效：头像柔和放大 + 光晕，明确提示「可点击展开菜单」 */
+.jinyu-user-btn:hover .jinyu-user-avatar {
+    transform: scale(1.16);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, .22);
+    filter: brightness(1.04);
+}
+.jinyu-user-drop {
+    position: absolute;
+    top: calc(100% + @s-2);
+    right: 0;
+    min-width: 180px;
+    background: @bg-card;
+    border: 1px solid @border;
+    border-radius: @radius-md;
+    box-shadow: @shadow-float;
+    padding: @s-2;
+    z-index: @z-header;
+
+    &[hidden] { display: none; }
+    /* 展开时接上已定义的入场动画，避免「瞬间弹出」的突兀感 */
+    &:not([hidden]) { animation: jinyu-pop-in .18s ease both; }
+    @media (prefers-reduced-motion: reduce) {
+        &:not([hidden]) { animation: none; }
+    }
+    a {
+        display: flex;
+        align-items: center;
+        gap: @s-2;
+        padding: @s-2 @s-3;
+        border-radius: @radius-sm;
+        color: @text-2;
+        text-decoration: none;
+        font-size: @fs-sm;
+
+        i {
+            width: 20px;
+            min-width: 20px;
+            text-align: center;
+            line-height: 1;
+        }
+
+        &:hover { background: @bg-subtle; color: @text-1; }
+    }
+}
+.jinyu-login-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 36px;
+    padding: 0 @s-4;
+    border: 1px solid @primary;
+    border-radius: @radius-pill;
+    background: transparent;
+    color: @primary;
+    cursor: pointer;
+    font-size: @fs-sm;
+    line-height: 1;
+    vertical-align: middle;
+
+    &:hover { background: @primary; color: @text-invert; }
+}
+
+@keyframes jinyu-pop-in {
+    from { opacity: 0; transform: translateY(8px) scale(.98); }
+    to   { opacity: 1; transform: none; }
+}
+
+/* ---- 响应式 ---- */
+@media (max-width: 768px) {
+    .jinyu-user-center { grid-template-columns: minmax(0, 1fr); }
+    .jinyu-user-side { position: static; }
+    .jinyu-grid-cols-2 { grid-template-columns: minmax(0, 1fr); }
+}

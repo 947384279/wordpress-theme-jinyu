@@ -1,0 +1,236 @@
+/* ==========================================================================
+   金玉主题 · 销售与变现（前端触点）
+   悬浮 CTA 条 / 侧边悬浮客服 / 文末引导卡 / 邮件订阅 / 广告角标
+   仅依赖 tokens.less → var.less 的 CSS 变量，天然适配明暗主题。
+   ========================================================================== */
+
+/* ── 全站悬浮 CTA 条 ── */
+.jinyu-cta-bar {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%) translateY(120%);
+  display: flex;
+  align-items: center;
+  gap: @s-4;
+  max-width: calc(100vw - 32px);
+  padding: @s-3 @s-4;
+  background: @bg-card;
+  border: 1px solid @border;
+  border-radius: @radius-pill;
+  box-shadow: @shadow-float;
+  z-index: @z-back-top;
+  opacity: 0;
+  transition: transform .35s @ease-out-expo, opacity .35s @ease-std;
+}
+.jinyu-cta-bar[hidden] { display: none; }
+.jinyu-cta-bar.is-visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+.jinyu-cta-text {
+  color: @text-1;
+  font-size: @fs-base;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.jinyu-cta-link {
+  flex: none;
+  padding: @s-2 @s-5;
+  background: @primary;
+  color: @text-invert;
+  border-radius: @radius-pill;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background .2s @ease-std, transform .15s @ease-std;
+}
+.jinyu-cta-link:hover { background: @primary-dark; transform: translateY(-1px); }
+.jinyu-cta-close {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  color: @text-3;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 50%;
+}
+.jinyu-cta-close:hover { color: @text-1; background: @bg-subtle; }
+
+/* ── 侧边悬浮客服 / 微信 ── */
+.jinyu-float-contact {
+  position: fixed;
+  right: 20px;
+  bottom: 88px;
+  z-index: @z-back-top;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: @s-2;
+}
+.jinyu-float-btn {
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 50%;
+  background: @primary;
+  color: @text-invert;
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow: @shadow-float;
+  transition: transform .15s @ease-std, background .2s @ease-std;
+}
+.jinyu-float-btn:hover { background: @primary-dark; transform: scale(1.06); }
+.jinyu-float-pop {
+  background: @bg-card;
+  border: 1px solid @border;
+  border-radius: @radius-md;
+  box-shadow: @shadow-float;
+  padding: @s-3;
+  text-align: center;
+}
+.jinyu-float-pop[hidden] { display: none; }
+.jinyu-float-title {
+  margin: 0 0 @s-2;
+  color: @text-1;
+  font-size: @fs-sm;
+  font-weight: 600;
+}
+.jinyu-float-img {
+  display: block;
+  max-width: 180px;
+  height: auto;
+  border-radius: @radius-sm;
+}
+
+/* ── 文末统一引导卡 ── */
+.jinyu-post-guide {
+  margin: @s-8 0;
+  padding: @s-6;
+  background: linear-gradient(135deg, @primary-light, @bg-subtle);
+  border: 1px solid @border;
+  border-left: 4px solid @primary;
+  border-radius: @radius-md;
+}
+.jinyu-post-guide-title {
+  margin: 0 0 @s-2;
+  color: @text-1;
+  font-size: @fs-lg;
+}
+.jinyu-post-guide-text {
+  margin: 0 0 @s-4;
+  color: @text-2;
+  font-size: @fs-base;
+  line-height: 1.7;
+}
+.jinyu-post-guide-btn {
+  display: inline-block;
+  padding: @s-2 @s-6;
+  background: @primary;
+  color: @text-invert;
+  border-radius: @radius-pill;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background .2s @ease-std, transform .15s @ease-std;
+}
+.jinyu-post-guide-btn:hover { background: @primary-dark; transform: translateY(-1px); }
+
+/* ── 邮件订阅表单 ── */
+.jinyu-subscribe {
+  padding: @s-5;
+  background: @bg-subtle;
+  border: 1px solid @border;
+  border-radius: @radius-md;
+}
+.jinyu-subscribe-title {
+  margin: 0 0 @s-2;
+  color: @text-1;
+  font-size: @fs-md;
+}
+.jinyu-subscribe-desc {
+  margin: 0 0 @s-3;
+  color: @text-2;
+  font-size: @fs-sm;
+}
+.jinyu-subscribe-form {
+  display: flex;
+  gap: @s-2;
+  flex-wrap: wrap;
+}
+.jinyu-subscribe-input {
+  flex: 1 1 200px;
+  min-width: 0;
+  padding: @s-2 @s-3;
+  background: @bg-input;
+  border: 1px solid @border-strong;
+  border-radius: @radius-sm;
+  color: @text-1;
+  font-size: @fs-base;
+}
+.jinyu-subscribe-input:focus {
+  outline: none;
+  border-color: @primary;
+  box-shadow: 0 0 0 3px rgba(var(--jinyu-c-primary-rgb), .18);
+}
+.jinyu-subscribe-btn {
+  flex: none;
+  padding: @s-2 @s-5;
+  background: @primary;
+  color: @text-invert;
+  border: none;
+  border-radius: @radius-sm;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .2s @ease-std;
+}
+.jinyu-subscribe-btn:hover { background: @primary-dark; }
+.jinyu-subscribe-msg {
+  margin: @s-3 0 0;
+  font-size: @fs-sm;
+}
+.jinyu-subscribe-msg[data-ok='1'] { color: @success; }
+.jinyu-subscribe-msg[data-ok='0'] { color: @danger; }
+
+/* ── 广告位「广告」角标 ── */
+.jinyu-ad {
+  position: relative;
+}
+.jinyu-ad-badge {
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 1px 6px;
+  font-size: 11px;
+  line-height: 1.6;
+  color: @text-3;
+  background: @bg-subtle;
+  border: 1px solid @border;
+  border-radius: 0 @radius-sm 0 @radius-sm;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── 响应式 ── */
+@media (max-width: 768px) {
+  .jinyu-cta-bar {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    transform: translateY(120%);
+    max-width: none;
+    width: auto;
+    border-radius: @radius-md;
+  }
+  .jinyu-cta-bar.is-visible { transform: translateY(0); }
+  .jinyu-cta-text { font-size: @fs-sm; }
+  .jinyu-float-contact { right: 12px; bottom: 76px; }
+  .jinyu-float-img { max-width: 140px; }
+  .jinyu-post-guide { padding: @s-4; }
+  .jinyu-subscribe-form { flex-direction: column; }
+  .jinyu-subscribe-btn { width: 100%; }
+}

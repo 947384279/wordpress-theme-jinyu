@@ -1,0 +1,555 @@
+@import "var.less";
+
+/* ==========================================================================
+   正文排版 + 短代码组件
+   作用域：.jinyu-article-content（文章正文）与 .jinyu-comment-content（评论正文）
+   ========================================================================== */
+
+.jinyu-article-content {
+    /* 字号/字体可被「正文字号 / 正文字体」设置覆盖 */
+    /* 字号 = 后台「正文字号」× 阅读器实时调节（--reader-scale，由 jinyu.js 写入） */
+    font-size: calc(var(--content-font-size, @fs-base) * var(--reader-scale, 1));
+    font-family: var(--content-font-family, inherit);
+    line-height: 1.9;
+    color: @text-2;
+    word-wrap: break-word;
+
+    /* ---- 标题 ---- */
+    h1, h2, h3, h4, h5, h6 {
+        color: @text-1;
+        font-weight: 700;
+        line-height: 1.4;
+        margin: @s-10 0 @s-4;
+        scroll-margin-top: 80px;
+
+        &:first-child { margin-top: 0; }
+    }
+    h1 { font-size: 26px; }
+    h2 {
+        font-size: @fs-xl;
+        padding-left: @s-3;
+        border-left: 3px solid @primary;
+    }
+    h3 { font-size: @fs-lg; }
+    h4 { font-size: @fs-md; }
+    h5, h6 { font-size: @fs-base; color: @text-2; }
+
+    /* ---- 段落与分隔 ---- */
+    p { margin: 0 0 @s-4; &:last-child { margin-bottom: 0; } }
+
+    hr {
+        height: 1px;
+        margin: @s-10 0;
+        border: 0;
+        background: @border;
+    }
+
+    /* ---- 强调 ---- */
+    strong, b { color: @text-1; font-weight: 600; }
+
+    mark {
+        background: rgba(var(--jinyu-c-primary-rgb), .18);
+        color: @text-1;
+        padding: 0 4px;
+        border-radius: 3px;
+    }
+
+    kbd {
+        display: inline-block;
+        padding: 1px 6px;
+        font-family: "JetBrains Mono", Menlo, Consolas, monospace;
+        font-size: @fs-xs;
+        color: @text-1;
+        background: @bg-subtle;
+        border: 1px solid @border-strong;
+        border-bottom-width: 2px;
+        border-radius: 4px;
+    }
+
+    small { font-size: @fs-sm; color: @text-3; }
+
+    /* ---- 链接 ---- */
+    /* :not(.jinyu-btn)：按钮/下载链接自绘配色（彩底白字），不吃正文链接色——
+       否则 .jinyu-article-content a 的 @primary 文字色以更高优先级压过 .jinyu-btn 的白字，
+       蓝字配蓝底 → 按钮渲染成空色块（线上 4417 实测） */
+    a:not(.jinyu-btn) {
+        color: @primary;
+        border-bottom: 1px solid transparent;
+        &:hover { border-bottom-color: @primary; }
+    }
+
+    /* 外链图标（含按钮，跟随按钮自身文字色） */
+    a[target="_blank"]::after {
+        content: '\f08e';
+        font-family: "Font Awesome 6 Free";
+        font-weight: 900;
+        font-size: .7em;
+        margin-left: 4px;
+        vertical-align: super;
+        opacity: .7;
+    }
+
+    /* ---- 列表 ---- */
+    ul, ol {
+        margin: 0 0 @s-4;
+        padding-left: 1.6em;
+
+        li { margin-bottom: @s-2; &::marker { color: @primary; } }
+        ul, ol { margin: @s-2 0 0; }
+    }
+
+    /* 任务列表 */
+    li.task-list-item,
+    input[type="checkbox"] { list-style: none; }
+
+    ul:has(> li > input[type="checkbox"]) {
+        list-style: none;
+        padding-left: 0;
+
+        li { display: flex; align-items: flex-start; gap: @s-2; }
+        input[type="checkbox"] {
+            margin-top: .5em;
+            accent-color: @primary;
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
+    }
+
+    /* 定义列表 */
+    dl { margin: 0 0 @s-4; }
+    dt { font-weight: 600; color: @text-1; margin-top: @s-3; }
+    dd { margin: @s-1 0 0; padding-left: @s-4; color: @text-3; }
+
+    /* ---- 引用 ---- */
+    blockquote {
+        margin: @s-5 0;
+        padding: @s-4 @s-5;
+        border-left: 4px solid @primary;
+        border-radius: 0 @radius-sm @radius-sm 0;
+        background: @primary-light;
+        color: @text-2;
+
+        p:last-child { margin-bottom: 0; }
+        cite {
+            display: block;
+            margin-top: @s-2;
+            font-size: @fs-sm;
+            font-style: normal;
+            color: @text-3;
+            &::before { content: '— '; }
+        }
+    }
+
+    /* ---- 代码 ---- */
+    /* 行内 code：排除 pre 内的 code，后者交由 highlight.js 主题接管配色 */
+    :not(pre) > code {
+        padding: 2px 6px;
+        margin: 0 2px;
+        font-family: "JetBrains Mono", Menlo, Consolas, monospace;
+        font-size: .9em;
+        color: @primary;
+        background: rgba(var(--jinyu-c-primary-rgb), .1);
+        border-radius: 4px;
+    }
+
+    pre {
+        margin: @s-5 0;
+        padding: 0;
+        background: transparent;
+        border-radius: @radius-md;
+        overflow-x: auto;
+        font-size: @fs-sm;
+        line-height: 1.7;
+        -webkit-overflow-scrolling: touch;
+
+        code {
+            display: block;
+            padding: 0;
+            margin: 0;
+            font-size: inherit;
+            border-radius: @radius-md;
+            white-space: pre;
+        }
+
+        /* highlight.js 接管代码块配色；此处仅补圆角，不覆盖背景/前景 */
+        code.hljs {
+            border-radius: @radius-md;
+        }
+    }
+
+    /* 代码块容器（JS 注入） */
+    .jinyu-code-wrap {
+        position: relative;
+        margin: @s-5 0;
+
+        > pre {
+            margin: 0;
+            border-radius: 0 0 @radius-md @radius-md;
+        }
+    }
+
+    .jinyu-code-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: @s-2 @s-4;
+        background: @bg-code-bar;
+        border-radius: @radius-md @radius-md 0 0;
+        font-size: @fs-xs;
+        color: @text-4;
+    }
+    .jinyu-code-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .jinyu-code-dot.r { background: #ff5f56; }
+    .jinyu-code-dot.y { background: #ffbd2e; }
+    .jinyu-code-dot.g { background: #27c93f; }
+
+    .jinyu-code-copy {
+        position: absolute;
+        top: @s-2;
+        right: @s-3;
+        padding: 2px @s-3;
+        background: rgba(255, 255, 255, .1);
+        color: rgba(255, 255, 255, .7);
+        border: 0;
+        border-radius: @radius-sm;
+        font-size: @fs-xs;
+        cursor: pointer;
+        transition: all @transition-fast;
+
+        &:hover { background: rgba(255, 255, 255, .2); color: #fff; }
+        &.jinyu-copied { color: #27c93f; }
+    }
+
+    /* ---- 表格 ---- */
+    table {
+        width: 100%;
+        margin: @s-5 0;
+        border-collapse: collapse;
+        font-size: @fs-sm;
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+
+        th, td {
+            padding: @s-3 @s-4;
+            border: 1px solid @border;
+            text-align: left;
+            white-space: nowrap;
+        }
+        thead th {
+            background: @bg-subtle;
+            color: @text-1;
+            font-weight: 600;
+        }
+        tbody tr:nth-child(even) { background: @bg-subtle; }
+        tbody tr:hover { background: @primary-light; }
+    }
+
+    /* ---- 图片 ---- */
+    img {
+        border-radius: @radius-sm;
+        margin: @s-4 auto;
+        height: auto;
+    }
+
+    figure {
+        margin: @s-5 0;
+        text-align: center;
+
+        img { margin: 0 auto; }
+
+        figcaption {
+            margin-top: @s-2;
+            font-size: @fs-sm;
+            color: @text-3;
+            text-align: center;
+        }
+    }
+
+    .alignleft  { float: left;  margin: 0 @s-4 @s-3 0; }
+    .alignright { float: right; margin: 0 0 @s-3 @s-4; }
+    .aligncenter { display: block; margin: @s-4 auto; }
+    .wp-caption-text { font-size: @fs-sm; color: @text-3; text-align: center; }
+
+    /* ---- 折叠面板 ---- */
+    details {
+        margin: @s-5 0;
+        border: 1px solid @border;
+        border-radius: @radius-md;
+        overflow: hidden;
+
+        summary {
+            padding: @s-3 @s-4;
+            background: @bg-subtle;
+            color: @text-1;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+        }
+        > *:not(summary) { padding: 0 @s-4; }
+        > p { padding: @s-3 @s-4; }
+        &[open] summary { border-bottom: 1px solid @border; }
+    }
+
+    /* ---- 嵌入内容 ---- */
+    iframe, video {
+        max-width: 100%;
+        border-radius: @radius-sm;
+        margin: @s-4 auto;
+    }
+
+    .wp-block-embed { margin: @s-5 0; }
+
+    /* 16:9 自适应容器 */
+    .jinyu-embed {
+        position: relative;
+        width: 100%;
+        padding-top: 56.25%;
+        margin: @s-5 0;
+        border-radius: @radius-sm;
+        overflow: hidden;
+        background: @bg-subtle;
+
+        iframe, video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            border: 0;
+            border-radius: 0;
+        }
+    }
+
+    &::after { content: ''; display: block; clear: both; }
+}
+
+/* ==========================================================================
+   短代码组件
+   ========================================================================== */
+
+/* 提示框 */
+.jinyu-tip {
+    display: flex;
+    gap: @s-3;
+    margin: @s-5 0;
+    padding: @s-4 @s-5;
+    border-left: 4px solid @info;
+    border-radius: 0 @radius-md @radius-md 0;
+    background: @bg-subtle;
+
+    .jinyu-tip-title { font-weight: 700; color: @text-1; margin-bottom: @s-1; }
+    .jinyu-tip-body { flex: 1; min-width: 0; font-size: @fs-sm; }
+    p:last-child { margin-bottom: 0; }
+
+    &.jinyu-tip-info    { border-left-color: @info;    background: rgba(23, 162, 184, .08); }
+    &.jinyu-tip-success { border-left-color: @success; background: rgba(0, 183, 74, .08); }
+    &.jinyu-tip-warning { border-left-color: @warning; background: rgba(252, 101, 31, .08); }
+    &.jinyu-tip-danger  { border-left-color: @danger;  background: rgba(220, 53, 69, .08); }
+}
+
+/* 按钮 */
+.jinyu-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: @s-2;
+    padding: @s-2 @s-5;
+    border: 0;
+    border-radius: @radius-pill;
+    background: @primary;
+    color: @text-invert;
+    font-size: @fs-sm;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all @transition-fast;
+
+    &:hover { background: @primary-dark; color: @text-invert; transform: translateY(-1px); }
+    i { font-size: 14px; }
+}
+
+/* 按钮颜色变体（短代码 [jinyu_btn type="..."] 对齐 Puock btn-* 系列） */
+.jinyu-btn-success { background: @success; &:hover { background: @success; filter: brightness(.93); } }
+.jinyu-btn-warning { background: @warning; &:hover { background: @warning; filter: brightness(.93); } }
+.jinyu-btn-danger  { background: @danger;  &:hover { background: @danger;  filter: brightness(.93); } }
+.jinyu-btn-info    { background: @info;    &:hover { background: @info;    filter: brightness(.93); } }
+.jinyu-btn-dark    { background: @text-1;  &:hover { background: @text-1;  filter: brightness(.93); } }
+.jinyu-btn-ghost {
+    background: transparent; color: @primary; border: 1px solid @primary;
+    &:hover { background: @primary; color: @text-invert; transform: translateY(-1px); }
+}
+
+/* 徽章 */
+.jinyu-badge {
+    display: inline-block;
+    padding: 1px 8px;
+    margin: 0 2px;
+    border-radius: @radius-sm;
+    background: @primary;
+    color: @text-invert;
+    font-size: @fs-xs;
+    font-weight: 600;
+    vertical-align: middle;
+
+    &.jinyu-badge-success { background: @success; }
+    &.jinyu-badge-warning { background: @warning; }
+    &.jinyu-badge-danger  { background: @danger; }
+    &.jinyu-badge-info    { background: @info; }
+    &.jinyu-badge-grey    { background: @text-4; }
+}
+
+/* 进度条 */
+.jinyu-progress-wrap { margin: @s-4 0; }
+.jinyu-progress-label { display: block; margin-bottom: @s-2; font-size: @fs-sm; color: @text-2; }
+
+.jinyu-progress-bar {
+    height: 8px;
+    border-radius: @radius-pill;
+    background: @bg-subtle;
+    overflow: hidden;
+
+    .jinyu-progress-fill {
+        height: 100%;
+        border-radius: inherit;
+        background: @primary;
+        transition: width .6s @ease-out-expo;
+
+        &.jinyu-progress-success { background: @success; }
+        &.jinyu-progress-warning { background: @warning; }
+        &.jinyu-progress-danger  { background: @danger; }
+        &.jinyu-progress-info    { background: @info; }
+    }
+}
+
+/* 折叠面板（原生 <details> 渐进增强：无 JS 也能展开，箭头/显隐全靠 [open]） */
+.jinyu-collapse {
+    margin: @s-5 0;
+    border: 1px solid @border;
+    border-radius: @radius-md;
+    overflow: hidden;
+
+    .jinyu-collapse-title {
+        padding: @s-3 @s-5;
+        background: @bg-subtle;
+        color: @text-1;
+        font-weight: 600;
+        cursor: pointer;
+        user-select: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        list-style: none;                 /* 隐藏原生 disclosure 三角，改用 FA 箭头 */
+        &::-webkit-details-marker { display: none; }
+
+        &::after {
+            content: '\f107';
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            transition: transform @transition-fast;
+        }
+        .jinyu-collapse[open] &::after { transform: rotate(180deg); }
+    }
+    .jinyu-collapse-body {
+        padding: @s-4 @s-5;
+        font-size: @fs-sm;
+        display: none;
+    }
+    &[open] .jinyu-collapse-body { display: block; }
+}
+
+/* 选项卡 */
+.jinyu-tabs {
+    margin: @s-5 0;
+    border: 1px solid @border;
+    border-radius: @radius-md;
+    overflow: hidden;
+}
+.jinyu-tabs-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    background: @bg-subtle;
+    border-bottom: 1px solid @border;
+
+    .jinyu-tab-btn {
+        padding: @s-3 @s-5;
+        border: 0;
+        background: transparent;
+        color: @text-3;
+        font-size: @fs-sm;
+        font-weight: 500;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: all @transition-fast;
+
+        &:hover { color: @primary; }
+
+        &.jinyu-tab-active {
+            color: @primary;
+            border-bottom-color: @primary;
+            background: @bg-card;
+        }
+    }
+}
+.jinyu-tabs-content { padding: @s-5; }
+
+.jinyu-tab-pane { display: none; &.jinyu-tab-active { display: block; } }
+
+/* 图库 */
+.jinyu-gallery {
+    display: grid;
+    gap: @s-3;
+    margin: @s-5 0;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    &.jinyu-gallery-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    &.jinyu-gallery-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    &.jinyu-gallery-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    &.jinyu-gallery-cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+
+    .jinyu-gallery-item {
+        position: relative;
+        aspect-ratio: 1;
+        border-radius: @radius-sm;
+        overflow: hidden;
+        background: @bg-subtle;
+
+        img { width: 100%; height: 100%; object-fit: cover; margin: 0; transition: transform .4s @ease-out-expo; }
+        &:hover img { transform: scale(1.06); }
+    }
+}
+
+/* GitHub 卡片 */
+.jinyu-github-card {
+    display: flex;
+    align-items: center;
+    gap: @s-3;
+    margin: @s-5 0;
+    padding: @s-4 @s-5;
+    border: 1px solid @border;
+    border-radius: @radius-md;
+    background: @bg-subtle;
+    transition: all @transition-fast;
+
+    &:hover { border-color: @primary; transform: translateY(-2px); }
+    .jinyu-github-icon { font-size: 24px; color: @text-1; }
+    .jinyu-github-name { font-weight: 600; color: @text-1; }
+}
+
+/* 登录/评论可见 */
+.jinyu-login-hide,
+.jinyu-comment-hide {
+    margin: @s-4 0;
+    padding: @s-4 @s-5;
+    border: 1px dashed @border-strong;
+    border-radius: @radius-md;
+    background: @bg-subtle;
+    text-align: center;
+    font-size: @fs-sm;
+    color: @text-3;
+
+    .jinyu-login-hide-text { display: block; }
+}
+
+.jinyu-download-type,
+.jinyu-download-pwd { font-size: @fs-xs; color: @text-3; margin-left: @s-2; }

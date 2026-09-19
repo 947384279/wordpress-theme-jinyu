@@ -1,0 +1,52 @@
+# ============================================================
+# jinyu 主题 - Git 忽略规则
+# 构建产物 / 依赖 / 打包文件不应进入版本库，避免漂移
+# ============================================================
+
+# --- 构建产物：dist 已编译并随仓库发布，保证 git clone 即可安装（改源码后须重新 gulp build）---
+# 若只想跟踪源码、由 CI 构建 dist，可改回 /assets/dist/
+
+# --- Node 依赖 ---
+/node_modules/
+npm-debug.log*
+yarn-error.log
+
+# --- 打包 / 归档 ---
+*.zip
+*.tar.gz
+
+# --- 私有更新清单（指向私有更新主机 update.qicaiyun.top，非主题源；线上由该主机托管）---
+jinyu-update.json
+
+# --- 内部工作笔记（含服务器路径/排期/凭证提示，非主题源，严禁公开）---
+memory/
+
+# --- 作者私有运营文档（SEO/排期/选题矩阵，非主题源）---
+博客流量增长方案.md
+定时发布排期表.md
+站长平台收录优化清单.md
+长尾选题矩阵.md
+
+# --- 操作系统 / 编辑器产生的临时文件 ---
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.swp
+*~
+
+# --- 本地开发环境快照（.workbuddy / .trae 含凭证与签名私钥，严禁提交）---
+# 整个目录忽略：含 FTP 明文密码(ftp-config.json)、WP 应用密码(wp-creds.json)、主题签名私钥(jinyu-update.key)
+.workbuddy/
+.trae/
+
+# --- 更新/上报后端真实密钥（含 DB 密码与 HMAC 密钥，禁止提交）---
+# 注意：后端已从本仓库独立，现位于同级目录 C:\Users\Administrator\Desktop\update-server\
+# 其 config.local.php 的忽略规则见该目录自己的 .gitignore
+
+# --- 发布过程中间产物（介绍页预览 / 文章草稿 / 截图 / 临时脚本，非主题源）---
+jinyu-theme-intro.html
+jinyu-theme-post.html
+jinyu-intro-assets/
+.shot-tools/
+_tmp_mem.py

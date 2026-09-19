@@ -1,0 +1,29 @@
+// ============================================================================
+// 自托管字体
+// 作用：拉丁字符（英文/数字/标点）统一走 Noto Sans SC 的 latin 子集，
+//      跨平台字形一致、消除 CLS；中文回退到系统字体（PingFang SC / 微软雅黑）。
+// 注意：CJK 全量字形体积庞大（数 MB），未随包发布。若要中文也自托管，
+//      把「思源黑体 / Noto Sans SC 可变字体」subset 后的 woff2 放到
+//      assets/fonts/jinyu-text/jinyu-text-cjk.woff2，
+//      并取消下方「CJK（可选）」注释块即可（font-display:swap 保证不阻塞首屏）。
+// ============================================================================
+
+@font-face {
+    font-family: "Jinyu Sans";
+    font-style: normal;
+    font-weight: 400 700;
+    font-display: swap;
+    src: url("../fonts/jinyu-text/jinyu-text-latin.woff2") format("woff2");
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+        U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+        U+FEFF, U+FFFD;
+}
+
+// CJK（可选）：放入 jinyu-text-cjk.woff2 后取消注释
+// @font-face {
+//     font-family: "Jinyu Sans";
+//     font-style: normal;
+//     font-weight: 400 700;
+//     font-display: swap;
+//     src: url("../fonts/jinyu-text/jinyu-text-cjk.woff2") format("woff2");
+// }

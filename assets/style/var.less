@@ -1,0 +1,103 @@
+// ============================================================================
+// 金玉主题 · Less 变量层
+//
+// 颜色类变量一律指向 tokens.less 定义的 CSS 自定义属性，
+// 因此所有组件样式天然支持明暗切换，禁止再单独编写 dark 覆写块。
+// 尺寸 / 字体 / 动效为编译期常量，不随主题变化。
+// ============================================================================
+
+// ---- 品牌与语义色 ----
+@primary:        var(--jinyu-c-primary);
+@primary-dark:   var(--jinyu-c-primary-dark);
+@primary-light:  var(--jinyu-c-primary-light);
+@primary-rgb:    var(--jinyu-c-primary-rgb);
+@success:        var(--jinyu-c-success);
+@warning:        var(--jinyu-c-warning);
+@danger:         var(--jinyu-c-danger);
+@info:           var(--jinyu-c-info);
+
+// ---- 背景 ----
+@bg-body:        var(--jinyu-c-bg);
+@bg-card:        var(--jinyu-c-bg-card);
+@bg-subtle:      var(--jinyu-c-bg-subtle);
+@bg-input:       var(--jinyu-c-bg-input);
+@bg-code:        var(--jinyu-c-bg-code);
+@bg-code-bar:    var(--jinyu-c-bg-code-bar);
+@bg-header:      var(--jinyu-c-bg-header);
+@bg-footer:      var(--jinyu-c-bg-footer);
+@bg-mask:        var(--jinyu-c-bg-mask);
+
+// ---- 文本 ----
+@text-1:         var(--jinyu-c-text-1);
+@text-2:         var(--jinyu-c-text-2);
+@text-3:         var(--jinyu-c-text-3);
+@text-4:         var(--jinyu-c-text-4);
+@text-invert:    var(--jinyu-c-text-invert);
+@text-footer:    var(--jinyu-c-text-footer);
+@text-footer-strong: var(--jinyu-c-text-footer-strong);
+
+// ---- 边框 ----
+@border:         var(--jinyu-c-border);
+@border-strong:  var(--jinyu-c-border-strong);
+@border-footer:  var(--jinyu-c-border-footer);
+
+// ---- 阴影 ----
+@shadow-card:    var(--jinyu-shadow-card);
+@shadow-hover:   var(--jinyu-shadow-hover);
+@shadow-float:   var(--jinyu-shadow-float);
+@shadow-header:  var(--jinyu-shadow-header);
+
+// ---- 字号 ----
+@fs-xs:          12px;
+@fs-sm:          13px;
+@fs-base:        15px;
+@fs-md:          16px;
+@fs-lg:          18px;
+@fs-xl:          22px;
+@fs-2xl:         28px;
+
+// ---- 间距 ----
+@s-1: 4px;  @s-2: 8px;  @s-3: 12px; @s-4: 16px;
+@s-5: 20px; @s-6: 24px; @s-8: 32px; @s-10: 40px; @s-12: 48px;
+
+// ---- 圆角（会被后台「全局圆角」设置覆写） ----
+@radius-sm:      var(--jinyu-radius-sm, 6px);
+@radius-md:      var(--jinyu-radius-md, 12px);
+@radius-lg:      var(--jinyu-radius-lg, 16px);
+@radius-pill:    999px;
+
+// ---- 动效 ----
+@ease-out-expo:  cubic-bezier(.16, 1, .3, 1);
+@ease-spring:    cubic-bezier(.34, 1.56, .64, 1);
+@ease-std:       cubic-bezier(.4, 0, .2, 1);
+@transition:     .25s @ease-std;
+@transition-fast:.15s ease;
+
+// ---- 布局 ----
+@container-max:  1240px;
+@sidebar-w:      300px;
+@gap:            24px;
+@gutter:         var(--jinyu-gutter, 20px);
+
+// ---- 层级 (z-index) ----
+// 全站唯一来源：新代码禁止再写裸数字。数值沿用历史值**不做任何调整**——
+// 层叠顺序是「改一个数就可能踩坏下拉/浮层/模态」的高危区，本次只收敛写法、不改行为。
+// 放 var.less（而非 tokens.less）是因为 critical.less 只 import 了 var.less，
+// 若做成 CSS 自定义属性，首屏内联的关键 CSS 会拿不到值 → 浮层直接丢 z-index。
+@z-in-card:     2;     // 卡片内角标（.jinyu-post-sticky）
+@z-header-sub:  10;    // 头部内的子菜单下拉
+@z-header:      100;   // 粘性头部 / 头部内的下拉与用户菜单
+@z-back-top:    999;   // 回到顶部按钮
+@z-tooltip:     1001;  // 链接悬停预览卡（须压过模态遮罩之下、滚动工具之上）
+@z-mask:        1000;  // 遮罩层 / 通用模态框
+@z-overlay:     9990;  // 全屏导航浮层 / Cookie 条
+@z-decor:       9998;  // 光标光晕（纯装饰，pointer-events:none）
+@z-pinned:      9999;  // 骨架屏 / 阅读进度条 / skip-link（须压过浮层）
+@z-toast:       10000; // Toast / 浮层之上的用户下拉
+// 例外：admin.less 是后台独立 surface，不共用前台层级，仍写 5 / 40 / 9999。
+
+// ---- 断点（Less 变量不可用于 @media 条件，故以注释保持一致；**前台只允许以下 5 个值**）
+// 480 xs / 576 sm / 768 md / 1024 lg / 1240 xl
+// 例外：782 仅用于 body.admin-bar 的偏移（对齐 WP 核心的 admin bar 断点，勿作他用）。
+// admin.less 是后台独立 surface，允许自己的 900 断点。
+// ⚠️ 历史坑：侧栏在 1024 隐藏、网格却 992 才降列 → 993~1024px 区间布局半吊子，已统一到 1024。
