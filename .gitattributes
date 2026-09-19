@@ -1,0 +1,15 @@
+# 统一换行符，保证跨平台克隆一致（仓库内统一 LF）
+* text=auto eol=lf
+
+# 二进制资源不转换
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.woff2 binary
+*.woff binary
+*.ttf binary
+*.eot binary
+*.svg text
+*.zip binary
