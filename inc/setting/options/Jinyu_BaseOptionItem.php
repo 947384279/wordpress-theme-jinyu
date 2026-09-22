@@ -20,7 +20,7 @@ abstract class Jinyu_BaseOptionItem
 
     protected function all_pages(): array
     {
-        $list = [['label' => __('无', JINYU), 'value' => '']];
+        $list = [['label' => __('无', 'jinyu'), 'value' => '']];
         foreach (get_pages('sort_column=post_parent,menu_order') as $p) {
             $list[] = ['label' => $p->post_title, 'value' => $p->ID];
         }

@@ -8,9 +8,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  * XML-RPC / REST API 开关逻辑
  */
 
-if (jinyu_is_checked('close_xmlrpc')) {
-    add_filter('xmlrpc_enabled', '__return_false');
-}
+// XML-RPC 默认关闭：常见暴破与 pingback 攻击面（原 close_xmlrpc 开关，已内置常关）
+add_filter('xmlrpc_enabled', '__return_false');
 if (jinyu_is_checked('close_rest_api')) {
     // 关闭 REST API 给未登录用户的访问（WP 4.7+ 已废弃 rest_enabled 过滤器，改用 rest_authentication_errors）
     add_filter('rest_authentication_errors', function ($result) {
@@ -20,7 +19,7 @@ if (jinyu_is_checked('close_rest_api')) {
         if (!is_user_logged_in()) {
             return new WP_Error(
                 'jinyu_rest_disabled',
-                __('REST API 已对未登录用户关闭。', JINYU),
+                __('REST API 已对未登录用户关闭。', 'jinyu'),
                 ['status' => rest_authorization_required_code()]
             );
         }
@@ -33,7 +32,7 @@ if (jinyu_is_checked('close_rest_api')) {
     add_action('admin_notices', function () {
         if (!current_user_can('manage_options')) return;
         echo '<div class="notice notice-info"><p>' .
-            esc_html__('「关闭 REST API」已生效：仅未登录访客被拒绝，已登录用户在后台使用古登堡编辑器不受影响。', JINYU) .
+            esc_html__('「关闭 REST API」已生效：仅未登录访客被拒绝，已登录用户在后台使用古登堡编辑器不受影响。', 'jinyu') .
             '</p></div>';
     });
 }
@@ -100,7 +99,8 @@ if (!function_exists('jinyu_rate_limit_check')) {
 /* ==========================================================================
    安全：后台登录防暴破（按客户端 IP 限流，连续失败锁定一段时间）
    ========================================================================== */
-if (jinyu_is_checked('login_brute_force')) {
+// 登录防暴破（原 login_brute_force 开关，已内置常开）：按客户端 IP 限流，连续失败锁定一段时间
+{
     $jinyu_brute_max = 5;                       // 允许的最大连续失败次数
     $jinyu_brute_ttl = 15 * MINUTE_IN_SECONDS; // 锁定时长（秒）
     $jinyu_brute_min = (int) ceil($jinyu_brute_ttl / MINUTE_IN_SECONDS); // 用于提示文案，随 TTL 联动
@@ -120,7 +120,7 @@ if (jinyu_is_checked('login_brute_force')) {
             return new WP_Error(
                 'jinyu_brute',
                 sprintf(
-                    __('登录尝试过于频繁，已被临时锁定，请 %d 分钟后再试。', JINYU),
+                    __('登录尝试过于频繁，已被临时锁定，请 %d 分钟后再试。', 'jinyu'),
                     $jinyu_brute_min
                 )
             );

@@ -178,7 +178,8 @@ if (!function_exists('jinyu_webp_push_to_storage')) {
      */
     function jinyu_webp_push_to_storage($local_webp, $rel_webp)
     {
-        if (!jinyu_is_storage_enabled()) {
+        // 云存储由配套插件提供；未安装时跳过（主题自带本地 WebP 仍可用）
+        if (!function_exists('jinyu_is_storage_enabled') || !function_exists('jinyu_storage_config') || !jinyu_is_storage_enabled()) {
             return '';
         }
         $cfg = jinyu_storage_config();
@@ -207,9 +208,6 @@ if (!function_exists('jinyu_img_to_webp_url')) {
     function jinyu_img_to_webp_url($url)
     {
         if (empty($url) || !is_string($url)) {
-            return $url;
-        }
-        if (!jinyu_get_option('webp_enable', true)) {
             return $url;
         }
 
@@ -292,7 +290,6 @@ if (!function_exists('jinyu_img_to_webp_url')) {
 
 // 上传时同步生成 WebP 副本（是否替换输出 URL 由 jinyu_img_to_webp_url 统一决定）
 add_filter('wp_handle_upload', function($result) {
-    if (!jinyu_get_option('webp_enable', true)) return $result;
     if (empty($result['file']) || !extension_loaded('gd') || !function_exists('imagewebp')) return $result;
     if (!preg_match('/\.(jpe?g|png)$/i', $result['file'])) return $result;
 
@@ -327,7 +324,7 @@ add_filter('wp_get_attachment_image_attributes', function($attrs, $attachment, $
         $attrs['decoding'] = 'async';
     }
     // 附件图 src 同步替换为 WebP（logo、原生相册等走此处；外链/SVG 自动跳过）
-    if (jinyu_get_option('webp_enable', true) && !empty($attrs['src'])) {
+    if (!empty($attrs['src'])) {
         $w = jinyu_img_to_webp_url($attrs['src']);
         if ($w !== $attrs['src']) {
             $attrs['src'] = $w;
@@ -346,7 +343,7 @@ if (!function_exists('jinyu_webp_replace_html_imgs')) {
      * HTML 输出点复用：广告代码块、文本/块小工具、短代码等。SVG / data-uri 自动跳过。
      */
     function jinyu_webp_replace_html_imgs($html) {
-        if (empty($html) || !jinyu_get_option('webp_enable', true)) return $html;
+        if (empty($html)) return $html;
         if (!extension_loaded('gd') || !function_exists('imagewebp')) return $html;
         if (stripos($html, '<img') === false) return $html;
 

@@ -1,0 +1,57 @@
+/**
+ * 金玉主题 · RTL（从右向左书写语言）支持
+ *
+ * 覆盖阿拉伯语 / 希伯来语 / 波斯语 / 乌尔都语等 RTL 语种。
+ * WordPress 在站点语言为 RTL（is_rtl() 为真）时会自动在 style.css 之后加载本文件。
+ *
+ * 设计取向：优先用 CSS 逻辑属性（text-align:start / margin-inline / inset-inline），
+ * 使布局随书写方向自动翻转，而非写死 left/right。仅对必须显式翻转的少数定宽组件做定向修正。
+ */
+
+body {
+	direction: rtl;
+	unicode-bidi: embed;
+}
+
+/* 正文与标题：用 start 对齐，RTL 下自动变为右对齐 */
+.jinyu-content,
+.jinyu-archive-title,
+.jinyu-post-excerpt,
+.jinyu-comment-body,
+.comment-content,
+.jinyu-faq-ans,
+.jinyu-step-text {
+	text-align: start;
+}
+
+/* 网格/弹性容器：方向随书写方向自动排布，无需整体翻转 */
+[dir="rtl"] .jinyu-post-grid,
+[dir="rtl"] .jinyu-flex,
+[dir="rtl"] .jinyu-content,
+[dir="rtl"] .jinyu-main-wrap {
+	direction: rtl;
+}
+
+/* 阅读进度条等定宽悬浮组件：贴合视口同侧 */
+[dir="rtl"] .jinyu-read-progress {
+	left: auto;
+	right: 0;
+}
+
+/* 返回顶部按钮：RTL 下移到左下角 */
+[dir="rtl"] .jinyu-back-top {
+	left: 24px;
+	right: auto;
+}
+
+/* 面包屑分隔符方向修正 */
+[dir="rtl"] .jinyu-breadcrumbs .sep {
+	display: inline-block;
+	transform: scaleX(-1);
+}
+
+/* 引用块左边框在 RTL 下改到右侧 */
+[dir="rtl"] blockquote {
+	border-left: none;
+	border-right: 4px solid rgba(var(--jinyu-c-primary-rgb), 0.35);
+}

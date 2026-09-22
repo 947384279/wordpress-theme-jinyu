@@ -195,6 +195,123 @@ if (!function_exists('jinyu_perf_history')) {
 add_action('shutdown', 'jinyu_perf_sample', 20);
 
 /* ==========================================================================
+   派生指标（均值 / 峰值 / 健康分 / 资源占用）
+   ========================================================================== */
+
+if (!function_exists('jinyu_memory_limit_mb')) {
+	/**
+	 * PHP memory_limit 折算成 MB。不限（-1）或取不到时返回 0，调用方据此隐藏占用率。
+	 *
+	 * @return int
+	 */
+	function jinyu_memory_limit_mb(): int
+	{
+		$raw = trim((string) ini_get('memory_limit'));
+		if ($raw === '' || $raw === '-1') {
+			return 0;
+		}
+		$bytes = function_exists('wp_convert_hr_to_bytes') ? (int) wp_convert_hr_to_bytes($raw) : 0;
+		return $bytes > 0 ? (int) round($bytes / 1048576) : 0;
+	}
+}
+
+if (!function_exists('jinyu_server_load')) {
+	/**
+	 * 服务器 1 分钟平均负载。取不到（Windows / disable_functions / 无权限）返回 null，
+	 * 前端据此把该格降级为「内存占用」——绝不显示一个假的 0.00。
+	 *
+	 * @return float|null
+	 */
+	function jinyu_server_load(): ?float
+	{
+		if (!function_exists('sys_getloadavg')) {
+			return null;
+		}
+		$la = @sys_getloadavg();
+		if (!is_array($la) || !isset($la[0]) || !is_numeric($la[0])) {
+			return null;
+		}
+		return round((float) $la[0], 2);
+	}
+}
+
+if (!function_exists('jinyu_perf_stats')) {
+	/**
+	 * 把心跳样本折算成性能面板要展示的派生指标。
+	 *
+	 * 计算留在服务端（而不是前端各算一份）：口径唯一，避免将来把「均值」改成中位数时
+	 * 只改了一处。前端只负责画。
+	 *
+	 * 健康分权重：耗时 45 / 查询 20 / 内存 20 / 负载 15；负载取不到时按剩余权重归一化，
+	 * 不把缺失项当 0 分算。
+	 *
+	 * @param array<int, array{ms:int,q:int,mem:float,ts:int}> $beats
+	 * @return array<string, mixed>
+	 */
+	function jinyu_perf_stats(array $beats): array
+	{
+		$n = count($beats);
+		if ($n < 1) {
+			return [];
+		}
+
+		$ms_list = array_map('intval', array_column($beats, 'ms'));
+		$latest  = $beats[$n - 1];
+		$prev    = $n > 1 ? $beats[$n - 2] : null;
+
+		$sorted = $ms_list;
+		sort($sorted);
+		$p90 = (int) $sorted[min($n - 1, (int) floor($n * 0.9))];
+
+		$ms  = (int) $latest['ms'];
+		$q   = (int) $latest['q'];
+		$mem = (float) $latest['mem'];
+
+		$mem_max = jinyu_memory_limit_mb();
+		$mem_pct = $mem_max > 0 ? (int) min(100, round($mem / $mem_max * 100)) : 0;
+		$load    = jinyu_server_load();
+
+		// 各分项：100ms 满分、1s 归零；查询 ≤25 次满分，每多一次扣 2 分；
+		// 内存占用 ≤10% 满分，每多 1% 扣 1.2 分；负载 0 满分，每 1 扣 40 分。
+		$s_ms   = 100 - $ms / 10;
+		$s_q    = 100 - max(0, $q - 25) * 2;
+		$s_mem  = $mem_max > 0 ? 100 - max(0, $mem_pct - 10) * 1.2 : 100;
+		$s_load = $load === null ? null : 100 - $load * 40;
+
+		$parts = [[$s_ms, 0.45], [$s_q, 0.20], [$s_mem, 0.20]];
+		if ($s_load !== null) {
+			$parts[] = [$s_load, 0.15];
+		}
+		$acc = 0.0;
+		$wsum = 0.0;
+		foreach ($parts as $part) {
+			$acc  += $part[0] * $part[1];
+			$wsum += $part[1];
+		}
+		$score = (int) max(0, min(100, (int) round($acc / $wsum)));
+
+		return [
+			'avg'     => (int) round(array_sum($ms_list) / $n),
+			'max'     => (int) $sorted[$n - 1],
+			'min'     => (int) $sorted[0],
+			'p90'     => $p90,
+			'samples' => $n,
+			'age'     => max(0, time() - (int) $latest['ts']),
+			'prev'    => $prev ? [
+				'ms'  => (int) $prev['ms'],
+				'q'   => (int) $prev['q'],
+				'mem' => (float) $prev['mem'],
+			] : null,
+			'score'   => $score,
+			'level'   => $score >= 90 ? 'fast' : ($score >= 75 ? 'ok' : ($score >= 55 ? 'warn' : 'bad')),
+			'mem_max' => $mem_max,
+			'mem_pct' => $mem_pct,
+			'load'    => $load,
+		];
+	}
+}
+
+/* ==========================================================================
    建站时间（网站概况：运行时长）
    ========================================================================== */
 
@@ -319,12 +436,12 @@ if (!function_exists('jinyu_live_payload')) {
 				'version' => (string) ($ua['version'] ?? ''),
 				'loc'     => jinyu_ip_location($ip, $allow_geo),
 			],
-			'perf'    => [
+			'perf'    => array_merge(jinyu_perf_stats($beats), [
 				'beats' => array_values(array_map('intval', array_column($beats, 'ms'))),
 				'ms'    => (int) $latest['ms'],
 				'q'     => (int) $latest['q'],
 				'mem'   => (float) $latest['mem'],
-			],
+			]),
 		];
 	}
 }

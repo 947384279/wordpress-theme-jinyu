@@ -23,7 +23,9 @@ if (!function_exists('jinyu_ad_in_content')) {
         if (!$ad) {
             return $content;
         }
-        $ad = jinyu_ad_badge_wrap($ad, 'page_inner');
+        if (function_exists('jinyu_ad_badge_wrap')) {
+            $ad = jinyu_ad_badge_wrap($ad, 'page_inner');
+        }
         $pos = strpos($content, '</p>');
         if ($pos !== false) {
             $content = substr($content, 0, $pos + 4) . "\n" . $ad . "\n" . substr($content, $pos + 4);

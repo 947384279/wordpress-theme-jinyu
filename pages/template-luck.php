@@ -15,9 +15,9 @@ get_header();
       <h1 class="jinyu-article-title"><?php the_title(); ?></h1>
       <div class="jinyu-article-content">
         <div class="jinyu-luck-box">
-          <p class="jinyu-luck-tip"><?php esc_html_e('点击按钮，随机跳转到一篇站内文章。', JINYU); ?></p>
+          <p class="jinyu-luck-tip"><?php esc_html_e('点击按钮，随机跳转到一篇站内文章。', 'jinyu'); ?></p>
           <button type="button" class="jinyu-luck-btn" id="jinyu-luck-btn">
-            <i class="fa-solid fa-shuffle" aria-hidden="true"></i> <?php esc_html_e('手气不错', JINYU); ?>
+            <i class="fa-solid fa-shuffle" aria-hidden="true"></i> <?php esc_html_e('手气不错', 'jinyu'); ?>
           </button>
         </div>
       </div>

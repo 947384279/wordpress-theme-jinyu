@@ -103,10 +103,114 @@
 .jinyu-modal-loading { text-align: center; color: @text-3; padding: @s-6 0; i { margin-right: @s-2; } }
 
 /* ---------- 海报 ---------- */
-.jinyu-poster-img { width: 100%; display: block; border: 1px solid @border; border-radius: @radius-md; }
-.jinyu-poster-actions { display: flex; gap: @s-3; margin-top: @s-4; }
-.jinyu-poster-actions .jinyu-btn { flex: 1; justify-content: center; }
-.jinyu-poster-modal .jinyu-modal-body { padding: @s-3; }
+/* 弹窗改为纵向 flex：图片区域自适应收缩，按钮固定在底部，整屏随视口自适应、不再滚动 */
+.jinyu-poster-modal .jinyu-modal-card {
+    display: flex;
+    flex-direction: column;
+    max-height: 94vh;
+}
+.jinyu-poster-modal .jinyu-modal-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: @s-3;
+}
+.jinyu-poster-img {
+    flex: 0 1 auto;
+    min-height: 0;
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    margin: 0 auto;
+    border: 1px solid @border;
+    border-radius: @radius-md;
+}
+.jinyu-poster-actions {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: @s-3;
+    margin-top: @s-4;
+}
+.jinyu-poster-actions .jinyu-btn {
+    width: 100%;
+    height: 48px;
+    border-radius: 999px;
+    font-size: @fs-base;
+    font-weight: 600;
+}
+.jinyu-poster-actions .jinyu-btn-primary {
+    box-shadow: 0 6px 16px rgba(var(--jinyu-c-primary-rgb), .28);
+}
+.jinyu-poster-actions .jinyu-btn:not(.jinyu-btn-primary) {
+    background: @bg-subtle;
+    border-color: transparent;
+    color: @text-2;
+}
+.jinyu-poster-actions .jinyu-btn:not(.jinyu-btn-primary):hover {
+    background: @border;
+    color: @text-1;
+    border-color: transparent;
+}
+.jinyu-poster-tip { margin: @s-3 0 0; font-size: @fs-xs; color: @text-3; text-align: center; }
+.jinyu-btn-disabled { opacity: .5; cursor: not-allowed; }
+
+/* 移动端保存：全屏放大海报，长按即可存图 */
+.jinyu-poster-fullscreen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, .92);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: @s-4;
+}
+.jinyu-poster-fs-inner {
+    max-width: 92vw;
+    max-height: 84vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: @s-3;
+}
+.jinyu-poster-fs-inner img {
+    max-width: 92vw;
+    max-height: 74vh;
+    border-radius: @radius-md;
+    display: block;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, .4);
+}
+.jinyu-poster-fs-tip { color: #fff; font-size: @fs-sm; text-align: center; margin: 0; }
+
+/* 微信分享：微信内右上角引导 + 其它环境二维码 */
+.jinyu-share-btns [data-share="wechat"] i { color: #07C160; }
+.jinyu-share-btns [data-share="wechat"]:hover { border-color: #07C160; color: #07C160; background: rgba(7, 193, 96, .08); }
+.jinyu-wechat-guide { max-width: 80vw; text-align: center; color: #fff; }
+.jinyu-wechat-guide-arrow {
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: @s-3;
+    animation: jinyu-wechat-arrow 1.2s ease-in-out infinite;
+}
+.jinyu-wechat-guide-tip { font-size: @fs-md; line-height: 1.7; }
+.jinyu-wechat-guide-tip b { color: #07C160; font-size: 1.1em; }
+@keyframes jinyu-wechat-arrow {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(6px, -6px); }
+}
+.jinyu-wechat-qr-card { width: min(86vw, 320px); }
+.jinyu-wechat-qr-box {
+    display: flex;
+    justify-content: center;
+    padding: @s-4 0;
+    svg, img, canvas { width: 220px; height: 220px; border-radius: @radius-sm; }
+}
 
 /* ---------- 二维码 ---------- */
 .jinyu-qr-box {

@@ -11,9 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 get_header();
 
-// 首屏 Banner：取第一篇置顶文章（仅首页第一页展示）
-// ⚠️ 必须与 functions.php 的 pre_get_posts 去重逻辑同源，故走共享函数
-$banner = is_paged() ? null : jinyu_home_banner_post();
+// 置顶文章统一进网格（见 templates/module-post.php 的 .jinyu-post-card.is-sticky 卡片高亮），不再独占首屏大图 Banner。
 ?>
 <div class="jinyu-container jinyu-main-wrap">
   <main id="jinyu-content" class="jinyu-content">
@@ -66,42 +64,14 @@ $banner = is_paged() ? null : jinyu_home_banner_post();
     endif;
     ?>
 
-    <?php if ($banner) : ?>
-      <?php
-      $cover    = jinyu_get_post_cover($banner->ID, 'large');
-      $banner_cats = get_the_category($banner->ID);
-      ?>
-      <a class="jinyu-banner" href="<?php echo esc_url(get_permalink($banner)); ?>">
-        <?php if ($cover) : ?>
-          <?php $ph_banner = jinyu_get_post_cover($banner->ID, 'thumbnail'); ?>
-          <?php $banner_srcset = jinyu_get_post_cover_srcset($banner->ID); ?>
-          <img class="jinyu-blur-img" src="<?php echo esc_url($cover); ?>" alt="<?php echo esc_attr($banner->post_title); ?>"<?php if ($banner_srcset) : ?> srcset="<?php echo esc_attr($banner_srcset); ?>" sizes="100vw"<?php endif; ?> loading="eager" decoding="async" fetchpriority="high"<?php echo $ph_banner ? ' data-ph="' . esc_url($ph_banner) . '"' : ''; ?>>
-        <?php else : ?>
-          <div class="jinyu-post-cover-ph"><i class="fa-solid fa-fire" aria-hidden="true"></i></div>
-        <?php endif; ?>
-
-        <div class="jinyu-banner-overlay">
-          <span class="jinyu-banner-cat">
-            <?php echo $banner_cats ? esc_html($banner_cats[0]->name) : esc_html__('推荐', JINYU); ?>
-          </span>
-          <h2 class="jinyu-banner-title"><?php echo esc_html($banner->post_title); ?></h2>
-          <?php
-          // 同 module-post.php：摘要为空时不输出空 <p>，避免遮罩层多出一块空白
-          $banner_excerpt = wp_trim_words(wp_strip_all_tags($banner->post_excerpt ?: $banner->post_content), 40, '…');
-          if ($banner_excerpt) :
-          ?>
-            <p class="jinyu-banner-excerpt"><?php echo esc_html($banner_excerpt); ?></p>
-          <?php endif; ?>
-        </div>
-      </a>
-    <?php endif; ?>
+    <?php /* 置顶文章统一进网格（.is-sticky 卡片高亮），不再独占首屏大图 Banner */ ?>
 
     <?php
     // ── 首页模块（仅首页第一页显示）──
     if (!is_paged()) :
 
         // 四宫格（后台拖拽配置）
-        if (jinyu_is_checked('cms_show_four_grid')) :
+        if (jinyu_is_checked('home_show_four_grid')) :
             $jinyu_grid = jinyu_cms_four_grid_items(4);
             if ($jinyu_grid) :
     ?>
@@ -119,9 +89,9 @@ $banner = is_paged() ? null : jinyu_home_banner_post();
         endif;
 
         // 两栏布局（按分类）
-        if (jinyu_is_checked('cms_show_2box')) :
-            $jinyu_box_ids = array_filter(array_map('trim', explode(',', (string) jinyu_get_option('cms_show_2box_id', ''))));
-            $jinyu_box_num = max(1, (int) jinyu_get_option('cms_show_2box_num', 6));
+        if (jinyu_is_checked('home_show_2box')) :
+            $jinyu_box_ids = array_filter(array_map('trim', explode(',', (string) jinyu_get_option('home_show_2box_id', ''))));
+            $jinyu_box_num = max(1, (int) jinyu_get_option('home_show_2box_num', 6));
             if ($jinyu_box_ids) :
     ?>
       <div class="jinyu-cms-2box">
@@ -176,6 +146,7 @@ $banner = is_paged() ? null : jinyu_home_banner_post();
       </div>
 
       <?php jinyu_pagination(); ?>
+      <?php get_template_part('templates/flinks'); ?>
 
     <?php else : ?>
 

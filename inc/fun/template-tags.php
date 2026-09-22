@@ -10,39 +10,96 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if (!function_exists('jinyu_pagination')) {
     /**
-     * 分页导航。开启「加载更多」时输出按钮，否则输出传统分页。
+     * 分页导航。开启「加载更多」时输出按钮，否则输出传统分页 + 页码直达。
+     *
+     * 全站唯一分页出口：首页/日期归档/分类/标签/搜索/作者/系列页都走这里，
+     * 避免原生 the_posts_pagination() 与本函数并存导致样式与功能两套实现。
+     *
+     * @param array $args {
+     *     @type bool $load_more 是否允许输出「加载更多」按钮。默认 true（首页/日期归档语义）；
+     *                           分类等归档页传 false，保持经典分页不受该开关影响。
+     * }
      */
-    function jinyu_pagination()
+    function jinyu_pagination($args = [])
     {
         global $wp_query;
 
         $total = isset($wp_query->max_num_pages) ? (int)$wp_query->max_num_pages : 1;
         if ($total <= 1) return;
 
-        if (jinyu_is_checked('blog_show_load_more')) {
+        $load_more = !isset($args['load_more']) || $args['load_more'];
+
+        if ($load_more && jinyu_is_checked('blog_show_load_more')) {
             $current = max(1, (int)get_query_var('paged'));
             printf(
                 '<div class="jinyu-load-more-wrap"><button type="button" class="jinyu-load-more" data-page="%d" data-target=".jinyu-post-grid" data-total="%d">%s</button></div>',
                 $current,
                 $total,
-                esc_html__('加载更多', JINYU)
+                esc_html__('加载更多', 'jinyu')
             );
             return;
         }
 
+        // base 必须携带 %#% 占位符，paginate_links 才能把页码替换进去。
+        // 旧写法用 get_pagenum_link()（默认第 1 页的具体链接）做 base，
+        // 不含占位符，导致所有页码都渲染成第一页 URL —— 点哪页都回第一页。
+        $big       = 999999999;
+        $current   = max(1, (int)(get_query_var('paged') ?: get_query_var('page')));
+        // 未转义的 URL 供跳转框做模板；转义版交给 paginate_links（其内部会再 esc_url）。
+        $raw       = get_pagenum_link($big);
+        $base      = str_replace($big, '%#%', esc_url($raw));
+        $jump_tpl  = str_replace($big, '__PAGE__', $raw);
+
+        // 页码密度：手机端窄，只保留「首/末页 + 当前页」(mid_size=0 → ‹ 1 … 23 … 72 ›，
+        // 共 7 项)，明显少于桌面，且保证与「跳转」按钮同处一行不换行；桌面端当前页左右各 2。
+        // 用 wp_is_mobile() 在服务端判定（比纯 CSS 隐藏更彻底：窄屏根本不输出多余页码）。
+        $is_mobile = function_exists('wp_is_mobile') && wp_is_mobile();
+        $mid_size  = $is_mobile ? 0 : 2;
+        $end_size  = 1;
+
         $links = paginate_links([
-            'base'      => str_replace('%_%', '%#%', esc_url(get_pagenum_link())),
+            'base'      => $base,
             'format'    => '?paged=%#%',
-            'current'   => max(1, (int)get_query_var('paged')),
+            'current'   => $current,
             'total'     => $total,
             'type'      => 'list',
+            'mid_size'  => $mid_size,
+            'end_size'  => $end_size,
             'prev_text' => '<i class="fa-solid fa-angle-left"></i>',
             'next_text' => '<i class="fa-solid fa-angle-right"></i>',
         ]);
 
-        if ($links) {
-            echo '<nav class="jinyu-pagination">' . $links . '</nav>';
-        }
+        if (!$links) return;
+
+        echo '<nav class="jinyu-pagination">' . $links;
+
+        // 页码直达（hover 展开式）：默认只显示一个轻量「跳转 »」按钮，
+        // 鼠标移入 / 键盘聚焦才展开输入框。data-base 复用 paginate_links 的链接模板
+        // （页码位置换成 __PAGE__），由前端填值跳转，确保与分页链接同源、同格式（含搜索词等 query）。
+        // 跳转是低频操作，折叠后可避免常显输入框稀释「当前页胶囊」这一唯一点。
+        $chev_single = '<svg class="jinyu-jump-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>';
+        $chev_double = '<svg class="jinyu-jump-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 6l6 6-6 6M13 6l6 6-6 6"/></svg>';
+        printf(
+            '<form class="jinyu-pagination-jump" data-base="%s" data-current="%d" data-total="%d">'
+            . '<button type="button" class="jinyu-jump-btn">%s%s</button>'
+            . '<span class="jinyu-jump-panel">'
+            . '<input type="number" class="jinyu-page-jump-input" min="1" max="%d" step="1" inputmode="numeric" placeholder="%s" autocomplete="off" aria-label="%s">'
+            . '<button type="submit" class="jinyu-jump-go" aria-label="%s">%s</button>'
+            . '</span>'
+            . '</form>',
+            esc_attr($jump_tpl),
+            $current,
+            $total,
+            esc_html__('跳转', 'jinyu'),
+            $chev_single,
+            $total,
+            esc_attr__('页码', 'jinyu'),
+            esc_attr(sprintf(__('输入 1 到 %d 之间的页码后跳转', 'jinyu'), $total)),
+            esc_attr__('跳转', 'jinyu'),
+            $chev_double
+        );
+
+        echo '</nav>';
     }
 }
 
@@ -55,20 +112,43 @@ if (!function_exists('jinyu_read_time')) {
         $post_id = $post_id ?: get_the_ID();
         $content = get_post_field('post_content', $post_id);
         $count   = mb_strlen(preg_replace('/\s+/', '', strip_tags((string)$content)), 'UTF-8');
-        return sprintf(esc_html__('%d 分钟阅读', JINYU), max(1, (int)ceil($count / 400)));
+        return sprintf(esc_html__('%d 分钟阅读', 'jinyu'), max(1, (int)ceil($count / 400)));
     }
+}
 
-    if (!function_exists('jinyu_post_word_count')) {
-        /**
-         * 正文纯文字数（中英文统一按字符计），带千分位
-         */
-        function jinyu_post_word_count($post_id = 0)
-        {
-            $post_id = $post_id ?: get_the_ID();
-            $content = get_post_field('post_content', $post_id);
-            $count   = mb_strlen(preg_replace('/\s+/', '', strip_tags((string)$content)), 'UTF-8');
-            return number_format($count, 0, '.', ',') . ' ' . esc_html__('字', JINYU);
-        }
+if (!function_exists('jinyu_post_word_count')) {
+    /**
+     * 正文纯文字数（中英文统一按字符计），带千分位
+     */
+    function jinyu_post_word_count($post_id = 0)
+    {
+        $post_id = $post_id ?: get_the_ID();
+        $content = get_post_field('post_content', $post_id);
+        $count   = mb_strlen(preg_replace('/\s+/', '', strip_tags((string)$content)), 'UTF-8');
+        return number_format($count, 0, '.', ',') . ' ' . esc_html__('字', 'jinyu');
+    }
+}
+
+if (!function_exists('jinyu_post_updated')) {
+    /**
+     * 「更新于 X」文案（列表卡片/可用于单篇）。
+     * 仅当最后修改比发布晚 $min_days 天以上才返回，避免改个错别字就到处报「更新于」。
+     *
+     * @param int $post_id  文章 ID，留空取当前文章
+     * @param int $min_days 触发阈值（天）
+     * @return string 空字符串表示无需展示
+     */
+    function jinyu_post_updated($post_id = 0, int $min_days = 3): string
+    {
+        $post = get_post($post_id ?: get_the_ID());
+        if (!$post) return '';
+
+        $pub = (int) strtotime((string) $post->post_date);
+        $mod = (int) strtotime((string) $post->post_modified);
+        if (!$pub || !$mod || ($mod - $pub) < $min_days * DAY_IN_SECONDS) return '';
+
+        $date = get_the_modified_date('Y-m-d', $post);
+        return $date ? sprintf(esc_html__('更新于 %s', 'jinyu'), $date) : '';
     }
 }
 
@@ -80,8 +160,8 @@ if (!function_exists('jinyu_breadcrumbs')) {
     {
         $sep = '<span class="jinyu-bread-sep" aria-hidden="true"><i class="fa-solid fa-angle-right"></i></span>';
         $cur = 'class="jinyu-bread-current" aria-current="page"';
-        $html = '<nav class="jinyu-breadcrumbs" aria-label="' . esc_attr__('面包屑导航', JINYU) . '">';
-        $html .= '<a class="jinyu-bread-home" href="' . esc_url(home_url('/')) . '"><i class="fa-solid fa-house" aria-hidden="true"></i>' . esc_html__('首页', JINYU) . '</a>';
+        $html = '<nav class="jinyu-breadcrumbs" aria-label="' . esc_attr__('面包屑导航', 'jinyu') . '">';
+        $html .= '<a class="jinyu-bread-home" href="' . esc_url(home_url('/')) . '"><i class="fa-solid fa-house" aria-hidden="true"></i>' . esc_html__('首页', 'jinyu') . '</a>';
 
         if (is_single()) {
             $cats = get_the_category();
@@ -94,7 +174,7 @@ if (!function_exists('jinyu_breadcrumbs')) {
         } elseif (is_tag()) {
             $html .= $sep . '<span ' . $cur . '>#' . esc_html(single_tag_title('', false)) . '</span>';
         } elseif (is_search()) {
-            $html .= $sep . '<span ' . $cur . '>' . esc_html__('搜索:', JINYU) . ' ' . esc_html(get_search_query()) . '</span>';
+            $html .= $sep . '<span ' . $cur . '>' . esc_html__('搜索:', 'jinyu') . ' ' . esc_html(get_search_query()) . '</span>';
         } elseif (is_author()) {
             $html .= $sep . '<span ' . $cur . '>' . esc_html(get_the_author()) . '</span>';
         } elseif (is_page()) {
@@ -129,7 +209,8 @@ if (!function_exists('jinyu_parse_social')) {
 
         $map = [
             'github'   => 'fa-brands fa-github',
-            'gitee'    => 'fa-solid fa-code-branch',
+            // Gitee 无 FA 免费品牌图标，用 simple-icons 官方路径（currentColor 跟随文字/悬停色）
+            'gitee'    => '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11.984 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.016 0zm6.09 5.333c.328 0 .593.266.592.593v1.482a.594.594 0 0 1-.593.592H9.777c-.982 0-1.778.796-1.778 1.778v5.63c0 .327.266.592.593.592h5.63c.982 0 1.778-.796 1.778-1.778v-.296a.593.593 0 0 0-.592-.593h-4.15a.592.592 0 0 1-.592-.592v-1.482a.593.593 0 0 1 .593-.592h6.815c.327 0 .593.265.593.592v3.408a4 4 0 0 1-4 4H5.926a.593.593 0 0 1-.593-.593V9.778a4.444 4.444 0 0 1 4.445-4.444h8.296Z"/></svg>',
             'gitlab'   => 'fa-brands fa-gitlab',
             '微博'      => 'fa-brands fa-weibo',
             'weibo'    => 'fa-brands fa-weibo',
@@ -142,15 +223,18 @@ if (!function_exists('jinyu_parse_social')) {
             'telegram' => 'fa-brands fa-telegram',
             'x'        => 'fa-brands fa-x-twitter',
             'twitter'  => 'fa-brands fa-x-twitter',
-            '知乎'      => 'fa-solid fa-graduation-cap',
-            'zhihu'    => 'fa-solid fa-graduation-cap',
+            // 知乎无 FA 免费品牌图标，用 simple-icons 官方路径
+            '知乎'      => '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5.721 0C2.251 0 0 2.25 0 5.719V18.28C0 21.751 2.252 24 5.721 24h12.56C21.751 24 24 21.75 24 18.281V5.72C24 2.249 21.75 0 18.281 0zm1.964 4.078c-.271.73-.5 1.434-.68 2.11h4.587c.545-.006.445 1.168.445 1.171H9.384a58.104 58.104 0 01-.112 3.797h2.712c.388.023.393 1.251.393 1.266H9.183a9.223 9.223 0 01-.408 2.102l.757-.604c.452.456 1.512 1.712 1.906 2.177.473.681.063 2.081.063 2.081l-2.794-3.382c-.653 2.518-1.845 3.607-1.845 3.607-.523.468-1.58.82-2.64.516 2.218-1.73 3.44-3.917 3.667-6.497H4.491c0-.015.197-1.243.806-1.266h2.71c.024-.32.086-3.254.086-3.797H6.598c-.136.406-.158.447-.268.753-.594 1.095-1.603 1.122-1.907 1.155.906-1.821 1.416-3.6 1.591-4.064.425-1.124 1.671-1.125 1.671-1.125zM13.078 6h6.377v11.33h-2.573l-2.184 1.373-.401-1.373h-1.219zm1.313 1.219v8.86h.623l.263.937 1.455-.938h1.456v-8.86z"/></svg>',
+            'zhihu'    => '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5.721 0C2.251 0 0 2.25 0 5.719V18.28C0 21.751 2.252 24 5.721 24h12.56C21.751 24 24 21.75 24 18.281V5.72C24 2.249 21.75 0 18.281 0zm1.964 4.078c-.271.73-.5 1.434-.68 2.11h4.587c.545-.006.445 1.168.445 1.171H9.384a58.104 58.104 0 01-.112 3.797h2.712c.388.023.393 1.251.393 1.266H9.183a9.223 9.223 0 01-.408 2.102l.757-.604c.452.456 1.512 1.712 1.906 2.177.473.681.063 2.081.063 2.081l-2.794-3.382c-.653 2.518-1.845 3.607-1.845 3.607-.523.468-1.58.82-2.64.516 2.218-1.73 3.44-3.917 3.667-6.497H4.491c0-.015.197-1.243.806-1.266h2.71c.024-.32.086-3.254.086-3.797H6.598c-.136.406-.158.447-.268.753-.594 1.095-1.603 1.122-1.907 1.155.906-1.821 1.416-3.6 1.591-4.064.425-1.124 1.671-1.125 1.671-1.125zM13.078 6h6.377v11.33h-2.573l-2.184 1.373-.401-1.373h-1.219zm1.313 1.219v8.86h.623l.263.937 1.455-.938h1.456v-8.86z"/></svg>',
             'b站'       => 'fa-brands fa-bilibili',
             'bilibili' => 'fa-brands fa-bilibili',
             'rss'      => 'fa-solid fa-rss',
-            '抖音'      => 'fa-solid fa-music',
-            'douyin'   => 'fa-solid fa-music',
-            '豆瓣'      => 'fa-solid fa-book',
-            'douban'   => 'fa-solid fa-book',
+            // 抖音无 FA 免费品牌图标；抖音即 TikTok 国内版，用 fa-tiktok 品牌标最贴近
+            '抖音'      => 'fa-brands fa-tiktok',
+            'douyin'   => 'fa-brands fa-tiktok',
+            // 豆瓣无 FA 免费品牌图标，用 simple-icons 官方路径
+            '豆瓣'      => '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M.51 3.06h22.98V.755H.51V3.06Zm20.976 2.537v9.608h-2.137l-1.669 5.76H24v2.28H0v-2.28h6.32l-1.67-5.76H2.515V5.597h18.972Zm-5.066 9.608H7.58l1.67 5.76h5.501l1.67-5.76ZM18.367 7.9H5.634v5.025h12.733V7.9Z"/></svg>',
+            'douban'   => '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M.51 3.06h22.98V.755H.51V3.06Zm20.976 2.537v9.608h-2.137l-1.669 5.76H24v2.28H0v-2.28h6.32l-1.67-5.76H2.515V5.597h18.972Zm-5.066 9.608H7.58l1.67 5.76h5.501l1.67-5.76ZM18.367 7.9H5.634v5.025h12.733V7.9Z"/></svg>',
             '今日头条' => 'fa-solid fa-newspaper',
             'toutiao'  => 'fa-solid fa-newspaper',
         ];
@@ -178,6 +262,21 @@ if (!function_exists('jinyu_footer_social')) {
     function jinyu_footer_social(): array
     {
         return jinyu_parse_social((string) jinyu_get_option('footer_social', ''));
+    }
+}
+
+if (!function_exists('jinyu_social_icon_markup')) {
+    /**
+     * 输出社交图标标记。
+     * - 以 `<svg` 开头的为内置可信 SVG（Gitee/知乎/豆瓣等无 FA 免费品牌图标的平台），直接输出、不转义；
+     * - 其余为 Font Awesome class，包一层 <i> 并转义 class。
+     */
+    function jinyu_social_icon_markup(string $icon): string
+    {
+        if (strncmp($icon, '<svg', 4) === 0) {
+            return $icon;
+        }
+        return '<i class="' . esc_attr($icon) . '" aria-hidden="true"></i>';
     }
 }
 
@@ -213,8 +312,8 @@ if (!function_exists('jinyu_default_nav')) {
     function jinyu_default_nav()
     {
         $items = [
-            home_url('/')          => __('首页', JINYU),
-            home_url('/archives/') => __('文章归档', JINYU),
+            home_url('/')          => __('首页', 'jinyu'),
+            home_url('/archives/') => __('文章归档', 'jinyu'),
         ];
 
         $cats = get_categories(['number' => 3, 'orderby' => 'count', 'order' => 'DESC']);
@@ -340,7 +439,7 @@ if (!function_exists('jinyu_cms_four_grid_items')) {
      */
     function jinyu_cms_four_grid_items(int $limit = 4)
     {
-        $list = jinyu_get_option('cms_four_grid_list');
+        $list = jinyu_get_option('home_four_grid_list');
         // 后台 dynamic-list 字段以 JSON 字符串落库（见 admin.js 的 syncDyn），
         // 此处兼容 JSON 字符串与数组两种形态，避免前台拿不到数据。
         if (is_string($list)) {
@@ -371,33 +470,3 @@ if (!function_exists('jinyu_cms_four_grid_items')) {
     }
 }
 
-if (!function_exists('jinyu_home_banner_post')) {
-    /**
-     * 首页首屏 Banner 文章：第一篇置顶文章。
-     *
-     * 必须由此函数统一判定，供 index.php（渲染 banner）与 pre_get_posts（主查询去重）
-     * 共用同一份逻辑——两处各写一遍迟早漂移，会出现「排除了 A 却展示 B」的错位。
-     *
-     * 本函数不做 is_paged() 判断：该状态在 pre_get_posts 阶段尚未写入全局查询对象，
-     * 由调用方各自判定（模板用 is_paged()，主查询用 $q->is_paged）。
-     *
-     * @return WP_Post|null 无可用置顶文章时返回 null
-     */
-    function jinyu_home_banner_post()
-    {
-        static $banner = false; // false = 尚未解析；null = 已解析且无结果
-        if ($banner !== false) {
-            return $banner;
-        }
-
-        $banner = null;
-        $sticky = get_option('sticky_posts');
-        if (!empty($sticky) && is_array($sticky)) {
-            $candidate = get_post((int) $sticky[0]);
-            if ($candidate && $candidate->post_status === 'publish' && !post_password_required($candidate)) {
-                $banner = $candidate;
-            }
-        }
-        return $banner;
-    }
-}

@@ -42,14 +42,14 @@ $list = new WP_Query([
         <div class="jinyu-random-box">
           <?php if ($random_post) : ?>
             <a class="jinyu-random-current" href="<?php echo esc_url(get_permalink($random_post)); ?>">
-              <span class="jinyu-random-label"><?php esc_html_e('为你随机推荐', JINYU); ?></span>
+              <span class="jinyu-random-label"><?php esc_html_e('为你随机推荐', 'jinyu'); ?></span>
               <span class="jinyu-random-title"><?php echo esc_html(get_the_title($random_post)); ?></span>
             </a>
           <?php endif; ?>
-          <a class="jinyu-btn jinyu-random-btn" href="<?php echo esc_url(get_permalink()); ?>"><?php esc_html_e('换一篇', JINYU); ?></a>
+          <a class="jinyu-btn jinyu-random-btn" href="<?php echo esc_url(get_permalink()); ?>"><?php esc_html_e('换一篇', 'jinyu'); ?></a>
         </div>
 
-        <h3 class="jinyu-random-list-title"><?php esc_html_e('随便逛逛', JINYU); ?></h3>
+        <h3 class="jinyu-random-list-title"><?php esc_html_e('随便逛逛', 'jinyu'); ?></h3>
         <ul class="jinyu-random-list">
           <?php if ($list->have_posts()) : while ($list->have_posts()) : $list->the_post(); ?>
             <li>

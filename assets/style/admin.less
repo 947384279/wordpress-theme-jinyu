@@ -160,6 +160,32 @@ body.toplevel_page_jinyu-options { overflow-x: clip; }
 }
 .jinyu-brand-title { font-size: 18px; font-weight: 800; margin: 0; line-height: 1.25; letter-spacing: .2px; }
 .jinyu-brand-sub { font-size: 12px; color: var(--ja-text-3); }
+.jinyu-brand-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+}
+.jinyu-ver-divider {
+    width: 1px;
+    height: 13px;
+    background: var(--ja-border-strong);
+    opacity: .7;
+}
+.jinyu-ver-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 9px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .3px;
+    color: var(--ja-primary);
+    background: var(--ja-primary-soft, var(--ja-surface-2));
+    border: 1px solid var(--ja-primary-ring, var(--ja-border-strong));
+    border-radius: 999px;
+}
+.jinyu-ver-req { font-size: 12px; color: var(--ja-text-3); }
 .jinyu-topbar-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .jinyu-search-wrap {
     position: relative;
@@ -535,6 +561,7 @@ body.toplevel_page_jinyu-options { overflow-x: clip; }
     .jinyu-field-label { margin-bottom: 0; }
 }
 .jinyu-multi-count {
+    margin-left: auto;
     font-size: 12px;
     font-weight: 600;
     color: var(--ja-primary-700);
@@ -542,98 +569,262 @@ body.toplevel_page_jinyu-options { overflow-x: clip; }
     padding: 2px 10px;
     border-radius: 999px;
 }
-.jinyu-multi-clear {
-    margin-left: auto;
-    border: none;
-    background: transparent;
-    padding: 3px 8px;
-    font-size: 12px;
-    color: var(--ja-text-3);
-    cursor: pointer;
-    border-radius: 6px;
-    transition: color var(--ja-dur) var(--ja-ease), background var(--ja-dur) var(--ja-ease);
-    &:hover { color: var(--ja-danger); background: var(--ja-surface-2); }
-}
-.jinyu-field--multi .jinyu-multi-box {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
+/* ===== 多选下拉（category-multi / page-multi / checkboxes） ===== */
+.jinyu-ms,
+.jinyu-ms *,
+.jinyu-ms *::before,
+.jinyu-ms *::after { box-sizing: border-box; }
+.jinyu-ms {
+    position: relative;
     max-width: 720px;
-    padding: 12px;
+}
+.jinyu-ms-trigger {
+    min-height: 38px;
+    max-height: 38px;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow: hidden;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 34px 5px 8px;
     border: 1px solid var(--ja-border);
     border-radius: var(--ja-r-lg);
     background: var(--ja-surface-2);
-    max-height: 264px;
-    overflow: auto;
-}
-.jinyu-multi-item {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    padding: 6px 14px;
-    border-radius: 999px;
-    border: 1px solid var(--ja-border-strong);
-    background: var(--ja-surface);
-    font-size: 13px;
-    line-height: 1.4;
-    color: var(--ja-text-2);
     cursor: pointer;
     user-select: none;
-    transition: color var(--ja-dur) var(--ja-ease),
-                border-color var(--ja-dur) var(--ja-ease),
-                background var(--ja-dur) var(--ja-ease),
+    transition: border-color var(--ja-dur) var(--ja-ease),
                 box-shadow var(--ja-dur) var(--ja-ease),
-                transform var(--ja-dur) var(--ja-ease);
-    /* 隐藏原生 checkbox（保留可访问性，JS 读 .checked） */
-    input {
-        position: absolute;
-        width: 1px; height: 1px;
-        margin: 0; padding: 0;
-        opacity: 0;
-        pointer-events: none;
-        accent-color: transparent;   /* 防 WP 后台原生蓝色勾选透出 */
+                background var(--ja-dur) var(--ja-ease);
+    &:hover { border-color: var(--ja-primary); }
+    &:focus-visible {
         outline: none;
-    }
-    /* 前置圆点指示器 */
-    .jinyu-multi-txt::before {
-        content: '';
-        width: 7px;
-        height: 7px;
-        border-radius: 50%;
-        background: var(--ja-border-strong);
-        flex-shrink: 0;
-        transition: background var(--ja-dur) var(--ja-ease), transform var(--ja-dur) var(--ja-ease);
-    }
-    &:hover {
-        border-color: var(--ja-primary);
-        color: var(--ja-text);
-        transform: translateY(-1px);
-    }
-    &:focus-within {
         border-color: var(--ja-primary);
         box-shadow: 0 0 0 3px var(--ja-primary-ring);
     }
-    /* 选中态：醒目珊瑚橙实心渐变药丸 + 白色勾号（由 JS 加 .is-checked，兼容所有浏览器，不依赖 :has） */
-    &.is-checked {
-        background: linear-gradient(135deg, var(--ja-primary), #ff8a5c);
-        border-color: transparent;
-        color: var(--ja-on-primary);
-        font-weight: 600;
-        box-shadow: 0 4px 14px var(--ja-primary-ring-strong);
-        transform: translateY(-1px);
-        .jinyu-multi-txt::before {
-            content: '\2713';            /* ✓ 白色勾号 */
-            background: transparent;
-            width: auto; height: auto;
-            border-radius: 0;
-            color: var(--ja-on-primary);
-            font-size: 13px;
-            font-weight: 700;
-            line-height: 1;
-            transform: none;
+}
+.jinyu-ms.is-open {
+    .jinyu-ms-trigger {
+        border-color: var(--ja-primary);
+        background: var(--ja-surface);
+        box-shadow: 0 0 0 3px var(--ja-primary-ring);
+    }
+    .jinyu-ms-caret { transform: translateY(-40%) rotate(-135deg); }
+    .jinyu-ms-panel { opacity: 1; transform: translateY(0); pointer-events: auto; }
+}
+.jinyu-ms-placeholder {
+    font-size: 13px;
+    color: var(--ja-text-3);
+    padding: 3px 2px;
+    &.is-hidden { display: none; }
+}
+.jinyu-ms-chips {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+    align-items: center;
+    gap: 6px;
+    overflow: hidden;
+}
+.jinyu-ms-caret {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid var(--ja-text-3);
+    border-bottom: 2px solid var(--ja-text-3);
+    transform: translateY(-70%) rotate(45deg);
+    transition: transform var(--ja-dur) var(--ja-ease);
+    pointer-events: none;
+}
+.jinyu-ms-chip {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 5px;
+    max-width: 100%;
+    min-width: 0;
+    padding: 3px 4px 3px 9px;
+    border: 1px solid var(--ja-primary-ring-strong);
+    border-radius: 8px;
+    background: var(--ja-primary-soft);
+    color: var(--ja-primary-700);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.6;
+    white-space: nowrap;
+    /* display:inline-flex 会覆盖 hidden 属性的 UA display:none，必须显式兜底 */
+    &[hidden] { display: none !important; }
+}
+.jinyu-ms-chip-more {
+    border-color: var(--ja-border-strong);
+    background: var(--ja-surface);
+    color: var(--ja-text-3);
+    font-weight: 400;
+    padding-left: 8px;
+    padding-right: 8px;
+}
+.jinyu-ms-chip-txt {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.jinyu-ms-chip-ord {
+    flex: none;
+    font-size: 10px;
+    font-weight: 400;
+    opacity: .55;
+}
+.jinyu-ms-chip-rm {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: inherit;
+    font-size: 12px;
+    line-height: 1;
+    cursor: pointer;
+    opacity: .7;
+    transition: background var(--ja-dur) var(--ja-ease),
+                color var(--ja-dur) var(--ja-ease),
+                opacity var(--ja-dur) var(--ja-ease);
+    &:hover { background: var(--ja-primary); color: var(--ja-on-primary); opacity: 1; }
+}
+.jinyu-ms-panel {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 6px);
+    z-index: 999;
+    background: var(--ja-surface);
+    border: 1px solid var(--ja-border);
+    border-radius: var(--ja-r-lg);
+    box-shadow: 0 12px 32px rgba(20, 30, 60, .14);
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-6px);
+    pointer-events: none;
+    transition: opacity var(--ja-dur) var(--ja-ease),
+                transform var(--ja-dur) var(--ja-ease);
+}
+.jinyu-ms-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+    border-bottom: 1px solid var(--ja-border);
+    input {
+        flex: 1;
+        min-width: 0;
+        height: 32px;
+        padding: 0 10px;
+        border: 1px solid var(--ja-border);
+        border-radius: 8px;
+        background: var(--ja-surface-2);
+        font-size: 13px;
+        color: var(--ja-text);
+        outline: none;
+        /* WP 后台会给 text input 的 focus 全局加 box-shadow 光圈，与自身边框叠成双框 */
+        box-shadow: none !important;
+        transition: border-color var(--ja-dur) var(--ja-ease),
+                    background var(--ja-dur) var(--ja-ease);
+        &:focus { border-color: var(--ja-primary); background: var(--ja-surface); }
+    }
+    .jinyu-ms-all {
+        flex: none;
+        height: 32px;
+        padding: 0 12px;
+        border: 1px solid var(--ja-border-strong);
+        border-radius: 8px;
+        background: var(--ja-surface);
+        font-size: 12px;
+        line-height: 30px;
+        color: var(--ja-text-2);
+        cursor: pointer;
+        transition: color var(--ja-dur) var(--ja-ease),
+                    border-color var(--ja-dur) var(--ja-ease),
+                    background var(--ja-dur) var(--ja-ease);
+        &:hover {
+            color: var(--ja-primary);
+            border-color: var(--ja-primary);
+            background: var(--ja-primary-ring);
         }
     }
+}
+.jinyu-ms-list {
+    max-height: 240px;
+    overflow-y: auto;
+    padding: 6px;
+}
+.jinyu-ms-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--ja-text-2);
+    cursor: pointer;
+    user-select: none;
+    transition: background var(--ja-dur) var(--ja-ease),
+                color var(--ja-dur) var(--ja-ease);
+    &[hidden] { display: none; }
+    &:hover { background: var(--ja-surface-2); }
+    &.is-on { color: var(--ja-primary-700); font-weight: 600; }
+    .jinyu-ms-box {
+        flex: none;
+        width: 16px;
+        height: 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1.5px solid var(--ja-border-strong);
+        border-radius: 4px;
+        background: var(--ja-surface);
+        transition: background var(--ja-dur) var(--ja-ease),
+                    border-color var(--ja-dur) var(--ja-ease);
+        svg {
+            width: 10px;
+            height: 10px;
+            fill: none;
+            stroke: var(--ja-on-primary);
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            opacity: 0;
+            transition: opacity var(--ja-dur) var(--ja-ease);
+        }
+    }
+    &.is-on .jinyu-ms-box {
+        background: var(--ja-primary);
+        border-color: var(--ja-primary);
+        svg { opacity: 1; }
+    }
+    .jinyu-ms-nm {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .jinyu-ms-ord {
+        flex: none;
+        margin-left: auto;
+        font-size: 11px;
+        font-weight: 400;
+        color: var(--ja-text-3);
+    }
+}
+.jinyu-ms-empty {
+    padding: 18px 10px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--ja-text-3);
+    &[hidden] { display: none; }
 }
 
 
@@ -863,6 +1054,69 @@ body.toplevel_page_jinyu-options { overflow-x: clip; }
     margin-bottom: 12px;
 }
 .jinyu-update-detail .jinyu-btn { margin-right: 8px; }
+/* 顶栏版本行内的更新状态 / 详情：与版本信息同行，不独占一行 */
+.jinyu-update-box--head { position: relative; gap: 10px; }
+.jinyu-update-detail--head {
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.jinyu-update-detail--head .jinyu-btn { margin-right: 0; }
+/* 发现新版本：详情浮出为顶栏下方的更新卡片（不挤压顶栏布局） */
+.jinyu-update-pop {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    z-index: 50;
+    width: 400px;
+    max-width: min(90vw, 480px);
+    padding: 14px 16px;
+    background: var(--ja-surface);
+    border: 1px solid var(--ja-border-strong);
+    border-radius: var(--ja-r-lg);
+    box-shadow: 0 12px 36px rgba(15, 23, 42, 0.16);
+    text-align: left;
+}
+.jinyu-update-pop-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ja-text);
+
+    span { font-size: 12px; font-weight: 400; color: var(--ja-text-3); }
+    .dashicons { font-size: 16px; width: 16px; height: 16px; color: var(--ja-success); align-self: center; }
+}
+.jinyu-update-pop-close {
+    margin-left: auto;
+    flex: none;
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    border-radius: var(--ja-r-sm);
+    background: transparent;
+    color: var(--ja-text-3);
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background var(--ja-dur) var(--ja-ease), color var(--ja-dur) var(--ja-ease);
+}
+.jinyu-update-pop-close:hover { background: var(--ja-surface-2); color: var(--ja-text); }
+.jinyu-update-pop .jinyu-update-cl {
+    max-height: 200px;
+    overflow: auto;
+    margin-bottom: 12px;
+    font-size: 12px;
+}
+.jinyu-update-pop-actions { display: flex; gap: 8px; }
+.jinyu-update-nocl { margin: 0 0 12px; font-size: 12px; color: var(--ja-text-3); }
 
 /* 主题按钮（品牌化，与前端设计语言一致） */
 .jinyu-btn {
@@ -870,6 +1124,8 @@ body.toplevel_page_jinyu-options { overflow-x: clip; }
     align-items: center;
     justify-content: center;
     gap: 6px;
+    flex: none;
+    white-space: nowrap;
     padding: 8px 16px;
     font-size: 13px;
     font-weight: 600;
@@ -890,6 +1146,13 @@ body.toplevel_page_jinyu-options { overflow-x: clip; }
 }
 .jinyu-btn-primary:hover { box-shadow: 0 6px 20px var(--ja-primary-ring-strong); }
 .jinyu-btn[disabled] { opacity: .6; cursor: not-allowed; transform: none; }
+.jinyu-btn-sm { padding: 6px 13px; font-size: 12px; }
+.jinyu-btn-ghost {
+    background: transparent;
+    color: var(--ja-text-2);
+    border-color: var(--ja-border-strong);
+}
+.jinyu-btn-ghost:hover { background: var(--ja-surface-2); border-color: var(--ja-primary); color: var(--ja-primary); }
 
 
 /* ---------------- 维护工具（行式列表：一行一工具，左图标右动作） ---------------- */
@@ -899,6 +1162,79 @@ body.toplevel_page_jinyu-options { overflow-x: clip; }
     border-radius: var(--ja-r-lg);
     box-shadow: var(--ja-shadow-sm);
     overflow: hidden;
+}
+/* SMTP 配置卡片：维护工具内嵌，点击「展开配置」显示；复用标准字段渲染，仅做容器与间距 */
+.jinyu-smtp-card {
+    margin: 0 20px 20px;
+    padding: 16px 20px 20px;
+    border: 1px solid var(--ja-border-strong);
+    border-radius: var(--ja-r-lg);
+    background: var(--ja-surface-2);
+
+    &[hidden] { display: none; }
+
+    .jinyu-smtp-card-head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding-bottom: 12px;
+        margin-bottom: 14px;
+        border-bottom: 1px dashed var(--ja-border-strong);
+
+        .dashicons {
+            font-size: 17px;
+            width: 17px;
+            height: 17px;
+            color: var(--ja-primary);
+        }
+    }
+    .jinyu-smtp-card-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--ja-text-1, inherit);
+    }
+    .jinyu-smtp-card-note {
+        margin-left: auto;
+        font-size: 12px;
+        color: var(--ja-text-3);
+    }
+
+    /* 两列字段网格：主机/端口、账号/授权码、加密/发件人 两两成行 */
+    .jinyu-smtp-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px 28px;
+        align-items: start;
+    }
+
+    /* 卡片内字段改为纵向紧凑布局：标题在上、控件满宽、描述收窄置底 */
+    .jinyu-field {
+        display: block;
+        margin: 0;
+        padding: 0;
+        border-radius: 0;
+        transition: none;
+    }
+    .jinyu-field:hover { background: transparent; }
+    .jinyu-field-label {
+        display: block;
+        padding-top: 0;
+        margin-bottom: 6px;
+        font-size: 13px;
+        line-height: 1.4;
+    }
+    .jinyu-field-body { min-width: 0; }
+    .jinyu-field-desc {
+        margin: 6px 0 0;
+        font-size: 12px;
+        line-height: 1.6;
+    }
+    .jinyu-input { max-width: 100%; }
+    .jinyu-password { max-width: 100%; }
+
+    @media (max-width: 782px) {
+        .jinyu-smtp-grid { grid-template-columns: minmax(0, 1fr); }
+    }
 }
 .jinyu-tool-row {
     display: flex;
@@ -1036,6 +1372,186 @@ body.toplevel_page_jinyu-options { overflow-x: clip; }
 .is-dark {
     .jinyu-tool-row:hover { background: rgba(255, 255, 255, .04); }
     .jinyu-storage-progress { background: var(--ja-surface-2); }
+}
+
+/* ---------------- 我要反馈（提交 / 作者回复） ---------------- */
+.jinyu-fb { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--ja-r); }
+.jinyu-fb-card {
+    background: var(--ja-surface);
+    border: 1px solid var(--ja-border);
+    border-radius: var(--ja-r-lg);
+    padding: 20px 22px;
+    box-shadow: var(--ja-shadow-sm);
+}
+.jinyu-fb-h {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+    font-size: 14px; font-weight: 600; color: var(--ja-text);
+
+    .dashicons { font-size: 18px; width: 18px; height: 18px; color: var(--ja-primary); }
+}
+.jinyu-fb-h-tip { margin-left: auto; font-size: 11px; font-weight: 400; color: var(--ja-text-3); }
+.jinyu-fb-sub { margin: 0 0 18px; font-size: 12px; line-height: 1.75; color: var(--ja-text-3); }
+
+/* 表单字段：统一「标签在上、控件满宽」的纵向节奏 */
+.jinyu-fb-field { margin-bottom: 16px; }
+.jinyu-fb-label {
+    display: block; margin-bottom: 7px;
+    font-size: 13px; font-weight: 600; color: var(--ja-text-2);
+
+    em { margin-left: 7px; font-style: normal; font-weight: 400; font-size: 11px; color: var(--ja-text-3); }
+}
+.jinyu-fb .jinyu-input { max-width: 100%; }
+.jinyu-fb-msg { width: 100%; height: auto; padding: 11px 13px; line-height: 1.7; resize: vertical; }
+.jinyu-fb-meta { display: flex; justify-content: flex-end; margin-top: 6px; }
+.jinyu-fb-count { font-size: 11px; color: var(--ja-text-3); }
+.jinyu-fb-count.is-ok { color: var(--ja-success); font-weight: 600; }
+
+/* 类型选择：两选项用分段控件，比下拉菜单更直观（也避开原生 select 的平台外观） */
+.jinyu-fb-seg {
+    display: inline-flex; gap: 3px; padding: 3px;
+    background: var(--ja-surface-2); border: 1px solid var(--ja-border);
+    border-radius: var(--ja-r-sm);
+}
+.jinyu-fb-seg-item { position: relative; margin: 0; }
+.jinyu-fb-seg-item input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.jinyu-fb-seg-txt {
+    display: inline-flex; align-items: center; gap: 6px; padding: 7px 15px;
+    border-radius: 7px; font-size: 13px; color: var(--ja-text-2);
+    transition: background var(--ja-dur) var(--ja-ease), color var(--ja-dur) var(--ja-ease);
+
+    .dashicons { font-size: 16px; width: 16px; height: 16px; }
+}
+.jinyu-fb-seg-item:hover .jinyu-fb-seg-txt { color: var(--ja-text); }
+.jinyu-fb-seg-item input:checked + .jinyu-fb-seg-txt {
+    background: var(--ja-surface); color: var(--ja-primary-600); font-weight: 600;
+    box-shadow: var(--ja-shadow-sm);
+}
+.jinyu-fb-seg-item input:focus-visible + .jinyu-fb-seg-txt { box-shadow: 0 0 0 4px var(--ja-primary-ring); }
+
+/* 控制台错误附件：做成一块可点的浅底行，而不是一行裸文字 */
+.jinyu-fb-console {
+    display: flex; align-items: flex-start; gap: 9px; margin: 0 0 16px; padding: 11px 13px;
+    background: var(--ja-surface-2); border: 1px solid var(--ja-border);
+    border-radius: var(--ja-r-sm);
+    font-size: 12px; line-height: 1.6; color: var(--ja-text-2); cursor: pointer;
+
+    input { flex: none; margin: 2px 0 0; accent-color: var(--ja-primary); }
+    em { display: block; margin-top: 2px; font-style: normal; font-size: 11px; color: var(--ja-text-3); }
+}
+.jinyu-fb-foot { display: flex; align-items: center; gap: 12px; }
+
+/* 底部披露：图标 + 键值行，代替原来糊成一团的长段落。
+   自定义面板已不包 .jinyu-panel-body 外层白卡 → 此处自带底色，独立成注释卡浮于灰底 */
+.jinyu-fb-note {
+    display: grid; gap: 7px; padding: 13px 15px;
+    background: var(--ja-surface);
+    border: 1px dashed var(--ja-border-strong); border-radius: var(--ja-r);
+}
+.jinyu-fb-note-i {
+    display: flex; align-items: flex-start; gap: 8px;
+    font-size: 12px; line-height: 1.7; color: var(--ja-text-3);
+
+    .dashicons { flex: none; margin-top: 3px; font-size: 14px; width: 14px; height: 14px; }
+    b { flex: none; font-weight: 600; color: var(--ja-text-2); }
+    /* 长常量（JINYU_DISABLE_*）不可断行 → 必须 min-width:0 + anywhere，否则窄屏撑破容器 */
+    span { min-width: 0; overflow-wrap: anywhere; }
+}
+.jinyu-fb-note code, .jinyu-fb-list code {
+    padding: 1px 5px; border: 1px solid var(--ja-border); border-radius: 4px;
+    background: var(--ja-surface-2); font-size: 11px;
+}
+
+.jinyu-fb-unread {
+    padding: 2px 8px; border-radius: var(--ja-r-pill);
+    font-size: 11px; font-weight: 500; color: var(--ja-on-primary); background: var(--ja-primary);
+}
+.jinyu-fb-refresh {
+    display: inline-flex; align-items: center; gap: 5px;
+    margin-left: auto; padding: 5px 13px 5px 11px; cursor: pointer;
+    font-size: 12px; color: var(--ja-text-2);
+    background: var(--ja-surface-2); border: 1px solid var(--ja-border);
+    border-radius: var(--ja-r-pill);
+    transition: background var(--ja-dur) var(--ja-ease), color var(--ja-dur) var(--ja-ease), border-color var(--ja-dur) var(--ja-ease);
+
+    .dashicons { font-size: 15px; width: 15px; height: 15px; }
+
+    &:hover { background: var(--ja-primary-soft); border-color: var(--ja-primary-ring); color: var(--ja-primary-600); }
+    &.is-loading { pointer-events: none; opacity: .75; }
+    &.is-loading .dashicons { animation: jinyu-fb-spin .9s linear infinite; }
+}
+@keyframes jinyu-fb-spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+
+.jinyu-fb-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.jinyu-fb-empty {
+    display: flex; flex-direction: column; align-items: center; gap: 9px;
+    margin: 0; padding: 26px 12px; text-align: center;
+    font-size: 13px; line-height: 1.7; color: var(--ja-text-3);
+
+    .dashicons { font-size: 30px; width: 30px; height: 30px; color: var(--ja-border-strong); }
+}
+
+.jinyu-fb-thread {
+    padding: 14px 16px; border-radius: var(--ja-r);
+    background: var(--ja-surface-2); border: 1px solid var(--ja-border);
+    transition: border-color var(--ja-dur) var(--ja-ease), box-shadow var(--ja-dur) var(--ja-ease);
+
+    &:hover { border-color: var(--ja-border-strong); box-shadow: var(--ja-shadow-sm); }
+}
+.jinyu-fb-thead { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
+.jinyu-fb-badge {
+    padding: 3px 9px; border-radius: var(--ja-r-pill); font-size: 11px;
+    border: 1px solid transparent;
+
+    &.fb-open { color: var(--ja-danger); background: var(--ja-danger-soft); }
+    &.fb-replied { color: var(--ja-primary); background: var(--ja-primary-soft); }
+    &.fb-closed { color: var(--ja-text-3); background: var(--ja-surface); }
+}
+.jinyu-fb-kind {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 12px; color: var(--ja-text-2);
+
+    .dashicons { font-size: 14px; width: 14px; height: 14px; color: var(--ja-text-3); }
+}
+.jinyu-fb-time { margin-left: auto; font-size: 12px; color: var(--ja-text-3); }
+.jinyu-fb-origin {
+    padding: 12px 14px; border-radius: var(--ja-r);
+    background: var(--ja-surface); border: 1px solid var(--ja-border);
+    font-size: 13px; line-height: 1.75; color: var(--ja-text-2);
+    white-space: pre-wrap; word-break: break-word;
+}
+.jinyu-fb-replies { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; margin-top: 12px; }
+.jinyu-fb-bubble {
+    max-width: 86%; padding: 10px 14px; border-radius: var(--ja-r);
+    background: var(--ja-primary-soft); border: 1px solid var(--ja-primary-ring);
+
+    &.is-mine { margin-left: auto; background: var(--ja-surface); border-color: var(--ja-border-strong); }
+}
+.jinyu-fb-who { margin-bottom: 4px; font-size: 11px; color: var(--ja-text-3); }
+.jinyu-fb-text {
+    font-size: 13px; line-height: 1.7; color: var(--ja-text);
+    white-space: pre-wrap; word-break: break-word;
+}
+.jinyu-fb-more { margin-top: 10px; }
+.jinyu-fb-link {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 0; border: 0; background: none; cursor: pointer;
+    font-size: 12px; color: var(--ja-primary);
+
+    .dashicons { font-size: 14px; width: 14px; height: 14px; }
+    &:hover { text-decoration: underline; }
+}
+.jinyu-fb-morebox { margin-top: 10px; }
+.jinyu-fb-morefoot { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+.jinyu-fb-morefoot .jinyu-btn { margin-left: auto; }
+
+@media (max-width: 640px) {
+    .jinyu-fb-card { padding: 16px; }
+    .jinyu-fb-h-tip { display: none; }
+    .jinyu-fb-seg { display: flex; width: 100%; }
+    .jinyu-fb-seg-item { flex: 1; }
+    .jinyu-fb-seg-txt { width: 100%; justify-content: center; }
+    .jinyu-fb-bubble { max-width: 100%; }
+    .jinyu-fb-time { margin-left: 0; }
 }
 
 /* ---------------- 未保存提示条 ---------------- */

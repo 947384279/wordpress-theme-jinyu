@@ -7,8 +7,8 @@ if ( ! defined( 'ABSPATH' ) ) {
     <main id="jinyu-content" class="jinyu-content">
         <section class="jinyu-404">
             <div class="jinyu-404-code">404</div>
-            <h1 class="jinyu-404-title"><?php esc_html_e('页面走丢了', JINYU); ?></h1>
-            <p class="jinyu-404-desc"><?php esc_html_e('你访问的页面不存在或已被移动，试试搜索或返回首页。', JINYU); ?></p>
+            <h1 class="jinyu-404-title"><?php esc_html_e('页面走丢了', 'jinyu'); ?></h1>
+            <p class="jinyu-404-desc"><?php esc_html_e('你访问的页面不存在或已被移动，试试搜索或返回首页。', 'jinyu'); ?></p>
 
             <?php
             $custom_404 = trim((string) jinyu_get_option('custom_404', ''));
@@ -22,12 +22,12 @@ if ( ! defined( 'ABSPATH' ) ) {
             </div>
 
             <div class="jinyu-404-actions">
-                <a class="jinyu-btn jinyu-btn-primary" href="<?php echo esc_url(home_url('/')); ?>"><?php esc_html_e('返回首页', JINYU); ?></a>
-                <a class="jinyu-btn" href="<?php echo esc_url(wp_get_referer() ?: home_url('/')); ?>"><?php esc_html_e('返回上一页', JINYU); ?></a>
+                <a class="jinyu-btn jinyu-btn-primary" href="<?php echo esc_url(home_url('/')); ?>"><?php esc_html_e('返回首页', 'jinyu'); ?></a>
+                <a class="jinyu-btn" href="<?php echo esc_url(wp_get_referer() ?: home_url('/')); ?>"><?php esc_html_e('返回上一页', 'jinyu'); ?></a>
             </div>
 
             <div class="jinyu-404-hot">
-                <h2 class="jinyu-404-hot-title"><i class="fa-solid fa-fire" aria-hidden="true"></i> <?php esc_html_e('热门文章', JINYU); ?></h2>
+                <h2 class="jinyu-404-hot-title"><i class="fa-solid fa-fire" aria-hidden="true"></i> <?php esc_html_e('热门文章', 'jinyu'); ?></h2>
                 <?php
                 $q = new WP_Query([
                     'post_type'      => 'post',

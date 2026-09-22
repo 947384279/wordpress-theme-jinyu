@@ -9,7 +9,7 @@ Template Name: 友情链接
 get_header();
 ?>
 <div class="jinyu-container jinyu-main-wrap">
-    <main id="jinyu-content" class="jinyu-content jinyu-single-wrap">
+    <main id="jinyu-content" class="jinyu-content jinyu-single-wrap jinyu-wide-wrap">
         <?php jinyu_breadcrumbs(); ?>
         <article class="jinyu-single">
             <h1 class="jinyu-article-title"><?php the_title(); ?></h1>

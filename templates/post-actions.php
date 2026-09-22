@@ -19,7 +19,7 @@ $faved = in_array($pid, jinyu_get_user_favs(), true);
             data-post-id="<?php echo esc_attr($pid); ?>"
             aria-pressed="<?php echo $liked ? 'true' : 'false'; ?>">
         <i class="fa-solid fa-heart" aria-hidden="true"></i>
-        <span><?php esc_html_e('点赞', JINYU); ?></span>
+        <span><?php esc_html_e('点赞', 'jinyu'); ?></span>
         <span class="jinyu-like-count"><?php echo esc_html(jinyu_get_post_likes($pid)); ?></span>
     </button>
     <?php endif; ?>
@@ -31,28 +31,28 @@ $faved = in_array($pid, jinyu_get_user_favs(), true);
             data-title="<?php the_title_attribute(); ?>"
             aria-pressed="<?php echo $faved ? 'true' : 'false'; ?>">
         <i class="fa-solid fa-star" aria-hidden="true"></i>
-        <span class="jinyu-fav-label"><?php echo $faved ? esc_html__('已收藏', JINYU) : esc_html__('收藏', JINYU); ?></span>
+        <span class="jinyu-fav-label"><?php echo $faved ? esc_html__('已收藏', 'jinyu') : esc_html__('收藏', 'jinyu'); ?></span>
     </button>
     <?php endif; ?>
 
     <?php if (jinyu_is_checked('share_enable')): ?>
     <button type="button" class="jinyu-action-btn jinyu-share-btn" data-jinyu-share>
         <i class="fa-solid fa-share-nodes" aria-hidden="true"></i>
-        <span><?php esc_html_e('分享', JINYU); ?></span>
+        <span><?php esc_html_e('分享', 'jinyu'); ?></span>
     </button>
     <?php endif; ?>
 
     <?php if (jinyu_is_checked('poster_enable')): ?>
-    <button type="button" class="jinyu-action-btn jinyu-poster-btn" data-jinyu-poster data-post-id="<?php echo esc_attr($pid); ?>">
+    <button type="button" class="jinyu-action-btn jinyu-poster-btn" data-jinyu-poster data-post-id="<?php echo esc_attr($pid); ?>" data-cover="<?php echo esc_url(jinyu_get_post_cover($pid, 'large', false)); ?>">
         <i class="fa-solid fa-image" aria-hidden="true"></i>
-        <span><?php esc_html_e('海报', JINYU); ?></span>
+        <span><?php esc_html_e('海报', 'jinyu'); ?></span>
     </button>
     <?php endif; ?>
 
     <?php if (jinyu_is_checked('qr_enable')): ?>
     <button type="button" class="jinyu-action-btn jinyu-qr-btn" data-jinyu-qr data-post-id="<?php echo esc_attr($pid); ?>" data-url="<?php echo esc_url(get_permalink()); ?>">
         <i class="fa-solid fa-qrcode" aria-hidden="true"></i>
-        <span><?php esc_html_e('二维码', JINYU); ?></span>
+        <span><?php esc_html_e('二维码', 'jinyu'); ?></span>
     </button>
     <?php endif; ?>
 
@@ -64,7 +64,7 @@ $faved = in_array($pid, jinyu_get_user_favs(), true);
             <button type="button" class="jinyu-action-btn jinyu-donate-btn" data-jinyu-donate
                     data-wx="<?php echo esc_url($wx); ?>" data-ali="<?php echo esc_url($ali); ?>">
                 <i class="fa-solid fa-mug-hot" aria-hidden="true"></i>
-                <span><?php esc_html_e('打赏', JINYU); ?></span>
+                <span><?php esc_html_e('打赏', 'jinyu'); ?></span>
             </button>
         <?php endif; ?>
 

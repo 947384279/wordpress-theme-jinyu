@@ -74,6 +74,77 @@ function jinyu_is_checked(string $key): bool
 }
 
 /**
+ * 一次性选项 key 迁移：cms_* → home_*
+ * 旧版将首页版块配置以 cms_ 前缀存入 jinyu_options，前缀泄漏了“CMS/杂志”布局概念，
+ * 且会在字段改名后被 drop_orphan_keys() 静默清空。统一重命名为 home_ 前缀，
+ * 已保存的配置原样迁过来，避免老用户首页版块配置丢失。仅执行一次（用 transient 兜底去重）。
+ */
+function jinyu_migrate_cms_option_keys(): void
+{
+    if (get_transient('jinyu_migrated_cms_keys')) {
+        return;
+    }
+    $map = [
+        'cms_new_exclude_cats' => 'home_exclude_cats',
+        'cms_show_four_grid'   => 'home_show_four_grid',
+        'cms_four_grid_list'    => 'home_four_grid_list',
+        'cms_show_2box'         => 'home_show_2box',
+        'cms_show_2box_id'      => 'home_show_2box_id',
+        'cms_show_2box_num'     => 'home_show_2box_num',
+    ];
+    $opts = get_option(JINYU_OPT, []);
+    if (!is_array($opts) || !array_intersect_key($map, $opts)) {
+        set_transient('jinyu_migrated_cms_keys', 1, MONTH_IN_SECONDS);
+        return;
+    }
+    foreach ($map as $old => $new) {
+        if (array_key_exists($old, $opts) && !array_key_exists($new, $opts)) {
+            $opts[$new] = $opts[$old];
+        }
+        unset($opts[$old]);
+    }
+    update_option(JINYU_OPT, $opts);
+    set_transient('jinyu_migrated_cms_keys', 1, MONTH_IN_SECONDS);
+}
+add_action('init', 'jinyu_migrate_cms_option_keys', 5);
+
+/**
+ * 升级内置垃圾评论关键词库：仅当站点仍停留在旧版内置列表（或旧版回退值）时，
+ * 一键替换为更全的新版内置库；用户已自定义（含主动清空）的列表保持不变，绝不覆盖。
+ * 用 transient 去重，保证只跑一次。
+ */
+function jinyu_migrate_spam_words(): void
+{
+    if (get_transient('jinyu_migrated_spam_words')) {
+        return;
+    }
+    $opts = get_option(JINYU_OPT, []);
+    if (!is_array($opts)) {
+        set_transient('jinyu_migrated_spam_words', 1, MONTH_IN_SECONDS);
+        return;
+    }
+    // 旧版内置库（文本框默认值 / 运行期回退值）的已知形态，命中即视为“未自定义”。
+    $known_old = [
+        '彩票,色情,赌博,代写,刷量',
+        '彩票,色情,赌博,代写,刷量,贷款,发票,办证,加微信,返利,兼职,代运营',
+    ];
+    if (!array_key_exists('anti_spam_words', $opts)) {
+        // 从未保存过该字段：jinyu_get_option 已回退 sdt（新版内置库），无需写库
+        set_transient('jinyu_migrated_spam_words', 1, MONTH_IN_SECONDS);
+        return;
+    }
+    if (!in_array(trim((string) $opts['anti_spam_words']), $known_old, true)) {
+        // 已自定义（含清空）→ 不动
+        set_transient('jinyu_migrated_spam_words', 1, MONTH_IN_SECONDS);
+        return;
+    }
+    $opts['anti_spam_words'] = JINYU_DEFAULT_SPAM_WORDS;
+    update_option(JINYU_OPT, $opts);
+    set_transient('jinyu_migrated_spam_words', 1, MONTH_IN_SECONDS);
+}
+add_action('init', 'jinyu_migrate_spam_words', 6);
+
+/**
  * 批量保存全部选项（后台设置页使用）
  * 敏感字段在写入前加密，避免以明文落库。
  */
@@ -96,39 +167,7 @@ function jinyu_save_options(array $data): bool
             $data[$k] = jinyu_encrypt($val);
         }
     }
-    // 动态列表内的嵌套敏感子字段（OAuth 密钥）：
-    // oauth_accounts 以 JSON 字符串落库，其 client_secret 子字段需单独加密。
-    // 空值表示不修改（沿用按 platform 匹配的原值），已加密则跳过二次包装。
-    if (isset($data['oauth_accounts'])) {
-        $acc = is_string($data['oauth_accounts']) ? json_decode($data['oauth_accounts'], true) : $data['oauth_accounts'];
-        if (!is_array($acc)) {
-            $acc = [];
-        }
-        $curRaw = isset($current['oauth_accounts']) ? $current['oauth_accounts'] : [];
-        $curAcc = is_string($curRaw) ? json_decode($curRaw, true) : $curRaw;
-        if (!is_array($curAcc)) {
-            $curAcc = [];
-        }
-        foreach ($acc as $i => $item) {
-            if (!is_array($item)) {
-                continue;
-            }
-            $secret   = $item['client_secret'] ?? '';
-            $platform = $item['platform'] ?? '';
-            if ($secret === '' || $secret === null) {
-                // 按 platform 沿用原值，避免拖拽 reorder 后索引错位导致密钥错配
-                $acc[$i]['client_secret'] = '';
-                foreach ($curAcc as $c) {
-                    if (is_array($c) && ($c['platform'] ?? '') === $platform) {
-                        $acc[$i]['client_secret'] = $c['client_secret'] ?? '';
-                        break;
-                    }
-                }
-            } elseif (strpos((string) $secret, 'jinyu_enc::') !== 0) {
-                $acc[$i]['client_secret'] = jinyu_encrypt($secret);
-            }
-        }
-        $data['oauth_accounts'] = json_encode($acc, JSON_UNESCAPED_UNICODE);
-    }
+    // 非敏感键缺失保护：以库中现有值为底、本次传入覆盖，避免局部写入误删其它配置
+    $data = array_merge($current, $data);
     return update_option(JINYU_OPT, $data);
 }

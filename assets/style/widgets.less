@@ -92,7 +92,7 @@
     .jinyu-rc-reply { color: @text-4; }
 }
 
-/* 随机文章（复用 .jinyu-widget-list，无需额外样式，保留以便后续细化） */
+/* 随机文章 / 相关文章：复用 .jinyu-hot-list 缩略图布局（.jinyu-random-list / .jinyu-related-list 仅作语义标记，无独立样式） */
 
 /* 搜索 */
 .jinyu-search-widget {
@@ -205,17 +205,23 @@
     .text-ellipsis(2);
 }
 
-/* 每日一句 */
+/* ==========================================================================
+   每日一句（引文卡）
+   —— 侧栏里的「引文卡」：左侧品牌竖条 + 右上角大引号 + 衬线引文 + 署名/换句行。
+      引文用衬线体（宋），配合古诗文内容比无衬线更有书卷气；正文色提到 @text-1，
+      让这句话成为侧栏的视觉重点，而不是又一个灰字块。
+   ========================================================================== */
 .jinyu-hitokoto {
     position: relative;
     overflow: hidden;   /* 裁掉右上角装饰引号的溢出，避免顶破卡片 */
     margin: 0;
-    padding: @s-4 @s-4 @s-3;
-    border-left: 0;
+    padding: @s-5 @s-4 @s-4;
     border-radius: @radius-md;
-    background: @bg-subtle;
+    background-color: @bg-subtle;
+    /* 右上角一团极淡的品牌光晕，把视线引向引文与引号，纯装饰 */
+    background-image: radial-gradient(125% 105% at 100% 0%, rgba(var(--jinyu-c-primary-rgb), .1), rgba(var(--jinyu-c-primary-rgb), 0) 58%);
 
-    /* 左侧品牌渐变竖条（替代原来的实色 border-left，与标题竖条同语言） */
+    /* 左侧品牌渐变竖条（与标题竖条同语言） */
     &::before {
         content: '';
         position: absolute;
@@ -226,16 +232,16 @@
         background: linear-gradient(180deg, @primary, @primary-light);
     }
 
-    /* 右上角装饰性大引号：极低透明度，只做质感不抢内容 */
+    /* 右上角装饰性大引号：低透明度衬线字形，只做质感不抢内容 */
     &::after {
         content: '\201C';
         position: absolute;
-        right: 8px;
-        top: -16px;
+        right: 6px;
+        top: 0;
         font-family: Georgia, 'Times New Roman', serif;
-        font-size: 72px;
+        font-size: 64px;
         line-height: 1;
-        color: rgba(var(--jinyu-c-primary-rgb), .12);
+        color: rgba(var(--jinyu-c-primary-rgb), .16);
         pointer-events: none;
     }
 
@@ -243,32 +249,95 @@
         position: relative;   /* 抬到装饰引号之上 */
         z-index: 1;
         margin: 0;
-        color: @text-2;
-        font-size: @fs-base;
+        color: @text-1;
+        /* 引文走衬线（宋），比无衬线更有书卷气；但后台「正文字体」一旦显式配置，
+           --content-font-family 优先——避免小工具与全站字体选择打架。 */
+        font-family: var(--content-font-family, 'Songti SC', 'STSong', 'Noto Serif SC', 'Source Han Serif SC', SimSun, Georgia, serif);
+        font-size: @fs-md;
         line-height: 1.9;
+        letter-spacing: .02em;
         text-wrap: pretty;
     }
 
-    .jinyu-hitokoto-from {
+    /* 署名 + 换句按钮同一行，右对齐 */
+    .jinyu-hitokoto-meta {
         position: relative;   /* 同上 */
         z-index: 1;
         display: flex;
         align-items: center;
         justify-content: flex-end;
-        gap: 6px;
+        gap: @s-2;
         margin-top: @s-3;
-        color: @text-4;
+        min-height: 26px;
+    }
+
+    .jinyu-hitokoto-from {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-width: 0;         /* flex 项防长署名撑破 */
+        color: @text-3;
         font-size: @fs-xs;
         font-style: normal;
 
-        /* 细横线替代「—— 」，杂志式署名 */
+        /* 品牌色细横线替代「—— 」，杂志式署名 */
         &::before {
             content: '';
-            width: 16px;
+            flex: none;
+            width: 18px;
             height: 1px;
-            background: currentColor;
-            opacity: .55;
+            background: @primary;
+            opacity: .5;
         }
+    }
+
+    /* 「换一句」：仅 random 模式由 PHP 输出。幽灵按钮，悬停才点亮 */
+    .jinyu-hitokoto-next {
+        flex: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 26px;
+        height: 26px;
+        padding: 0;
+        border: 0;
+        border-radius: @radius-pill;
+        background: transparent;
+        color: @text-4;
+        font-size: 12px;
+        line-height: 1;
+        cursor: pointer;
+        transition: color @transition-fast, background @transition-fast;
+
+        i { transition: transform .45s @ease-out-expo; }
+        &:hover {
+            color: @primary;
+            background: rgba(var(--jinyu-c-primary-rgb), .1);
+            i { transform: rotate(180deg); }
+        }
+        &:active { transform: scale(.9); }
+        &:focus-visible {
+            outline: 2px solid rgba(var(--jinyu-c-primary-rgb), .45);
+            outline-offset: 1px;
+        }
+    }
+
+    /* 客户端换句：文字与署名淡入淡出，避免 PJAX 换页时字直接跳变 */
+    .jinyu-hitokoto-text,
+    .jinyu-hitokoto-from {
+        transition: opacity .16s ease;
+    }
+
+    &.is-swapping .jinyu-hitokoto-text,
+    &.is-swapping .jinyu-hitokoto-from {
+        opacity: 0;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .jinyu-hitokoto-text,
+        .jinyu-hitokoto-from { transition: none; }
+        .jinyu-hitokoto-next i { transition: none; }
+        .jinyu-hitokoto-next:hover i { transform: none; }
     }
 }
 
@@ -671,24 +740,46 @@
 
 /* ==========================================================================
    金玉·站点性能（实时心跳）
+   结构契约（改标记须同步 inc/fun/widget.php + assets/js/jinyu.js fillPerf）：
+     .jinyu-perf-top    状态胶囊（脉冲点 + 文案 + 采样数）+ 健康分环
+     .jinyu-perf-chart  SVG 平滑曲线（渐变面积用内联 fill=url(#id)，勿在此写 fill）
+                        + 峰值点 / 均值虚线两个 HTML 覆盖层
+     .jinyu-perf-grid   三指标卡（图标 + 值 + 名称 + 趋势）
+     .jinyu-perf-meta   均值 / 峰值 / 负载
+   颜色一律走 tokens 变量，明暗自适应，禁止再写 dark 覆写块。
    ========================================================================== */
 .jinyu-perf {
-    &-head {
+    --jp-level: @primary;   /* 健康分等级色（环 / 文案），由 [data-level] 覆写 */
+    --jp-dot: @success;     /* 状态点色：默认「存活绿」，warn/bad 才变色 */
+
+    &-top {
         display: flex;
         align-items: center;
+        justify-content: space-between;
         gap: @s-2;
         margin-bottom: @s-3;
+    }
+    /* 状态胶囊：比裸文字更像「仪表盘」，且把采样数收进同一视觉单元 */
+    &-state {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        min-width: 0;
+        padding: 3px 9px 3px 7px;
+        background: @bg-subtle;
+        border: 1px solid @border;
+        border-radius: @radius-pill;
     }
     /* 状态点：脉冲光环用伪元素 + 纯 transform/opacity。
        ⚠️ 原来这里用 color-mix() 做光环色，浏览器不支持时整条 box-shadow 会被丢弃 → 光环消失。
        改用 inherit 继承状态色，零兼容风险。 */
     &-dot {
         position: relative;
-        width: 8px;
-        height: 8px;
+        width: 7px;
+        height: 7px;
         border-radius: 50%;
-        background: @text-4;
-        flex-shrink: 0;
+        background: var(--jp-dot);
+        flex: none;
 
         &::after {
             content: '';
@@ -697,48 +788,116 @@
             border-radius: 50%;
             background: inherit;
             opacity: 0;
+            animation: jinyu-perf-pulse 2.4s @ease-std infinite;
         }
-        &.is-ok  { background: @success; &::after { animation: jinyu-perf-pulse 2.4s @ease-std infinite; } }
-        &.is-warn { background: @warning; &::after { animation: jinyu-perf-pulse 2.4s @ease-std infinite; } }
-        &.is-bad  { background: @danger;  &::after { animation: jinyu-perf-pulse 2.4s @ease-std infinite; } }
     }
-    &-status { font-size: @fs-xs; color: @text-3; }
+    &-status { font-size: @fs-xs; font-weight: 600; color: @text-2; white-space: nowrap; }
+    &-samples {
+        font-size: 11px;
+        color: @text-4;
+        white-space: nowrap;
+
+        &:not([hidden])::before { content: '·'; margin-right: 5px; }
+    }
+
+    /* 健康分环：数字压在环心（负 margin 居中，不依赖 grid） */
+    &-score {
+        position: relative;
+        width: 34px;
+        height: 34px;
+        flex: none;
+        cursor: help;
+
+        svg { display: block; width: 100%; height: 100%; }
+        b {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 800;
+            color: @text-1;
+            font-variant-numeric: tabular-nums;
+        }
+    }
+    &-ring-bg,
+    &-ring { fill: none; stroke-width: 3.6; }
+    &-ring-bg { stroke: @border; }
+    &-ring {
+        stroke: var(--jp-level);
+        stroke-linecap: round;
+        transform-box: view-box;
+        transform-origin: 50% 50%;
+        transform: rotate(-90deg);   /* 12 点方向起画 */
+        transition: stroke-dashoffset .6s @ease-out-expo;
+    }
+
+    /* 图表：SVG 只画线与面积；峰值点/均值线是 HTML 覆盖层——
+       viewBox 被非等比拉伸，SVG 里的圆会被压成椭圆、虚线也会被拉长。 */
+    &-chart {
+        position: relative;
+        margin-bottom: @s-3;
+    }
     &-spark {
         display: block;
         width: 100%;
-        height: 44px;   /* 32 → 44：折线有了体量，不再是条细缝 */
-        margin-bottom: @s-3;
+        height: 52px;   /* 36 → 52：曲线有了体量，不再是条细缝 */
     }
-    /* 折线下的品牌淡色面积，把「心跳」从线扩成一个区域 */
-    &-area { fill: rgba(var(--jinyu-c-primary-rgb), .14); }
     &-line {
+        fill: none;
         stroke: @primary;
-        stroke-width: 1.6;
+        stroke-width: 1.8;
         stroke-linejoin: round;
         stroke-linecap: round;
         vector-effect: non-scaling-stroke;
     }
+    /* 渐变停靠点颜色只能走 CSS：SVG 表现属性里写不了 var()。
+       fill 本身由 PHP 内联 url(#唯一id)——同一页可有两份实例，重名 id 会让后一份填充失效。 */
+    &-stop { stop-color: @primary; }
+    &-avgline,
+    &-peak { position: absolute; pointer-events: none; }
+    &-avgline {
+        left: 0;
+        right: 0;
+        height: 0;
+        border-top: 1px dashed @border-strong;
+        opacity: .85;
+    }
+    &-peak {
+        width: 7px;
+        height: 7px;
+        margin: -3.5px 0 0 -3.5px;
+        border-radius: 50%;
+        background: @primary;
+        box-shadow: 0 0 0 3px rgba(var(--jinyu-c-primary-rgb), .16);
+    }
+
+    /* 三指标卡 */
     &-grid {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));   /* minmax(0,·) 防内容撑破 */
         gap: @s-2;
-        text-align: center;
     }
     &-cell {
         display: flex;
         flex-direction: column;
-        gap: 3px;
-        padding: @s-3 @s-1;
+        align-items: center;
+        gap: 4px;
+        min-width: 0;   /* 网格子项默认 min-width:auto，窄卡里会撑破 */
+        padding: @s-3 6px @s-2;
         background: @bg-subtle;
         border: 1px solid @border;
         border-radius: @radius-md;
-        transition: transform @transition-fast, border-color @transition-fast;
+        transition: transform @transition-fast, border-color @transition-fast, box-shadow @transition-fast;
 
         b {
             font-size: @fs-lg;
             font-weight: 800;
             color: @text-1;
             letter-spacing: -.3px;
+            line-height: 1.15;
+            white-space: nowrap;   /* 数值 + 单位永不折行（旧版 0.0340/秒 折行就是这么来的） */
             font-variant-numeric: tabular-nums;
 
             /* 小号单位（秒/次/MB）：由 JS setNumUnit 注入 */
@@ -751,10 +910,85 @@
                 margin-left: 2px;
             }
         }
-        span { font-size: 11px; color: @text-4; }
+        .jinyu-perf-name { font-size: 11px; color: @text-4; white-space: nowrap; }
 
-        &:hover { transform: translateY(-1px); border-color: rgba(var(--jinyu-c-primary-rgb), .3); }
+        &:hover {
+            transform: translateY(-1px);
+            border-color: rgba(var(--jinyu-c-primary-rgb), .35);
+            box-shadow: 0 6px 16px rgba(var(--jinyu-c-primary-rgb), .1);
+        }
     }
+    &-ico {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 22px;
+        height: 22px;
+        font-size: 11px;
+        color: @primary;
+        background: rgba(var(--jinyu-c-primary-rgb), .12);
+        border-radius: 7px;
+    }
+    /* 指标卡第四行：趋势（耗时/查询）/ 内存占比。默认灰=纯信息；
+       只有站点已经偏慢 / 拥堵时，趋势才上色报警（上涨=红、下降=绿——
+       这三项都是「越小越好」，非股市语义，勿反）。三张卡第四行永远有内容，高度才齐。 */
+    &-trend,
+    &-pct {
+        font-size: 10px;
+        line-height: 1.4;
+        white-space: nowrap;
+        color: @text-4;
+        font-variant-numeric: tabular-nums;
+    }
+    &-trend {
+        font-weight: 700;
+
+        &.is-up { color: @danger; }
+        &.is-down { color: @success; }
+    }
+
+    /* 底部元信息：均值 / 峰值 / 负载 */
+    &-meta {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: @s-2;
+        margin-top: @s-2;
+        padding-top: @s-2;
+        border-top: 1px dashed @border;
+        text-align: center;
+
+        span {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            min-width: 0;
+        }
+        i { font-style: normal; font-size: 10px; color: @text-4; }
+        b {
+            font-size: @fs-xs;
+            font-weight: 700;
+            color: @text-2;
+            font-variant-numeric: tabular-nums;
+        }
+    }
+
+    /* 等级色：data-level 由 JS 写入，等级阈值只在服务端 live.php 维护一处 */
+    &[data-level='fast'] {
+        --jp-level: @success;
+    }
+    &[data-level='ok'] {
+        --jp-level: @primary;
+    }
+    &[data-level='warn'] {
+        --jp-level: @warning;
+        --jp-dot: @warning;
+    }
+    &[data-level='bad'] {
+        --jp-level: @danger;
+        --jp-dot: @danger;
+    }
+    &[data-level='warn'] &-status,
+    &[data-level='bad'] &-status { color: var(--jp-level); }
 }
 
 @keyframes jinyu-perf-pulse {
@@ -971,7 +1205,9 @@
     }
 
     .jinyu-footer-title {
-        color: @text-invert;
+        /* 页脚标题的「强文字」色：亮色页脚是浅底(#f7f8fa)，@text-invert(#fff) 会白上白隐形。
+           与同级的 .jinyu-footer-col h4 保持一致，改用自适应 token（暗色下仍是 #fff，无副作用）。 */
+        color: @text-footer-strong;
         font-size: @fs-md;
         font-weight: 700;
         margin: 0 0 @s-4;
@@ -1039,8 +1275,14 @@
         cursor: pointer;
     }
 
-    /* 每日一句在深色底上的底色替换（@bg-subtle 是浅色 token，直接用会发白） */
-    .jinyu-hitokoto { background: rgba(255, 255, 255, .06); }
+    /* 每日一句在页脚：页脚亮色下是浅底(#f7f8fa)，而引文卡在侧栏用的是 @bg-subtle(#f5f6f8)
+       ——两者几乎同色，卡面会整块「消失」。页脚里改用 @bg-card（亮=#fff / 暗=#434a5a）垫出层次
+       （与性能卡在页脚的处理一致）；引文/署名/按钮走 @text-1/@text-3/@text-4 token 已能自适应，
+       无须再覆写——旧版硬写 rgba(255,255,255,.06) + @text-invert，在浅色页脚上会「白上白」隐形。 */
+    .jinyu-hitokoto {
+        background-color: @bg-card;
+        background-image: radial-gradient(125% 105% at 100% 0%, rgba(var(--jinyu-c-primary-rgb), .12), rgba(var(--jinyu-c-primary-rgb), 0) 58%);
+    }
 
     /* 最新评论在深色底上的适配：@bg-subtle / @bg-card / @text-3 / @text-4 都是浅底
        用的 token，照搬到深色页脚会得到「高亮发白 + 头像外环发白 + 正文时间看不清」。
@@ -1078,15 +1320,29 @@
     .jinyu-uptime-label,
     .jinyu-uptime-foot { color: @text-footer; }
 
-    .jinyu-perf-line { stroke: @primary; }
-    .jinyu-perf-area { fill: rgba(var(--jinyu-c-primary-rgb), .22); }
-    .jinyu-perf-status { color: @text-footer; }
+    /* 性能卡在页脚作用域：卡片底 / 描边改用「卡片 + 页脚边框」token。
+       旧版硬写 rgba(255,255,255,.06)，在亮色页脚（浅底 #f7f8fa）上等于白上白直接隐形。
+       注意不能在这里写 .jinyu-perf-area 的 fill —— 那会盖掉 PHP 内联的渐变 url()，面积整块消失。 */
+    .jinyu-perf-state { background: @bg-card; border-color: @border-footer; }
+    .jinyu-perf-status,
+    .jinyu-perf-samples { color: @text-footer; }
+    .jinyu-perf-score b { color: @text-footer-strong; }
+    .jinyu-perf-ring-bg { stroke: @border-footer; }
+    .jinyu-perf-avgline { border-top-color: @border-footer; }
     .jinyu-perf-cell {
-        background: rgba(255, 255, 255, .06);
+        background: @bg-card;
         border-color: @border-footer;
         &:hover { border-color: rgba(var(--jinyu-c-primary-rgb), .5); }
-        b { color: @text-invert; }
-        span { color: @text-footer; }
+        b { color: @text-footer-strong; }
+        /* 只覆写名称与占比：趋势自带 is-up/is-down 语义色，这里若用 @text-footer
+           盖过去，页脚里的报警色会被静默抹掉（选择器更深）。 */
+        .jinyu-perf-name,
+        .jinyu-perf-pct { color: @text-footer; }
+    }
+    .jinyu-perf-meta {
+        border-top-color: @border-footer;
+        i { color: @text-footer; }
+        b { color: @text-footer-strong; }
     }
 
     /* 时钟在深色底上的适配：数字渐变 / 眼睛 / 秒条 / 元信息统一换深底配色。
@@ -1169,14 +1425,18 @@ html.jinyu-widget-anim-ready {
     }
 
     /* 3) 热门徽章：缩放进场（同理，三卡片都要覆写，否则页脚排行徽章隐形） */
-    .jinyu-hot-rank {
+    .jinyu-hot-rank,
+    .jinyu-hot-rank-badge {
         transform: scale(.4);
         opacity: 0;
         transition: transform .4s @ease-spring, opacity .4s ease;
     }
     .jinyu-widget.is-in .jinyu-hot-rank,
+    .jinyu-widget.is-in .jinyu-hot-rank-badge,
     .jinyu-footer-widget.is-in .jinyu-hot-rank,
-    .jinyu-single-widget.is-in .jinyu-hot-rank {
+    .jinyu-footer-widget.is-in .jinyu-hot-rank-badge,
+    .jinyu-single-widget.is-in .jinyu-hot-rank,
+    .jinyu-single-widget.is-in .jinyu-hot-rank-badge {
         transform: scale(1);
         opacity: 1;
     }
@@ -1219,7 +1479,8 @@ html.jinyu-widget-anim-ready {
 }
 
 /* 热门条目 hover：徽章轻微放大呼应（rank 进场 transition 已含 transform，hover 用同曲线更顺） */
-.jinyu-hot-item:hover .jinyu-hot-rank { transform: scale(1.1); }
+.jinyu-hot-item:hover .jinyu-hot-rank,
+.jinyu-hot-item:hover .jinyu-hot-rank-badge { transform: scale(1.1); }
 
 /* 6) 作者卡封面：hover 时一道极淡光泽扫过（pointer-events:none，不挡内容）
    ⚠️ 封面的 position/overflow 已移到 common.less —— 封面一旦定位就会盖住头像，
@@ -1242,10 +1503,11 @@ html.jinyu-widget-anim-ready {
         .jinyu-footer-widget,
         .jinyu-single-widget { opacity: 1; }
         .jinyu-widget-title::before { transform: translateY(-50%) scaleY(1); }
-        .jinyu-hot-rank { transform: scale(1); opacity: 1; }
+        .jinyu-hot-rank, .jinyu-hot-rank-badge { transform: scale(1); opacity: 1; }
         .jinyu-tag-cloud a { opacity: 1; transform: none; transition-delay: 0s; }
     }
     /* 常驻装饰动画一律停掉（呼吸光晕 / 状态点脉冲） */
     .jinyu-visitor-avatar::after { animation: none; opacity: .35; }
     .jinyu-perf-dot::after { animation: none; }
+    .jinyu-perf-ring { transition: none; }
 }

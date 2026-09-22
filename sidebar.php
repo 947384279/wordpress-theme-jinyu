@@ -37,9 +37,9 @@ if (jinyu_get_option('sidebar_pos', 'right') === 'none') {
         </section>
 
         <!-- 热门文章（数据源与「金玉·热门文章」小工具共用：inc/fun/related.php） -->
-        <?php $hot_posts = jinyu_get_hot_posts(5); ?>
+        <?php $hot_posts = function_exists('jinyu_get_hot_posts') ? jinyu_get_hot_posts(5) : []; ?>
         <section class="jinyu-widget">
-            <h3 class="jinyu-widget-title"><i class="fa-solid fa-fire"></i> <?php esc_html_e('热门文章', JINYU); ?></h3>
+            <h3 class="jinyu-widget-title"><i class="fa-solid fa-fire"></i> <?php esc_html_e('热门文章', 'jinyu'); ?></h3>
             <ul class="jinyu-hot-list">
                 <?php if ($hot_posts) : ?>
                     <?php foreach ($hot_posts as $jy_i => $jy_p) : ?>
@@ -62,7 +62,7 @@ if (jinyu_get_option('sidebar_pos', 'right') === 'none') {
                 <?php else : ?>
                     <li class="jinyu-hot-item">
                         <span class="jinyu-hot-rank">1</span>
-                        <div class="jinyu-hot-info"><div class="jinyu-hot-title"><?php esc_html_e('暂无热门文章', JINYU); ?></div></div>
+                        <div class="jinyu-hot-info"><div class="jinyu-hot-title"><?php esc_html_e('暂无热门文章', 'jinyu'); ?></div></div>
                     </li>
                 <?php endif; ?>
             </ul>
@@ -70,7 +70,7 @@ if (jinyu_get_option('sidebar_pos', 'right') === 'none') {
 
         <!-- 分类目录 -->
         <section class="jinyu-widget">
-            <h3 class="jinyu-widget-title"><i class="fa-regular fa-folder-open"></i> <?php esc_html_e('分类目录', JINYU); ?></h3>
+            <h3 class="jinyu-widget-title"><i class="fa-regular fa-folder-open"></i> <?php esc_html_e('分类目录', 'jinyu'); ?></h3>
             <?php
             $cats = get_categories(['hide_empty' => true]);
             if ($cats) :
@@ -86,18 +86,18 @@ if (jinyu_get_option('sidebar_pos', 'right') === 'none') {
                     <?php endforeach; ?>
                 </ul>
             <?php else : ?>
-                <p class="jinyu-widget-empty"><?php esc_html_e('暂无分类', JINYU); ?></p>
+                <p class="jinyu-widget-empty"><?php esc_html_e('暂无分类', 'jinyu'); ?></p>
             <?php endif; ?>
         </section>
 
         <!-- 最新评论（与「金玉·最新评论」小工具共用：inc/fun/comment.php） -->
         <?php $recent_comments = jinyu_recent_comments_list(5); ?>
         <section class="jinyu-widget">
-            <h3 class="jinyu-widget-title"><i class="fa-regular fa-comment"></i> <?php esc_html_e('最新评论', JINYU); ?></h3>
+            <h3 class="jinyu-widget-title"><i class="fa-regular fa-comment"></i> <?php esc_html_e('最新评论', 'jinyu'); ?></h3>
             <?php if ($recent_comments) : ?>
                 <?php echo $recent_comments; // phpcs:ignore WordPress.Security.EscapeOutput -- 内部函数已逐字段转义 ?>
             <?php else : ?>
-                <p class="jinyu-widget-empty"><?php esc_html_e('暂无评论', JINYU); ?></p>
+                <p class="jinyu-widget-empty"><?php esc_html_e('暂无评论', 'jinyu'); ?></p>
             <?php endif; ?>
         </section>
 
@@ -105,17 +105,17 @@ if (jinyu_get_option('sidebar_pos', 'right') === 'none') {
         <?php $tag_cloud = jinyu_tag_cloud_html(15); ?>
         <?php if ($tag_cloud !== '') : ?>
         <section class="jinyu-widget">
-            <h3 class="jinyu-widget-title"><i class="fa-solid fa-tags"></i> <?php esc_html_e('标签云', JINYU); ?></h3>
+            <h3 class="jinyu-widget-title"><i class="fa-solid fa-tags"></i> <?php esc_html_e('标签云', 'jinyu'); ?></h3>
             <div class="jinyu-tag-cloud"><?php echo $tag_cloud; // phpcs:ignore WordPress.Security.EscapeOutput -- 内部函数已逐字段转义 ?></div>
         </section>
         <?php endif; ?>
 
         <!-- 搜索 -->
         <section class="jinyu-widget">
-            <h3 class="jinyu-widget-title"><i class="fa-solid fa-magnifying-glass"></i> <?php esc_html_e('搜索', JINYU); ?></h3>
+            <h3 class="jinyu-widget-title"><i class="fa-solid fa-magnifying-glass"></i> <?php esc_html_e('搜索', 'jinyu'); ?></h3>
             <form class="jinyu-search-box" method="get" action="<?php echo esc_url(home_url('/')); ?>" role="search">
-                <input type="search" name="s" placeholder="<?php esc_attr_e('输入关键词', JINYU); ?>" aria-label="<?php esc_attr_e('搜索', JINYU); ?>">
-                <button type="submit" aria-label="<?php esc_attr_e('搜索', JINYU); ?>">
+                <input type="search" name="s" placeholder="<?php esc_attr_e('输入关键词', 'jinyu'); ?>" aria-label="<?php esc_attr_e('搜索', 'jinyu'); ?>">
+                <button type="submit" aria-label="<?php esc_attr_e('搜索', 'jinyu'); ?>">
                     <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
                 </button>
             </form>

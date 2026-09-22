@@ -43,7 +43,7 @@ get_header();
               wp_reset_postdata();
           else :
           ?>
-            <p><?php esc_html_e('暂无内容', JINYU); ?></p>
+            <p><?php esc_html_e('暂无内容', 'jinyu'); ?></p>
           <?php endif; ?>
         </div>
       </div>

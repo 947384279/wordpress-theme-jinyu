@@ -5,22 +5,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * 资源优化
- * 设置项来自 Jinyu_OptionResource（含图片懒加载、自动 alt、禁用 emoji/migrate、HTML 压缩、页面缓存等）。
+ * 内置常驻的前端资源优化（图片懒加载 / 自动补 alt / WebP 替换 / 脚本 defer / 去 jQuery Migrate / 去 Dashicons / 关古腾堡前台样式），无开关、默认常开。
+ * 注：Emoji / wp-embed / Heartbeat 移除、HTML 压缩、整页缓存启停与有效期已迁至「性能优化中心（perf）」统一管控，此处不再重复实现。
  */
 
 /* ==========================================================================
    资源优化：移除不必要的脚本 / 样式
    ========================================================================== */
 
-// 主题内置：始终移除 WordPress Emoji 脚本（无用户开关，Emoji 由系统字体原生渲染）
-remove_action('wp_head', 'print_emoji_detection_script', 7);
-remove_action('admin_print_scripts', 'print_emoji_detection_script');
-remove_action('wp_print_styles', 'print_emoji_styles');
-remove_action('admin_print_styles', 'print_emoji_styles');
-remove_filter('the_content_feed', 'wp_staticize_emoji');
-remove_filter('comment_text_rss', 'wp_staticize_emoji');
-remove_filter('wp_mail', 'wp_staticize_emoji_for_email');
-add_filter('emoji_svg_url', '__return_false');
+// Emoji 脚本移除已迁入「性能优化中心」的 disable_emoji 开关统一管控（含 feed / 邮件过滤器），
+// 不再在此硬编码，避免开关失效与重复实现。
 
 // 主题内置：始终移除 jQuery Migrate（现代环境无需，老插件兼容问题极少）
 add_action('wp_default_scripts', function ($scripts) {
@@ -31,25 +25,19 @@ add_action('wp_default_scripts', function ($scripts) {
     }
 });
 
-if (jinyu_is_checked('disable_dashicons')) {
-    add_action('wp_enqueue_scripts', function () {
-        if (!is_user_logged_in()) wp_deregister_style('dashicons');
-    });
-}
+// 非管理员移除 Dashicons：仅后台需要，前台访客永不加载。
+add_action('wp_enqueue_scripts', function () {
+    if (!is_user_logged_in()) wp_deregister_style('dashicons');
+});
 
-if (jinyu_is_checked('disable_wp_embed')) {
-    add_action('wp_footer', function () {
-        wp_deregister_script('wp-embed');
-    });
-}
+// wp-embed 移除已迁入「性能优化中心」的 disable_embed 开关统一管控，此处不再重复。
 
-if (jinyu_is_checked('disable_gutenberg_css')) {
-    add_action('wp_enqueue_scripts', function () {
-        wp_dequeue_style('wp-block-library');
-        wp_dequeue_style('wp-block-library-theme');
-        wp_dequeue_style('wc-block-style');
-    }, 100);
-}
+// 禁用前台古腾堡样式：前台不使用区块样式时默认关闭。
+add_action('wp_enqueue_scripts', function () {
+    wp_dequeue_style('wp-block-library');
+    wp_dequeue_style('wp-block-library-theme');
+    wp_dequeue_style('wc-block-style');
+}, 100);
 
 // 禁用后台古腾堡（区块）编辑器：改用经典编辑器撰写文章/页面。
 // 仅拦截「是否启用区块编辑器」判定，不影响已发布内容，也不影响主题自身的区块资源注册。
@@ -66,13 +54,8 @@ add_filter('script_loader_tag', function ($tag, $handle) {
     return $tag;
 }, 10, 2);
 
-// 前端禁用 Heartbeat：内容站前台无需心跳（仅后台区块编辑器依赖），避免登录访客每 15~60s 发起一次 AJAX 空轮询，
-// 减少不必要的 PHP / DB 唤醒。后台（含编辑器）不受影响。
-add_action('wp_enqueue_scripts', function () {
-    if (!is_admin()) {
-        wp_deregister_script('heartbeat');
-    }
-}, 100);
+// 前台 Heartbeat 移除已迁入「性能优化中心」的 disable_heartbeat 开关统一管控（前台 + 后台均由 perf 处理），
+// 此处不再重复。
 
 /* ==========================================================================
    内容校验：正文输出时统一处理外链与图片
@@ -91,8 +74,8 @@ function jinyu_content_filter($content)
     $ext_blank   = jinyu_is_checked('ext_link_target');
     $ext_nofollow= jinyu_is_checked('ext_link_target');
     $go          = jinyu_is_checked('go_link_enable');
-    $alt         = jinyu_is_checked('auto_img_alt');
-    $webp        = jinyu_get_option('webp_enable', true);
+    $alt         = true; // 自动补 alt：主题图片缺 alt 一律补标题，利于 SEO（内置常开）
+    $webp        = true; // WebP 替换：封面/卡片等主题图片输出自动替换为 WebP（内置常开）
 
     // WebP 开启时也要进入图片处理分支，故提前返回判定需纳入 $webp
     if (!$ext_blank && !$ext_nofollow && !$go && !$alt && !$webp) return $content;
@@ -112,7 +95,7 @@ function jinyu_content_filter($content)
             if (!$href) continue;
             $host = wp_parse_url($href, PHP_URL_HOST);
             if ($host && $host !== $home) {
-                if ($go) {
+                if ($go && function_exists('jinyu_go_sign')) {
                     $a->setAttribute('href', home_url('/go/?url=' . urlencode($href) . '&sig=' . jinyu_go_sign($href)));
                 }
                 if ($ext_blank && $a->getAttribute('target') !== '_blank') $a->setAttribute('target', '_blank');
@@ -189,13 +172,19 @@ function jinyu_content_filter($content)
 /* ==========================================================================
    性能：HTML 压缩（去除标签间空白与注释，仅前台整页生效，跳过后台/接口）
    ========================================================================== */
-// 主题内置：始终压缩前台 HTML（仅整页文档，跳过后台/接口）；无用户开关
-if (!is_admin()) {
-    add_action('template_redirect', function () {
-        if (wp_doing_ajax() || wp_is_json_request() || (defined('REST_REQUEST') && REST_REQUEST)) return;
-        ob_start('jinyu_minify_html');
-    }, 5);
-}
+// 前台 HTML 压缩改由「性能优化中心」的 html_minify 开关管控（运行时读取，避免包含期依赖未定义函数）。
+add_action('template_redirect', function () {
+    if (is_admin()) {
+        return;
+    }
+    if (empty(jinyu_perf_get_options()['html_minify'])) {
+        return;
+    }
+    if (wp_doing_ajax() || wp_is_json_request() || (defined('REST_REQUEST') && REST_REQUEST)) {
+        return;
+    }
+    ob_start('jinyu_minify_html');
+}, 5);
 
 function jinyu_minify_html(string $html): string
 {
@@ -240,58 +229,7 @@ function jinyu_minify_html(string $html): string
    ========================================================================== */
 
 /* ==========================================================================
-   视频短代码 [jinyu_video]：原生 HTML5 <video>；识别 B站 链接时自动转为 iframe 直嵌
+   视频短代码 [jinyu_video] 已迁至配套插件 jinyu-theme-companion（inc/fun/short-code.php）。
+   主题不再注册任何短代码，以符合 WordPress.org 主题库规范。
    ========================================================================== */
-add_shortcode('jinyu_video', function ($atts) {
-    $atts = shortcode_atts(
-        ['url' => '', 'cover' => '', 'title' => '', 'autoplay' => 'false'],
-        $atts,
-        'jinyu_video'
-    );
-    $url = trim( $atts['url'] );
-    if ( ! $url ) {
-        return '';
-    }
-    $bili = jinyu_video_bilibili_src( $url );
-    if ( $bili ) {
-        $auto = ( $atts['autoplay'] === 'true' || $atts['autoplay'] === '1' ) ? 1 : 0;
-        $src  = $bili . '&autoplay=' . $auto;
-        return '<div class="jinyu-video jinyu-video-bili" style="position:relative;width:100%;padding-top:56.25%;">'
-             . '<iframe style="position:absolute;width:100%;height:100%;left:0;top:0;border:0;border-radius:8px;" '
-             . 'src="' . esc_url( $src ) . '" scrolling="no" frameborder="no" allowfullscreen="true" '
-             . 'sandbox="allow-top-navigation allow-same-origin allow-forms allow-scripts"></iframe></div>';
-    }
-    $out  = '<video class="jinyu-video" src="' . esc_url( $url ) . '" controls style="width:100%;border-radius:8px;"';
-    if ( $atts['cover'] ) {
-        $out .= ' poster="' . esc_url( $atts['cover'] ) . '"';
-    }
-    $out .= '>' . esc_html( $atts['title'] ) . '</video>';
-    return $out;
-});
-
-/**
- * 从链接解析 B站 播放地址：支持 bilibili.com/BVxxx、b23.tv、player.bilibili.com。
- * 返回可用于 iframe 的 player 地址；非 B站 链接返回空字符串。
- */
-function jinyu_video_bilibili_src( $url ) {
-    $host = parse_url( $url, PHP_URL_HOST );
-    if ( ! $host ) {
-        return '';
-    }
-    $host = strtolower( $host );
-    if ( ! preg_match( '/(^|\.)bilibili\.com$/', $host ) && $host !== 'b23.tv' ) {
-        return '';
-    }
-    if ( $host === 'player.bilibili.com' ) {
-        return $url;
-    }
-    if ( preg_match( '/\/video\/(BV[a-zA-Z0-9]+)/', $url, $m ) ) {
-        $page = 1;
-        if ( preg_match( '/[?&]p=(\d+)/', $url, $pm ) ) {
-            $page = max( 1, intval( $pm[1] ) );
-        }
-        return 'https://player.bilibili.com/player.html?bvid=' . $m[1] . '&page=' . $page . '&as_wide=1&high_quality=1&danmaku=0';
-    }
-    return '';
-}
 

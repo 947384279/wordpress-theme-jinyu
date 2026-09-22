@@ -13,19 +13,17 @@ class Jinyu_Setting
         add_action('wp_ajax_jinyu_export_options', [$this, 'ajax_export']);
         add_action('wp_ajax_jinyu_import_options', [$this, 'ajax_import']);
         add_action('wp_ajax_jinyu_reset_section', [$this, 'ajax_reset_section']);
-        add_action('wp_ajax_jinyu_check_update', [$this, 'ajax_check_update']);
     }
 
     public function register_menu(): void
     {
-        add_menu_page(
-            __('金玉主题配置', JINYU),
-            __('金玉主题配置', JINYU),
-            'manage_options',
+        add_theme_page(
+            __('金玉主题配置', 'jinyu'),
+            __('金玉主题配置', 'jinyu'),
+            'edit_theme_options',
             'jinyu-options',
             [$this, 'render_page'],
-            'dashicons-admin-customizer',
-            59
+            'dashicons-admin-customizer'
         );
     }
 
@@ -34,7 +32,7 @@ class Jinyu_Setting
      */
     public static function option_classes(): array
     {
-        return ['Jinyu_OptionBasic','Jinyu_OptionGlobal','Jinyu_OptionStyle','Jinyu_OptionContent','Jinyu_OptionCarousel','Jinyu_OptionSeo','Jinyu_OptionEmail','Jinyu_OptionResource','Jinyu_OptionStorage','Jinyu_OptionExtend','Jinyu_OptionUser','Jinyu_OptionFooter','Jinyu_OptionCode','Jinyu_OptionSales','Jinyu_OptionAbout'];
+        return ['Jinyu_OptionBasic','Jinyu_OptionGlobal','Jinyu_OptionStyle','Jinyu_OptionContent','Jinyu_OptionComment','Jinyu_OptionCarousel','Jinyu_OptionResource','Jinyu_OptionExtend','Jinyu_OptionUser','Jinyu_OptionFooter','Jinyu_OptionCode'];
     }
 
     /**
@@ -61,6 +59,13 @@ class Jinyu_Setting
                 if (is_array($f) && isset($f['id'])) $fields[$f['id']] = $f;
             }
         }
+        // 合并自定义面板（维护工具等）声明的字段，使其进入保存 schema：
+        // 否则这类字段会被 sanitize_fields 当未知键丢弃、或被 drop_orphan_keys 清除。
+        foreach (self::custom_groups() as $cg) {
+            foreach (($cg['fields'] ?? []) as $f) {
+                if (is_array($f) && isset($f['id'])) $fields[$f['id']] = $f;
+            }
+        }
         return $fields;
     }
 
@@ -81,16 +86,30 @@ class Jinyu_Setting
             }
         }
 
-        // 维护工具：独立的运维操作面板（非设置字段，不进入保存数据）
-        $groups[] = [
-            'key'     => 'tools',
-            'title'   => __('维护工具', JINYU),
-            'desc'    => __('SMTP 测试与缓存清理等运维操作，不写入主题设置。', JINYU),
-            'custom'  => 'tools',
-            'fields'  => [],
-        ];
+        // 维护工具 / 我要反馈 等自定义面板（定义见 custom_groups()）。
+        // 维护工具面板内由 admin.js 自行渲染并保存个别设置字段（如 footer_runinfo），
+        // 这些字段必须在 custom_groups() 的 fields 中声明，才能进入保存 schema、不被 drop_orphan_keys 清除。
+        return array_merge($groups, self::custom_groups());
+    }
 
-        return $groups;
+    /**
+     * 自定义面板（非普通选项分组）：由 admin.js 自行渲染并保存个别字段。
+     * 若面板内含需持久化的设置字段（如维护工具的 footer_runinfo），必须在 fields 中声明，
+     * 以便 each_field() 将其纳入保存 schema（sanitize / drop_orphan_keys 据此识别）。
+     */
+    private static function custom_groups(): array
+    {
+        return [
+            [
+                'key'     => 'tools',
+                'title'   => __('维护工具', 'jinyu'),
+                'desc'    => __('SMTP 测试、缓存清理与运行信息开关等运维操作。', 'jinyu'),
+                'custom'  => 'tools',
+                'fields'  => [
+                    ['id'=>'footer_runinfo','title'=>__('页脚显示运行信息','jinyu'),'type'=>'switch','sdt'=>0,'desc'=>__('在前台页脚输出一行实时运行信息：查询数 / 内存 / 渲染耗时。数值由 JS 实时拉取，不会被整页缓存冻结。开启后可在本面板「清理缓存」使其生效','jinyu')],
+                ],
+            ],
+        ];
     }
 
     /**
@@ -189,7 +208,7 @@ class Jinyu_Setting
 
     public function render_page(): void
     {
-        if (!current_user_can('manage_options')) return;
+        if (!current_user_can('edit_theme_options')) return;
         $groups = $this->collect_groups();
         include __DIR__ . '/template.php';
     }
@@ -197,24 +216,24 @@ class Jinyu_Setting
     public function ajax_save(): void
     {
         check_ajax_referer('jinyu_save_options', 'nonce');
-        if (!current_user_can('manage_options')) wp_send_json_error(__('权限不足', JINYU));
+        if (!current_user_can('edit_theme_options')) wp_send_json_error(__('权限不足', 'jinyu'));
         $input = json_decode(file_get_contents('php://input'), true);
-        if (!is_array($input)) wp_send_json_error(__('数据格式错误', JINYU));
+        if (!is_array($input)) wp_send_json_error(__('数据格式错误', 'jinyu'));
         // 服务端按字段 schema 校验/钳制，并与现有选项合并（避免前端漏字段造成配置丢失）
         $current = get_option(JINYU_OPT, []);
         if (!is_array($current)) $current = [];
         $current = $this->drop_orphan_keys($current);
         $clean = $this->sanitize_fields($input);
         jinyu_save_options(array_merge($current, $clean));
-        wp_send_json_success(['msg' => __('保存成功', JINYU)]);
+        wp_send_json_success(['msg' => __('保存成功', 'jinyu')]);
     }
 
     public function ajax_reset(): void
     {
         check_ajax_referer('jinyu_save_options', 'nonce');
-        if (!current_user_can('manage_options')) wp_send_json_error(__('权限不足', JINYU));
+        if (!current_user_can('edit_theme_options')) wp_send_json_error(__('权限不足', 'jinyu'));
         delete_option(JINYU_OPT);
-        wp_send_json_success(['msg' => __('已重置', JINYU)]);
+        wp_send_json_success(['msg' => __('已重置', 'jinyu')]);
     }
 
     /**
@@ -223,10 +242,10 @@ class Jinyu_Setting
     public function ajax_export(): void
     {
         check_ajax_referer('jinyu_save_options', 'nonce');
-        if (!current_user_can('manage_options')) wp_send_json_error(__('权限不足', JINYU));
+        if (!current_user_can('edit_theme_options')) wp_send_json_error(__('权限不足', 'jinyu'));
         $data = get_option(JINYU_OPT, []);
         wp_send_json_success([
-            'msg'  => __('导出成功', JINYU),
+            'msg'  => __('导出成功', 'jinyu'),
             'data' => $data,
         ]);
     }
@@ -237,10 +256,10 @@ class Jinyu_Setting
     public function ajax_import(): void
     {
         check_ajax_referer('jinyu_save_options', 'nonce');
-        if (!current_user_can('manage_options')) wp_send_json_error(__('权限不足', JINYU));
+        if (!current_user_can('edit_theme_options')) wp_send_json_error(__('权限不足', 'jinyu'));
         $body = json_decode(file_get_contents('php://input'), true);
         if (!is_array($body) || !isset($body['data']) || !is_array($body['data'])) {
-            wp_send_json_error(__('数据格式错误', JINYU));
+            wp_send_json_error(__('数据格式错误', 'jinyu'));
         }
         $incoming = $body['data'];
         // 白名单过滤：只接受已注册字段的键，避免注入无关数据
@@ -261,9 +280,9 @@ class Jinyu_Setting
         $current = get_option(JINYU_OPT, []);
         $merged = array_merge($current, $filtered);
         jinyu_save_options($merged);
-        $msg = __('导入成功', JINYU);
+        $msg = __('导入成功', 'jinyu');
         if ($skipped_secret > 0) {
-            $msg .= sprintf(__('；%d 个加密字段（API Key / 密码等）无法跨站解密，已跳过，请重新填写', JINYU), $skipped_secret);
+            $msg .= sprintf(__('；%d 个加密字段（API Key / 密码等）无法跨站解密，已跳过，请重新填写', 'jinyu'), $skipped_secret);
         }
         wp_send_json_success(['msg' => $msg]);
     }
@@ -274,55 +293,23 @@ class Jinyu_Setting
     public function ajax_reset_section(): void
     {
         check_ajax_referer('jinyu_save_options', 'nonce');
-        if (!current_user_can('manage_options')) wp_send_json_error(__('权限不足', JINYU));
+        if (!current_user_can('edit_theme_options')) wp_send_json_error(__('权限不足', 'jinyu'));
         $body = json_decode(file_get_contents('php://input'), true);
         $key = isset($body['key']) ? $body['key'] : '';
-        if (!$key) wp_send_json_error(__('参数错误', JINYU));
+        if (!$key) wp_send_json_error(__('参数错误', 'jinyu'));
 
         $target = null;
         foreach ($this->collect_groups() as $g) {
             if (($g['key'] ?? '') === $key && empty($g['custom'])) { $target = $g; break; }
         }
-        if (!$target) wp_send_json_error(__('分组不存在', JINYU));
+        if (!$target) wp_send_json_error(__('分组不存在', 'jinyu'));
 
         $ids = array_column($target['fields'] ?? [], 'id');
         $opts = get_option(JINYU_OPT, []);
         if (!is_array($opts)) $opts = [];
         foreach ($ids as $id) { unset($opts[$id]); }
         update_option(JINYU_OPT, $opts);
-        wp_send_json_success(['msg' => __('已重置本组', JINYU)]);
+        wp_send_json_success(['msg' => __('已重置本组', 'jinyu')]);
     }
 
-    /**
-     * 检查主题更新：读取「更新服务器地址」返回的版本 JSON，与当前主题版本比较。
-     * 期望 JSON：{"version":"1.1.0","changelog":"...","download_url":"...","detail_url":"..."}
-     */
-    public function ajax_check_update(): void
-    {
-        check_ajax_referer('jinyu_save_options', 'nonce');
-        if (!current_user_can('manage_options')) wp_send_json_error(['msg' => __('权限不足', JINYU)]);
-
-        $theme = wp_get_theme(get_template());
-        $current = $theme->get('Version');
-
-        // 复用统一拉取入口（含 RSA 签名校验，强制刷新）。
-        $info = jinyu_fetch_update_info(true);
-        if (null === $info) {
-            if (get_transient('jinyu_update_verify_failed')) {
-                wp_send_json_error(['msg' => __('更新源签名校验失败，已阻止升级（疑似更新源被篡改）', JINYU)]);
-            }
-            wp_send_json_error(['msg' => __('更新源无响应或返回数据不可用', JINYU)]);
-        }
-
-        $latest = trim((string) $info['version']);
-        wp_send_json_success([
-            'current'      => $current,
-            'latest'       => $latest,
-            'has_update'   => version_compare($latest, (string) $current, '>'),
-            'changelog'    => isset($info['changelog']) ? (string) $info['changelog'] : '',
-            'download_url' => isset($info['download_url']) ? (string) $info['download_url'] : '',
-            'detail_url'   => isset($info['detail_url']) ? (string) $info['detail_url'] : '',
-            'verified'     => true,
-        ]);
-    }
 }

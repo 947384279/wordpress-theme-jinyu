@@ -61,10 +61,10 @@ add_action( 'admin_notices', function () {
 	if ( ! jinyu_has_external_page_cache() ) {
 		return;
 	}
-	if ( ! jinyu_is_checked( 'page_cache_enable' ) ) {
+	if ( empty( jinyu_perf_get_options()['page_cache_enable'] ) ) {
 		return;
 	}
 	echo '<div class="notice notice-info is-dismissible"><p>'
-		. esc_html__( '检测到第三方整页缓存插件：金玉主题的内建整页缓存已自动让位，避免两层缓存冲突与内容不同步。前端 AJAX（点赞 / 评论 / AI 对话 / 登录）通过 nonce 懒加载保持正常，无需额外操作。', JINYU )
+		. esc_html__( '检测到第三方整页缓存插件：金玉主题的内建整页缓存已自动让位，避免两层缓存冲突与内容不同步。前端 AJAX（点赞 / 评论 / AI 对话 / 登录）通过 nonce 懒加载保持正常，无需额外操作。', 'jinyu')
 		. '</p></div>';
 } );

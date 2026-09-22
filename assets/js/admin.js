@@ -246,51 +246,197 @@
         }
     }
 
-    /* ---------- 多选（复选树）：category-multi / page-multi ---------- */
+    /* ---------- 多选下拉（category-multi / page-multi / checkboxes） ----------
+       收起态仅一行：占位符或已选 chip；展开态：搜索 + 可滚动勾选列表。
+       存储仍为逗号分隔字符串，勾选顺序即写入顺序（前端分栏顺序）。 */
     function renderMultiSelect(f, items, checkedStr) {
         var id = f.id || '';
-        var checked = {};
-        String(checkedStr || '').split(',').forEach(function (s) {
-            s = s.trim();
-            if (s) checked[s] = true;
-        });
-        var boxes = '';
+        // 勾选顺序 = 存储顺序（前端分栏顺序），初始渲染即按此回填 chips 与列表勾选态
+        var sel = String(checkedStr || '').split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+        var order = {};
+        sel.forEach(function (v, i) { order[v] = i + 1; });
+        var chips = sel.map(function (v) {
+            var name = (items || {})[v];
+            return '<span class="jinyu-ms-chip"><span class="jinyu-ms-chip-txt">' + esc(name || v) + '</span>' +
+                '<span class="jinyu-ms-chip-ord">' + order[v] + '</span>' +
+                '<button type="button" class="jinyu-ms-chip-rm" data-ms-rm="' + esc(v) + '" aria-label="移除">×</button></span>';
+        }).join('');
+        // 自适应折叠：先渲染全部 chip + 「+N」徽标，实际显示个数由 layoutMultiChips 按触发框宽度测量决定
+        // 注意：显隐必须用 style.display —— .jinyu-ms-chip 的 display:inline-flex 会覆盖 hidden 属性
+        var moreChip = '<span class="jinyu-ms-chip jinyu-ms-chip-more" style="display:none"></span>';
+        // 初始按钮文案：可见项（初始无过滤=全部）是否全部已选
+        var allKeys = Object.keys(items || {});
+        var allSel = allKeys.length > 0 && allKeys.every(function (k) { return order[k] !== undefined; });
+        var allLabel = allSel ? '全不选' : '全选';
+        var list = '';
         Object.keys(items || {}).forEach(function (k) {
-            var name = items[k];
-            var cid = 'jinyu-multi-' + id + '-' + k;
-            boxes += '<label class="jinyu-multi-item' + (checked[k] ? ' is-checked' : '') + '" for="' + esc(cid) + '">' +
-                '<input type="checkbox" id="' + esc(cid) + '" class="jinyu-multi-cb" data-multi-key="' + esc(id) + '" value="' + esc(k) + '"' + (checked[k] ? ' checked' : '') + '>' +
-                '<span class="jinyu-multi-txt">' + esc(name) + '</span></label>';
+            var on = order[k] !== undefined;
+            list += '<div class="jinyu-ms-item' + (on ? ' is-on' : '') + '" data-val="' + esc(k) + '" role="option" aria-selected="' + (on ? 'true' : 'false') + '">' +
+                '<span class="jinyu-ms-box" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="4 12 10 18 20 6"/></svg></span>' +
+                '<span class="jinyu-ms-nm">' + esc(items[k]) + '</span>' +
+                '<span class="jinyu-ms-ord" aria-hidden="true">' + (on ? '#' + order[k] : '') + '</span></div>';
         });
-        if (!boxes) boxes = '<p class="jinyu-field-desc">' + esc(f.empty || '暂无可选') + '</p>';
-        var initCount = Object.keys(checked).length;
+        if (!list) list = '<p class="jinyu-ms-empty">' + esc(f.empty || '暂无可选') + '</p>';
+        var initCount = sel.length;
         return '<div class="jinyu-field jinyu-field--multi" data-field="' + esc(id) + '">' +
             '<div class="jinyu-field-labelrow">' +
-            '<label class="jinyu-field-label" for="jinyu-f-' + esc(id) + '">' + esc(f.title) + '</label>' +
-            '<span class="jinyu-multi-count" data-multi-count="' + esc(id) + '">' + (initCount ? '已选 ' + initCount + ' 项' : '') + '</span>' +
-            '<button type="button" class="jinyu-multi-clear" data-multi-clear="' + esc(id) + '"' + (initCount ? '' : ' hidden') + '>清空</button>' +
+            '<label class="jinyu-field-label">' + esc(f.title) + '</label>' +
+            '<span class="jinyu-multi-count" data-multi-count="' + esc(id) + '"' + (initCount ? '' : ' hidden') + '>已选 ' + initCount + ' 项</span>' +
             '</div>' +
-            '<div class="jinyu-multi-box" data-multi-box="' + esc(id) + '">' + boxes + '</div>' +
+            '<div class="jinyu-ms" data-multi-box="' + esc(id) + '">' +
+            '<div class="jinyu-ms-trigger" role="button" tabindex="0" aria-haspopup="listbox">' +
+            '<span class="jinyu-ms-placeholder' + (initCount ? ' is-hidden' : '') + '">' + esc(f.placeholder || '请选择…') + '</span>' +
+            '<div class="jinyu-ms-chips">' + chips + moreChip + '</div>' +
+            '<span class="jinyu-ms-caret" aria-hidden="true"></span>' +
+            '</div>' +
+            '<div class="jinyu-ms-panel">' +
+            '<div class="jinyu-ms-search"><input type="text" class="jinyu-ms-q" placeholder="搜索…" autocomplete="off">' +
+            '<button type="button" class="jinyu-ms-all" data-ms-all>' + allLabel + '</button></div>' +
+            '<div class="jinyu-ms-list" role="listbox" aria-multiselectable="true">' + list + '</div>' +
+            '</div>' +
+            '</div>' +
             '<input type="hidden" data-key="' + esc(id) + '" data-type="category-multi" value="' + esc(checkedStr || '') + '">' +
             (f.desc ? '<p class="jinyu-field-desc">' + esc(f.desc) + '</p>' : '') +
             '</div>';
     }
 
-    function syncMulti(box) {
+    // 依据 hidden input 当前值刷新下拉框视图（chips / 列表勾选态 / 计数 / 清空按钮）
+    function refreshMulti(box) {
         var id = box.getAttribute('data-multi-box');
         var hidden = qs('input[data-key="' + id + '"]', root);
         if (!hidden) return;
-        var sel = qsa('.jinyu-multi-cb:checked', box).map(function (c) { return c.value; });
-        hidden.value = sel.join(',');
-        var cnt = qs('[data-multi-count="' + id + '"]', root);
-        if (cnt) cnt.textContent = sel.length ? '已选 ' + sel.length + ' 项' : '';
-        var clr = qs('[data-multi-clear="' + id + '"]', root);
-        if (clr) clr.hidden = !sel.length;
-        qsa('.jinyu-multi-cb', box).forEach(function (c) {
-            var lab = c.closest('.jinyu-multi-item');
-            if (lab) lab.classList.toggle('is-checked', c.checked);
+        var sel = String(hidden.value || '').split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+        var order = {};
+        sel.forEach(function (v, i) { order[v] = i + 1; });
+
+        var names = {};
+        qsa('.jinyu-ms-item', box).forEach(function (it) {
+            var nm = qs('.jinyu-ms-nm', it);
+            names[it.getAttribute('data-val')] = nm ? nm.textContent : '';
         });
+
+        var chipsWrap = qs('.jinyu-ms-chips', box);
+        if (chipsWrap) {
+            // 重建全部 chip（旧的 chip 与「+N」徽标一并清掉，徽标含 jinyu-ms-chip 类）
+            qsa('.jinyu-ms-chip', chipsWrap).forEach(function (n) { n.remove(); });
+            sel.forEach(function (v) {
+                var chip = document.createElement('span');
+                chip.className = 'jinyu-ms-chip';
+                chip.innerHTML = '<span class="jinyu-ms-chip-txt">' + esc(names[v] || v) + '</span>' +
+                    '<span class="jinyu-ms-chip-ord">' + order[v] + '</span>' +
+                    '<button type="button" class="jinyu-ms-chip-rm" data-ms-rm="' + esc(v) + '" aria-label="移除">×</button>';
+                chipsWrap.appendChild(chip);
+            });
+            if (!qs('.jinyu-ms-chip-more', chipsWrap)) {
+                var more0 = document.createElement('span');
+                more0.className = 'jinyu-ms-chip jinyu-ms-chip-more';
+                more0.style.display = 'none';
+                chipsWrap.appendChild(more0);
+            }
+            layoutMultiChips(box);   // 按触发框实际宽度自适应折叠，保证单行
+        }
+        var ph = qs('.jinyu-ms-placeholder', box);
+        if (ph) ph.classList.toggle('is-hidden', sel.length > 0);
+
+        // 全选/全不选 按钮文案随「可见项是否全部已选」切换
+        refreshMultiAllBtn(box);
+
+        qsa('.jinyu-ms-item', box).forEach(function (it) {
+            var v = it.getAttribute('data-val');
+            var on = order[v] !== undefined;
+            it.classList.toggle('is-on', on);
+            it.setAttribute('aria-selected', on ? 'true' : 'false');
+            var ord = qs('.jinyu-ms-ord', it);
+            if (ord) ord.textContent = on ? '#' + order[v] : '';
+        });
+
+        var cnt = qs('[data-multi-count="' + id + '"]', root);
+        if (cnt) { cnt.textContent = '已选 ' + sel.length + ' 项'; cnt.hidden = !sel.length; }
+    }
+
+    // 依据当前可见项是否全部已选，切换全选/全不选按钮文案
+    function refreshMultiAllBtn(box) {
+        var allBtn = qs('.jinyu-ms-all', box);
+        if (!allBtn) return;
+        var order = {};
+        var hidden = qs('input[data-key="' + box.getAttribute('data-multi-box') + '"]', root);
+        String(hidden && hidden.value || '').split(',').forEach(function (s) {
+            s = s.trim(); if (s) order[s] = true;
+        });
+        var vis = [];
+        qsa('.jinyu-ms-item', box).forEach(function (it) { if (!it.hidden) vis.push(it.getAttribute('data-val')); });
+        var allOn = vis.length > 0 && vis.every(function (v) { return order[v] === true; });
+        allBtn.textContent = allOn ? '全不选' : '全选';
+    }
+
+    // 自适应折叠：按触发框（.jinyu-ms-chips）实际可用宽度显示尽可能多的 chip，
+    // 放不下的折叠进「+N」徽标，保证触发框恒定一行。面板不可见（display:none）时跳过，待可见后重算。
+    function layoutMultiChips(box) {
+        var wrap = qs('.jinyu-ms-chips', box);
+        var more = qs('.jinyu-ms-chip-more', box);
+        if (!wrap || !more) return;
+        var chips = qsa('.jinyu-ms-chip:not(.jinyu-ms-chip-more)', wrap);
+        if (!chips.length) { more.style.display = 'none'; return; }
+        var avail = wrap.clientWidth;
+        if (!avail) return;
+        var gap = 6;
+        // 先全部可见，判断是否整行能放下（无需 +N）
+        chips.forEach(function (c) { c.style.display = ''; });
+        more.style.display = 'none';
+        var used = 0, allFit = true;
+        chips.forEach(function (c) {
+            var w = c.offsetWidth;
+            if (used + w > avail) allFit = false;
+            used += w + gap;
+        });
+        if (allFit) return;
+        // 放不下：显示徽标（先给占位文案保证有真实宽度）测出 reserve，再按预算裁切
+        more.textContent = '+' + chips.length;
+        more.style.display = '';
+        var reserve = more.offsetWidth + gap;
+        var budget = avail - reserve;
+        used = 0; var shown = 0;
+        chips.forEach(function (c) {
+            var w = c.offsetWidth;
+            var need = w + (shown ? gap : 0);
+            if (used + need <= budget) { used += need; shown++; }
+            else { c.style.display = 'none'; }
+        });
+        var hiddenN = chips.length - shown;
+        if (hiddenN > 0) { more.textContent = '+' + hiddenN; }
+        else { more.style.display = 'none'; }
+    }
+    function layoutMultiAll() {
+        qsa('.jinyu-ms', root).forEach(layoutMultiChips);
+    }
+
+    function setMultiValue(box, values) {
+        var id = box.getAttribute('data-multi-box');
+        var hidden = qs('input[data-key="' + id + '"]', root);
+        if (!hidden) return;
+        hidden.value = values.join(',');
+        refreshMulti(box);
         markDirty();
+    }
+
+    // 多选下拉：按关键字过滤列表项（仅显隐，不改选中态）
+    function filterMultiList(box, kw) {
+        kw = String(kw || '').trim().toLowerCase();
+        var shown = 0;
+        qsa('.jinyu-ms-item', box).forEach(function (it) {
+            var nm = qs('.jinyu-ms-nm', it);
+            var hit = !kw || (nm ? nm.textContent.toLowerCase().indexOf(kw) >= 0 : false);
+            it.hidden = !hit;
+            if (hit) shown++;
+        });
+        var empty = qs('.jinyu-ms-empty', box);
+        if (empty) empty.hidden = !!shown;
+    }
+
+    function closeAllMsPop(except) {
+        qsa('.jinyu-ms.is-open', root).forEach(function (b) {
+            if (b !== except) b.classList.remove('is-open');
+        });
     }
 
     /* ---------- 字段渲染 ---------- */
@@ -469,15 +615,20 @@
     }
 
     function groupHtml(g) {
+        if (g.hidden) return '';
         var body;
         if (g.custom === 'tools') {
             body = toolsHtml();
         } else {
             body = (g.fields || []).map(fieldHtml).join('');
         }
-        var resetBtn = (g.custom === 'tools') ? '' :
+        // 自定义面板（维护工具 / 我要反馈）不持有设置字段，无需「重置本组」
+        var resetBtn = g.custom ? '' :
             '<button type="button" class="jinyu-panel-reset" data-reset-group="' + esc(g.key) + '" title="' + esc('仅重置本组为默认值') + '">' + esc('重置本组') + '</button>';
         var gIcon = ICONS[g.key] || 'dashicons-admin-generic';
+        // 自定义面板（维护工具 / 我要反馈）的内容自带独立卡片（jinyu-tools-list / jinyu-fb），
+        // 不再包 .jinyu-panel-body 外层圆角白卡，避免卡片套卡片的双层背景
+        var wrappedBody = g.custom ? body : ('<div class="jinyu-panel-body">' + body + '</div>');
         return '<section class="jinyu-panel' + (g.key === currentKey ? ' is-active' : '') + '" data-panel="' + esc(g.key) + '">' +
             '<header class="jinyu-panel-head">' +
             '<span class="jinyu-panel-icon dashicons ' + gIcon + '"></span>' +
@@ -487,7 +638,7 @@
             '</div>' +
             resetBtn +
             '</header>' +
-            '<div class="jinyu-panel-body">' + body + '</div>' +
+            wrappedBody +
             '</section>';
     }
 
@@ -518,16 +669,33 @@
             '</label>' +
             '<span id="jinyu-runinfo-tip" class="jinyu-tools-tip"></span>';
         return '<div class="jinyu-tools-list">' +
-            toolRow('email-alt', 'SMTP 测试', '向后台设置的收件地址发送一封测试邮件，验证站点发信链路是否正常。', toolAction('jinyu-test-smtp', '发送测试邮件', 'jinyu-test-smtp-tip')) +
+            toolRow('admin-settings', 'SMTP 发信', '配置发信通道（主机 / 端口 / 账号 / 授权码 / 加密 / 发件人）。测试邮件优先使用表单当前值，未保存也可直接测试。', toolAction('jinyu-test-smtp', '发送测试邮件', 'jinyu-test-smtp-tip') + toolAction('jinyu-config-smtp', '展开配置', 'jinyu-config-smtp-tip')) +
             toolRow('performance', '清理主题缓存', '立即清空全部主题缓存（页面缓存与静态化资源），改版后建议执行一次。', toolAction('jinyu-clear-cache', '清理缓存', 'jinyu-clear-cache-tip')) +
             toolRow('database', '数据库优化', '清理文章修订版、自动草稿、垃圾/回收站评论、孤立 meta 与过期 transient，并对数据表执行 OPTIMIZE。仅删冗余，不动正常内容。', toolAction('jinyu-db-optimize', '一键优化', 'jinyu-db-optimize-tip')) +
             toolRow('download', '导出配置', '将当前所有主题设置导出为 JSON 文件，便于备份与多站迁移。', toolAction('jinyu-export', '导出 JSON', 'jinyu-export-tip')) +
             toolRow('upload', '导入配置', '从 JSON 文件恢复主题设置，将覆盖当前全部配置，请先导出备份。', toolAction('jinyu-import', '选择文件并导入', 'jinyu-import-tip') + '<input type="file" id="jinyu-import-file" accept="application/json,.json" hidden>') +
             toolRow('chart-bar', '页脚运行信息', '在前台页脚输出实时运行信息（查询数 / 内存 / 渲染耗时）。开启后建议清理一次缓存使其生效。', runSwitch) +
+            '<div id="jinyu-smtp-card" class="jinyu-smtp-card" hidden>' + smtpCardHtml() + '</div>' +
             '</div>';
     }
 
-    /* 对象存储操作面板（配置页底部 storage_ops 字段渲染，仅操作按钮，不进入保存数据） */
+    function smtpCardHtml() {
+        var g = null;
+        for (var i = 0; i < GROUPS.length; i++) { if (GROUPS[i].key === 'email') { g = GROUPS[i]; break; } }
+        if (!g || !g.fields) return '';
+        var grid = g.fields.map(function (f) {
+            return '<div class="jinyu-smtp-cell">' + fieldHtml(f) + '</div>';
+        }).join('');
+        return '<div class="jinyu-smtp-card-head">' +
+            '<i class="dashicons dashicons-email" aria-hidden="true"></i>' +
+            '<span class="jinyu-smtp-card-title">发信通道</span>' +
+            '<span class="jinyu-smtp-card-note">填完记得点右上角「保存设置」</span>' +
+            '</div>' +
+            '<div class="jinyu-smtp-grid">' + grid + '</div>';
+    }
+
+    /* ---------- 对象存储面板（推送 / 拉回 / 加速域名） ---------- */
+    // 不使用 WP-Cron：由用户打开后台面板触发拉取，服务端以 ETag 判定内容是否变化（304 直接沿用本地缓存）
     function storageHtml() {
         return '<div class="jinyu-tools-list">' +
             toolRow('admin-network', '测试连接', '使用本页上方已填写并保存的配置，向存储上传并回读一个临时文件，验证服务商、桶、密钥是否正确。', toolAction('jinyu-storage-test', '测试连接', 'jinyu-storage-test-tip')) +
@@ -546,6 +714,7 @@
     function sidebarHtml() {
         var html = '<nav class="jinyu-nav" aria-label="设置分组">';
         GROUPS.forEach(function (g) {
+            if (g.hidden) return;
             var ic = ICONS[g.key] || 'dashicons-admin-generic';
             html += '<button type="button" class="jinyu-nav-item' + (g.key === currentKey ? ' is-active' : '') + '" data-nav="' + esc(g.key) + '">' +
                 '<span class="dashicons ' + ic + '"></span>' +
@@ -604,6 +773,8 @@
 
         snapshot = JSON.stringify(collect());
         applyShowRef();
+        layoutMultiAll();   // 初始可见面板的多选框按宽度自适应折叠
+
     }
 
     function activate(key) {
@@ -616,11 +787,13 @@
         qsa('.jinyu-panel', root).forEach(function (p) {
             p.classList.toggle('is-active', p.getAttribute('data-panel') === key);
         });
+        layoutMultiAll();   // 新面板可见后重算多选框折叠，避免 width=0 误裁切
         var main = qs('.jinyu-main', root);
         if (main) main.scrollTop = 0;
         // 页面级滚动（window）才是实际滚动容器，切换分组须归零，
         // 否则新面板从上个分组的滚动位置开始（看不到面板头）
         try { window.scrollTo(0, 0); } catch (e) {}
+
     }
 
     /* ---------- 自定义下拉（select） ---------- */
@@ -636,6 +809,17 @@
     function onRootClick(e) {
         var nav = e.target.closest('.jinyu-nav-item');
         if (nav) { activate(nav.getAttribute('data-nav')); return; }
+
+        // 维护工具：展开 / 收起 SMTP 配置卡片
+        var cfgBtn = e.target.closest('#jinyu-config-smtp');
+        if (cfgBtn) {
+            var card = qs('#jinyu-smtp-card', root);
+            if (card) {
+                card.hidden = !card.hidden;
+                cfgBtn.textContent = card.hidden ? '展开配置' : '收起配置';
+            }
+            return;
+        }
 
         // 自定义下拉：展开 / 收起
         var sTg = e.target.closest('[data-select-toggle]');
@@ -703,7 +887,6 @@
             return;
         }
 
-        // 维护工具：SMTP 测试 / 缓存清理（事件委托，面板重建后仍有效）
         if (e.target.closest('#jinyu-test-smtp')) { postTool('jinyu_test_smtp', qs('#jinyu-test-smtp-tip')); return; }
         if (e.target.closest('#jinyu-clear-cache')) { postTool('jinyu_clear_cache', qs('#jinyu-clear-cache-tip')); return; }
         if (e.target.closest('#jinyu-db-optimize')) { postTool('jinyu_db_optimize', qs('#jinyu-db-optimize-tip')); return; }
@@ -719,6 +902,7 @@
         if (e.target.closest('#jinyu-storage-push')) { runStorageJob('jinyu_storage_push', qs('#jinyu-storage-push'), qs('#jinyu-storage-push-tip')); return; }
         if (e.target.closest('#jinyu-storage-pull')) { runStorageJob('jinyu_storage_pull', qs('#jinyu-storage-pull'), qs('#jinyu-storage-pull-tip')); return; }
 
+
         // 关于：检查主题更新
         if (e.target.closest('[data-check-update]')) { checkUpdate(e.target.closest('[data-check-update]')); return; }
 
@@ -731,13 +915,72 @@
         var resetGrp = e.target.closest('[data-reset-group]');
         if (resetGrp) { resetSection(resetGrp.getAttribute('data-reset-group')); return; }
 
-        // 多选 chip：一键清空
-        var mClear = e.target.closest('[data-multi-clear]');
-        if (mClear) {
-            var mbox = qs('[data-multi-box="' + mClear.getAttribute('data-multi-clear') + '"]', root);
-            if (mbox) {
-                qsa('.jinyu-multi-cb:checked', mbox).forEach(function (c) { c.checked = false; });
-                syncMulti(mbox);
+        // 多选下拉：全选/全不选 当前可见（过滤后）的项 —— 可见项全部已选则反选（移除可见），否则勾选全部可见
+        var mAll = e.target.closest('[data-ms-all]');
+        if (mAll) {
+            var aBox = mAll.closest('[data-multi-box]');
+            if (aBox) {
+                var aHidden = qs('input[data-key="' + aBox.getAttribute('data-multi-box') + '"]', root);
+                var aCur = String(aHidden && aHidden.value || '').split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+                var aVis = [];
+                qsa('.jinyu-ms-item', aBox).forEach(function (it) {
+                    if (!it.hidden) aVis.push(it.getAttribute('data-val'));
+                });
+                var aAllOn = aVis.length > 0 && aVis.every(function (v) { return aCur.indexOf(v) !== -1; });
+                if (aAllOn) {
+                    var aSet = {};
+                    aVis.forEach(function (v) { aSet[v] = true; });
+                    aCur = aCur.filter(function (v) { return !aSet[v]; });
+                } else {
+                    aVis.forEach(function (v) { if (aCur.indexOf(v) === -1) aCur.push(v); });
+                }
+                setMultiValue(aBox, aCur);
+            }
+            return;
+        }
+
+        // 多选下拉：chip × 移除（保持其余项的勾选顺序）
+        var mRm = e.target.closest('[data-ms-rm]');
+        if (mRm) {
+            var rBox = mRm.closest('[data-multi-box]');
+            if (rBox) {
+                var rHidden = qs('input[data-key="' + rBox.getAttribute('data-multi-box') + '"]', root);
+                var rVal = mRm.getAttribute('data-ms-rm');
+                var rCur = String(rHidden && rHidden.value || '').split(',').map(function (s) { return s.trim(); }).filter(function (s) { return s && s !== rVal; });
+                setMultiValue(rBox, rCur);
+            }
+            return;
+        }
+
+        // 多选下拉：列表项勾选 / 取消（新勾选追加到末尾 → 勾选顺序即存储顺序）
+        var mItem = e.target.closest('.jinyu-ms-item');
+        if (mItem) {
+            var iBox = mItem.closest('[data-multi-box]');
+            if (iBox) {
+                var iHidden = qs('input[data-key="' + iBox.getAttribute('data-multi-box') + '"]', root);
+                var iVal = mItem.getAttribute('data-val');
+                var iCur = String(iHidden && iHidden.value || '').split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+                var at = iCur.indexOf(iVal);
+                if (at !== -1) iCur.splice(at, 1); else iCur.push(iVal);
+                setMultiValue(iBox, iCur);
+                var iQ = qs('.jinyu-ms-q', iBox);
+                if (iQ) { iQ.value = ''; filterMultiList(iBox, ''); iQ.focus(); }
+            }
+            return;
+        }
+
+        // 多选下拉：展开 / 收起（同时收起其它已展开的下拉）
+        var mTrg = e.target.closest('.jinyu-ms-trigger');
+        if (mTrg) {
+            var tBox = mTrg.closest('[data-multi-box]');
+            if (tBox) {
+                var willOpen = !tBox.classList.contains('is-open');
+                closeAllMsPop();
+                tBox.classList.toggle('is-open', willOpen);
+                if (willOpen) {
+                    var tQ = qs('.jinyu-ms-q', tBox);
+                    if (tQ) { tQ.value = ''; filterMultiList(tBox, ''); tQ.focus(); }
+                }
             }
             return;
         }
@@ -788,11 +1031,17 @@
             saveRuninfo(t.checked, qs('#jinyu-runinfo-tip', root));
             return;
         }
-        if (t.classList && t.classList.contains('jinyu-multi-cb')) {
-            var mbox = t.closest('[data-multi-box]');
-            if (mbox) { syncMulti(mbox); return; }
+        // 多选下拉：搜索关键字 → 过滤列表（不影响保存值），并同步全选按钮文案
+        if (t.classList && t.classList.contains('jinyu-ms-q')) {
+            var sqBox = t.closest('[data-multi-box]');
+            if (sqBox) {
+                filterMultiList(sqBox, t.value);
+                refreshMultiAllBtn(sqBox);
+                return;
+            }
         }
         if (t.id === 'jinyu-import-file') { handleImport(t); return; }
+        if (t.id === 'jinyu-fb-msg') { fbCount(); return; }
 
         if (t.hasAttribute('data-color-swatch')) {
             var key = t.getAttribute('data-color-swatch');
@@ -893,6 +1142,7 @@
             if (fnav) fnav.classList.add('is-active');
         }
         if (emptyTip) emptyTip.hidden = anyMatch;
+        layoutMultiAll();   // 搜索切换面板可见性后重算多选框折叠
     }
 
     /* ---------- 保存 / 重置 ---------- */
@@ -1213,6 +1463,33 @@
     }
 
     /* ---------- 关于：检查主题更新 ---------- */
+    function closeUpdatePop() {
+        var detail = qs('.jinyu-update-detail--head');
+        if (detail) detail.innerHTML = '';
+        detachUpdatePopClose();
+    }
+    var updatePopCloseHandler = null;
+    function detachUpdatePopClose() {
+        if (updatePopCloseHandler) {
+            document.removeEventListener('click', updatePopCloseHandler, true);
+            document.removeEventListener('keydown', updatePopCloseHandler._esc, true);
+            updatePopCloseHandler = null;
+        }
+    }
+    function attachUpdatePopClose() {
+        detachUpdatePopClose();
+        var onDoc = function (e) {
+            if (e.target.closest && e.target.closest('[data-close-update]')) { closeUpdatePop(); return; }
+            var box = qs('.jinyu-update-box--head');
+            if (box && box.contains(e.target)) return; // 点在弹卡或「检查更新」按钮内不关闭
+            closeUpdatePop();
+        };
+        var onEsc = function (e) { if (e.key === 'Escape') closeUpdatePop(); };
+        updatePopCloseHandler = onDoc;
+        updatePopCloseHandler._esc = onEsc;
+        document.addEventListener('click', onDoc, true);
+        document.addEventListener('keydown', onEsc, true);
+    }
     function checkUpdate(btn) {
         btn.disabled = true;
         var box = btn.closest('.jinyu-update-box');
@@ -1229,19 +1506,32 @@
                 var d = json.data || {};
                 if (status) {
                     if (d.has_update) {
-                        status.textContent = '发现新版本 v' + d.latest + '（当前 v' + d.current + '）';
+                        status.textContent = '发现新版本 v' + d.latest;
                         status.className = 'jinyu-update-status ok';
                     } else {
                         status.textContent = '已是最新版本 v' + d.current;
-                        status.className = 'jinyu-update-status ok';
+                        status.className = 'jinyu-update-status';
                     }
                 }
                 if (detail) {
+                    // 仅在确有新版本时才浮出更新卡片（更新日志 + 操作按钮）；已是最新时不渲染任何详情，不撑爆顶栏
                     var html = '';
-                    if (d.changelog) html += '<div class="jinyu-update-cl">' + esc(d.changelog) + '</div>';
-                    if (d.download_url) html += '<a class="jinyu-btn jinyu-btn-primary" href="' + esc(d.download_url) + '" target="_blank" rel="noopener">下载更新包</a>';
-                    if (d.detail_url) html += ' <a class="jinyu-btn" href="' + esc(d.detail_url) + '" target="_blank" rel="noopener">查看详情</a>';
+                    if (d.has_update) {
+                        html += '<div class="jinyu-update-pop">' +
+                            '<div class="jinyu-update-pop-head">' +
+                            '<i class="dashicons dashicons-download" aria-hidden="true"></i>' +
+                            '新版本 v' + esc(d.latest) +
+                            '<span>当前 v' + esc(d.current) + '</span>' +
+                            '<button type="button" class="jinyu-update-pop-close" data-close-update aria-label="关闭">×</button>' +
+                            '</div>' +
+                            (d.changelog ? '<div class="jinyu-update-cl">' + esc(d.changelog) + '</div>' : '<p class="jinyu-update-nocl">暂无更新日志。</p>') +
+                            '<div class="jinyu-update-pop-actions">' +
+                            (d.download_url ? '<a class="jinyu-btn jinyu-btn-sm jinyu-btn-primary" href="' + esc(d.download_url) + '" target="_blank" rel="noopener">下载更新包</a>' : '') +
+                            (d.detail_url ? '<a class="jinyu-btn jinyu-btn-sm" href="' + esc(d.detail_url) + '" target="_blank" rel="noopener">查看详情</a>' : '') +
+                            '</div></div>';
+                    }
                     detail.innerHTML = html;
+                    if (d.has_update) attachUpdatePopClose(); else detachUpdatePopClose();
                 }
             })
             .catch(function (err) { if (status) { status.textContent = '网络错误：' + err.message; status.className = 'jinyu-update-status err'; } })
@@ -1255,8 +1545,10 @@
         var saveFloat = qs('#jinyu-save-float');
         var discard = qs('#jinyu-discard');
         var search = qs('#jinyu-search');
+        var checkUpdateBtn = qs('#jinyu-check-update');
         dirtybar = qs('#jinyu-dirtybar');
 
+        if (checkUpdateBtn) checkUpdateBtn.addEventListener('click', function () { checkUpdate(checkUpdateBtn); });
         if (saveBtn) saveBtn.addEventListener('click', function () { save(saveBtn); });
         if (saveFloat) saveFloat.addEventListener('click', function () { save(saveFloat); });
         if (resetBtn) resetBtn.addEventListener('click', function () { resetAll(resetBtn); });
@@ -1294,11 +1586,12 @@
                 e.preventDefault();
                 save(saveBtn);
             }
-            if (e.key === 'Escape') closeAllSelectPops();
+            if (e.key === 'Escape') { closeAllSelectPops(); closeAllMsPop(); }
         });
-        // 点击下拉区域外 → 收起全部下拉
+        // 点击下拉区域外 → 收起全部下拉（自定义 select + 多选下拉）
         document.addEventListener('click', function (e) {
             if (root && !e.target.closest('.jinyu-select')) closeAllSelectPops();
+            if (root && !e.target.closest('.jinyu-ms')) closeAllMsPop();
         });
     }
 
@@ -1328,7 +1621,10 @@
         build();
         resumeStorageIfActive();
         wireTopbar();
-        watchTopbarH();
+        // 窗口缩放时重算多选框折叠，保持触发框恒定一行
+        window.addEventListener('resize', function () {
+            if (root) layoutMultiAll();
+        });
     }
 
     if (document.readyState === 'loading') {

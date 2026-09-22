@@ -13,7 +13,8 @@ if ( ! defined( 'ABSPATH' ) ) {
             <div class="jinyu-post-grid">
                 <?php while (have_posts()): the_post(); get_template_part('templates/module','post'); endwhile; ?>
             </div>
-            <div class="jinyu-pagination"><?php the_posts_pagination(['prev_text'=>'‹','next_text'=>'›']); ?></div>
+            <?php jinyu_pagination(['load_more' => false]); ?>
+            <?php get_template_part('templates/flinks'); ?>
         <?php else: ?>
             <?php get_template_part('templates/content','none'); ?>
         <?php endif; ?>

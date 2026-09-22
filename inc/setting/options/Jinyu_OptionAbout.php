@@ -10,12 +10,12 @@ class Jinyu_OptionAbout extends Jinyu_BaseOptionItem
     {
         return [
             'key'    => 'about',
-            'title'  => __('关于', JINYU),
-            'desc'   => __('主题版本、更新服务器与检查更新。', JINYU),
+            'title'  => __('关于', 'jinyu'),
+            'desc'   => __('主题版本、更新服务器与检查更新。', 'jinyu'),
             'icon'   => 'fa-solid fa-info-circle',
             'fields' => [
-                ['id'=>'version_info','title'=>__('当前版本',JINYU),'type'=>'info','desc'=>__('金玉主题 v' . JINYU_CUR_VER . ' · PHP 8.0+ · WordPress 7.1+',JINYU)],
-                ['id'=>'update_check','title'=>__('检查更新',JINYU),'type'=>'update_check'],
+                ['id'=>'version_info','title'=>__('当前版本','jinyu'),'type'=>'info','desc'=>sprintf(__('金玉主题 v%s · PHP 8.0+ · WordPress 7.1+','jinyu'), JINYU_CUR_VER)],
+                ['id'=>'update_check','title'=>__('检查更新','jinyu'),'type'=>'update_check'],
             ],
         ];
     }

@@ -204,23 +204,28 @@
 
     &::before, &::after { content: ''; flex: 1; height: 1px; background: @border; }
 }
-.jinyu-oauth-btns { display: flex; gap: @s-3; }
+.jinyu-oauth-btns {
+    display: flex;
+    justify-content: center;
+    gap: @s-4;
+}
 .jinyu-oauth-btn {
-    flex: 1;
-    height: 42px;
+    width: 44px;
+    height: 44px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: @s-2;
-    border-radius: @radius-md;
+    border-radius: 50%;
     color: #fff;
     text-decoration: none;
-    font-size: @fs-sm;
+    font-size: 20px;
+    transition: transform .15s ease, opacity .15s ease;
 
     &.jinyu-oauth-qq { background: #12b7f5; }
     &.jinyu-oauth-github { background: #24292e; }
     &.jinyu-oauth-gitee { background: #c71d23; }
-    &:hover { opacity: .9; color: #fff; }
+    &.jinyu-oauth-apple { background: #000; }
+    &:hover { opacity: .9; color: #fff; transform: translateY(-2px); }
 }
 
 /* ---- 未登录门禁 ---- */
@@ -435,6 +440,41 @@
     border-radius: @radius-md;
 }
 .jinyu-bind-on { margin-left: auto; font-size: @fs-xs; color: @success; }
+
+/* 第三方账号绑定列表：小型平台徽标 + 去绑定按钮 */
+.jinyu-bind-ico {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+.jinyu-bind-ico-qq     { background: #12b7f5; }
+.jinyu-bind-ico-github { background: #24292e; }
+.jinyu-bind-ico-gitee  { background: #c71d23; }
+.jinyu-bind-ico-apple  { background: #000; }
+
+.jinyu-bind-go {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    height: 30px;
+    padding: 0 14px;
+    border: 1px solid var(--jinyu-c-primary);
+    border-radius: 999px;
+    color: var(--jinyu-c-primary);
+    font-size: @fs-xs;
+    background: transparent;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease;
+
+    &:hover { background: var(--jinyu-c-primary); color: var(--jinyu-c-text-invert); }
+}
 
 /* ---- 头部用户菜单 ---- */
 .jinyu-user-menu { position: relative; }

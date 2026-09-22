@@ -45,7 +45,7 @@ get_header();
                 <div class="jinyu-moment-meta">
                   <a href="<?php the_permalink(); ?>"><?php echo esc_html(get_the_date('Y-m-d H:i')); ?></a>
                   <?php if (comments_open() || (int) get_comments_number() > 0) : ?>
-                    · <a href="<?php echo esc_url(get_comments_link()); ?>"><?php echo sprintf(__('%s 条评论', JINYU), (int) get_comments_number()); ?></a>
+                    · <a href="<?php echo esc_url(get_comments_link()); ?>"><?php echo sprintf(__('%s 条评论', 'jinyu'), (int) get_comments_number()); ?></a>
                   <?php endif; ?>
                 </div>
               </div>
@@ -55,7 +55,7 @@ get_header();
               wp_reset_postdata();
           else :
           ?>
-            <p><?php esc_html_e('暂无动态，请在后台「时光圈」中发表。', JINYU); ?></p>
+            <p><?php esc_html_e('暂无动态，请在后台「时光圈」中发表。', 'jinyu'); ?></p>
           <?php endif; ?>
         </div>
       </div>

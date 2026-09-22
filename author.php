@@ -20,11 +20,11 @@ if ( ! defined( 'ABSPATH' ) ) {
                 <h1><?php echo esc_html($author->display_name); ?></h1>
                 <?php if ($author->description): ?><p class="jinyu-term-desc"><?php echo esc_html($author->description); ?></p><?php endif; ?>
                 <?php if (is_user_logged_in() && get_current_user_id() !== (int)$author->ID) :
-                    $jinyu_following = jinyu_is_following(get_current_user_id(), (int)$author->ID); ?>
+                    $jinyu_following = function_exists('jinyu_is_following') ? jinyu_is_following(get_current_user_id(), (int)$author->ID) : false; ?>
                     <button type="button" class="jinyu-follow-btn<?php echo $jinyu_following ? ' is-following' : ''; ?>"
                             data-jinyu-follow data-target="user" data-id="<?php echo (int)$author->ID; ?>">
                         <i class="fa-solid <?php echo $jinyu_following ? 'fa-user-check' : 'fa-user-plus'; ?>" aria-hidden="true"></i>
-                        <span><?php echo $jinyu_following ? esc_html__('已关注', JINYU) : esc_html__('关注', JINYU); ?></span>
+                        <span><?php echo $jinyu_following ? esc_html__('已关注', 'jinyu') : esc_html__('关注', 'jinyu'); ?></span>
                     </button>
                 <?php endif; ?>
             </div>
@@ -33,7 +33,8 @@ if ( ! defined( 'ABSPATH' ) ) {
             <div class="jinyu-post-grid">
                 <?php while (have_posts()): the_post(); get_template_part('templates/module','post'); endwhile; ?>
             </div>
-            <div class="jinyu-pagination"><?php the_posts_pagination(['prev_text'=>'‹','next_text'=>'›']); ?></div>
+            <?php jinyu_pagination(['load_more' => false]); ?>
+            <?php get_template_part('templates/flinks'); ?>
         <?php else: ?>
             <?php get_template_part('templates/content','none'); ?>
         <?php endif; ?>

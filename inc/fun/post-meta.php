@@ -426,7 +426,7 @@ if (!function_exists('jinyu_get_post_views')) {
     function jinyu_get_post_views($post_id = 0)
     {
         global $post;
-        $pid = $post_id ?: $post->ID;
+        $pid = $post_id ?: (isset($post) ? $post->ID : 0);
         if (!$pid) return 0;
         $count = (int) get_post_meta($pid, 'jinyu_views', true);
         return $count;

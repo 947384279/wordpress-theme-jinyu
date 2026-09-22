@@ -10,33 +10,38 @@
 .jinyu-dark-tokens() {
     color-scheme: dark;
 
+    // 主色仅为「占位默认值」：后台「主题主色」在暗色下的真实取值由
+    // inc/fun/dynamic-style.php 的 jinyu_dark_override_css() 按配置派生后覆写。
+    // 切勿在此写死某个品牌色 —— html[data-theme='dark'] 权重大于 :root，会把用户配置吃掉。
     --jinyu-c-primary: #ff8a5c;
     --jinyu-c-primary-dark: #ff6b35;
     --jinyu-c-primary-light: rgba(255, 107, 53, .14);
     --jinyu-c-primary-rgb: 255, 138, 92;
 
-    --jinyu-c-bg: #0f1115;
-    --jinyu-c-bg-card: #16181d;
-    --jinyu-c-bg-subtle: #1f2229;
-    --jinyu-c-bg-input: #0f1115;
-    --jinyu-c-bg-code: #0b0d10;
-    --jinyu-c-bg-code-bar: #171a1f;
-    --jinyu-c-bg-header: rgba(20, 22, 28, .72);
-    --jinyu-c-bg-footer: #0f1115;
-    --jinyu-c-bg-mask: rgba(0, 0, 0, .6);
+    /* 默认深灰整体提亮：原 #0f1115 仅靠 #000 纯黑档，肉眼几乎无差；
+       现 bg #3a4150 ↔ 纯黑 #000 对比度≈2.1，切换明显。卡片/边框/文本同步提亮保持协调。 */
+    --jinyu-c-bg: #3a4150;
+    --jinyu-c-bg-card: #434a5a;
+    --jinyu-c-bg-subtle: #4d5568;
+    --jinyu-c-bg-input: #3f4654;
+    --jinyu-c-bg-code: #2c313d;
+    --jinyu-c-bg-code-bar: #383e4c;
+    --jinyu-c-bg-header: rgba(58, 65, 80, .82);
+    --jinyu-c-bg-footer: #353b47;
+    --jinyu-c-bg-mask: rgba(0, 0, 0, .55);
 
-    --jinyu-c-text-1: #e5e7eb;
-    --jinyu-c-text-2: #d1d5db;
-    --jinyu-c-text-3: #9ca3af;
-    /* 暗色元信息灰：原 #6b7280 在 #16181d 卡上约 3.6:1，调深到 #8a93a3(5.6:1) 达标 */
-    --jinyu-c-text-4: #8a93a3;
+    --jinyu-c-text-1: #eef0f4;
+    --jinyu-c-text-2: #d6dae2;
+    --jinyu-c-text-3: #aab2c0;
+    /* 暗色元信息灰：默认深灰提亮后原 #8a93a3 对比骤降，#9aa3b3 在 #434a5a 卡上约 4:1 保持可读 */
+    --jinyu-c-text-4: #9aa3b3;
     --jinyu-c-text-invert: #fff;
     --jinyu-c-text-footer-strong: #fff;
-    --jinyu-c-text-footer: #9ca3af;
+    --jinyu-c-text-footer: #aab2c0;
 
-    --jinyu-c-border: rgba(255, 255, 255, .08);
-    --jinyu-c-border-strong: rgba(255, 255, 255, .14);
-    --jinyu-c-border-footer: #2a2d32;
+    --jinyu-c-border: rgba(255, 255, 255, .12);
+    --jinyu-c-border-strong: rgba(255, 255, 255, .18);
+    --jinyu-c-border-footer: #4a515f;
 
     --jinyu-shadow-card: 0 4px 20px rgba(0, 0, 0, .35);
     --jinyu-shadow-hover: 0 12px 32px rgba(var(--jinyu-c-primary-rgb), .22);

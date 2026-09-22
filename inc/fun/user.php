@@ -37,7 +37,8 @@ function jinyu_user_page_url(string $tab = ''): string
 function jinyu_login_redirect_url(): string
 {
     if (!empty($_REQUEST['redirect_to'])) {
-        return esc_url_raw(wp_unslash($_REQUEST['redirect_to']));
+        // esc_url_raw 仅过滤危险协议、不校验主机；必须用 wp_validate_redirect 限制跳回本站，杜绝开放重定向钓鱼
+        return wp_validate_redirect(esc_url_raw(wp_unslash($_REQUEST['redirect_to'])), jinyu_user_page_url());
     }
     $ref = wp_get_referer();
     return $ref ?: jinyu_user_page_url();
@@ -49,17 +50,17 @@ function jinyu_login_redirect_url(): string
 function jinyu_user_tabs(): array
 {
     $tabs = [
-        'dashboard' => ['label' => __('概览', JINYU),    'icon' => 'fa-solid fa-gauge-high'],
-        'posts'     => ['label' => __('我的文章', JINYU), 'icon' => 'fa-solid fa-file-lines'],
-        'comments'  => ['label' => __('我的评论', JINYU), 'icon' => 'fa-solid fa-comments'],
-        'favs'      => ['label' => __('我的收藏', JINYU), 'icon' => 'fa-solid fa-bookmark'],
-        'profile'   => ['label' => __('资料设置', JINYU), 'icon' => 'fa-solid fa-user-gear'],
+        'dashboard' => ['label' => __('概览', 'jinyu'),    'icon' => 'fa-solid fa-gauge-high'],
+        'posts'     => ['label' => __('我的文章', 'jinyu'), 'icon' => 'fa-solid fa-file-lines'],
+        'comments'  => ['label' => __('我的评论', 'jinyu'), 'icon' => 'fa-solid fa-comments'],
+        'favs'      => ['label' => __('我的收藏', 'jinyu'), 'icon' => 'fa-solid fa-bookmark'],
+        'profile'   => ['label' => __('资料设置', 'jinyu'), 'icon' => 'fa-solid fa-user-gear'],
     ];
     if (jinyu_is_checked('user_can_submit')) {
-        $tabs['submit'] = ['label' => __('投稿', JINYU), 'icon' => 'fa-solid fa-pen-to-square'];
+        $tabs['submit'] = ['label' => __('投稿', 'jinyu'), 'icon' => 'fa-solid fa-pen-to-square'];
     }
-    $tabs['follow']        = ['label' => __('我的关注', JINYU), 'icon' => 'fa-solid fa-user-group'];
-    $tabs['notifications'] = ['label' => __('消息', JINYU),     'icon' => 'fa-solid fa-bell'];
+    $tabs['follow']        = ['label' => __('我的关注', 'jinyu'), 'icon' => 'fa-solid fa-user-group'];
+    $tabs['notifications'] = ['label' => __('消息', 'jinyu'),     'icon' => 'fa-solid fa-bell'];
     return $tabs;
 }
 
@@ -78,7 +79,17 @@ function jinyu_user_avatar_url(int $user_id, int $size = 96): string
     if ($custom) {
         return jinyu_img_to_webp_url(esc_url_raw($custom));
     }
-    $oauth = get_user_meta($user_id, 'jinyu_oauth_avatar', true);
+    // 兼容：旧版全局 jinyu_oauth_avatar + 新版按平台 jinyu_oauth_{platform}_avatar
+    $oauth = '';
+    foreach ( get_user_meta( $user_id ) ?: [] as $k => $v ) {
+        if ( 'jinyu_oauth_avatar' === $k || preg_match( '/^jinyu_oauth_.+_avatar$/', (string) $k ) ) {
+            $val = is_array( $v ) ? ( $v[0] ?? '' ) : $v;
+            if ( ! empty( $val ) ) {
+                $oauth = $val;
+                break;
+            }
+        }
+    }
     if ($oauth) {
         return jinyu_img_to_webp_url(esc_url_raw($oauth));
     }
@@ -213,14 +224,14 @@ function jinyu_user_role_label(int $uid): string
 {
     $user = get_userdata($uid);
     if (!$user || empty($user->roles)) {
-        return __('访客', JINYU);
+        return __('访客', 'jinyu');
     }
     $map = [
-        'administrator' => __('管理员', JINYU),
-        'editor'        => __('编辑', JINYU),
-        'author'        => __('作者', JINYU),
-        'contributor'   => __('投稿者', JINYU),
-        'subscriber'    => __('订阅者', JINYU),
+        'administrator' => __('管理员', 'jinyu'),
+        'editor'        => __('编辑', 'jinyu'),
+        'author'        => __('作者', 'jinyu'),
+        'contributor'   => __('投稿者', 'jinyu'),
+        'subscriber'    => __('订阅者', 'jinyu'),
     ];
     $role = $user->roles[0];
     return $map[$role] ?? $role;
@@ -247,45 +258,10 @@ function jinyu_user_comments(int $uid, int $per = 20): array
 }
 
 /* ==========================================================================
-   第三方绑定
+   第三方登录（oauth）入口：社交登录函数族 jinyu_oauth_* 由配套插件提供。
+   主题侧调用点以 function_exists() 守卫：插件未启用时登录弹窗不显示第三方入口，
+   不会出现致命错误。
    ========================================================================== */
-function jinyu_oauth_platforms(): array
-{
-    return [
-        'qq'     => ['label' => 'QQ',     'icon' => 'fa-brands fa-qq'],
-        'github' => ['label' => 'GitHub', 'icon' => 'fa-brands fa-github'],
-        'gitee'  => ['label' => 'Gitee',  'icon' => 'fa-solid fa-code-branch'],
-    ];
-}
-
-function jinyu_oauth_bindings(int $uid): array
-{
-    $out = [];
-    foreach (array_keys(jinyu_oauth_platforms()) as $p) {
-        $out[$p] = (string)get_user_meta($uid, 'jinyu_oauth_' . $p . '_id', true);
-    }
-    return $out;
-}
-
-function jinyu_oauth_enabled(): bool
-{
-    if (!jinyu_is_checked('oauth_enable')) {
-        return false;
-    }
-    // 新结构：后台「第三方登录账号」列表中存在任一已配置 App ID 即视为启用
-    foreach (jinyu_get_oauth_accounts() as $a) {
-        if (!empty($a['client_id'])) {
-            return true;
-        }
-    }
-    // 兼容升级前的旧字段
-    foreach (array_keys(jinyu_oauth_platforms()) as $p) {
-        if (jinyu_get_option("oauth_{$p}_key", '')) {
-            return true;
-        }
-    }
-    return false;
-}
 
 /* ==========================================================================
    投稿
@@ -303,9 +279,9 @@ if (!function_exists('jinyu_post_status_label')) {
     function jinyu_post_status_label($status): string
     {
         $map = [
-            'publish' => __('已发布', JINYU),
-            'pending' => __('审核中', JINYU),
-            'draft'   => __('草稿', JINYU),
+            'publish' => __('已发布', 'jinyu'),
+            'pending' => __('审核中', 'jinyu'),
+            'draft'   => __('草稿', 'jinyu'),
         ];
         if (isset($map[$status])) return $map[$status];
         $obj = get_post_status_object($status);

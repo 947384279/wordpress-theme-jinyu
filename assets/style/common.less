@@ -134,7 +134,9 @@ button { font-family: inherit; }
 }
 
 /* 仅供屏幕阅读器：视觉隐藏但保留在无障碍树中（勿改成 display:none / visibility:hidden） */
-.jinyu-sr-only {
+/* .screen-reader-text 是 WP 核心类名（the_posts_pagination / searchform 等输出），前台无 admin CSS 提供样式，必须主题兜底 */
+.jinyu-sr-only,
+.screen-reader-text {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -155,13 +157,18 @@ button { font-family: inherit; }
 .jinyu-main-wrap {
     display: flex;
     gap: @gap;
-    padding: @s-6 @gutter @s-12;
+    /* 底部内边距 @s-12→@s-4：原与页脚 margin-top(@s-12) 叠加出 96px 空档，
+       内容底部与页脚脱节；现保留 16px 供卡片 hover 阴影呼吸，页脚紧贴内容底缘 */
+    padding: @s-6 @gutter @s-4;
 }
 .jinyu-content { flex: 1 1 auto; min-width: 0; }
 .jinyu-sidebar {
     width: @sidebar-w;
     flex-shrink: 0;
     align-self: flex-start;
+    /* 末位小工具去 trailing margin：侧栏为 BFC，高度含末子元素下边距；
+       sticky 推到父容器底缘时该 20px 会让最后小工具可见底边比主列（友链条）高出约 20px，对不齐 */
+    > .jinyu-widget:last-child { margin-bottom: 0; }
     /* 长页面侧栏跟随：滚动阅读主内容时小工具停在视口内，右侧不再留白。
        仅桌面端（>1024px 为左右两栏）生效；窄屏侧栏已堆叠到内容下方，保持静态。 */
     position: sticky;
@@ -514,43 +521,6 @@ html.jinyu-tools-compact {
     }
 }
 
-/* ==========================================================================
-   首页 Banner
-   ========================================================================== */
-.jinyu-banner {
-    border-radius: @radius-md;
-    overflow: hidden;
-    margin-bottom: @gap;
-    height: 320px;
-    position: relative;
-    display: block;
-
-    img { width: 100%; height: 100%; object-fit: cover; }
-
-    .jinyu-banner-overlay {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(to top, rgba(0,0,0,.75) 0%, rgba(0,0,0,.1) 40%, transparent 70%);
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
-        padding: @s-6 @s-8;
-        color: #fff;
-
-        .jinyu-banner-cat {
-            background: @primary;
-            padding: 4px @s-3;
-            border-radius: @radius-sm;
-            font-size: @fs-xs;
-            font-weight: 500;
-            display: inline-block;
-            margin-bottom: @s-3;
-            align-self: flex-start;
-        }
-        .jinyu-banner-title { font-size: @fs-2xl; font-weight: 800; line-height: 1.3; margin: 0 0 @s-2; }
-        .jinyu-banner-excerpt { font-size: @fs-base; opacity: .85; max-width: 600px; margin: 0; }
-    }
-}
 
 /* ==========================================================================
    文章卡片
@@ -635,6 +605,39 @@ html.jinyu-tools-compact {
     }
 }
 
+/* 置顶卡片：顶部 4px 品牌色描边 + 顶部淡橙渐变底 + 更明显光晕，网格里明显「跳」出但不刺眼 */
+.jinyu-post-card.is-sticky {
+    border: 1px solid rgba(var(--jinyu-c-primary-rgb), .5);
+    border-top: 4px solid @primary;
+    background:
+        linear-gradient(180deg, rgba(var(--jinyu-c-primary-rgb), .07), rgba(var(--jinyu-c-primary-rgb), 0) 42%),
+        @bg-card;
+    box-shadow: 0 6px 26px rgba(var(--jinyu-c-primary-rgb), .16);
+
+    &:hover {
+        border-color: rgba(var(--jinyu-c-primary-rgb), .62);
+        border-top-color: @primary;
+        box-shadow: 0 14px 38px rgba(var(--jinyu-c-primary-rgb), .28);
+    }
+}
+
+/* 标题行内「置顶」胶囊：覆盖无封面 / 小封面（列表、CMS）场景，保证标题区即可识别 */
+.jinyu-post-pintag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    vertical-align: middle;
+    background: rgba(var(--jinyu-c-primary-rgb), .12);
+    color: @primary-dark;
+    font-size: @fs-xs;
+    font-weight: 700;
+    padding: 2px @s-2;
+    border-radius: @radius-pill;
+    margin-right: @s-2;
+
+    i { font-size: 11px; }
+}
+
 .jinyu-post-cover {
     position: relative;
     aspect-ratio: 16 / 9;
@@ -663,14 +666,22 @@ html.jinyu-tools-compact {
     .jinyu-post-sticky {
         position: absolute;
         top: @s-3;
-        right: @s-3;
+        left: @s-3;
+        right: auto;
         z-index: @z-in-card;
-        background: @primary;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: linear-gradient(135deg, @primary, @primary-dark);
         color: @text-invert;
-        font-size: @fs-xs;
-        padding: 4px @s-3;
+        font-size: 13px;
+        padding: 6px @s-3;
         border-radius: @radius-sm;
-        font-weight: 600;
+        font-weight: 700;
+        letter-spacing: .5px;
+        box-shadow: 0 6px 16px rgba(var(--jinyu-c-primary-rgb), .45);
+
+        i { font-size: 12px; }
     }
 
     /* 无封面时的占位渐变（柔和、克制，避免整块高饱和蓝） */
@@ -721,12 +732,30 @@ html.jinyu-tools-compact {
 
 .jinyu-post-meta {
     display: flex;
-    gap: @s-4;
+    flex-wrap: wrap;              /* 信息行项数可变，窄卡自动折行，避免挤压/溢出 */
+    align-items: center;
+    gap: @s-2 @s-4;               /* 行间距紧、列间距松 */
     font-size: @fs-xs;
     color: @text-4;
     margin-top: auto;
     padding-top: @s-3;
     i { margin-right: 4px; }
+}
+
+/* 系列归属徽章：点进系列归档；名称过长省略号截断，保证不撑破两栏/三栏窄卡 */
+.jinyu-post-meta-series {
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    padding: 1px 6px;
+    border-radius: @radius-sm;
+    color: @primary;
+    background: rgba(var(--jinyu-c-primary-rgb), .12);
+    transition: background @transition-fast;
+
+    &:hover { background: rgba(var(--jinyu-c-primary-rgb), .24); }
+    .jinyu-post-meta-series-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .jinyu-post-meta-series-index { margin-left: 4px; flex: none; opacity: .75; }
 }
 
 /* 分类彩色标签：标题上方内联徽章，按 term_id % 12 取稳定色相，明暗主题通用 */
@@ -845,17 +874,29 @@ html.jinyu-tools-compact {
     overflow: hidden;
 }
 
-/* 封面：品牌渐变打底 + 左上柔光提亮，底部不圆角（与头像咬合） */
+/* 封面：AI 主题背景图（方案 D · 铂金/青流线）+ 微暗渐变增强纵深。
+   深色图在深/浅两套卡片上都稳：深卡上做 Hero 带，浅卡上做对比头带。
+   背景图比纯 CSS 渐变重，用 @primary-dark 兜底色防破图时的闪白。 */
 .jinyu-author-cover {
     position: relative;   /* 仅为承载 ::after 光泽，勿加 z-index（会盖住头像，见下） */
     overflow: hidden;     /* 把光泽裁在封面内，别扫到正文 */
     height: 92px;
-    background:
-        radial-gradient(120% 150% at 16% 0%, rgba(255, 255, 255, .22), rgba(255, 255, 255, 0) 58%),
-        linear-gradient(135deg, @primary, @primary-dark);
+    background-color: @primary-dark;
+    background-image: linear-gradient(135deg,
+        rgba(var(--jinyu-c-primary-rgb), .55),
+        rgba(0, 0, 0, .42));
     background-size: cover;
     background-position: center;
     border-radius: var(--jinyu-radius-md, 12px) var(--jinyu-radius-md, 12px) 0 0;
+}
+/* 离子动画画布：JS 注入，铺满封面、压在光泽下、不拦交互 */
+.jinyu-author-cover .jinyu-cover-ion {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
 }
 
 /* 头像：压住封面下沿。
@@ -934,7 +975,9 @@ html.jinyu-tools-compact {
 
 /* 排行榜列表：热门文章 / 热评文章共用，侧栏默认卡与「金玉·热门文章」小工具同一套结构。
    结构契约（PHP 必须严格产出这棵树，否则标题会被压成单行后拦腰截断）：
-   .jinyu-hot-item > .jinyu-hot-rank + .jinyu-hot-info( > .jinyu-hot-title > a  +  .jinyu-hot-views)
+   .jinyu-hot-item > ( .jinyu-hot-rank | .jinyu-hot-thumb ) + .jinyu-hot-info( > .jinyu-hot-title > a  +  .jinyu-hot-views )
+   - 不开缩略图时首子节点为 .jinyu-hot-rank（圆点名次）；
+   - 开缩略图时首子节点为 .jinyu-hot-thumb（内含 <img> + .jinyu-hot-rank-badge 角标名次）。
    本块刻意不继承 .jinyu-widget-list 的 flex：那套会把 <a> 变成 flex 项并单行截断。 */
 .jinyu-hot-list { list-style: none; padding: 0; margin: 0; }
 
@@ -961,10 +1004,51 @@ html.jinyu-tools-compact {
     flex-shrink: 0;
     background: @bg-subtle;
     box-shadow: inset 0 0 0 1px @border;
+}
 
-    &.jinyu-rank-1 { background: linear-gradient(135deg, #ff4d4f, #ff7a45); color: #fff; box-shadow: 0 3px 8px rgba(255, 77, 79, .35); }
-    &.jinyu-rank-2 { background: linear-gradient(135deg, #ff8c26, #ffb347); color: #fff; box-shadow: 0 3px 8px rgba(255, 140, 38, .35); }
-    &.jinyu-rank-3 { background: linear-gradient(135deg, #ffbf00, #ffe066); color: #7a5b00; box-shadow: 0 3px 8px rgba(255, 191, 0, .35); }
+/* 名次配色：独立成类，圆点名次(.jinyu-hot-rank) 与缩略图角标(.jinyu-hot-rank-badge) 通用 */
+.jinyu-rank-1 { background: linear-gradient(135deg, #ff4d4f, #ff7a45); color: #fff; box-shadow: 0 3px 8px rgba(255, 77, 79, .35); }
+.jinyu-rank-2 { background: linear-gradient(135deg, #ff8c26, #ffb347); color: #fff; box-shadow: 0 3px 8px rgba(255, 140, 38, .35); }
+.jinyu-rank-3 { background: linear-gradient(135deg, #ffbf00, #ffe066); color: #7a5b00; box-shadow: 0 3px 8px rgba(255, 191, 0, .35); }
+
+/* 缩略图 + 名次角标：show_thumb 开时由 PHP 输出，取代纯圆点名次。
+   尺寸固定以彻底杜绝 CLS；img object-fit:cover 自适应任意来源比例。 */
+.jinyu-hot-thumb {
+    position: relative;
+    flex-shrink: 0;
+    width: 64px;
+    height: 44px;
+    margin-top: 1px;
+    border-radius: @radius-sm;
+    overflow: hidden;
+    display: block;
+    background: @bg-subtle;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+}
+
+.jinyu-hot-rank-badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 18px;
+    height: 18px;
+    border-radius: 0 0 @radius-sm 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    color: #fff;
+    background: rgba(0, 0, 0, .6);   /* 第 4 名起无配色类时的兜底，避免白字看不见 */
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .25);
 }
 
 .jinyu-hot-info { flex: 1; min-width: 0; }
@@ -1160,6 +1244,19 @@ html.jinyu-tools-compact {
    max-width 取 880（卡内正文约 816px，舒适阅读宽度），避免中间留白过大。 */
 .jinyu-single-wrap { max-width: 880px; margin: 0; flex: 1; min-width: 0; }
 .jinyu-single-wrap + .jinyu-sidebar { margin-left: auto; }
+
+/* 无侧栏模板（关于 / 申请友链 / 文章归档 / 友链）版心 override。
+   880 是按「有侧栏」定的（正文 880 + 侧栏 300）；这些模板不输出侧栏，沿用 880 会让正文右侧
+   空出一条死白。此类模板在 <main> 上加 .jinyu-wide-wrap，改为铺满 .jinyu-main-wrap 内容区。
+   width:100% 不可省：≤1024（或触摸设备 ≤1240）时 .jinyu-main-wrap 变 flex-direction:column
+   （screen.less），此时 margin:auto 属「交叉轴 auto 边距」，会禁用默认 stretch 拉伸，正文列
+   退化为按内容收缩（实测 1024→534px、768→417px）。 */
+.jinyu-main-wrap > .jinyu-single-wrap.jinyu-wide-wrap {
+    max-width: none;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
 
 .jinyu-single {
     background: @bg-card;
@@ -1698,6 +1795,31 @@ html.jinyu-tools-compact {
     &.jinyu-loading { opacity: .6; pointer-events: none; }
 }
 
+/* 点赞弹跳 + 心形粒子动效（P1 友好化） */
+.jinyu-like-btn { position: relative; }
+.jinyu-like-btn.jinyu-like-pop .fa-heart {
+    animation: jinyu-like-beat .5s @ease-spring;
+}
+@keyframes jinyu-like-beat {
+    0%   { transform: scale(1); }
+    28%  { transform: scale(1.45); }
+    50%  { transform: scale(.8); }
+    74%  { transform: scale(1.18); }
+    100% { transform: scale(1); }
+}
+.jinyu-like-particle {
+    position: absolute;
+    color: @primary;
+    line-height: 1;
+    pointer-events: none;
+    z-index: 6;
+    animation: jinyu-particle-fly .65s ease-out forwards;
+}
+@keyframes jinyu-particle-fly {
+    0%   { opacity: 1; transform: translate(0, 0) scale(1); }
+    100% { opacity: 0; transform: translate(var(--dx, 0), var(--dy, -24px)) scale(.3); }
+}
+
 /* 相关文章 */
 .jinyu-relevant { margin: @s-6 0; }
 .jinyu-relevant-heading { font-size: @fs-md; font-weight: 700; color: @text-1; margin: 0 0 @s-4; }
@@ -1927,13 +2049,15 @@ html.jinyu-tools-compact {
    ========================================================================== */
 .jinyu-pagination { margin-top: @s-8; text-align: center; }
 
-/* WordPress the_posts_pagination() 输出 .nav-links（flex 默认左对齐），需显式居中 */
+/* .jinyu-pagination 是 nav：只作分组容器，视觉与布局全交给内层 ul / form。
+   整组允许换行——窄屏放不下时跳转框整体落到下一行，而不是拆散。 */
 .jinyu-pagination > nav,
-.jinyu-pagination .nav-links {
+.jinyu-pagination {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     justify-content: center;
-    gap: @s-2;
+    gap: @s-2 @s-4;
 }
 
 .jinyu-pagination ul {
@@ -1944,27 +2068,180 @@ html.jinyu-tools-compact {
     flex-wrap: wrap;
     gap: @s-2;
     justify-content: center;
+    /* 页码行不参与拉伸，确保与跳转框垂直居中而非被拉满高度 */
+    flex: 0 0 auto;
 }
 
+/* 页码：去卡片化——去掉白底与边框，仅保留文字，hover 才出浅底。
+   目的：一行里只有「当前页」一个实心块是视觉焦点，其余安静，根除「三/四种风格打架」。 */
 .jinyu-pagination a,
 .jinyu-pagination span {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 40px;
-    height: 40px;
+    min-width: 34px;
+    height: 38px;
     padding: 0 @s-3;
+    border: 0;
+    background: transparent;
     border-radius: @radius-sm;
-    background: @bg-card;
-    border: 1px solid @border;
     color: @text-2;
     font-size: @fs-sm;
-    transition: all @transition-fast;
+    transition: background @transition-fast, color @transition-fast;
 }
 
-.jinyu-pagination a:hover { border-color: @primary; color: @primary; }
-.jinyu-pagination .current { background: @primary; color: @text-invert; border-color: @primary; }
-.jinyu-pagination .dots { border-color: transparent; background: transparent; }
+.jinyu-pagination a:hover { background: @bg-subtle; color: @text-1; }
+/* 当前页用胶囊而非方角：与「安静的文字页码」形成形状差异，比只换颜色更易识别，
+   也避免 3px 小圆角在大色块上看着接近直角。 */
+.jinyu-pagination .current {
+    background: @primary;
+    color: @text-invert;
+    border-radius: @radius-pill;
+    min-width: 38px;
+    padding: 0 @s-3;
+}
+.jinyu-pagination .dots { background: transparent; color: @text-4; }
+
+/* 页码直达（hover 展开式）：默认只显示一个轻量「跳转 »」按钮，
+   鼠标移入 / 键盘聚焦才展开输入框。折叠可避免常显输入框稀释「当前页胶囊」这一唯一点，
+   展开态从按钮左缘生长，视觉仍连着页码条不脱节。键盘可达（Tab 聚焦同样展开）。 */
+.jinyu-pagination-jump {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    height: 38px;
+    margin-left: @s-6;
+    padding-left: @s-6;
+    border-left: 1px solid @border;
+}
+
+/* 收起态：单个轻量文字按钮，hover 才给浅底，不抢当前页焦点 */
+.jinyu-jump-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    height: 38px;
+    padding: 0 @s-4;
+    border: 1px solid transparent;
+    border-radius: @radius-sm;
+    background: transparent;
+    color: @text-2;
+    font-family: inherit;
+    font-size: @fs-sm;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity .22s @ease-std, background @transition-fast, color @transition-fast;
+}
+.jinyu-pagination-jump:hover .jinyu-jump-btn,
+.jinyu-pagination-jump.is-open .jinyu-jump-btn,
+.jinyu-pagination-jump:focus-within .jinyu-jump-btn {
+    background: @bg-subtle;
+    color: @text-1;
+    /* 展开时藏起收起态按钮（面板盖在同一位置） */
+    opacity: 0;
+    pointer-events: none;
+}
+.jinyu-jump-chev { width: 11px; height: 11px; flex: 0 0 auto; }
+
+/* 展开态：从按钮左缘生长，避免右对齐与页码脱节 */
+.jinyu-jump-panel {
+    position: absolute;
+    left: @s-6;
+    top: 50%;
+    transform: translateY(-50%) scaleX(.94);
+    transform-origin: left center;
+    display: flex;
+    align-items: center;
+    height: 38px;
+    padding: 0 4px 0 @s-3;
+    border: 1px solid @border-strong;
+    border-radius: @radius-sm;
+    background: @bg-card;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, .06);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity .22s @ease-std, transform .22s @ease-std, visibility .22s @ease-std;
+}
+.jinyu-pagination-jump:hover .jinyu-jump-panel,
+.jinyu-pagination-jump.is-open .jinyu-jump-panel,
+.jinyu-pagination-jump:focus-within .jinyu-jump-panel {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(-50%) scaleX(1);
+}
+
+.jinyu-jump-panel .jinyu-page-jump-input {
+    width: 64px;
+    height: 30px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    outline: none;
+    color: @text-1;
+    font-family: inherit;
+    font-size: @fs-sm;
+    font-variant-numeric: tabular-nums;
+    text-align: left;
+    caret-color: @primary;
+    appearance: textfield;
+    -moz-appearance: textfield;
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button { -webkit-appearance: none; appearance: none; margin: 0; }
+    &::placeholder { color: @text-4; }
+}
+
+.jinyu-jump-panel .jinyu-jump-go {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 0;
+    border-radius: @radius-sm;
+    background: transparent;
+    color: @text-3;
+    cursor: pointer;
+    transition: background @transition-fast, color @transition-fast;
+    &:hover { background: @bg-subtle; color: @text-1; }
+    .jinyu-jump-chev { width: 12px; height: 12px; }
+}
+
+/* 键盘聚焦时面板描边高亮，提示可输入 */
+.jinyu-pagination-jump:focus-within .jinyu-jump-panel { border-color: @primary; }
+
+/* 提交反馈气泡（已在当前页时提示，不导航） */
+.jinyu-jump-tip {
+    position: absolute;
+    left: 50%;
+    top: -32px;
+    transform: translateX(-50%) translateY(0);
+    white-space: nowrap;
+    background: @text-1;
+    color: @text-invert;
+    font-size: @fs-xs;
+    line-height: 1;
+    padding: 6px 10px;
+    border-radius: 4px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease, transform .2s ease;
+    &::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        bottom: -4px;
+        width: 8px;
+        height: 8px;
+        margin-left: -4px;
+        background: @text-1;
+        transform: rotate(45deg);
+    }
+}
 
 /* 加载更多 */
 .jinyu-load-more-wrap { margin-top: @s-8; text-align: center; }
@@ -1992,7 +2269,7 @@ html.jinyu-tools-compact {
     background: @bg-footer;
     color: @text-footer;
     padding: @s-8 0 @s-6;            /* 原 @s-12 顶部内边距过大，footer 区块关掉后顶部空出一大块黑 */
-    margin-top: @s-12;
+    margin-top: 0;                   /* 与内容底缘对齐：间距由 .jinyu-main-wrap 的 padding-bottom 统一供给 */
 
     /* 顶部发丝线，呼应卡片/小工具的精致层次 */
     &::before {
@@ -2008,11 +2285,52 @@ html.jinyu-tools-compact {
 }
 
 .jinyu-footer-inner {
-    /* 自适应列数：开几列就铺满整行（2 列时各占一半、左右分开），不再按固定 3 栏留空档 */
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    /* 方案A：品牌区（左，flex-grow 吸收剩余空间）+ 链接区（右，自然定宽）。
+       彻底抛弃等宽拉伸网格——那是「友情链接」半空列、视觉重心偏左的根因 */
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
     gap: @gap;
     margin-bottom: @s-8;
+}
+
+/* 品牌区：站点名 + 简介，左侧占主、随容器变宽，把右侧链接区自然推到右缘。
+   max-width 限宽：简介行长可控（阅读舒适），不让品牌区吃满整行导致中段过空 */
+.jinyu-footer-brand {
+    flex: 1 1 300px;
+    max-width: 560px;
+    min-width: 0;                 /* 防长链接 / 长单词撑破弹性盒 */
+
+    .jinyu-footer-brand-name {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: @fs-lg;
+        font-weight: 800;
+        color: @text-footer-strong;
+        margin: 0 0 @s-3;
+
+        i { color: @primary; font-size: 18px; line-height: 1; }
+    }
+
+    .jinyu-footer-brand-desc {
+        margin: 0;
+        font-size: @fs-sm;
+        line-height: 1.8;
+        color: @text-footer;
+    }
+}
+
+/* 链接区：快速导航自然内容宽、不拉伸；margin-left:auto 贴右缘与品牌区成两翼 */
+.jinyu-footer-links {
+    flex: 0 1 auto;
+    margin-left: auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: @gap;
+
+    .jinyu-footer-col { flex: 0 0 auto; min-width: 200px; }
 }
 
 .jinyu-footer-col {
@@ -2032,42 +2350,503 @@ html.jinyu-tools-compact {
             line-height: 1;
         }
     }
-    p { font-size: @fs-sm; line-height: 1.8; }
+    p { margin: 0; font-size: @fs-sm; line-height: 1.8; }   /* margin 归零：与 ul（margin:0）首行严格对齐，浏览器默认 1em 上边距会造成两栏首行错位 */
     ul { list-style: none; padding: 0; margin: 0; }
     li { margin-bottom: @s-2; a { color: @text-footer; font-size: @fs-sm; &:hover { color: @primary; } } }
+}
+
+/* 友情链接：独立整行区块——标题行（色条标题 + 右侧「申请友链」）+ 圆角横条内 · 分隔链接 */
+/* 友情链接：列表/归档页「分页下方」的独立整行区块。
+   原置于 footer（深色背景），现移到亮色主内容区，故配色改用主内容区 token（@text-1/@text-2/@bg-subtle），
+   而非 footer 深色 token，否则浅色文字在白底上看不见。 */
+.jinyu-flinks {
+    margin-top: @s-4;             /* 与上方分页隔开；取 16px 使友链条底缘与侧栏最后小工具底缘对齐（实测差 15px） */
+    color: @text-2;
+
+    .jinyu-flinks-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: @s-3;
+
+        h4 {
+            position: relative;
+            padding-left: 10px;
+            color: @text-1;
+            font-size: @fs-md;
+            font-weight: 700;
+            margin: 0;
+
+            /* 左侧品牌色条，与站点其余区块标题语言一致 */
+            &::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 3px;
+                height: 14px;
+                border-radius: 2px;
+                background: linear-gradient(180deg, @primary-light, @primary);
+            }
+        }
+    }
+
+    .jinyu-flinks-apply {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: @fs-xs;
+        color: @text-2;
+
+        &:hover { color: @primary; }
+    }
+
+    .jinyu-flinks-list {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        row-gap: @s-2;
+        list-style: none;
+        padding: @s-3 @s-4;
+        margin: 0;
+        /* 用主内容区卡片底色（亮色 #fff / 暗色 #434a5a），而非 @bg-subtle——
+           亮色下 --jinyu-c-bg 与 --jinyu-c-bg-subtle 同为 #f5f6f8，条子会与页面背景融成一片「看不见」；
+           与小工具卡片同款背景+描边+阴影，明暗两态都有清晰边界 */
+        background: @bg-card;
+        border: 1px solid @border;
+        border-radius: @radius-md;
+        box-shadow: @shadow-card;
+
+        /* 相邻项前置 · 分隔符（首项不带；纯文本圆点，随文字色继承） */
+        li + li::before {
+            content: '·';
+            margin: 0 10px;
+            color: @text-2;
+            opacity: .45;
+        }
+
+        a {
+            display: inline-flex;
+            align-items: center;
+            color: @text-2;
+            font-size: @fs-sm;
+
+            &:hover { color: @primary; }
+        }
+
+        /* 链接前的图标：默认是主题自带 Font Awesome 链接图标（零网络请求），
+           若目标站根目录 favicon.ico 可取则绝对覆盖其上；取不到时 onerror 删 img，露出默认图标 */
+        .jinyu-flink-ico {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            margin-right: 6px;
+            flex: 0 0 auto;
+
+            .fa-link {
+                font-size: 14px;
+                line-height: 1;
+                color: inherit;   /* 跟随链接文字色，hover 时同步变化 */
+            }
+
+            .jinyu-flink-fav {
+                position: absolute;
+                inset: 0;
+                width: 16px;
+                height: 16px;
+                border-radius: 3px;
+                object-fit: contain;
+                background: transparent;   /* 透明：加载中时底层默认图标透出，成功才覆盖 */
+            }
+        }
+    }
+}
+
+/* ── 关于页（pages/template-about.php）─────────────────────────────────────
+   头部 = 头像 + 作者名 + 个人说明（取自 WP 用户「个人说明」，非本页正文）；
+   下方 = 本页正文。正文为空时只对可编辑用户显示引导块。 */
+
+.jinyu-about {
+    .jinyu-about-header {
+        display: flex;
+        align-items: center;
+        gap: @s-5;
+    }
+
+    .jinyu-about-avatar {
+        flex-shrink: 0;
+        width: 88px;
+        height: 88px;
+        border-radius: @radius-md;
+        object-fit: cover;
+        background: @bg-subtle;
+    }
+
+    .jinyu-about-id { min-width: 0; }
+
+    .jinyu-about-content { margin-top: @s-5; }
+
+    .jinyu-about-empty {
+        margin-top: @s-5;
+        padding: @s-5 @s-6;
+        border: 1px dashed @border-strong;
+        border-radius: @radius-md;
+        background: @bg-subtle;
+        color: @text-3;
+        font-size: @fs-sm;
+        line-height: 1.8;
+
+        > i {
+            margin-right: @s-2;
+            color: @primary;
+        }
+
+        p { margin: 0; }
+    }
+
+    @media (max-width: 576px) {
+        .jinyu-about-header { gap: @s-4; }
+        .jinyu-about-avatar { width: 64px; height: 64px; }
+    }
+}
+
+/* ── 文章归档页（pages/template-archives.php）───────────────────────────────
+   时间线：年份锚点 + 竖向轨道，每年一组，组内每篇一个节点；复用主题令牌，避免默认圆点列表。 */
+.jinyu-archives {
+    margin-top: @s-6;
+
+    .jinyu-archives-year {
+        position: relative;
+        margin: @s-6 0 @s-3;
+        padding-left: 24px;
+        font-size: 1.5rem;
+        font-weight: 700;
+        line-height: 1.2;
+        color: @text-1;
+
+        &:first-child { margin-top: 0; }
+
+        &::before {
+            content: "";
+            position: absolute;
+            left: -5px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 13px;
+            height: 13px;
+            border-radius: 50%;
+            background: @primary;
+        }
+    }
+
+    .jinyu-archives-list {
+        list-style: none;
+        margin: 0;
+        padding: 0 0 0 24px;
+        border-left: 2px solid @border-strong;
+    }
+
+    .jinyu-archives-list li {
+        position: relative;
+        display: flex;
+        align-items: baseline;
+        gap: @s-3;
+        padding: 7px 0;
+
+        &::before {
+            content: "";
+            position: absolute;
+            left: -29px;
+            top: 12px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: @bg-subtle;
+            border: 2px solid @primary;
+            transition: background 0.18s ease, transform 0.18s ease;
+        }
+
+        &:hover::before {
+            background: @primary;
+            transform: scale(1.15);
+        }
+    }
+
+    .jinyu-archives-date {
+        flex-shrink: 0;
+        font-variant-numeric: tabular-nums;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: @fs-sm;
+        color: @text-3;
+        letter-spacing: 0.02em;
+    }
+
+    .jinyu-archives-list a {
+        color: @text-1;
+        text-decoration: none;
+        transition: color 0.18s ease;
+
+        &:hover {
+            color: @primary;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .jinyu-archives-year { font-size: 1.3rem; }
+        .jinyu-archives-list li { gap: @s-2; }
+        .jinyu-archives-date { font-size: 0.78rem; }
+    }
+}
+
+/* ── 申请友链页（pages/template-link-apply.php）─────────────────────────────
+   三张卡片：本站信息（可复制）/ 申请要求 / 申请表单。
+   卡片底色用 @bg-card 而非 @bg-subtle —— 亮色下 @bg-subtle 与页面背景同值，会「看不见」。
+   版心宽度由通用规则 .jinyu-wide-wrap 处理（见「文章页」小节）。 */
+
+.jinyu-flink-apply-page {
+    .jinyu-fa-card {
+        margin-top: @s-5;
+        padding: @s-5 @s-6;
+        background: @bg-card;
+        border: 1px solid @border;
+        border-radius: @radius-lg;
+        box-shadow: @shadow-card;
+    }
+
+    .jinyu-fa-title {
+        display: flex;
+        align-items: center;
+        gap: @s-2;
+        margin: 0 0 @s-2;
+        font-size: @fs-md;
+        font-weight: 700;
+        color: @text-1;
+
+        i { color: @primary; font-size: @fs-sm; }
+    }
+
+    .jinyu-fa-hint {
+        margin: 0 0 @s-4;
+        font-size: @fs-sm;
+        line-height: 1.8;
+        color: @text-3;
+
+        a { color: @primary; }
+    }
+
+    /* 本站信息：标签 / 值 / 复制按钮 */
+    .jinyu-fa-profile {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+
+        li {
+            display: flex;
+            align-items: center;
+            gap: @s-3;
+            padding: @s-3 0;
+            border-top: 1px dashed @border;
+
+            &:first-child { border-top: 0; padding-top: 0; }
+            &:last-child { padding-bottom: 0; }
+        }
+    }
+
+    .jinyu-fa-k {
+        flex: 0 0 68px;
+        font-size: @fs-sm;
+        color: @text-3;
+    }
+
+    .jinyu-fa-v {
+        flex: 1 1 auto;
+        min-width: 0;                 /* 长 URL 不被 flex 撑破，交给 overflow-wrap 折行 */
+        font-size: @fs-sm;
+        color: @text-1;
+        line-height: 1.7;
+        overflow-wrap: anywhere;
+    }
+
+    .jinyu-fa-thumb {
+        width: 20px;
+        height: 20px;
+        margin-right: @s-2;
+        border-radius: @radius-sm;
+        object-fit: contain;
+        vertical-align: -4px;
+        background: @bg-input;
+    }
+
+    .jinyu-fa-copy {
+        flex: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 10px;
+        border: 1px solid @border;
+        border-radius: @radius-pill;
+        background: @bg-input;
+        color: @text-2;
+        font-size: @fs-xs;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: color @transition-fast, border-color @transition-fast;
+
+        &:hover { border-color: @primary; color: @primary; }
+        &.is-done { border-color: @success; color: @success; }
+    }
+
+    /* 申请要求：序号圆点 + 文案 */
+    .jinyu-fa-rules {
+        list-style: none;
+        counter-reset: fa-rule;
+        margin: 0;
+        padding: 0;
+
+        li {
+            position: relative;
+            padding-left: @s-6;
+            margin-bottom: @s-2;
+            font-size: @fs-sm;
+            line-height: 1.8;
+            color: @text-2;
+
+            &::before {
+                counter-increment: fa-rule;
+                content: counter(fa-rule);
+                position: absolute;
+                left: 0;
+                top: 4px;
+                width: 18px;
+                height: 18px;
+                border-radius: 50%;
+                background: rgba(var(--jinyu-c-primary-rgb), .12);
+                color: @primary;
+                font-size: @fs-xs;
+                font-weight: 700;
+                line-height: 18px;
+                text-align: center;
+            }
+
+            &:last-child { margin-bottom: 0; }
+        }
+    }
+
+    /* 申请表单 */
+    .jinyu-fa-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: @s-4;
+    }
+
+    .jinyu-fa-field {
+        display: block;
+        min-width: 0;
+
+        .jinyu-fa-label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: @fs-sm;
+            color: @text-2;
+        }
+
+        .jinyu-fa-req { color: @danger; font-style: normal; }
+
+        input {
+            width: 100%;
+            padding: @s-3 @s-4;
+            border: 1px solid @border;
+            border-radius: @radius-md;
+            background: @bg-input;
+            color: @text-1;
+            font-family: inherit;
+            font-size: @fs-sm;
+            outline: none;
+            transition: border-color @transition-fast;
+
+            &:focus { border-color: @primary; background: @bg-card; }
+            &.is-error { border-color: @danger; }
+        }
+    }
+
+    .jinyu-fa-field-full { grid-column: 1 / -1; }
+
+    /* 蜜罐字段：正常用户不可见，机器人会填 */
+    .jinyu-fa-hp {
+        position: absolute;
+        left: -9999px;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+    }
+
+    .jinyu-fa-foot {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: @s-3;
+        margin-top: @s-4;
+
+        .jinyu-captcha-row { flex: 1 1 240px; min-width: 0; max-width: 320px; }
+        .jinyu-btn { flex: none; }
+    }
+
+    .jinyu-fa-done {
+        padding: @s-6 0;
+        text-align: center;
+
+        i { font-size: 34px; color: @success; }
+        h3 { margin: @s-3 0 @s-2; font-size: @fs-md; color: @text-1; }
+        p { margin: 0; font-size: @fs-sm; color: @text-3; }
+    }
+
+    .jinyu-fa-done[hidden] { display: none; }
+}
+
+@media (max-width: 768px) {
+    .jinyu-flink-apply-page {
+        .jinyu-fa-card { margin-top: @s-4; padding: @s-4; }
+        .jinyu-fa-grid { grid-template-columns: minmax(0, 1fr); gap: @s-3; }
+        .jinyu-fa-k { flex-basis: 60px; }
+        .jinyu-fa-foot {
+            flex-direction: column;
+            align-items: stretch;
+
+            .jinyu-captcha-row { max-width: none; }
+            .jinyu-btn { justify-content: center; width: 100%; }
+        }
+    }
 }
 
 .jinyu-footer-bottom {
     position: relative;
     border-top: 1px solid @border-footer;
-    padding-top: @s-3;           /* 原 @s-6 留白过大，版权上方像多了一行 */
-    text-align: center;
+    padding-top: @s-6;           /* 方案C：加宽与上方栏目区的呼吸感（原 @s-3 偏紧） */
+    padding-bottom: @s-3;
+    text-align: center;          /* 运行信息 / 广告等次要行居中 */
     font-size: @fs-sm;
 }
 
-/* 底部信息条：标题 + 版权 + 备案 */
+/* 底部主信息条：版权（左）与署名 + 社交（右）两端对齐，替代原来整行居中 */
+.jinyu-footer-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: @s-3;
+}
+
+/* 底部信息条：版权 + 备案 */
 .jinyu-footer-info {
-    line-height: 1.65;
+    line-height: 1.9;           /* 方案C：拉大行距，文案更透气（原 1.65 偏紧） */
     color: @text-footer;
-
-    .jinyu-footer-info-title {
-        display: inline-block;
-        font-weight: 700;
-        color: @text-footer-strong;
-        margin-right: @s-2;
-
-        &:empty { display: none; }   /* 标题留空时连同竖线一起隐藏 */
-
-        &::after {
-            content: '';
-            display: inline-block;
-            width: 2px;
-            height: 12px;
-            background: @primary;
-            margin-left: @s-2;
-            vertical-align: -1px;
-        }
-    }
 
     a {
         color: @text-footer;
@@ -2090,26 +2869,49 @@ html.jinyu-tools-compact {
     }
 }
 
-/* 主题署名（硬编码于 footer.php，无后台开关、无链接） */
+/* 主题署名（硬编码于 footer.php，无后台开关、无链接）；社交图标内联在署名右侧 */
 .jinyu-footer-credit {
-    margin-top: 2px;
+    margin: 0;                  /* 现置于 .jinyu-footer-meta 右端，由 meta 的 gap 控制间距 */
     font-size: @fs-xs;
     color: @text-footer;
-    opacity: .7;
     display: flex;
+    flex-wrap: wrap;            /* 超窄屏 / 图标较多时整体换行，避免撑破视口 */
     align-items: center;
     justify-content: center;
     gap: 5px;
+
+    /* 仅弱化「品牌文字」，社交图标保持满透明度（否则图标发灰、hover 高亮被冲淡） */
+    > i,
+    > span:not(.jinyu-social-row) {
+        opacity: .7;
+    }
 
     i {
         font-size: 13px;
         line-height: 1;
     }
+
+    /* 内联社交图标：覆盖独立行样式（缩小、去下边距），与署名文字同行 */
+    .jinyu-social-row {
+        margin-bottom: 0;
+        margin-left: 8px;
+        gap: 8px;
+
+        a {
+            width: 24px;
+            height: 24px;
+
+            i { font-size: 12px; }
+        }
+    }
 }
+
+/* 方案C：底部广告与署名之间留出呼吸空间 */
+.jinyu-footer-bottom .jinyu-ad { margin-top: @s-4; }
 
 /* 页脚运行信息（后台「页脚显示运行信息」开关开启时由 footer.php 输出） */
 .jinyu-footer-runinfo {
-    margin-top: 8px;
+    margin-top: @s-3;           /* 方案C：与上方版权行拉开（原 8px 偏紧） */
     font-size: @fs-xs;
     color: @text-footer;
     display: flex;
@@ -2135,9 +2937,10 @@ html.jinyu-tools-compact {
 
 .jinyu-social-row {
     display: flex;
+    flex-wrap: wrap;               /* 多社交账号窄屏换行，避免撑破署名行 */
     gap: @s-3;
     justify-content: center;
-    margin-bottom: @s-4;
+    margin-bottom: @s-5;           /* 方案C：与下方版权行拉开（原 @s-4） */
 
     a {
         width: 36px;
@@ -2150,6 +2953,13 @@ html.jinyu-tools-compact {
         justify-content: center;
         transition: all @transition-fast;
 
+        /* 内置 SVG 品牌图标（Gitee/知乎/豆瓣）：跟随文字色、悬停反白 */
+        svg {
+            width: 1em;
+            height: 1em;
+            display: block;
+        }
+
         &:hover {
             background: linear-gradient(135deg, @primary, @primary-light);
             color: @text-invert;
@@ -2157,6 +2967,37 @@ html.jinyu-tools-compact {
             box-shadow: 0 6px 16px rgba(var(--jinyu-c-primary-rgb), .35);
         }
     }
+}
+
+/* 移动端窄屏：两区纵向堆叠且整体居中（移动端页脚居中排版观感最佳）。
+   关键坑：flex-direction:column 后主轴变为纵向，品牌区 flex:1 1 300px 的
+   flex-basis 会变成「高度 300px」，把内容撑出一大段空白 → 必须归 auto */
+@media (max-width: 640px) {
+    .jinyu-footer-inner { flex-direction: column; gap: @s-6; }
+
+    .jinyu-footer-brand {
+        flex: 0 0 auto;
+        max-width: none;
+        text-align: center;
+
+        .jinyu-footer-brand-name { justify-content: center; }
+    }
+
+    .jinyu-footer-links {
+        width: 100%;
+        margin-left: 0;
+        justify-content: center;
+
+        .jinyu-footer-col {
+            min-width: 0;
+            text-align: center;
+
+            h4 { justify-content: center; }
+        }
+    }
+
+    .jinyu-footer-meta { flex-direction: column; align-items: center; text-align: center; gap: @s-2; }
+    .jinyu-footer-credit { justify-content: center; }
 }
 
 /* ==========================================================================
@@ -2843,6 +3684,13 @@ html.jinyu-tools-compact {
         border-radius: 50%;
         color: @text-2;
         transition: color .15s, background .15s;
+
+        svg {
+            width: 16px;
+            height: 16px;
+            display: block;
+        }
+
         &:hover { color: #fff; background: @primary; }
     }
 }
@@ -3086,48 +3934,57 @@ html.jinyu-tools-compact {
    ====================================================================== */
 .jinyu-vote {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: @s-4;
+    gap: @s-3;
     margin: @s-6 0 @s-5;
-    padding: @s-5;
+    padding: @s-5 @s-4;
     background: @bg-card;
     border: 1px solid @border;
-    border-radius: @radius-md;
+    border-radius: @radius-lg;
 }
-.jinyu-vote-q { font-size: @fs-base; color: @text-2; font-weight: 500; }
+.jinyu-vote-q { font-size: @fs-base; color: @text-2; font-weight: 600; text-align: center; }
+.jinyu-vote-btns { display: flex; gap: @s-3; width: 100%; }
 .jinyu-vote-btn {
+    flex: 1;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: @s-2;
-    padding: @s-2 @s-5;
+    padding: @s-3 @s-4;
     border: 1px solid @border;
     border-radius: @radius-pill;
     background: @bg-subtle;
     color: @text-2;
-    font-size: @fs-sm;
+    font-size: @fs-base;
     cursor: pointer;
     transition: @transition-fast;
-    &:hover { border-color: @primary; color: @primary; transform: translateY(-1px); }
-    &:active { transform: translateY(0) scale(.97); }
+    &:hover { border-color: @primary; color: @primary; }
+    &:active { transform: scale(.97); }
     &:disabled { cursor: default; }
-    i { font-size: 15px; }
+    i { font-size: 16px; }
 }
 .jinyu-vote-count {
-    min-width: 1em;
+    min-width: 1.6em;
+    padding: 0 .45em;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, .06);
     font-variant-numeric: tabular-nums;
-    font-weight: 600;
+    font-weight: 700;
+    font-size: @fs-xs;
+    line-height: 1.7;
 }
 .jinyu-vote-yes.is-active {
     background: rgba(var(--jinyu-c-success-rgb), .14);
     border-color: @success;
     color: @success;
+    .jinyu-vote-count { background: rgba(var(--jinyu-c-success-rgb), .26); color: @success; }
 }
 .jinyu-vote-no.is-active {
     background: rgba(var(--jinyu-c-text-3-rgb), .16);
     border-color: @text-3;
     color: @text-2;
+    .jinyu-vote-count { background: rgba(var(--jinyu-c-text-3-rgb), .3); }
 }
 
 /* ======================================================================

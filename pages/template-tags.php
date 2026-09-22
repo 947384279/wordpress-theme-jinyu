@@ -98,7 +98,7 @@ get_header();
           <?php if (!empty($groups)) : ?>
 
             <!-- 字母导航 -->
-            <nav class="jinyu-tags-nav" aria-label="<?php esc_attr_e('字母导航', JINYU); ?>">
+            <nav class="jinyu-tags-nav" aria-label="<?php esc_attr_e('字母导航', 'jinyu'); ?>">
               <?php foreach ($groups as $letter => $items) : ?>
                 <a href="#jinyu-tag-<?php echo esc_attr($letter); ?>"
                    class="jinyu-tag-nav-item<?php echo count($items) > 0 ? '' : ' disabled'; ?>">
@@ -113,7 +113,7 @@ get_header();
                 <section id="jinyu-tag-<?php echo esc_attr($letter); ?>" class="jinyu-tag-group">
                   <h3 class="jinyu-tag-group-title">
                     <span class="jinyu-tag-group-letter"><?php echo esc_html($letter); ?></span>
-                    <span class="jinyu-tag-group-count"><?php echo (int)count($items); ?> <?php esc_html_e('个标签', JINYU); ?></span>
+                    <span class="jinyu-tag-group-count"><?php echo (int)count($items); ?> <?php esc_html_e('个标签', 'jinyu'); ?></span>
                   </h3>
                   <div class="jinyu-tag-list">
                     <?php foreach ($items as $t) : ?>
@@ -128,7 +128,7 @@ get_header();
             </div>
 
           <?php else : ?>
-            <p><?php esc_html_e('暂无标签', JINYU); ?></p>
+            <p><?php esc_html_e('暂无标签', 'jinyu'); ?></p>
           <?php endif; ?>
         </div>
       </div>

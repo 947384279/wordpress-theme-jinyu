@@ -14,9 +14,9 @@ get_header();
     <div class="jinyu-archive-head">
       <h1 class="jinyu-archive-title">
         <?php
-        if (is_day())        printf(__('每日归档：%s', JINYU), get_the_date());
-        elseif (is_month())  printf(__('每月归档：%s', JINYU), get_the_date('Y 年 m 月'));
-        else                printf(__('每年归档：%s', JINYU), get_the_date('Y 年'));
+        if (is_day())        printf(__('每日归档：%s', 'jinyu'), get_the_date('Y-m-d'));
+        elseif (is_month())  printf(__('每月归档：%s', 'jinyu'), get_the_date('Y-m'));
+        else                printf(__('每年归档：%s', 'jinyu'), get_the_date('Y'));
         ?>
       </h1>
     </div>
@@ -28,6 +28,7 @@ get_header();
         <?php endwhile; ?>
       </div>
       <?php jinyu_pagination(); ?>
+      <?php get_template_part('templates/flinks'); ?>
     <?php else : ?>
       <?php get_template_part('templates/content', 'none'); ?>
     <?php endif; ?>

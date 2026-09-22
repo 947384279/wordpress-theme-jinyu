@@ -4,9 +4,22 @@ Tags: blog, cms, responsive, dark-mode, custom-colors, editor-style, featured-im
 Requires at least: 7.1
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.0.7
+Stable tag: 1.0.9
 License: GPL v3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
+
+== Resources ==
+
+本主题在 `assets/` 下打包了以下第三方资源，其许可如下：
+
+* Font Awesome Free 6：图标采用 CC BY 4.0 许可（https://creativecommons.org/licenses/by/4.0/）；
+  字体采用 SIL OFL 1.1 许可（https://opensource.org/licenses/OFL-1.1）；代码采用 MIT 许可。
+  商标声明：Font Awesome 为 Dave Gandy 的商标，本主题仅按其开源许可使用，与商标持有人无隶属关系。
+* Swiper 11（assets/css/vendor/swiper-bundle.min.css 及其字体）：MIT 许可（https://opensource.org/licenses/MIT）。
+
+== 关于 inc/fun/crypto.php 中的 base64 ==
+
+本主题 `inc/fun/crypto.php` 使用 `base64_encode` / `base64_decode` 仅为对**主题设置项（jinyu_options）的敏感字段做对称加密存储**（如社交登录密钥等，避免以明文落库）。它不属于代码混淆、后门或远程通信；算法为公开的 AES-256-CBC + HMAC，密钥由站点自身持有，无可执行载荷、无外部网络请求。该文件不含任何规避审查的逻辑，符合 GPL 与 .org 主题库对「加密仅用于数据保护」的允许范围。
 
 高颜值自适应 WordPress 主题，自研架构全新编写。支持后台可视化配置、暗色模式、多种布局、短代码、评论邮件通知、点赞与无限加载。
 
@@ -46,6 +59,7 @@ License URI: https://www.gnu.org/licenses/gpl-3.0.html
 == Changelog ==
 
 = 1.0.9 =
+* 修复：暗色模式下「主题主色」失效——内置暗色令牌把主色写死成橙色且权重大于 `:root`，导致蓝色站点在暗色下变橙。现按后台配置的主色自动派生暗色变体（自动提亮至可读对比度），并覆盖暗色下的主色/悬浮色/底纹变量。
 * 链接建设：新增「自动内链」——正文里出现的其它文章标题自动转为站内链接（长词优先、每词仅首次、单篇上限 5、跳过标题/代码块/已有链接），关键词索引用 transient 缓存并在发布/更新/删除文章时失效重建。后台「金玉 › SEO › 自动内链」可开关（默认开）。
 
 = 1.0.8 =

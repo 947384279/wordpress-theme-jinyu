@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 add_action('add_meta_boxes', function () {
     add_meta_box(
         'jinyu_post_meta',
-        __('金玉 · 文章扩展字段', JINYU),
+        __('金玉 · 文章扩展字段', 'jinyu'),
         'jinyu_post_meta_box',
         ['post', 'page'],
         'normal',
@@ -27,19 +27,19 @@ function jinyu_post_meta_box($post): void
     $hide     = (int) get_post_meta($post->ID, '_jinyu_hide_cover', true);
     ?>
     <p>
-        <label for="jinyu_subtitle"><?php esc_html_e('文章副标题', JINYU); ?></label><br>
-        <input type="text" id="jinyu_subtitle" name="jinyu_subtitle" value="<?php echo esc_attr($subtitle); ?>" class="widefat" placeholder="<?php esc_attr_e('显示在标题下方', JINYU); ?>">
+        <label for="jinyu_subtitle"><?php esc_html_e('文章副标题', 'jinyu'); ?></label><br>
+        <input type="text" id="jinyu_subtitle" name="jinyu_subtitle" value="<?php echo esc_attr($subtitle); ?>" class="widefat" placeholder="<?php esc_attr_e('显示在标题下方', 'jinyu'); ?>">
     </p>
     <p>
-        <label for="jinyu_source"><?php esc_html_e('文章来源', JINYU); ?></label><br>
-        <input type="text" id="jinyu_source" name="jinyu_source" value="<?php echo esc_attr($source); ?>" class="widefat" placeholder="<?php esc_attr_e('如：转载自xxx / 原创', JINYU); ?>">
+        <label for="jinyu_source"><?php esc_html_e('文章来源', 'jinyu'); ?></label><br>
+        <input type="text" id="jinyu_source" name="jinyu_source" value="<?php echo esc_attr($source); ?>" class="widefat" placeholder="<?php esc_attr_e('如：转载自xxx / 原创', 'jinyu'); ?>">
     </p>
     <p>
-        <label for="jinyu_external_url"><?php esc_html_e('外链地址（跳转）', JINYU); ?></label><br>
+        <label for="jinyu_external_url"><?php esc_html_e('外链地址（跳转）', 'jinyu'); ?></label><br>
         <input type="url" id="jinyu_external_url" name="jinyu_external_url" value="<?php echo esc_url($ext); ?>" class="widefat" placeholder="https://">
     </p>
     <p>
-        <label><input type="checkbox" name="jinyu_hide_cover" value="1" <?php checked($hide, 1); ?>> <?php esc_html_e('隐藏正文特色封面图', JINYU); ?></label>
+        <label><input type="checkbox" name="jinyu_hide_cover" value="1" <?php checked($hide, 1); ?>> <?php esc_html_e('隐藏正文特色封面图', 'jinyu'); ?></label>
     </p>
     <?php
 }

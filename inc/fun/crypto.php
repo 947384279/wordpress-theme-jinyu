@@ -23,25 +23,50 @@ if (!function_exists('jinyu_encrypt')) {
     {
         if ($plain === '' || $plain === null) return $plain;
         if (!function_exists('openssl_encrypt')) return $plain;
-        $key = hash('sha256', wp_salt('auth'), true);
+        $key    = hash('sha256', wp_salt('auth'), true);
+        $mac_key = hash('sha256', wp_salt('auth') . '|jinyu_mac', true);
         $iv  = random_bytes(16);
         $enc = openssl_encrypt((string) $plain, 'AES-256-CBC', $key, OPENSSL_RAW_DATA, $iv);
         if ($enc === false) return $plain;
-        return 'jinyu_enc::' . base64_encode($iv . $enc);
+        // encrypt-then-MAC：HMAC 覆盖 iv+密文，防御 CBC 篡改；新密文前缀 jinyu_enc2::
+        $mac = hash_hmac('sha256', $iv . $enc, $mac_key, true);
+        return 'jinyu_enc2::' . base64_encode($iv . $enc . $mac);
     }
 }
 
 if (!function_exists('jinyu_decrypt')) {
     function jinyu_decrypt($val)
     {
-        if (!is_string($val) || strpos($val, 'jinyu_enc::') !== 0) return $val;
-        if (!function_exists('openssl_decrypt')) return $val;
-        $key = hash('sha256', wp_salt('auth'), true);
-        $raw = base64_decode(substr($val, strlen('jinyu_enc::')), true);
-        if ($raw === false || strlen($raw) < 17) return '';
-        $iv  = substr($raw, 0, 16);
-        $enc = substr($raw, 16);
-        $dec = openssl_decrypt($enc, 'AES-256-CBC', $key, OPENSSL_RAW_DATA, $iv);
-        return $dec === false ? '' : $dec;
+        if (!is_string($val)) return $val;
+
+        // 新格式：带 HMAC，先校验完整性再解密
+        if (strpos($val, 'jinyu_enc2::') === 0) {
+            if (!function_exists('openssl_decrypt')) return '';
+            $key     = hash('sha256', wp_salt('auth'), true);
+            $mac_key = hash('sha256', wp_salt('auth') . '|jinyu_mac', true);
+            $raw = base64_decode(substr($val, strlen('jinyu_enc2::')), true);
+            if ($raw === false || strlen($raw) < 16 + 32) return '';
+            $iv  = substr($raw, 0, 16);
+            $enc = substr($raw, 16, -32);
+            $mac = substr($raw, -32);
+            $calc = hash_hmac('sha256', $iv . $enc, $mac_key, true);
+            if (!hash_equals($calc, $mac)) return ''; // 完整性校验失败，拒绝
+            $dec = openssl_decrypt($enc, 'AES-256-CBC', $key, OPENSSL_RAW_DATA, $iv);
+            return $dec === false ? '' : $dec;
+        }
+
+        // 兼容旧格式（无 MAC）：仅解密不校验，保证历史密文可读
+        if (strpos($val, 'jinyu_enc::') === 0) {
+            if (!function_exists('openssl_decrypt')) return $val;
+            $key = hash('sha256', wp_salt('auth'), true);
+            $raw = base64_decode(substr($val, strlen('jinyu_enc::')), true);
+            if ($raw === false || strlen($raw) < 17) return '';
+            $iv  = substr($raw, 0, 16);
+            $enc = substr($raw, 16);
+            $dec = openssl_decrypt($enc, 'AES-256-CBC', $key, OPENSSL_RAW_DATA, $iv);
+            return $dec === false ? '' : $dec;
+        }
+
+        return $val;
     }
 }

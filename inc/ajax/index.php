@@ -29,31 +29,82 @@ function jinyu_ajax_like()
 
     $pid = isset($_POST['post_id']) ? absint($_POST['post_id']) : 0;
     if (!$pid || get_post_status($pid) !== 'publish') {
-        wp_send_json_error(__('文章不存在', JINYU));
+        wp_send_json_error(__('文章不存在', 'jinyu'));
     }
+
+    $act     = isset($_POST['action_type']) ? sanitize_key($_POST['action_type']) : 'like';
+    $is_like = ($act !== 'unlike');
 
     $uid = get_current_user_id();
+    $ip  = function_exists('jinyu_client_ip') ? jinyu_client_ip() : (isset($_SERVER['REMOTE_ADDR']) ? trim((string) $_SERVER['REMOTE_ADDR']) : '0.0.0.0');
 
-    // 防重复：登录用户记 user meta，游客记 cookie
     if ($uid) {
+        // 登录用户：user meta 去重（服务端可信），支持点赞/取消点赞切换
         $liked = jinyu_meta_ids($uid, 'jinyu_liked_posts');
-        if (in_array($pid, $liked, true)) {
-            wp_send_json_error(__('已点赞', JINYU));
+        $has   = in_array($pid, $liked, true);
+        if ($is_like) {
+            if ($has) {
+                wp_send_json_error(__('已点赞', 'jinyu'));
+            }
+            $liked[] = $pid;
+            update_user_meta($uid, 'jinyu_liked_posts', $liked);
+        } else {
+            if (!$has) {
+                wp_send_json_error(__('尚未点赞', 'jinyu'));
+            }
+            $liked = array_values(array_diff($liked, array($pid)));
+            update_user_meta($uid, 'jinyu_liked_posts', $liked);
         }
-        $liked[] = $pid;
-        update_user_meta($uid, 'jinyu_liked_posts', $liked);
     } else {
-        $cookie = 'jinyu_liked_' . $pid;
-        if (!empty($_COOKIE[$cookie])) {
-            wp_send_json_error(__('已点赞', JINYU));
+        // 游客：cookie 仅作 UI 提示（可被清除绕过），必须叠加服务端 IP 去重 + 限流，杜绝无限刷量
+        if (!jinyu_rate_limit_check('like', 20, MINUTE_IN_SECONDS)) {
+            wp_send_json_error(__('操作过于频繁，请稍后再试', 'jinyu'));
         }
-        setcookie($cookie, '1', time() + DAY_IN_SECONDS * 30, '/', '', is_ssl(), false);
+        $dedupe = 'jinyu_like_' . md5($ip . '|' . $pid);
+        $has    = (bool) get_transient($dedupe) || !empty($_COOKIE['jinyu_liked_' . $pid]);
+        if ($is_like) {
+            if ($has) {
+                wp_send_json_error(__('已点赞', 'jinyu'));
+            }
+            setcookie('jinyu_liked_' . $pid, '1', time() + DAY_IN_SECONDS * 30, '/', '', is_ssl(), false);
+            set_transient($dedupe, 1, DAY_IN_SECONDS * 30);
+        } else {
+            if (!$has) {
+                wp_send_json_error(__('尚未点赞', 'jinyu'));
+            }
+            setcookie('jinyu_liked_' . $pid, '0', time() - DAY_IN_SECONDS, '/', '', is_ssl(), false);
+            delete_transient($dedupe);
+        }
     }
 
-    $count = (int)get_post_meta($pid, 'jinyu_likes', true) + 1;
+    $count = (int)get_post_meta($pid, 'jinyu_likes', true);
+    $count = $is_like ? ($count + 1) : max(0, $count - 1);
     update_post_meta($pid, 'jinyu_likes', $count);
 
     wp_send_json_success($count);
+}
+
+/* 批量读取点赞状态（页面缓存场景下的前端水合：保证计数/已赞态与 DB 一致，不依赖缓存失效） */
+add_action('wp_ajax_jinyu_like_state', 'jinyu_ajax_like_state');
+add_action('wp_ajax_nopriv_jinyu_like_state', 'jinyu_ajax_like_state');
+function jinyu_ajax_like_state()
+{
+    jinyu_ajax_guard();
+
+    $raw = isset($_POST['ids']) ? (string) $_POST['ids'] : '';
+    $ids = array_filter(array_map('absint', explode(',', $raw)));
+    if (empty($ids)) {
+        wp_send_json_success([]);
+    }
+
+    $out = [];
+    foreach ($ids as $pid) {
+        $out[(int) $pid] = [
+            'count' => jinyu_get_post_likes($pid),
+            'liked' => jinyu_is_liked($pid),
+        ];
+    }
+    wp_send_json_success($out);
 }
 
 /* ==========================================================================
@@ -65,14 +116,14 @@ function jinyu_ajax_fav()
     jinyu_ajax_guard();
 
     if (!is_user_logged_in()) {
-        wp_send_json_error(__('请先登录', JINYU));
+        wp_send_json_error(__('请先登录', 'jinyu'));
     }
 
     $pid = isset($_POST['post_id']) ? absint($_POST['post_id']) : 0;
     $fav = isset($_POST['fav']) && $_POST['fav'] === '1';
 
     if (!$pid || get_post_status($pid) !== 'publish') {
-        wp_send_json_error(__('文章不存在', JINYU));
+        wp_send_json_error(__('文章不存在', 'jinyu'));
     }
 
     $uid  = get_current_user_id();
@@ -160,7 +211,7 @@ function jinyu_ajax_load_more()
     ]);
 
     if (!$q->have_posts()) {
-        wp_send_json_error(__('没有更多了', JINYU));
+        wp_send_json_error(__('没有更多了', 'jinyu'));
     }
 
     ob_start();
@@ -313,7 +364,20 @@ function jinyu_ajax_vote()
     $pid = isset($_POST['post_id']) ? absint($_POST['post_id']) : 0;
     $dir = isset($_POST['dir']) ? sanitize_key($_POST['dir']) : '';
     if (!$pid || !in_array($dir, ['yes', 'no'], true) || get_post_status($pid) !== 'publish') {
-        wp_send_json_error(__('参数无效', JINYU));
+        wp_send_json_error(__('参数无效', 'jinyu'));
+    }
+
+    // 游客端原本无任何防重复，可无限刷。叠加 IP 去重（每 IP 每文一票）+ 限流
+    if (!is_user_logged_in()) {
+        if (!jinyu_rate_limit_check('vote', 20, MINUTE_IN_SECONDS)) {
+            wp_send_json_error(__('操作过于频繁，请稍后再试', 'jinyu'));
+        }
+        $ip     = function_exists('jinyu_client_ip') ? jinyu_client_ip() : (isset($_SERVER['REMOTE_ADDR']) ? trim((string) $_SERVER['REMOTE_ADDR']) : '0.0.0.0');
+        $dedupe = 'jinyu_vote_' . md5($ip . '|' . $pid);
+        if (get_transient($dedupe)) {
+            wp_send_json_error(__('已投票', 'jinyu'));
+        }
+        set_transient($dedupe, 1, DAY_IN_SECONDS * 30);
     }
 
     $key   = $dir === 'yes' ? '_jinyu_helpful_yes' : '_jinyu_helpful_no';

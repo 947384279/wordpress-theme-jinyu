@@ -15,6 +15,17 @@ function jinyu_ajax_comment()
 {
     check_ajax_referer('jinyu_front', '_ajax_nonce');
 
+    // 访客评论服务端校验图形验证码：杜绝匿名刷评（登录用户免验证）
+    if (!is_user_logged_in()) {
+        if (function_exists('jinyu_captcha_verify')) {
+            $captcha = (string)($_POST['captcha'] ?? '');
+            $verify  = jinyu_captcha_verify('comment', $captcha);
+            if (is_wp_error($verify)) {
+                wp_send_json_error($verify->get_error_message(), 400);
+            }
+        }
+    }
+
     $comment = wp_handle_comment_submission(wp_unslash($_POST));
 
     if (is_wp_error($comment)) {
@@ -37,7 +48,7 @@ function jinyu_ajax_comment()
     wp_send_json_success([
         'html'    => $html,
         'message' => $approved
-            ? __('评论已发布', JINYU)
-            : __('评论已提交，等待审核', JINYU),
+            ? __('评论已发布', 'jinyu')
+            : __('评论已提交，等待审核', 'jinyu'),
     ]);
 }

@@ -8,13 +8,14 @@ if ( ! defined( 'ABSPATH' ) ) {
         <?php jinyu_breadcrumbs(); ?>
         <div class="jinyu-term-header">
             <h1><?php single_cat_title(); ?></h1>
-            <?php if (category_description()): ?><div class="jinyu-term-desc"><?php echo category_description(); ?></div><?php endif; ?>
+            <?php if (category_description()): ?><div class="jinyu-term-desc"><?php echo wp_kses_post(category_description()); ?></div><?php endif; ?>
         </div>
         <?php if (have_posts()): ?>
             <div class="jinyu-post-grid">
                 <?php while (have_posts()): the_post(); get_template_part('templates/module','post'); endwhile; ?>
             </div>
-            <div class="jinyu-pagination"><?php the_posts_pagination(['prev_text'=>'‹','next_text'=>'›']); ?></div>
+            <?php jinyu_pagination(['load_more' => false]); ?>
+            <?php get_template_part('templates/flinks'); ?>
         <?php else: ?>
             <?php get_template_part('templates/content','none'); ?>
         <?php endif; ?>

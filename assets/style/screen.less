@@ -9,7 +9,6 @@
 /* ---------- 流式排版：标题随视口平滑缩放（替代固定 px 硬切，提升大屏/小屏观感） ----------
    注意：Less 会把 `rem + vw` 误算成定值（3.6rem 之类），故中间值只用 vw，
    再用 clamp 的 min/max 钳住上下限。基准视口按 1280 设计。 */
-.jinyu-banner-title      { font-size: clamp(22px, 2.8vw, 36px); }
 .jinyu-article-title     { font-size: clamp(20px, 2vw, 30px); }
 .jinyu-term-header h1,
 .jinyu-author-header h1  { font-size: clamp(22px, 2.5vw, 32px); }
@@ -41,8 +40,6 @@
    993~1024px 区间就会出现「侧栏没了、网格却还是桌面列数」的半吊子布局。 */
 @media (max-width: 1024px) {
     .jinyu-relevant-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .jinyu-footer-inner { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .jinyu-banner { height: 260px; }
 }
 
 /* ---------- ≤768px ---------- */
@@ -57,13 +54,6 @@
 
     /* 标题栏空间紧张：隐藏页眉社交图标（页脚已有社交区），避免与搜索/月亮/登录/汉堡挤破 390 标题栏 */
     .jinyu-header-social { display: none; }
-
-    .jinyu-banner {
-        height: 220px;
-        .jinyu-banner-overlay { padding: @s-4 @s-5; }
-    }
-    .jinyu-banner-title { font-size: @fs-xl; }
-    .jinyu-banner-excerpt { display: none; }
 
     .jinyu-single { padding: @s-5; }
     .jinyu-article-title { font-size: @fs-xl; }
@@ -92,10 +82,9 @@
     .jinyu-header-tools .jinyu-user-avatar { width: 24px; height: 24px; }
     .jinyu-header-tools .jinyu-login-btn { height: 32px; padding: 0 @s-3; }
 
-    /* 手机端首页：隐藏电脑端首页装饰模块（轮播/置顶横幅/四宫格/两栏），
+    /* 手机端首页：隐藏电脑端首页装饰模块（轮播/四宫格/两栏），
        只留文章列表 + 翻页 + 页脚版权部分 */
     .home .jinyu-carousel,
-    .home .jinyu-banner,
     .home .jinyu-cms-grid,
     .home .jinyu-cms-2box { display: none; }
 }
@@ -107,7 +96,6 @@
 
     .jinyu-post-grid { grid-template-columns: minmax(0, 1fr); }
     .jinyu-relevant-grid { grid-template-columns: minmax(0, 1fr); }
-    .jinyu-footer-inner { grid-template-columns: minmax(0, 1fr); }
 
     .jinyu-single { padding: @s-4; }
     .jinyu-article-title { font-size: @fs-lg; }
@@ -117,7 +105,22 @@
     .jinyu-action-btn { padding: @s-2 @s-4; font-size: @fs-xs; }
 
     .jinyu-pagination a,
-    .jinyu-pagination span { min-width: 34px; height: 34px; font-size: @fs-xs; }
+    .jinyu-pagination span { min-width: 30px; height: 34px; padding: 0 @s-1; font-size: @fs-xs; }
+
+    /* 手机端强制单行：不允许换行，页码列表可收缩，跳转按钮始终留在同一行。
+       服务端已用 wp_is_mobile() 把页码收窄到 ≤7 项，这里是兜底（超长搜索词等极端情况）。 */
+    .jinyu-pagination { flex-wrap: nowrap; gap: @s-1 @s-2; }
+    .jinyu-pagination ul {
+        flex-wrap: nowrap;
+        gap: @s-1;
+        min-width: 0;
+        overflow: hidden;
+    }
+    .jinyu-pagination-jump { flex: 0 0 auto; margin-left: @s-2; padding-left: @s-2; }
+    .jinyu-jump-btn { height: 34px; padding: 0 @s-2; font-size: @fs-xs; gap: 3px; }
+    .jinyu-jump-panel { left: @s-2; }
+    .jinyu-jump-panel .jinyu-page-jump-input { width: 48px; font-size: @fs-xs; }
+    .jinyu-jump-panel .jinyu-page-jump-input::placeholder { font-size: @fs-xs; }
 
     .jinyu-scroll-util { right: 16px; bottom: 16px; }
     .jinyu-scroll-btn { width: 40px; height: 40px; font-size: 15px; }

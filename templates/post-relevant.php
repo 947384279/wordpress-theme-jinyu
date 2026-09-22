@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 if (jinyu_is_checked('related_enable')) {
     $num  = (int) jinyu_get_option('related_num', 4);
     $type = jinyu_get_option('related_type', 'tags');
-    if ($q = jinyu_get_related_posts(0, $num, $type)) {
+    if ($q = (function_exists('jinyu_get_related_posts') ? jinyu_get_related_posts(0, $num, $type) : false)) {
         if ($q->have_posts()) {
 ?>
 <section class="jinyu-relevant">

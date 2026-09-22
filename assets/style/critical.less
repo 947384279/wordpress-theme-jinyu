@@ -50,7 +50,9 @@ button { font-family: inherit; }
 }
 
 /* 仅供屏幕阅读器：视觉隐藏但保留在无障碍树中（勿改成 display:none / visibility:hidden） */
-.jinyu-sr-only {
+/* .screen-reader-text 是 WP 核心类名（the_posts_pagination / searchform 等输出），前台无 admin CSS 提供样式，必须主题兜底 */
+.jinyu-sr-only,
+.screen-reader-text {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -77,6 +79,15 @@ body.jinyu-no-sidebar .jinyu-sidebar { display: none; }
     .jinyu-sidebar { display: none; }
 }
 body.jinyu-no-sidebar .jinyu-single-wrap { max-width: 860px; margin: 0 auto; }
+
+/* 无侧栏模板（关于 / 申请友链 / 文章归档 / 友链）版心铺满内容区，见 common.less「文章页」小节。
+   首屏关键 CSS 必须同步，否则会先按 880 画出再被主样式改宽（闪一下）。 */
+.jinyu-main-wrap > .jinyu-single-wrap.jinyu-wide-wrap {
+    max-width: none;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
 
 /* ===== 顶部导航 ===== */
 .jinyu-header {
@@ -438,6 +449,39 @@ html[data-theme="dark"] .jinyu-logo--dual .jinyu-logo-dark { display: block; }
         .jinyu-post-cover::after { opacity: 1; }
     }
 }
+
+/* 置顶卡片：顶部 4px 品牌色描边 + 顶部淡橙渐变底 + 更明显光晕（与 common.less 同步） */
+.jinyu-post-card.is-sticky {
+    border: 1px solid rgba(var(--jinyu-c-primary-rgb), .5);
+    border-top: 4px solid @primary;
+    background:
+        linear-gradient(180deg, rgba(var(--jinyu-c-primary-rgb), .07), rgba(var(--jinyu-c-primary-rgb), 0) 42%),
+        @bg-card;
+    box-shadow: 0 6px 26px rgba(var(--jinyu-c-primary-rgb), .16);
+
+    &:hover {
+        border-color: rgba(var(--jinyu-c-primary-rgb), .62);
+        border-top-color: @primary;
+        box-shadow: 0 14px 38px rgba(var(--jinyu-c-primary-rgb), .28);
+    }
+}
+
+/* 标题行内「置顶」胶囊（与 common.less 同步） */
+.jinyu-post-pintag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    vertical-align: middle;
+    background: rgba(var(--jinyu-c-primary-rgb), .12);
+    color: @primary-dark;
+    font-size: @fs-xs;
+    font-weight: 700;
+    padding: 2px @s-2;
+    border-radius: @radius-pill;
+    margin-right: @s-2;
+
+    i { font-size: 11px; }
+}
 .jinyu-post-cover {
     position: relative;
     aspect-ratio: 16 / 9;
@@ -457,14 +501,22 @@ html[data-theme="dark"] .jinyu-logo--dual .jinyu-logo-dark { display: block; }
     .jinyu-post-sticky {
         position: absolute;
         top: @s-3;
-        right: @s-3;
+        left: @s-3;
+        right: auto;
         z-index: @z-in-card;
-        background: @primary;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: linear-gradient(135deg, @primary, @primary-dark);
         color: @text-invert;
-        font-size: @fs-xs;
-        padding: 4px @s-3;
+        font-size: 13px;
+        padding: 6px @s-3;
         border-radius: @radius-sm;
-        font-weight: 600;
+        font-weight: 700;
+        letter-spacing: .5px;
+        box-shadow: 0 6px 16px rgba(var(--jinyu-c-primary-rgb), .45);
+
+        i { font-size: 12px; }
     }
     .jinyu-post-cover-ph {
         width: 100%;
@@ -504,12 +556,28 @@ html[data-theme="dark"] .jinyu-logo--dual .jinyu-logo-dark { display: block; }
 }
 .jinyu-post-meta {
     display: flex;
-    gap: @s-4;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: @s-2 @s-4;
     font-size: @fs-xs;
     color: @text-4;
     margin-top: auto;
     padding-top: @s-3;
     i { margin-right: 4px; }
+}
+.jinyu-post-meta-series {
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    padding: 1px 6px;
+    border-radius: @radius-sm;
+    color: @primary;
+    background: rgba(var(--jinyu-c-primary-rgb), .12);
+    transition: background @transition-fast;
+
+    &:hover { background: rgba(var(--jinyu-c-primary-rgb), .24); }
+    .jinyu-post-meta-series-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .jinyu-post-meta-series-index { margin-left: 4px; flex: none; opacity: .75; }
 }
 .jinyu-post-cat {
     display: inline-flex;
