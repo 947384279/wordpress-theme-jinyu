@@ -1,5 +1,5 @@
 === 金玉 (Jinyu) ===
-Contributors: qicaiyun
+Contributors: huanxiang88
 Tags: blog, cms, responsive, dark-mode, custom-colors, editor-style, featured-images, microformats, post-formats, rtl-language-support, sticky-post, threaded-comments, translation-ready, two-columns, three-columns
 Requires at least: 7.1
 Tested up to: 7.1

@@ -1347,7 +1347,7 @@ msgid "峰值"
 msgstr ""
 
 # pages/template-link-apply.php:79
-msgid "巡检会抓取：① 您填写的「友链页地址」；② 贵站首页，检测页面是否含指向本站（qicaiyun.top，含 / 不含 www）的链接。"
+msgid "巡检会抓取：① 您填写的「友链页地址」；② 贵站首页，检测页面是否含指向本站（%s）的链接。"
 msgstr ""
 
 # inc/fun/flink.php:360
