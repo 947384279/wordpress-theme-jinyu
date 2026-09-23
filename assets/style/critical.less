@@ -135,7 +135,7 @@ body.admin-bar .jinyu-header { top: 32px; }
         align-items: center;
         justify-content: center;
         color: @text-invert;
-        font-size: 18px;
+        font-size: @fs-lg;
         box-shadow: 0 4px 12px rgba(var(--jinyu-c-primary-rgb), .3);
         img { width: 100%; height: 100%; object-fit: contain; border-radius: 10px; }
     }
@@ -210,7 +210,7 @@ html[data-theme="dark"] .jinyu-logo--dual .jinyu-logo-dark { display: block; }
         border-radius: @radius-sm;
         cursor: pointer;
         color: @text-2;
-        font-size: 16px;
+        font-size: @fs-md;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -294,6 +294,19 @@ html[data-theme="dark"] .jinyu-logo--dual .jinyu-logo-dark { display: block; }
             transform: translateY(0);
         }
     }
+
+    /* 菜单打开时把 sticky header 强制 fixed 钉在顶部：
+       body.overflow=hidden 会冻结滚动容器，sticky 在已滚动页面会脱粘滑出视口，
+       导致面板顶部露出背景内容。面板仍从 header 下沿开始，不覆盖 header 自身内容。 */
+    body.jinyu-nav-opened .jinyu-header {
+        position: fixed;
+        top: var(--jinyu-ab-h, 0px);
+        left: 0;
+        right: 0;
+        width: 100%;
+        z-index: 10000;
+    }
+
     .jinyu-nav {
         flex: 1 1 auto;
         flex-direction: column;
@@ -354,7 +367,7 @@ html[data-theme="dark"] .jinyu-logo--dual .jinyu-logo-dark { display: block; }
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 12px;
+        font-size: @fs-xs;
         color: @text-invert;
         background: linear-gradient(135deg, @primary, @primary-dark);
     }
@@ -397,28 +410,79 @@ html[data-theme="dark"] .jinyu-logo--dual .jinyu-logo-dark { display: block; }
     .jinyu-bread-current { color: @text-2; font-weight: 600; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 }
 .jinyu-term-header {
+    position: relative;
     margin-bottom: @s-6;
-    padding-left: @s-4;
-    border-left: 4px solid @primary;
-    h1 { font-size: @fs-2xl; font-weight: 800; color: @text-1; margin: 0; }
-    .jinyu-term-desc { margin-top: @s-3; color: @text-3; font-size: @fs-sm; line-height: 1.6; }
+    padding: @s-2;
+    background: @bg-card;
+    border: 1px solid @border;
+    border-radius: @radius-lg;
+    box-shadow: @shadow-card;
+    min-width: 0;
+    overflow: hidden;
+    &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+            radial-gradient(circle at 18% 85%, rgba(var(--jinyu-c-primary-rgb, 255,107,53), .05) 0, transparent 26%),
+            radial-gradient(circle at 82% 18%, rgba(var(--jinyu-c-primary-rgb, 255,107,53), .06) 0, transparent 30%);
+        pointer-events: none;
+    }
+    > .jinyu-breadcrumbs { margin-bottom: @s-1; line-height: 1.25; }
+    .bg-letter {
+        position: absolute;
+        right: @s-2;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 76px;
+        font-weight: 800;
+        line-height: 1;
+        color: @primary;
+        opacity: .06;
+        pointer-events: none;
+        user-select: none;
+        letter-spacing: -4px;
+        z-index: 0;
+    }
+    .jinyu-term-inner {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        gap: @s-3;
+        min-width: 0;
+    }
+    .jinyu-term-badge {
+        flex: 0 0 auto;
+        width: 40px;
+        height: 40px;
+        border-radius: @radius-md;
+        background: @primary-light;
+        color: @primary;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        font-weight: 700;
+        svg { width: 20px; height: 20px; fill: currentColor; }
+    }
+    .jinyu-term-body { position: relative; z-index: 1; min-width: 0; flex: 1 1 auto; }
+    h1 { font-size: @fs-xl; font-weight: 800; color: @text-1; margin: 0; line-height: 1.15; }
+    .jinyu-term-desc { margin-top: @s-2; color: @text-3; font-size: @fs-sm; line-height: 1.5; }
+    .jinyu-term-meta { margin: 2px 0 0; font-size: @fs-sm; color: @text-3; }
+    .jinyu-term-meta b { color: @primary; font-weight: 600; }
 }
 .jinyu-author-header {
-    display: flex;
-    align-items: center;
-    gap: @s-5;
-    border-left: 0;
-    padding-left: 0;
     .jinyu-author-avatar-img {
-        width: 72px;
-        height: 72px;
+        width: 48px;
+        height: 48px;
         border-radius: 50%;
         object-fit: cover;
         flex-shrink: 0;
-        border: 3px solid @bg-card;
+        border: 2px solid @bg-card;
         box-shadow: @shadow-card;
     }
-    .jinyu-author-meta { min-width: 0; }
+    .jinyu-author-meta { min-width: 0; flex: 1 1 auto; }
     h1 { margin: 0; }
 }
 
@@ -480,7 +544,7 @@ html[data-theme="dark"] .jinyu-logo--dual .jinyu-logo-dark { display: block; }
     border-radius: @radius-pill;
     margin-right: @s-2;
 
-    i { font-size: 11px; }
+    i { font-size: @fs-xxs; }
 }
 .jinyu-post-cover {
     position: relative;
@@ -497,26 +561,6 @@ html[data-theme="dark"] .jinyu-logo--dual .jinyu-logo-dark { display: block; }
         opacity: 0;
         transition: opacity .3s @ease-out-expo;
         pointer-events: none;
-    }
-    .jinyu-post-sticky {
-        position: absolute;
-        top: @s-3;
-        left: @s-3;
-        right: auto;
-        z-index: @z-in-card;
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        background: linear-gradient(135deg, @primary, @primary-dark);
-        color: @text-invert;
-        font-size: 13px;
-        padding: 6px @s-3;
-        border-radius: @radius-sm;
-        font-weight: 700;
-        letter-spacing: .5px;
-        box-shadow: 0 6px 16px rgba(var(--jinyu-c-primary-rgb), .45);
-
-        i { font-size: 12px; }
     }
     .jinyu-post-cover-ph {
         width: 100%;
@@ -558,19 +602,31 @@ html[data-theme="dark"] .jinyu-logo--dual .jinyu-logo-dark { display: block; }
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: @s-2 @s-4;
+    gap: 6px;
     font-size: @fs-xs;
     color: @text-4;
     margin-top: auto;
     padding-top: @s-3;
+    border-top: 1px solid var(--jinyu-c-border);
     i { margin-right: 4px; }
+
+    > span {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 9px;
+        border-radius: @radius-pill;
+        background: var(--jinyu-c-bg-subtle);
+        color: @text-3;
+        line-height: 1.55;
+    }
+    .jinyu-post-meta-updated { color: @text-4; }
 }
 .jinyu-post-meta-series {
     display: inline-flex;
     align-items: center;
     max-width: 100%;
     padding: 1px 6px;
-    border-radius: @radius-sm;
+    border-radius: @radius-pill;
     color: @primary;
     background: rgba(var(--jinyu-c-primary-rgb), .12);
     transition: background @transition-fast;
@@ -588,26 +644,17 @@ html[data-theme="dark"] .jinyu-logo--dual .jinyu-logo-dark { display: block; }
     font-size: @fs-xs;
     font-weight: 600;
     line-height: 1.6;
-    color: var(--c, @primary);
-    background: rgba(var(--c-rgb, var(--jinyu-c-primary-rgb)), .14);
-    padding: 2px 8px;
+    color: #fff;
+    background: var(--c, @primary);
+    padding: 4px 10px;
+    min-height: 28px;
     border-radius: @radius-sm;
-    transition: background @transition-fast;
-    &:hover { background: rgba(var(--c-rgb, var(--jinyu-c-primary-rgb)), .24); }
-    i { font-size: 11px; }
+    transition: opacity @transition-fast, background @transition-fast;
+    &:hover { opacity: .9; }
+    i { font-size: @fs-xxs; }
 }
-.jinyu-cat-0  { --c: #ff6b35; --c-rgb: 255, 107, 53; }
-.jinyu-cat-1  { --c: #1c60f3; --c-rgb: 28, 96, 243; }
-.jinyu-cat-2  { --c: #00b074; --c-rgb: 0, 176, 116; }
-.jinyu-cat-3  { --c: #9b59b6; --c-rgb: 155, 89, 182; }
-.jinyu-cat-4  { --c: #16b5c4; --c-rgb: 22, 181, 196; }
-.jinyu-cat-5  { --c: #e84393; --c-rgb: 232, 67, 147; }
-.jinyu-cat-6  { --c: #f0a30a; --c-rgb: 240, 163, 10; }
-.jinyu-cat-7  { --c: #2d98da; --c-rgb: 45, 152, 218; }
-.jinyu-cat-8  { --c: #e74c3c; --c-rgb: 231, 76, 60; }
-.jinyu-cat-9  { --c: #27ae60; --c-rgb: 39, 174, 96; }
-.jinyu-cat-10 { --c: #8e44ad; --c-rgb: 142, 68, 173; }
-.jinyu-cat-11 { --c: #fd7e14; --c-rgb: 253, 126, 20; }
+/* 分类色板：引用 var.less 单一真相源（与 common.less 共用同一 mixin） */
+.jinyu-cat-palette();
 
 /* ===== 头部用户菜单（首屏） ===== */
 .jinyu-user-menu { position: relative; }
@@ -657,19 +704,22 @@ html[data-theme="dark"] .jinyu-logo--dual .jinyu-logo-dark { display: block; }
 /* ===== 暗色令牌（主样式延迟加载期间避免暗色闪烁） ===== */
 html[data-theme='dark'] {
     color-scheme: dark;
+    /* ⚠️ 必须与 tokens.less 的 .jinyu-dark-tokens() 保持一致：本块是首屏暗色防闪烁的兜底，
+       主样式加载后会被其覆盖；改 tokens.less 暗色时务必同步此处，否则首屏先旧色后新色闪烁。 */
     --jinyu-c-primary: #ff8a5c; --jinyu-c-primary-dark: #ff6b35; --jinyu-c-primary-light: rgba(255,107,53,.14); --jinyu-c-primary-rgb: 255,138,92;
-    --jinyu-c-bg: #0f1115; --jinyu-c-bg-card: #16181d; --jinyu-c-bg-subtle: #1f2229; --jinyu-c-bg-input: #0f1115; --jinyu-c-bg-code: #0b0d10; --jinyu-c-bg-code-bar: #171a1f; --jinyu-c-bg-header: rgba(20,22,28,.72); --jinyu-c-bg-footer: #0f1115; --jinyu-c-bg-mask: rgba(0,0,0,.6);
-    --jinyu-c-text-1: #e5e7eb; --jinyu-c-text-2: #d1d5db; --jinyu-c-text-3: #9ca3af; --jinyu-c-text-4: #8a93a3; --jinyu-c-text-invert: #fff; --jinyu-c-text-footer-strong: #fff; --jinyu-c-text-footer: #9ca3af;
-    --jinyu-c-border: rgba(255,255,255,.08); --jinyu-c-border-strong: rgba(255,255,255,.14); --jinyu-c-border-footer: #2a2d32;
+    --jinyu-c-bg: #3a4150; --jinyu-c-bg-card: #434a5a; --jinyu-c-bg-subtle: #4d5568; --jinyu-c-bg-input: #3f4654; --jinyu-c-bg-code: #2c313d; --jinyu-c-bg-code-bar: #383e4c; --jinyu-c-bg-header: rgba(58,65,80,.82); --jinyu-c-bg-footer: #353b47; --jinyu-c-bg-mask: rgba(0,0,0,.55);
+    --jinyu-c-text-1: #eef0f4; --jinyu-c-text-2: #d6dae2; --jinyu-c-text-3: #aab2c0; --jinyu-c-text-4: #9aa3b3; --jinyu-c-text-invert: #fff; --jinyu-c-text-footer-strong: #fff; --jinyu-c-text-footer: #aab2c0;
+    --jinyu-c-border: rgba(255,255,255,.12); --jinyu-c-border-strong: rgba(255,255,255,.18); --jinyu-c-border-footer: #4a515f;
     --jinyu-shadow-card: 0 4px 20px rgba(0,0,0,.35); --jinyu-shadow-hover: 0 12px 32px rgba(var(--jinyu-c-primary-rgb),.22); --jinyu-shadow-float: 0 16px 44px rgba(0,0,0,.45); --jinyu-shadow-header: 0 4px 24px rgba(0,0,0,.4);
 }
 @media (prefers-color-scheme: dark) {
-    html:not([data-theme='light']) {
-        color-scheme: dark;
-        --jinyu-c-primary: #ff8a5c; --jinyu-c-primary-dark: #ff6b35; --jinyu-c-primary-light: rgba(255,107,53,.14); --jinyu-c-primary-rgb: 255,138,92;
-        --jinyu-c-bg: #0f1115; --jinyu-c-bg-card: #16181d; --jinyu-c-bg-subtle: #1f2229; --jinyu-c-bg-input: #0f1115; --jinyu-c-bg-code: #0b0d10; --jinyu-c-bg-code-bar: #171a1f; --jinyu-c-bg-header: rgba(20,22,28,.72); --jinyu-c-bg-footer: #0f1115; --jinyu-c-bg-mask: rgba(0,0,0,.6);
-        --jinyu-c-text-1: #e5e7eb; --jinyu-c-text-2: #d1d5db; --jinyu-c-text-3: #9ca3af; --jinyu-c-text-4: #8a93a3; --jinyu-c-text-invert: #fff; --jinyu-c-text-footer-strong: #fff; --jinyu-c-text-footer: #9ca3af;
-        --jinyu-c-border: rgba(255,255,255,.08); --jinyu-c-border-strong: rgba(255,255,255,.14); --jinyu-c-border-footer: #2a2d32;
-        --jinyu-shadow-card: 0 4px 20px rgba(0,0,0,.35); --jinyu-shadow-hover: 0 12px 32px rgba(var(--jinyu-c-primary-rgb),.22); --jinyu-shadow-float: 0 16px 44px rgba(0,0,0,.45); --jinyu-shadow-header: 0 4px 24px rgba(0,0,0,.4);
-    }
+        html:not([data-theme='light']) {
+            color-scheme: dark;
+            /* 与上方 html[data-theme='dark'] 块保持一致（见其同步说明） */
+            --jinyu-c-primary: #ff8a5c; --jinyu-c-primary-dark: #ff6b35; --jinyu-c-primary-light: rgba(255,107,53,.14); --jinyu-c-primary-rgb: 255,138,92;
+            --jinyu-c-bg: #3a4150; --jinyu-c-bg-card: #434a5a; --jinyu-c-bg-subtle: #4d5568; --jinyu-c-bg-input: #3f4654; --jinyu-c-bg-code: #2c313d; --jinyu-c-bg-code-bar: #383e4c; --jinyu-c-bg-header: rgba(58,65,80,.82); --jinyu-c-bg-footer: #353b47; --jinyu-c-bg-mask: rgba(0,0,0,.55);
+            --jinyu-c-text-1: #eef0f4; --jinyu-c-text-2: #d6dae2; --jinyu-c-text-3: #aab2c0; --jinyu-c-text-4: #9aa3b3; --jinyu-c-text-invert: #fff; --jinyu-c-text-footer-strong: #fff; --jinyu-c-text-footer: #aab2c0;
+            --jinyu-c-border: rgba(255,255,255,.12); --jinyu-c-border-strong: rgba(255,255,255,.18); --jinyu-c-border-footer: #4a515f;
+            --jinyu-shadow-card: 0 4px 20px rgba(0,0,0,.35); --jinyu-shadow-hover: 0 12px 32px rgba(var(--jinyu-c-primary-rgb),.22); --jinyu-shadow-float: 0 16px 44px rgba(0,0,0,.45); --jinyu-shadow-header: 0 4px 24px rgba(0,0,0,.4);
+        }
 }

@@ -304,7 +304,7 @@
         border-radius: @radius-pill;
         background: transparent;
         color: @text-4;
-        font-size: 12px;
+        font-size: @fs-xs;
         line-height: 1;
         cursor: pointer;
         transition: color @transition-fast, background @transition-fast;
@@ -639,7 +639,7 @@
             width: 62px;   /* 容纳「图标 + 3 个中文字」 */
             font-size: @fs-xs;
             color: @text-4;
-            i { font-size: 10px; opacity: .8; }
+            i { font-size: @fs-xxxs; opacity: .8; }
         }
         dd {
             margin: 0;
@@ -793,7 +793,7 @@
     }
     &-status { font-size: @fs-xs; font-weight: 600; color: @text-2; white-space: nowrap; }
     &-samples {
-        font-size: 11px;
+        font-size: @fs-xxs;
         color: @text-4;
         white-space: nowrap;
 
@@ -815,7 +815,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 11px;
+            font-size: @fs-xxs;
             font-weight: 800;
             color: @text-1;
             font-variant-numeric: tabular-nums;
@@ -903,14 +903,14 @@
             /* 小号单位（秒/次/MB）：由 JS setNumUnit 注入 */
             i.unit {
                 font-style: normal;
-                font-size: 11px;
+                font-size: @fs-xxs;
                 font-weight: 600;
                 color: @text-3;
                 letter-spacing: 0;
                 margin-left: 2px;
             }
         }
-        .jinyu-perf-name { font-size: 11px; color: @text-4; white-space: nowrap; }
+        .jinyu-perf-name { font-size: @fs-xxs; color: @text-4; white-space: nowrap; }
 
         &:hover {
             transform: translateY(-1px);
@@ -924,7 +924,7 @@
         justify-content: center;
         width: 22px;
         height: 22px;
-        font-size: 11px;
+        font-size: @fs-xxs;
         color: @primary;
         background: rgba(var(--jinyu-c-primary-rgb), .12);
         border-radius: 7px;
@@ -934,7 +934,7 @@
        这三项都是「越小越好」，非股市语义，勿反）。三张卡第四行永远有内容，高度才齐。 */
     &-trend,
     &-pct {
-        font-size: 10px;
+        font-size: @fs-xxxs;
         line-height: 1.4;
         white-space: nowrap;
         color: @text-4;
@@ -963,7 +963,7 @@
             gap: 1px;
             min-width: 0;
         }
-        i { font-style: normal; font-size: 10px; color: @text-4; }
+        i { font-style: normal; font-size: @fs-xxxs; color: @text-4; }
         b {
             font-size: @fs-xs;
             font-weight: 700;
@@ -1093,7 +1093,7 @@
         color: @text-1; /* 兜底实色：渐变文字能力缺失时数字仍可见（绝不隐形），渐变见下方 @supports */
     }
     &-sec {
-        font-size: 15px;
+        font-size: @fs-base;
         font-weight: 700;
         color: @text-3;
         font-variant-numeric: tabular-nums;

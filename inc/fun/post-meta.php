@@ -107,7 +107,7 @@ if (!function_exists('jinyu_get_post_cover')) {
         function jinyu_get_url_srcset($url, $webp = true)
         {
             if (empty($url) || !is_string($url)) return '';
-            $clean = preg_replace('/[?#].*$/', '', $url);
+            $clean = jinyu_strip_transform_suffix($url);
             $up    = wp_get_upload_dir();
             $base  = !empty($up['baseurl']) ? $up['baseurl'] : '';
             if (!$base) return '';
@@ -347,7 +347,7 @@ if (!function_exists('jinyu_cover_url')) {
         // 外链/CDN/主题资源/已带尺寸后缀的图直接跳过 attachment_url_to_postid，
         // 否则每次渲染都多查一次且对站外图必然返回 0（纯浪费）。
         static $memo = [];
-        $clean = preg_replace('/[?#].*$/', '', $url);
+        $clean = jinyu_strip_transform_suffix($url);
 
         // 以上传目录 baseurl 判定“本站上传图”，兼容自定义上传路径与 CDN 域名；
         // 旧的硬编码 '/wp-content/uploads/' 会在自定义上传目录或 CDN 下误判为站外，跳过降采样与原图直出。

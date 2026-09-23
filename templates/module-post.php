@@ -24,10 +24,6 @@ $card_class = is_sticky() ? ' is-sticky' : '';
 <article id="post-<?php the_ID(); ?>" <?php post_class('jinyu-post-card' . $card_class); ?>>
 
     <div class="jinyu-post-cover">
-        <?php if (is_sticky()) : ?>
-            <span class="jinyu-post-sticky"><i class="fa-solid fa-thumbtack" aria-hidden="true"></i><?php esc_html_e('置顶', 'jinyu'); ?></span>
-        <?php endif; ?>
-
         <a class="jinyu-post-cover-link" href="<?php the_permalink(); ?>" tabindex="-1" aria-hidden="true">
             <?php if ($cover) : ?>
                 <?php $ph_card = jinyu_get_post_cover($pid, 'thumbnail', false); ?>
@@ -45,16 +41,13 @@ $card_class = is_sticky() ? ' is-sticky' : '';
                 <i class="fa-regular fa-folder-open" aria-hidden="true"></i><?php echo esc_html($cats[0]->name); ?>
             </a>
         <?php endif; ?>
-        <h3 class="jinyu-post-title"><?php if (is_sticky()) : ?><span class="jinyu-post-pintag"><i class="fa-solid fa-thumbtack" aria-hidden="true"></i><?php esc_html_e('置顶', 'jinyu'); ?></span><?php endif; ?><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+        <h2 class="jinyu-post-title"><?php if (is_sticky()) : ?><span class="jinyu-post-pintag"><i class="fa-solid fa-thumbtack" aria-hidden="true"></i><?php esc_html_e('置顶', 'jinyu'); ?></span><?php endif; ?><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
 
         <?php
-        // 摘要为空是正常情况（正文只有图片/短代码时 strip_tags 后无文本）——
-        // 此时不输出空 <p>，避免死节点与卡片高度无意义参差
+        // 摘要统一占位：无论有无摘要都输出 <p>，由 CSS 固定 2 行高度，避免卡片高度参差
         $jinyu_excerpt = wp_trim_words(get_the_excerpt(), 40, '…');
-        if ($jinyu_excerpt) :
         ?>
-            <p class="jinyu-post-excerpt"><?php echo esc_html($jinyu_excerpt); ?></p>
-        <?php endif; ?>
+            <p class="jinyu-post-excerpt"<?php echo $jinyu_excerpt ? '' : ' aria-hidden="true"'; ?>><?php echo esc_html($jinyu_excerpt); ?></p>
 
         <div class="jinyu-post-meta">
             <?php if (jinyu_show_views()) : ?>

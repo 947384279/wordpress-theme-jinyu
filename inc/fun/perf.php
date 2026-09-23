@@ -305,18 +305,27 @@ function jinyu_perf_apply(): void {
 	// 12) 关键域名 DNS 预连接：在 <head> 最前为 CDN 域名提前建连。
 	if ( ! empty( $o['dns_preconnect'] ) ) {
 		add_action( 'wp_head', static function () {
-			$hosts = [];
-			$cdn   = trim( (string) jinyu_get_option( 'cdn_url', '' ) );
-			$scheme = 'https';
-			if ( $cdn && preg_match( '#^[a-z]+://#i', $cdn, $mm ) ) {
-				$scheme = rtrim( $mm[0], ':' );
+		$hosts = [];
+		$cdn   = trim( (string) jinyu_get_option( 'cdn_url', '' ) );
+		$scheme = 'https';
+		if ( $cdn && preg_match( '#^[a-z]+://#i', $cdn, $mm ) ) {
+			$scheme = rtrim( $mm[0], ':' );
+		}
+		if ( $cdn ) {
+			$h = wp_parse_url( $cdn, PHP_URL_HOST );
+			if ( $h && ! in_array( $h, $hosts, true ) ) {
+				$hosts[] = $h;
 			}
-			if ( $cdn ) {
-				$h = wp_parse_url( $cdn, PHP_URL_HOST );
-				if ( $h && ! in_array( $h, $hosts, true ) ) {
-					$hosts[] = $h;
-				}
+		}
+		// 图片常托管在存储加速域名（storage_domain，独立于 cdn_url）；只预连接 cdn_url 会导致
+		// 图床域名零预连接。JY-10：一并纳入，使浏览器提前建连、省首屏 RTT。
+		$sd = trim( (string) jinyu_get_option( 'storage_domain', '' ) );
+		if ( $sd ) {
+			$h = wp_parse_url( $sd, PHP_URL_HOST );
+			if ( $h && ! in_array( $h, $hosts, true ) ) {
+				$hosts[] = $h;
 			}
+		}
 			// 允许外部追加更多需预连接的域名（如字体/统计源）
 			foreach ( (array) apply_filters( 'jinyu_perf_preconnect_hosts', [] ) as $extra ) {
 				if ( is_string( $extra ) && ! in_array( $extra, $hosts, true ) ) {

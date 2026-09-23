@@ -53,3 +53,6 @@ sftp*.py
 # 内部文档与设计稿（非项目源，禁止公开发布）
 jinyu-bug-report.md
 jinyu-plugin-preview.html
+
+# 本地设计审计产物（截图/预览/测试脚本，非主题源）
+_design_audit/

@@ -106,6 +106,29 @@ if (!function_exists('jinyu_webp_transform_suffix')) {
     }
 }
 
+if (!function_exists('jinyu_strip_transform_suffix')) {
+    /**
+     * 剥离 CDN 即时转码指令后缀，把「带转码指令的 CDN URL」还原成源图 URL。
+     * 又拍云风格 `!/format/webp` 以 ! 开头、不含 ?#，preg_replace('/[?#].*$/') 无法剥除，
+     * 会导致 attachment_url_to_postid / 扩展名判定 / 降采样失效——这是全站 srcset 为 0 的根因。
+     * 阿里云/腾讯云/七牛的 ?x-oss-process=... 由 [?#].*$ 处理，此处一并兜底。
+     *
+     * @param string $url
+     * @return string
+     */
+    function jinyu_strip_transform_suffix($url)
+    {
+        if (!is_string($url) || $url === '') {
+            return $url;
+        }
+        // 又拍云「!」分隔的转码指令（!/format/webp 等）：剥到行尾
+        $url = preg_replace('/!.*$/', '', $url);
+        // 其它服务商的 ? 查询串 / # 锚点
+        $url = preg_replace('/[?#].*$/', '', $url);
+        return $url;
+    }
+}
+
 if (!function_exists('jinyu_webp_storage_cdn_url')) {
     /**
      * 由上传相对路径拼出存储 CDN 原图 URL（不含转码指令）。
@@ -240,7 +263,7 @@ if (!function_exists('jinyu_img_to_webp_url')) {
             return $url;
         }
 
-        $path = preg_replace('/[?#].*$/', '', $local_url);
+        $path = jinyu_strip_transform_suffix($local_url);
         if (!preg_match('/\.(jpe?g|png)$/i', $path)) {
             return $url;
         }

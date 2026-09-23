@@ -5,9 +5,16 @@ if ( ! defined( 'ABSPATH' ) ) {
  get_header(); ?>
 <div class="jinyu-container jinyu-main-wrap">
     <main id="jinyu-content" class="jinyu-content">
-        <?php jinyu_breadcrumbs(); ?>
         <div class="jinyu-term-header">
-            <h1>#<?php single_tag_title(); ?></h1>
+            <span class="bg-letter" aria-hidden="true">#</span>
+            <?php jinyu_breadcrumbs(); ?>
+            <div class="jinyu-term-inner">
+                <div class="jinyu-term-badge" aria-hidden="true">#</div>
+                <div class="jinyu-term-body">
+                    <h1>#<?php single_tag_title(); ?></h1>
+                    <?php echo jinyu_archive_meta_html(); ?>
+                </div>
+            </div>
         </div>
         <?php if (have_posts()): ?>
             <div class="jinyu-post-grid">

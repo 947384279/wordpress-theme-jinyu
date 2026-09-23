@@ -647,9 +647,10 @@ class Jinyu_Reader_Wall_Widget extends WP_Widget {
             echo '<div class="jinyu-reader-wall">';
             foreach ($rows as $r) {
                 if ($letter_mode) {
-                    $avatar = '<img class="jinyu-avatar-img" src="' . esc_attr(jinyu_letter_avatar((string) $r->comment_author, 48)) . '" width="48" height="48" alt="">';
+                    $avatar = '<img class="jinyu-avatar-img" src="' . esc_attr(jinyu_letter_avatar((string) $r->comment_author, 48)) . '" width="48" height="48" alt="' . esc_attr($r->comment_author) . '">';
                 } else {
-                    $avatar = get_avatar($r->comment_author_email, 48, '', '', ['class' => 'jinyu-avatar-img']);
+                    // 第 4 参 $alt 由 get_avatar 内部 esc_attr，此处传原始值避免双重转义
+                    $avatar = get_avatar($r->comment_author_email, 48, '', $r->comment_author, ['class' => 'jinyu-avatar-img']);
                 }
                 $name   = $r->comment_author;
                 if (!empty($r->comment_author_url)) {
@@ -831,6 +832,12 @@ class Jinyu_Hitokoto_Widget extends WP_Widget {
 
         $n    = count($rows);
         $rand = ($instance['mode'] ?? 'daily') === 'random';
+        // random 模式：服务端仅首屏一条，翻页换句交给前端；全量语录内联会撑大 HTML，
+        // 超 30 条只随机抽样 30 条下发，兼顾「换一句」体验与首屏体积（JY-14）。daily 模式零额外体积，不动。
+        if ($rand && $n > 30) {
+            $rows = array_values(array_intersect_key($rows, array_flip((array) array_rand($rows, 30))));
+            $n    = count($rows);
+        }
         // daily：按站点本地日期取模，全天固定同一条。
         // random：服务端只负责首屏那一条，翻页换句交给前端 hitokoto 模块 ——
         // 整页走 WP Super Cache 静态直吐，服务端随机值会被缓存冻死，只有前端换句才真的生效。

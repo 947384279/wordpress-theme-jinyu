@@ -73,11 +73,22 @@ function jinyu_current_user_tab(): string
 /* ==========================================================================
    头像
    ========================================================================== */
+/**
+ * 头像源统一升级 https。
+ * 历史 OAuth 头像（thirdqq.qlogo.cn 等）在库中存的是 http://，
+ * https 页面加载 http 子资源会被浏览器按混合内容拦截 → 裂图。
+ * 这些头像 CDN 均支持 https，出口处统一替换。
+ */
+function jinyu_avatar_https(string $url): string
+{
+    return preg_replace('#^http://#i', 'https://', $url);
+}
+
 function jinyu_user_avatar_url(int $user_id, int $size = 96): string
 {
     $custom = get_user_meta($user_id, 'jinyu_avatar', true);
     if ($custom) {
-        return jinyu_img_to_webp_url(esc_url_raw($custom));
+        return jinyu_avatar_https(jinyu_img_to_webp_url(esc_url_raw($custom)));
     }
     // 兼容：旧版全局 jinyu_oauth_avatar + 新版按平台 jinyu_oauth_{platform}_avatar
     $oauth = '';
@@ -91,7 +102,7 @@ function jinyu_user_avatar_url(int $user_id, int $size = 96): string
         }
     }
     if ($oauth) {
-        return jinyu_img_to_webp_url(esc_url_raw($oauth));
+        return jinyu_avatar_https(jinyu_img_to_webp_url(esc_url_raw($oauth)));
     }
     // 兼容本地头像插件与旧主题遗留：Simple Local Avatars 标准 meta（simple_local_avatar）
     // 及 Kratos 旧主题的 kratos_local_avatar，结构均为序列化数组（full + 各尺寸 URL）。
@@ -101,7 +112,7 @@ function jinyu_user_avatar_url(int $user_id, int $size = 96): string
         if (is_array($local)) {
             $url = $local[$size] ?? ($local['full'] ?? '');
             if (is_string($url) && preg_match('#^https?://#i', $url)) {
-                return jinyu_img_to_webp_url(esc_url_raw($url));
+                return jinyu_avatar_https(jinyu_img_to_webp_url(esc_url_raw($url)));
             }
         }
     }

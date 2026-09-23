@@ -235,6 +235,8 @@
         var labelClose = toggle.getAttribute('data-label-close') || '关闭菜单';
         var opened = false;
         var padRight = '';
+        var headerPadRight = '';
+        var header = document.querySelector('.jinyu-header');
 
         /* ---------- 子菜单：注入展开按钮 + 手风琴 ---------- */
         $$('li', panel).forEach(function (li) {
@@ -253,11 +255,17 @@
         });
 
         /* ---------- 滚动锁 ---------- */
+        var savedScrollTop = 0;
         function lockScroll() {
+            savedScrollTop = window.scrollY || doc.documentElement.scrollTop;
             var gap = window.innerWidth - root.clientWidth;
             if (gap > 0) {
                 padRight = doc.body.style.paddingRight;
                 doc.body.style.paddingRight = gap + 'px';
+                if (header) {
+                    headerPadRight = header.style.paddingRight;
+                    header.style.paddingRight = gap + 'px';
+                }
             }
             doc.body.style.overflow = 'hidden';
             root.style.overflow = 'hidden';
@@ -266,7 +274,12 @@
             doc.body.style.overflow = '';
             root.style.overflow = '';
             doc.body.style.paddingRight = padRight;
+            if (header) {
+                header.style.paddingRight = headerPadRight;
+                headerPadRight = '';
+            }
             padRight = '';
+            window.scrollTo(0, savedScrollTop);
         }
 
         /* ---------- 焦点环：汉堡按钮 + 面板内可见可聚焦元素 ---------- */
@@ -289,6 +302,7 @@
             toggle.setAttribute('aria-expanded', 'true');
             toggle.setAttribute('aria-label', labelClose);
             lockScroll();
+            doc.body.classList.add('jinyu-nav-opened');
             // 焦点交给面板本身：读屏能进入对话框，也不会像聚焦首个链接那样画出一圈描边
             panel.focus({ preventScroll: true });
         }
@@ -303,7 +317,8 @@
             toggle.setAttribute('aria-expanded', 'false');
             toggle.setAttribute('aria-label', labelOpen);
             unlockScroll();
-            if (returnFocus !== false) toggle.focus();
+            doc.body.classList.remove('jinyu-nav-opened');
+            if (returnFocus !== false) toggle.focus({ preventScroll: true });
         }
 
         /* ---------- 交互 ---------- */
@@ -347,7 +362,9 @@
            移动端（≤1240）保持汉堡浮层：fitNav 先清理所有内联样式/类，交回 CSS 媒体查询的浮层。
            JS 不可用时降级：菜单按 14px 平铺（可能裁剪），不顶飞工具区。 */
         var navEl = panel.querySelector('.jinyu-nav');
-        var FS_BASE = 14, FS_MIN = 13, GAP_BASE = 2, GAP_MIN = 1;
+        /* 地板 12px/0 间距：实测 1440 视口 10 个带 emoji 的菜单项在 13px 仍差 ~45px，
+           若地板过高会跌入横向滚动兜底（overflow 裁剪下拉菜单）。12px 仍可读，优先保下拉可用。 */
+        var FS_BASE = 14, FS_MIN = 12, GAP_BASE = 2, GAP_MIN = 0;
 
         function setFluid(fs, gap) {
             navEl.style.setProperty('--jinyu-nav-fs', fs + 'px');
@@ -397,10 +414,10 @@
             var ics = getComputedStyle(inner);
             var contentW = inner.clientWidth - (parseFloat(ics.paddingLeft) || 0) - (parseFloat(ics.paddingRight) || 0);
             var innerGap = parseFloat(ics.columnGap) || 0;
-            var panelGap = parseFloat(getComputedStyle(panel).columnGap) || parseFloat(getComputedStyle(panel).gap) || 0;
-            // 内联模式横向占宽：Logo + 菜单 + 工具区，及 logo↔panel、panel↔tools 两个 inner 列间距 + panel 内 nav↔tools 间距
+            // 内联模式横向占宽：Logo + 菜单 + 工具区 + logo↔panel、panel↔tools 两个 inner 列间距。
+            // 工具区已在面板外（面板只装菜单 DOM），不再扣 panel 内部 gap —— 多扣会低估可用宽度，误触发滚动兜底。
             return contentW - logo.getBoundingClientRect().width - tools.getBoundingClientRect().width
-                - innerGap * 2 - panelGap;
+                - innerGap * 2;
         }
 
         function fitNav() {
@@ -432,6 +449,31 @@
         if (mqDesktop.addEventListener) mqDesktop.addEventListener('change', fitNav);
         else if (mqDesktop.addListener) mqDesktop.addListener(fitNav);
         fitNav();
+
+        /* ---------- 滚动兜底态的下拉修正 ----------
+           .jinyu-nav-scroll 是 overflow 滚动容器，absolute 下拉会被裁剪看不见。
+           hover 时把子菜单临时切成 fixed 定位钉在触发项正下方（ul 仍是 li 的子节点，
+           :hover 链不断，展开态 CSS 照常生效）；离开时还原 inline style。 */
+        $$('li.jinyu-has-sub', navEl).forEach(function (li) {
+            var sub = li.querySelector(':scope > ul');
+            if (!sub) return;
+            li.addEventListener('mouseenter', function () {
+                if (!navEl.classList.contains('jinyu-nav-scroll')) return;
+                var r = li.getBoundingClientRect();
+                sub.style.position = 'fixed';
+                sub.style.top = r.bottom + 'px';
+                sub.style.left = '0px';
+                sub.style.transform = 'none';
+                var lx = Math.max(8, Math.min(r.left, window.innerWidth - sub.offsetWidth - 8));
+                sub.style.left = lx + 'px';
+            });
+            li.addEventListener('mouseleave', function () {
+                sub.style.position = '';
+                sub.style.top = '';
+                sub.style.left = '';
+                sub.style.transform = '';
+            });
+        });
     }
 
     /* ======================================================================
@@ -586,11 +628,18 @@
 
         var wrap = doc.createElement('div');
         wrap.className = 'jinyu-toc';
-        wrap.innerHTML = '<div class="jinyu-toc-title">文章目录' +
-            '<button type="button" class="jinyu-toc-toggle" aria-label="展开/收起目录"><i class="fa-solid fa-chevron-down"></i></button></div>' +
+        wrap.innerHTML = '<div class="jinyu-toc-title">' +
+            '<span class="jinyu-toc-heading"><i class="fa-solid fa-list-ul jinyu-toc-ico" aria-hidden="true"></i>文章目录</span>' +
+            '<span class="jinyu-toc-meta"><span class="jinyu-toc-cur"></span><span class="jinyu-toc-count"></span>' +
+            '<button type="button" class="jinyu-toc-toggle" aria-label="展开/收起目录" aria-expanded="false"><i class="fa-solid fa-chevron-down"></i></button></span>' +
+            '</div>' +
             '<ul class="jinyu-toc-list"></ul>';
         var list = $('.jinyu-toc-list', wrap);
         var titleEl = $('.jinyu-toc-title', wrap);
+        var curEl = $('.jinyu-toc-cur', wrap);
+        var countEl = $('.jinyu-toc-count', wrap);
+        var toggleBtn = $('.jinyu-toc-toggle', wrap);
+        if (countEl) countEl.textContent = '0/' + headings.length;
 
         var ids = [];
         headings.forEach(function (h, i) {
@@ -629,11 +678,17 @@
             var target = doc.getElementById(id);
             if (target) target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
             if (history.replaceState) history.replaceState(null, '', '#' + id);
+            // 移动端：点选条目后自动收起，不遮挡正文
+            if (window.matchMedia('(max-width: 768px)').matches) setOpen(false);
         });
 
         // 移动端：标题整条可点击折叠/展开
+        var setOpen = function (open) {
+            wrap.classList.toggle('jinyu-toc-open', open);
+            if (toggleBtn) toggleBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        };
         titleEl.addEventListener('click', function () {
-            wrap.classList.toggle('jinyu-toc-open');
+            setOpen(!wrap.classList.contains('jinyu-toc-open'));
         });
 
         // 滚动高亮 + 章节进度点 + URL hash 同步
@@ -645,6 +700,9 @@
             if (cur < 0) return;
             links.forEach(function (a, i) { a.classList.toggle('jinyu-toc-active', i === cur); });
             items.forEach(function (li, i) { li.classList.toggle('jinyu-toc-done', i <= cur); });
+            // 折叠条上的实时进度：x/y + 当前章节名
+            if (countEl) countEl.textContent = (cur + 1) + '/' + ids.length;
+            if (curEl) curEl.textContent = headings[cur].textContent;
             if (history.replaceState) history.replaceState(null, '', '#' + ids[cur]);
         };
         var observer = new IntersectionObserver(function (entries) {
@@ -1136,37 +1194,6 @@
     }
 
     /* ======================================================================
-       模块：卡片 3D 倾斜 / 鼠标光晕（仅在精确指针 + 未降低动效时启用）
-       ====================================================================== */
-    function pointerEffects() {
-        if (reduceMotion || !finePointer) return;
-
-        // 卡片 3D 倾斜：mousemove 高频触发，用 rAF 批处理、仅取最近一次坐标合成，
-        // 避免每次指针移动都重排/重绘合成层（原实现每 move 直接写 transform，低端机易卡）
-        $$('.jinyu-post-card, .jinyu-relevant-card').forEach(function (card) {
-            var queued = false, lx = 0, ly = 0;
-            card.addEventListener('mousemove', function (e) {
-                var r = card.getBoundingClientRect();
-                lx = (e.clientX - r.left) / r.width - 0.5;
-                ly = (e.clientY - r.top) / r.height - 0.5;
-                if (queued) return;
-                queued = true;
-                requestAnimationFrame(function () {
-                    queued = false;
-                    card.style.transform = 'perspective(800px) rotateY(' + (lx * 6) + 'deg) rotateX(' + (-ly * 6) + 'deg) translateY(-4px)';
-                });
-            }, { passive: true });
-            card.addEventListener('mouseleave', function () {
-                queued = false;
-                card.style.transform = '';
-            });
-        });
-
-        // 注：原全局鼠标光晕（jinyu-cursor-glow）已移除——纯装饰、无信息量，全站跟随
-        // 光斑易显廉价；如需可放在首页 hero 区局部实现，而非挂到 body 全局。
-    }
-
-    /* ======================================================================
        模块：头部滚动态
        ====================================================================== */
     function headerScroll() {
@@ -1391,6 +1418,9 @@
     function ajaxComment() {
         var form = $('.jinyu-comment-respond form, #commentform');
         if (!form) return;
+        // 幂等：避免重初始化时在同一表单上重复绑定 submit（双发评论）
+        if (form.getAttribute('data-jy-ajax')) return;
+        form.setAttribute('data-jy-ajax', '1');
 
         var tip = doc.createElement('div');
         tip.className = 'jinyu-comment-tip';
@@ -2337,6 +2367,9 @@
         var btn = doc.querySelector('.jinyu-comment-smiley-btn');
         var panel = doc.getElementById('jinyu-smiley-panel');
         if (!btn || !panel) return;
+        // 幂等：PJAX 换页后同一 DOM 重复初始化则跳过
+        if (btn.getAttribute('data-jy-ready')) return;
+        btn.setAttribute('data-jy-ready', '1');
 
         var emojis = ['😀','😁','😂','🤣','😊','😍','😘','😎','🤔','😅','😭','😡','👍','👎','👏','🙏','💪','🎉','❤️','💔','🔥','✨','🌟','🍻'];
         emojis.forEach(function (e) {
@@ -2348,20 +2381,30 @@
             panel.appendChild(b);
         });
 
+        function setOpen(open) {
+            panel.hidden = !open;
+            btn.setAttribute('aria-expanded', String(open));
+        }
+
         btn.addEventListener('click', function (e) {
             e.preventDefault();
-            panel.hidden = !panel.hidden;
+            e.stopPropagation(); // 不冒泡到 document，避免外部点击判定误关面板
+            setOpen(panel.hidden);
         });
 
         panel.addEventListener('click', function (e) {
             var t = e.target.closest('.jinyu-smiley-item');
             if (!t) return;
             insertEmojiAtCursor(t.getAttribute('data-emoji'));
-            panel.hidden = true;
+            setOpen(false);
         });
 
+        // 判定必须用 contains：点按钮内 <i> 图标时 e.target 是图标而非按钮本身
         doc.addEventListener('click', function (e) {
-            if (!panel.hidden && e.target !== btn && !panel.contains(e.target)) panel.hidden = true;
+            if (!panel.hidden && !btn.contains(e.target) && !panel.contains(e.target)) setOpen(false);
+        });
+        doc.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && !panel.hidden) setOpen(false);
         });
 
         function insertEmojiAtCursor(text) {
@@ -2372,7 +2415,46 @@
             var pos = start + text.length;
             ta.selectionStart = ta.selectionEnd = pos;
             ta.focus();
+            // 触发 input：让计数器/自动增高联动
+            ta.dispatchEvent(new Event('input', { bubbles: true }));
         }
+    }
+
+    /* ======================================================================
+       模块：评论字数计数（实时更新工具栏计数，超长提示）
+       ====================================================================== */
+    function commentCounter() {
+        var ta = doc.getElementById('comment');
+        var box = doc.querySelector('[data-jinyu-counter]');
+        if (!ta || !box) return;
+        if (box.getAttribute('data-jy-ready')) return;
+        box.setAttribute('data-jy-ready', '1');
+
+        var MAX = 1000;
+        var firstRun = true;
+        // 输入框随内容自动增高
+        function fit() {
+            ta.style.height = 'auto';
+            ta.style.height = Math.max(ta.scrollHeight, ta.offsetHeight) + 'px';
+        }
+        function update() {
+            var len = ta.value.length;
+            box.textContent = len + ' / ' + MAX;
+            box.classList.toggle('is-over', len > MAX);
+            // 数字跳动微动效（跳过首次渲染；移除→强制回流→再加回以重置动画）
+            if (firstRun) {
+                firstRun = false;
+            } else {
+                box.classList.remove('is-bump');
+                void box.offsetWidth;
+                box.classList.add('is-bump');
+            }
+            fit();
+        }
+        ta.addEventListener('input', update);
+        window.addEventListener('resize', fit);
+        fit();
+        update();
     }
 
     /* ======================================================================
@@ -3682,7 +3764,7 @@ id: btn.dataset.id
         [toc, codeBlock, codeHighlight, lightbox, reveal, carousel,
          readProgress, backTop, loadMore, pageJump, headerScroll, coverFallback,
          liveSearch, fontScale, recentViewed, hoverCard, coView, articleVote, copyGuard, paraCopy, sidebarLive,
-         widgetAnim, hitokoto, sales, social, coverIons, flinkApply].forEach(function (fn) {
+         widgetAnim, hitokoto, sales, social, coverIons, flinkApply, commentSmiley, ajaxComment, commentCounter].forEach(function (fn) {
             try { fn(); } catch (e) { /* 单模块异常不阻断 */ }
         });
     };
@@ -3776,8 +3858,8 @@ id: btn.dataset.id
     var MODULES = [
         theme, greyMode, nav, search, readProgress, readEstimate, backTop, toc, liveSearch, fontScale, recentViewed,
         hoverCard, coView, articleVote, copyGuard, paraCopy,
-        codeBlock, codeHighlight, coverFallback, lazyImg, blurImg, postActions, share, reveal, pointerEffects,
-        headerScroll, loadMore, pageJump, shortcodes, ajaxComment, auth, userForms,
+        codeBlock, codeHighlight, coverFallback, lazyImg, blurImg, postActions, share, reveal,
+        headerScroll, loadMore, pageJump, shortcodes, ajaxComment, auth, userForms, commentCounter,
         poster, qrcodeModule, donate, lightbox, carousel, pjax, luck, faviconBadge, sidebarLive,
         widgetAnim, hitokoto, sales, social, webVitals, coverIons, flinkApply
     ];

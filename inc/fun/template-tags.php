@@ -187,6 +187,26 @@ if (!function_exists('jinyu_breadcrumbs')) {
     }
 }
 
+if (!function_exists('jinyu_archive_meta_html')) {
+    /**
+     * 归档标题区元信息行：文章数 · 最后更新时间。
+     * 直接读取主查询 $wp_query，无额外数据库查询；空列表返回空串（调用方不渲染）。
+     */
+    function jinyu_archive_meta_html() {
+        $q = $GLOBALS['wp_query'] ?? null;
+        if ( ! $q || empty( $q->found_posts ) ) {
+            return '';
+        }
+        $count = (int) $q->found_posts;
+        $html  = '<p class="jinyu-term-meta"><b>' . esc_html( number_format_i18n( $count ) ) . '</b> ' . esc_html__( '篇文章', 'jinyu' );
+        if ( ! empty( $q->posts[0]->post_date ) ) {
+            $html .= ' · ' . esc_html__( '最后更新于', 'jinyu' ) . ' ' . esc_html( mysql2date( get_option( 'date_format' ), $q->posts[0]->post_date ) );
+        }
+        $html .= '</p>';
+        return $html;
+    }
+}
+
 if (!function_exists('jinyu_footer_copyright')) {
     /**
      * 页脚版权兜底文案（无自定义时返回默认）。

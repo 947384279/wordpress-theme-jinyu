@@ -24,7 +24,8 @@
 
         &:first-child { margin-top: 0; }
     }
-    h1 { font-size: 26px; }
+    /* 文章 h1 不再单独定尺寸，统一走全局 h1 的响应式 clamp(22px,2.5vw,32px)（见 screen.less），
+       避免正文标题与全局标题三种口径冲突。 */
     h2 {
         font-size: @fs-xl;
         padding-left: @s-3;

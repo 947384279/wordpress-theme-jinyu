@@ -48,7 +48,7 @@
     .jinyu-header-inner { min-height: 58px; height: 58px; gap: @s-3; }
     .jinyu-logo {
         font-size: @fs-md;
-        .jinyu-logo-icon { width: 30px; height: 30px; font-size: 15px; }
+        .jinyu-logo-icon { width: 30px; height: 30px; font-size: @fs-base; }
     }
     .jinyu-logo-sub { display: none; }
 
@@ -77,7 +77,7 @@
     .jinyu-logo-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
 
     /* 标题栏按钮在手机端略微缩小，给 Logo 与汉堡留出空间 */
-    .jinyu-header-tools .jinyu-icon-btn { width: 32px; height: 32px; font-size: 15px; }
+    .jinyu-header-tools .jinyu-icon-btn { width: 32px; height: 32px; font-size: @fs-base; }
     .jinyu-header-tools .jinyu-user-btn { height: 32px; padding: 0 @s-1; }
     .jinyu-header-tools .jinyu-user-avatar { width: 24px; height: 24px; }
     .jinyu-header-tools .jinyu-login-btn { height: 32px; padding: 0 @s-3; }
@@ -123,10 +123,20 @@
     .jinyu-jump-panel .jinyu-page-jump-input::placeholder { font-size: @fs-xs; }
 
     .jinyu-scroll-util { right: 16px; bottom: 16px; }
-    .jinyu-scroll-btn { width: 40px; height: 40px; font-size: 15px; }
+    .jinyu-scroll-btn { width: 40px; height: 40px; font-size: @fs-base; }
 
     .jinyu-search-panel { padding: @s-4; }
-    .jinyu-search-form { flex-direction: column; button { width: 100%; } }
+    .jinyu-search-form {
+        flex-direction: row;
+        button {
+            flex: 0 0 52px;
+            width: 52px;
+            padding: 0;
+            .jinyu-search-btn-text { display: none; }
+            .jinyu-search-btn-icon { display: inline-block; }
+        }
+    }
+    .jinyu-search-tip { display: none; }
 }
 
 /* ---------- 打印 ---------- */
