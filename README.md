@@ -6,8 +6,7 @@
 [![WordPress](https://img.shields.io/badge/WordPress-7.1+-blue)](https://wordpress.org)
 [![PHP](https://img.shields.io/badge/PHP-8.0+-purple)](https://php.net)
 
-![首页 · 亮色](https://cdn.qicaiyun.top/wp-content/2026/09/home-light.png)
-![首页 · 暗色](https://cdn.qicaiyun.top/wp-content/2026/09/home-dark.png)
+> 主题预览截图见主题包根目录 `screenshot.png`。
 
 ---
 
@@ -123,9 +122,7 @@
 
 ## 界面预览
 
-| 前台 · 文章页 | 移动端响应式 |
-|---|---|
-| ![文章页](https://cdn.qicaiyun.top/wp-content/2026/09/post.png) | ![移动端](https://cdn.qicaiyun.top/wp-content/2026/09/mobile.png) |
+**前台文章页 / 移动端响应式**：主题预览截图见主题包根目录 `screenshot.png`。
 
 ---
 
