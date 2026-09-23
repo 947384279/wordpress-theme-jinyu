@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 //   （又拍云 !/format/webp、阿里云 ?x-oss-process=image/format,webp、
 //   腾讯云/七牛 ?imageMogr2/format/webp），由 CDN 边缘产出 WebP，零源站负担。
 // 通道 B（兜底）：后端不支持即时转码时，本地 GD 生成 WebP 并推送至存储（复用
-//   Jinyu_Storage 适配器）走 CDN；无存储则源站直出。全程失败回退原图，绝不裂图。
+//   云端存储适配器）走 CDN；无存储则源站直出。全程失败回退原图，绝不裂图。
 // URL 替换统一收口在 jinyu_img_to_webp_url()，仅处理本站 uploads 内 jpg/png。
 // ─────────────────────────────────────────────────────────────
 
@@ -75,7 +75,7 @@ if (!function_exists('jinyu_generate_webp_file')) {
  * WebP 交付策略（存储无关 · 双通道）
  * 通道 A：云端即时转码（首选）。后端支持时在 CDN 原图 URL 后追加转码指令，
  *   由 CDN 边缘直接产出 WebP。零源站 GD、零推送、命中边缘缓存，最优。
- * 通道 B：本地 GD 生成 WebP 并推送至存储（复用 Jinyu_Storage 适配器）走 CDN；
+ * 通道 B：本地 GD 生成 WebP 并推送至存储（复用 云端存储适配器）走 CDN；
  *   无存储则源站直出（push 模式 CDN 不会自动同步 webp）。
  * 全程错误安全：任何环节失败一律回退原图，绝不裂图。
  * ───────────────────────────────────────────────────────────── */

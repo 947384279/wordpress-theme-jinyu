@@ -617,7 +617,7 @@ function jinyu_perf_memcached_stats(): ?array {
 /* ───────────────────────── 状态采集：真实用户 Web Vitals ───────────────────────── */
 
 /**
- * 读取本地聚合的真实用户指标（由 web-vitals.php 的 jinyu_web_vitals_record 写入）。
+ * 读取本地聚合的真实用户指标（由前端 web-vitals 采集后写入）。
  *
  * @return array|null null=近 7 天无样本
  */

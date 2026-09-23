@@ -76,8 +76,8 @@ $jinyu_profile_rows = [
                 <h2 class="jinyu-fa-title"><i class="fa-solid fa-rotate" aria-hidden="true"></i><?php esc_html_e( '回链巡检说明', 'jinyu'); ?></h2>
                 <ul class="jinyu-fa-rules">
                     <li><?php esc_html_e( '为保障友链质量，本站每 7 天自动巡检一次已发布的友链。', 'jinyu'); ?></li>
-                    <li><?php esc_html_e( '巡检会抓取：① 您填写的「友链页地址」；② 贵站首页，检测页面是否含指向本站（qicaiyun.top，含 / 不含 www）的链接。', 'jinyu'); ?></li>
-                    <li><?php esc_html_e( '巡检请求 UA 为 JinyuBacklinkBot（浏览器标识 + 站点署名），请确保其可正常访问友链页，勿在防火墙 / CDN / WAF 中封禁该 UA。', 'jinyu'); ?></li>
+                    <li><?php printf( esc_html__( '巡检会抓取：① 您填写的「友链页地址」；② 贵站首页，检测页面是否含指向本站（%s）的链接。', 'jinyu' ), esc_html( parse_url( home_url(), PHP_URL_HOST ) ) ); ?></li>
+                    <li><?php printf( esc_html__( '巡检请求 UA 为 %s（浏览器标识 + 站点署名），请确保其可正常访问友链页，勿在防火墙 / CDN / WAF 中封禁该 UA。', 'jinyu' ), esc_html( function_exists( 'jinyu_backlink_bot_name' ) ? jinyu_backlink_bot_name() : __( '本站巡检程序', 'jinyu' ) ) ); ?></li>
                     <li><?php esc_html_e( '若友链在二级页，请务必填写真实的「友链页地址」——只抓首页容易漏检。', 'jinyu'); ?></li>
                     <li><?php esc_html_e( '若巡检未检测到回链，系统会邮件通知站长并自动将该友链撤下（转为草稿）；补回链接后重新提交申请即可恢复。', 'jinyu'); ?></li>
                 </ul>
