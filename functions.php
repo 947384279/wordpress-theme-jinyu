@@ -336,7 +336,7 @@ add_action('admin_notices', function () {
 });
 
 add_action('after_switch_theme', function () {
-    update_option('jinyu_theme_activated', date('Y-m-d H:i:s'));
+    update_option('jinyu_theme_activated', current_time('mysql'));
     if (function_exists('jinyu_stats_install')) jinyu_stats_install();
 });
 

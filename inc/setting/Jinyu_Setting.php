@@ -188,7 +188,29 @@ class Jinyu_Setting
                     $out[$key] = in_array((string) $val, $allowed, true) ? $val : $f['sdt'];
                     break;
                 default:
-                    $out[$key] = $val;
+                    // 自由文本类字段按类型兜底 sanitize（纵深防御：入库前清洗，输出端仍有转义）
+                    switch ($f['type']) {
+                        case 'textarea':
+                            $out[$key] = sanitize_textarea_field((string) $val);
+                            break;
+                        case 'color':
+                            $out[$key] = sanitize_hex_color((string) $val) ?? $f['sdt'];
+                            break;
+                        case 'upload':
+                            $out[$key] = esc_url_raw((string) $val);
+                            break;
+                        case 'password':
+                            // 密钥类：保留原始字符（sanitize 会破坏密钥），落库经 crypto 加密，输出端 esc_attr
+                            $out[$key] = (string) $val;
+                            break;
+                        case 'dynamic-list':
+                            $out[$key] = is_array($val)
+                                ? array_values(array_map('sanitize_text_field', array_map('strval', $val)))
+                                : $f['sdt'];
+                            break;
+                        default: // string
+                            $out[$key] = sanitize_text_field((string) $val);
+                    }
             }
         }
         return $out;

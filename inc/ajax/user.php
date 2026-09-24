@@ -613,17 +613,18 @@ function jinyu_ajax_get_notifications(): void
     $html = '';
     foreach ($list as $n) {
         $n = (array)$n;
-        $is_read = (int)$n['is_read'] === 1;
-        $html .= '<li class="jinyu-notif-item' . ($is_read ? ' is-read' : '') . '" data-notif-id="' . (int)$n['id'] . '">';
+        // 配套插件返回结构兜底：键缺失不产生 PHP warning
+        $is_read = !empty($n['is_read']);
+        $html .= '<li class="jinyu-notif-item' . ($is_read ? ' is-read' : '') . '" data-notif-id="' . (int)($n['id'] ?? 0) . '">';
         if (!empty($n['link'])) {
             $html .= '<a class="jinyu-notif-link" href="' . esc_url($n['link']) . '">';
         }
         $html .= '<div class="jinyu-notif-body">';
-        $html .= '<p class="jinyu-notif-title">' . esc_html($n['title']) . '</p>';
-        if ($n['content']) {
+        $html .= '<p class="jinyu-notif-title">' . esc_html($n['title'] ?? '') . '</p>';
+        if (!empty($n['content'])) {
             $html .= '<p class="jinyu-notif-content">' . esc_html($n['content']) . '</p>';
         }
-        $html .= '<p class="jinyu-notif-time">' . esc_html(mysql2date('Y-m-d H:i', $n['created_at'])) . '</p>';
+        $html .= '<p class="jinyu-notif-time">' . esc_html(mysql2date('Y-m-d H:i', $n['created_at'] ?? '')) . '</p>';
         $html .= '</div>';
         if (!empty($n['link'])) {
             $html .= '</a>';

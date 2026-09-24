@@ -15,7 +15,18 @@ get_header();
             <h1 class="jinyu-article-title"><?php the_title(); ?></h1>
             <?php
             global $wpdb;
-            $posts = $wpdb->get_results("SELECT YEAR(post_date) as year, MONTH(post_date) as month, ID, post_title, post_date FROM $wpdb->posts WHERE post_status='publish' AND post_type='post' ORDER BY post_date DESC");
+            // 归档列表全量查询：结果缓存 12 小时（save_post/deleted_post 已挂钩 jinyu_cache_flush 自动失效），
+            // 避免每次访客访问都全表扫描。
+            $posts = jinyu_cache_get('archives_list');
+            if (!is_array($posts)) {
+                $posts = $wpdb->get_results(
+                    "SELECT YEAR(post_date) as year, MONTH(post_date) as month, ID, post_title, post_date
+                     FROM {$wpdb->posts}
+                     WHERE post_status = 'publish' AND post_type = 'post'
+                     ORDER BY post_date DESC"
+                );
+                jinyu_cache_set('archives_list', $posts, 12 * HOUR_IN_SECONDS);
+            }
             $by_year = [];
             foreach ($posts as $p) {
                 $by_year[$p->year][$p->month][] = $p;

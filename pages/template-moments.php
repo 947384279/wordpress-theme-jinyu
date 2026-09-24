@@ -16,13 +16,17 @@ get_header();
       <div class="jinyu-article-content">
         <div class="jinyu-moments">
           <?php
-          // 优先使用「时光圈」自定义文章类型；无数据时回退到「状态」格式文章，兼容旧内容
-          $q = new WP_Query([
-              'post_type'      => 'moments',
-              'posts_per_page' => 50,
-              'no_found_rows'  => true,
-          ]);
-          if (!$q->have_posts()) {
+          // 「时光圈」CPT（moments）由配套插件 jinyu-theme-companion 注册；
+          // 未注册时跳过该查询，直接回退到「状态」格式文章，兼容旧内容。
+          $q = null;
+          if (post_type_exists('moments')) {
+              $q = new WP_Query([
+                  'post_type'      => 'moments',
+                  'posts_per_page' => 50,
+                  'no_found_rows'  => true,
+              ]);
+          }
+          if (!$q || !$q->have_posts()) {
               $q = new WP_Query([
                   'post_type'      => 'post',
                   'posts_per_page' => 50,
