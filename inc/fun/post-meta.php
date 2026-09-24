@@ -225,6 +225,27 @@ if (!function_exists('jinyu_get_post_cover')) {
             }
 
             $dead = false;
+
+            // SSRF 防护：URL 来自文章自定义字段（作者级可写），探测前必须校验。
+            // 仅允许 http/https 公网地址；主机解析到内网/保留段（127.0.0.1、10.x、192.168.x、169.254.x 等）
+            // 一律不发起请求（fail-open 视为活图，不误杀）。注：重定向目标不在本函数控制内，
+            // 依赖 WP HTTP 层限制，此处按图片探测的低风险场景接受。
+            $parts = wp_parse_url($url);
+            $scheme = strtolower((string) ($parts['scheme'] ?? ''));
+            $host = (string) ($parts['host'] ?? '');
+            if (!in_array($scheme, ['http', 'https'], true) || $host === '') {
+                return false;
+            }
+            // 主机为字面 IP 时直接校验；域名则解析后校验（gethostbyname 仅 IPv4，
+            // 纯 IPv6 主机解析不到 A 记录时按失败处理 → fail-open 不误杀）。
+            $ip = filter_var($host, FILTER_VALIDATE_IP)
+                ? $host
+                : gethostbyname($host);
+            if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+                $memo[$url] = false;
+                return false;
+            }
+
             $res  = wp_remote_get($url, [
                 'timeout'     => 3,
                 'redirection' => 3,

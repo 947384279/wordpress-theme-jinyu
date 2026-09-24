@@ -1,7 +1,7 @@
 === Jinyu ===
 Contributors: huanxiang88
 Tags: blog, cms, responsive, dark-mode, custom-colors, editor-style, featured-images, microformats, post-formats, rtl-language-support, sticky-post, threaded-comments, translation-ready, two-columns, three-columns
-Requires at least: 7.1
+Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
 Stable tag: 1.1.0
@@ -69,6 +69,7 @@ License URI: https://www.gnu.org/licenses/gpl-3.0.html
 = 1.1.0 =
 * 隐私合规：侧栏 IP 归属地外部查询改为默认关闭，需在「高级设置」显式开启（新增开关），并在 readme 增加隐私披露。
 * 主题显示名改为 ASCII「Jinyu」，符合 .org 提交规范。
+* Requires at least 由 7.1 降为 6.0（主题未使用 6.0 之后的新 API，实测无需更高版本）。
 
 = 1.0.9 =
 * 修复：暗色模式下「主题主色」失效——内置暗色令牌把主色写死成橙色且权重大于 `:root`，导致蓝色站点在暗色下变橙。现按后台配置的主色自动派生暗色变体（自动提亮至可读对比度），并覆盖暗色下的主色/悬浮色/底纹变量。
