@@ -977,7 +977,7 @@ function jinyu_perf_render_status_html(): string {
 	$html .= '</div>';
 
 	// —— 监控双栏 ——
-	$html .= '' . '<p class="jperf-eyebrow jperf-eyebrow-mt">' . esc_html__( '运行时监控', 'jinyu' ) . '</p>' . ''
+	$html .= '<p class="jperf-eyebrow jperf-eyebrow-mt">' . esc_html__( '运行时监控', 'jinyu' ) . '</p>';
 	$html .= '<div class="jperf-panels">';
 
 	// OPcache 面板
@@ -1025,7 +1025,7 @@ function jinyu_perf_render_status_html(): string {
 	$wv  = jinyu_perf_web_vitals_stats();
 	$wvm = jinyu_perf_wv_meta();
 	$wv_score = ( null !== $wv ) ? jinyu_perf_wv_score( $wv, $wvm ) : null;
-	$html .= '' . '<p class="jperf-eyebrow jperf-eyebrow-mt">' . esc_html__( '真实用户体验（近 7 天）', 'jinyu' ) . '</p>' . ''
+	$html .= '<p class="jperf-eyebrow jperf-eyebrow-mt">' . esc_html__( '真实用户体验（近 7 天）', 'jinyu' ) . '</p>';
 	$html .= '<div class="jperf-wv">';
 	if ( null === $wv ) {
 		$html .= '<div class="jperf-wv-empty">' . esc_html__( '暂无样本。前端已采集 LCP / INP / CLS / FCP / TTFB，访客浏览后这里会出现真实均值。', 'jinyu' ) . '</div>';
@@ -1042,7 +1042,7 @@ function jinyu_perf_render_status_html(): string {
 				. '<span class="jperf-wv-badge">' . $badge . '</span></div>'
 				. '<div class="jperf-wv-val">' . $val . '</div>'
 				. '<div class="jperf-wv-name">' . $meta['name'] . '</div>'
-				. '' . '<div class="jperf-wv-worst">' . esc_html__( '最差 ', 'jinyu' ) . $worst . '</div>' . ''
+				. '<div class="jperf-wv-worst">' . esc_html__( '最差 ', 'jinyu' ) . $worst . '</div>'
 				. '<div class="jperf-wv-opt" title="' . esc_attr( $meta['optimize'] ) . '"><b>' . esc_html__( '优化', 'jinyu' ) . '</b> · ' . esc_html( $meta['optimize'] ) . '</div></div>';
 		}
 		if ( null !== $wv_score ) {
