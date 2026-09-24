@@ -83,6 +83,12 @@ if (!function_exists('jinyu_ip_location')) {
 			return '';
 		}
 
+		// 隐私合规：外部归属地查询会把访客 IP 发往第三方服务（whois.pconline.com.cn），
+		// 必须由站长在后台显式开启（默认关闭），未开启时永不发起外部请求。
+		if (!jinyu_get_option('live_ip_location', false)) {
+			return '';
+		}
+
 		$cache_key = 'jinyu_iploc_' . md5($ip);
 		$cached    = get_transient($cache_key);
 		if ($cached !== false) {

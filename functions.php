@@ -62,7 +62,15 @@ if (version_compare(PHP_VERSION, '8.0', '<')) {
 require_once JINYU_ABS_DIR . '/inc/fun/crypto.php';
 require_once JINYU_ABS_DIR . '/inc/fun/core.php';
 require_once JINYU_ABS_DIR . '/inc/fun/maintenance.php';
-require_once JINYU_ABS_DIR . '/inc/fun/perf.php';        // 后台一键性能优化（状态面板 + 可逆开关 + 一键清理）
+// 性能优化中心已迁至配套插件 jinyu-theme-companion（perf-center.php）。
+// 主题仅在呈现层按需读取开关值（HTML 压缩 / 评论懒加载），插件缺席时按 $default 降级。
+function jinyu_perf_opt( string $key, bool $default = false ): bool {
+	$opts = get_option( 'jinyu_perf_options', [] );
+	if ( ! is_array( $opts ) || ! array_key_exists( $key, $opts ) ) {
+		return $default;
+	}
+	return ! empty( $opts[ $key ] );
+}
 if (is_admin()) require_once JINYU_ABS_DIR . '/inc/setting/index.php';
 
 add_action('admin_enqueue_scripts', function ($hook) {

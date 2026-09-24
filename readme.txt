@@ -1,4 +1,4 @@
-=== 金玉 (Jinyu) ===
+=== Jinyu ===
 Contributors: huanxiang88
 Tags: blog, cms, responsive, dark-mode, custom-colors, editor-style, featured-images, microformats, post-formats, rtl-language-support, sticky-post, threaded-comments, translation-ready, two-columns, three-columns
 Requires at least: 7.1
@@ -7,6 +7,14 @@ Requires PHP: 8.0
 Stable tag: 1.1.0
 License: GPL v3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
+
+== Privacy ==
+
+本主题默认不向任何第三方服务器发送访客数据，不收集、不上报统计信息。以下功能仅在站长显式开启后才会与外部服务通信：
+
+* 侧栏访客归属地查询（高级设置 › 侧栏访客归属地查询，默认关闭）：开启后会把访客 IP 发往 whois.pconline.com.cn 查询归属地，结果在站内缓存 12 小时。
+* 头像来源（用户互动 › 头像来源，默认 Gravatar）：选择国内镜像（Cravatar / WeAvatar 等）时，评论者邮箱哈希会按同一协议发往所选镜像。
+* 每日一句语料（默认本地内置语料，零外部请求）：仅当站长手动定义 JINYU_HITOKOTO_REMOTE 常量时才拉取远程 JSON。
 
 == Resources ==
 
@@ -57,6 +65,10 @@ License URI: https://www.gnu.org/licenses/gpl-3.0.html
 每个设置分组面板头部都有「重置本组」按钮，仅清空该分组、回退默认值，不影响其它设置。
 
 == Changelog ==
+
+= 1.1.0 =
+* 隐私合规：侧栏 IP 归属地外部查询改为默认关闭，需在「高级设置」显式开启（新增开关），并在 readme 增加隐私披露。
+* 主题显示名改为 ASCII「Jinyu」，符合 .org 提交规范。
 
 = 1.0.9 =
 * 修复：暗色模式下「主题主色」失效——内置暗色令牌把主色写死成橙色且权重大于 `:root`，导致蓝色站点在暗色下变橙。现按后台配置的主色自动派生暗色变体（自动提亮至可读对比度），并覆盖暗色下的主色/悬浮色/底纹变量。

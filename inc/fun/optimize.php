@@ -177,7 +177,7 @@ add_action('template_redirect', function () {
     if (is_admin()) {
         return;
     }
-    if (empty(jinyu_perf_get_options()['html_minify'])) {
+    if ( ! jinyu_perf_opt( 'html_minify', true ) ) {
         return;
     }
     if (wp_doing_ajax() || wp_is_json_request() || (defined('REST_REQUEST') && REST_REQUEST)) {

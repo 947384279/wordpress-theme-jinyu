@@ -22,7 +22,7 @@ if (jinyu_is_checked('comment_smiley')) {
             <?php wp_list_comments(['style'=>'ol','callback'=>'jinyu_wp_comment','avatar_size'=>48]); ?>
         </ol>
         <?php
-        $jinyu_lazy_comments = ! empty( jinyu_perf_get_options()['comment_lazyload'] ) && get_comment_pages_count() > 1;
+        $jinyu_lazy_comments = jinyu_perf_opt( 'comment_lazyload', false ) && get_comment_pages_count() > 1;
         if ( $jinyu_lazy_comments ) :
             $jinyu_cm_max = (int) get_comment_pages_count();
         ?>
