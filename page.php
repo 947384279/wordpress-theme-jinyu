@@ -10,6 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
             <article class="jinyu-single">
                 <h1 class="jinyu-article-title"><?php the_title(); ?></h1>
                 <div class="jinyu-article-content"><?php the_content(); ?></div>
+                <?php wp_link_pages(); ?>
             </article>
             <?php if (comments_open() || get_comments_number()): comments_template(); endif; ?>
         <?php endwhile; ?>

@@ -103,16 +103,26 @@ if (!function_exists('jinyu_pagination')) {
     }
 }
 
+if (!function_exists('jinyu_read_minutes')) {
+    /**
+     * 预估阅读分钟数（整数，中文按 400 字/分钟）
+     */
+    function jinyu_read_minutes($post_id = 0): int
+    {
+        $post_id = $post_id ?: get_the_ID();
+        $content = get_post_field('post_content', $post_id);
+        $count   = mb_strlen(preg_replace('/\s+/', '', strip_tags((string)$content)), 'UTF-8');
+        return max(1, (int)ceil($count / 400));
+    }
+}
+
 if (!function_exists('jinyu_read_time')) {
     /**
      * 预估阅读时长（中文按 400 字/分钟）
      */
     function jinyu_read_time($post_id = 0)
     {
-        $post_id = $post_id ?: get_the_ID();
-        $content = get_post_field('post_content', $post_id);
-        $count   = mb_strlen(preg_replace('/\s+/', '', strip_tags((string)$content)), 'UTF-8');
-        return sprintf(esc_html__('%d 分钟阅读', 'jinyu'), max(1, (int)ceil($count / 400)));
+        return sprintf(esc_html__('%d 分钟阅读', 'jinyu'), jinyu_read_minutes($post_id));
     }
 }
 

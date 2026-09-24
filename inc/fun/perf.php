@@ -63,8 +63,6 @@ function jinyu_perf_get_options(): array {
 		'disable_wp_org_api'     => 1, // 屏蔽 WordPress.org 外部 API（更新/翻译/主题检查，国内极慢）
 		'hide_admin_bar_front'   => 0, // 前台对非管理员隐藏 admin bar（按需开启）
 		'html_minify'            => 1, // 压缩前台 HTML 输出（去除空白/注释）
-		'page_cache_enable'      => 1, // 主题整页缓存（原「资源优化」面板迁出，统一在此管控）
-		'page_cache_ttl'         => 3600, // 整页缓存有效期（秒）
 		'dns_preconnect'        => 1, // 关键域名 DNS 预连接（CDN 域名，加速首屏建连）
 		'comment_lazyload'      => 0, // 评论懒加载（按需加载更多，减少长文首屏 DOM）
 		'iframe_lazy'           => 1, // iframe 懒加载（视频/嵌入延后到视口）
@@ -83,89 +81,116 @@ function jinyu_perf_get_options(): array {
 function jinyu_perf_toggle_meta(): array {
 	return [
 		'disable_heartbeat'      => [
-			'label' => '关闭心跳（Heartbeat）轮询',
+			'label' => __( '关闭心跳（Heartbeat）轮询', 'jinyu' ),
+
 			'group' => 'admin',
-			'desc'  => '后台默认每 15~60 秒向 admin-ajax.php 发一次心跳请求（协同编辑提示、自动保存增量、锁状态都靠它）。关闭后后台明显安静，但代价：编辑文章时不显示「他人正在编辑」锁定提示，自动保存间隔变得不可靠。单管理员站点建议开。',
+			'desc'  => __( '后台默认每 15~60 秒向 admin-ajax.php 发一次心跳请求（协同编辑提示、自动保存增量、锁状态都靠它）。关闭后后台明显安静，但代价：编辑文章时不显示「他人正在编辑」锁定提示，自动保存间隔变得不可靠。单管理员站点建议开。', 'jinyu' ),
+
 		],
 		'disable_dashboard_news' => [
-			'label' => '禁用仪表盘「WordPress 动态与新闻」',
+			'label' => __( '禁用仪表盘「WordPress 动态与新闻」', 'jinyu' ),
+
 			'group' => 'admin',
-			'desc'  => '该小工具每次打开仪表盘都会同步请求 api.wordpress.org 拉取资讯与活动，海外网络波动时可拖慢仪表盘 1~3 秒。移除后仅影响这一个官方小工具，其余小工具不受影响。',
+			'desc'  => __( '该小工具每次打开仪表盘都会同步请求 api.wordpress.org 拉取资讯与活动，海外网络波动时可拖慢仪表盘 1~3 秒。移除后仅影响这一个官方小工具，其余小工具不受影响。', 'jinyu' ),
+
 		],
 		'disable_emoji'          => [
-			'label' => '移除 WP Emoji 脚本（推荐）',
+			'label' => __( '移除 WP Emoji 脚本（推荐）', 'jinyu' ),
+
 			'group' => 'front',
-			'desc'  => 'WP 会在前台/后台注入 emoji 检测脚本，并在浏览器不支持时把部分 emoji 字符替换为 s.w.org 的远程图片——国内 s.w.org 不可达时就会看到「裂开的图」。移除后 emoji 恢复为系统原生渲染（显示效果不变），只是不再转图片。本页面已全程改用 CSS 绘制图标，不再依赖 emoji。',
+			'desc'  => __( 'WP 会在前台/后台注入 emoji 检测脚本，并在浏览器不支持时把部分 emoji 字符替换为 s.w.org 的远程图片——国内 s.w.org 不可达时就会看到「裂开的图」。移除后 emoji 恢复为系统原生渲染（显示效果不变），只是不再转图片。本页面已全程改用 CSS 绘制图标，不再依赖 emoji。', 'jinyu' ),
+
 		],
 		'disable_embed'          => [
-			'label' => '移除 wp-embed 脚本',
+			'label' => __( '移除 wp-embed 脚本', 'jinyu' ),
+
 			'group' => 'front',
-			'desc'  => 'wp-embed.js 用于把其他 WordPress 文章以卡片形式嵌入到内容里（oEmbed）。绝大多数站点从不使用。移除后正常文章显示完全不变；仅在「嵌入别人的 WP 文章卡片」这一场景失效。',
+			'desc'  => __( 'wp-embed.js 用于把其他 WordPress 文章以卡片形式嵌入到内容里（oEmbed）。绝大多数站点从不使用。移除后正常文章显示完全不变；仅在「嵌入别人的 WP 文章卡片」这一场景失效。', 'jinyu' ),
+
 		],
 		'limit_revisions'        => [
-			'label' => '限制文章修订（每篇最多 5 个）',
+			'label' => __( '限制文章修订（每篇最多 5 个）', 'jinyu' ),
+
 			'group' => 'admin',
-			'desc'  => 'WP 默认无限保存修订版本，编辑频繁时 wp_posts 表会持续膨胀、拖慢文章查询。开启后每篇文章最多保留 5 个修订。注意：只限制新增，不删除历史修订，可用性不受影响。',
+			'desc'  => __( 'WP 默认无限保存修订版本，编辑频繁时 wp_posts 表会持续膨胀、拖慢文章查询。开启后每篇文章最多保留 5 个修订。注意：只限制新增，不删除历史修订，可用性不受影响。', 'jinyu' ),
+
 		],
 		'disable_live_geo'       => [
-			'label' => '短接实时小工具的外部地理查询',
+			'label' => __( '短接实时小工具的外部地理查询', 'jinyu' ),
+
 			'group' => 'admin',
-			'desc'  => '实时小工具会同步请求 whois.pconline.com.cn 查询访客 IP 归属地（超时上限 3 秒）。该外链一旦变慢，会拖慢每一个带实时小工具的页面。开启后请求被本地直接拒绝，归属地显示为空，其余实时数据不受影响。',
+			'desc'  => __( '实时小工具会同步请求 whois.pconline.com.cn 查询访客 IP 归属地（超时上限 3 秒）。该外链一旦变慢，会拖慢每一个带实时小工具的页面。开启后请求被本地直接拒绝，归属地显示为空，其余实时数据不受影响。', 'jinyu' ),
+
 		],
 		'disable_xmlrpc'         => [
-			'label' => '禁用 XML-RPC 接口',
+			'label' => __( '禁用 XML-RPC 接口', 'jinyu' ),
+
 			'group' => 'security',
-			'desc'  => 'XML-RPC 用于旧版编辑器与部分第三方客户端的远程调用，也是暴力破解与 pingback 攻击的常见入口。关闭后手机原生 App、Jetpack 的部分远程功能可能失效；普通站点无影响。',
+			'desc'  => __( 'XML-RPC 用于旧版编辑器与部分第三方客户端的远程调用，也是暴力破解与 pingback 攻击的常见入口。关闭后手机原生 App、Jetpack 的部分远程功能可能失效；普通站点无影响。', 'jinyu' ),
+
 		],
 		'clean_wp_head'          => [
-			'label' => '清理 wp_head 冗余输出',
+			'label' => __( '清理 wp_head 冗余输出', 'jinyu' ),
+
 			'group' => 'front',
-			'desc'  => '移除 wp_head 注入的冗余标签：RSD 链接、wlwmanifest、WordPress 版本号（generator）、短链接、REST API 发现、相邻文章 rel。仅减少页面 <head> 噪音与一处外部发现链接，不影响任何功能。',
+			'desc'  => __( '移除 wp_head 注入的冗余标签：RSD 链接、wlwmanifest、WordPress 版本号（generator）、短链接、REST API 发现、相邻文章 rel。仅减少页面 <head> 噪音与一处外部发现链接，不影响任何功能。', 'jinyu' ),
+
 		],
 		'disable_pingback'       => [
-			'label' => '禁用 pingback 自引用',
+			'label' => __( '禁用 pingback 自引用', 'jinyu' ),
+
 			'group' => 'security',
-			'desc'  => '摘掉 XML-RPC 的 pingback.ping 方法并关闭新文章默认 pingback，减少外链回推请求与攻击面。已发布文章的既有 pingback 不受影响。',
+			'desc'  => __( '摘掉 XML-RPC 的 pingback.ping 方法并关闭新文章默认 pingback，减少外链回推请求与攻击面。已发布文章的既有 pingback 不受影响。', 'jinyu' ),
+
 		],
 		'disable_wp_org_api'     => [
-			'label' => '屏蔽 WordPress.org 外部 API 请求（推荐）',
+			'label' => __( '屏蔽 WordPress.org 外部 API 请求（推荐）', 'jinyu' ),
+
 			'group' => 'security',
-			'desc'  => '拦截所有发往 *.wordpress.org 的 HTTP 请求（含 api / downloads / translate）。后台每次更新检查、翻译包拉取、主题/插件版本探测都会同步请求 wp.org，国内网络波动时可拖慢后台数秒甚至超时。拦截后这些检查立即失败并跳过，后台明显变快。仅影响 WP 官方源的查询，站点自身接口（CDN / ajax 等）与国内头像源（Cravatar 等）完全不受影响；代价：后台不再提示「WordPress 有新版本」，需自行关注升级。',
+			'desc'  => __( '拦截所有发往 *.wordpress.org 的 HTTP 请求（含 api / downloads / translate）。后台每次更新检查、翻译包拉取、主题/插件版本探测都会同步请求 wp.org，国内网络波动时可拖慢后台数秒甚至超时。拦截后这些检查立即失败并跳过，后台明显变快。仅影响 WP 官方源的查询，站点自身接口（CDN / ajax 等）与国内头像源（Cravatar 等）完全不受影响；代价：后台不再提示「WordPress 有新版本」，需自行关注升级。', 'jinyu' ),
+
 		],
 		'hide_admin_bar_front'   => [
-			'label' => '前台对非管理员隐藏 admin bar',
+			'label' => __( '前台对非管理员隐藏 admin bar', 'jinyu' ),
+
 			'group' => 'front',
-			'desc'  => '未登录 / 非管理员访问前台时不再显示 WordPress 管理条，减少一处前台 CSS/JS 注入。管理员在后台与前台均不受影响。',
+			'desc'  => __( '未登录 / 非管理员访问前台时不再显示 WordPress 管理条，减少一处前台 CSS/JS 注入。管理员在后台与前台均不受影响。', 'jinyu' ),
+
 		],
 		'html_minify'            => [
-			'label' => '压缩前台 HTML 输出',
+			'label' => __( '压缩前台 HTML 输出', 'jinyu' ),
+
 			'group' => 'front',
-			'desc'  => '去除整页 HTML 的标签间空白与注释（仅前台完整文档，跳过后台/接口，且 <script>/<style>/<pre>/<textarea> 等原始块不被折叠）。首屏体积更小；出现极端排版问题时可关闭。',
-		],
-		'page_cache_enable'      => [
-			'label' => '启用整页缓存',
-			'group' => 'cache',
-			'desc'  => '对未登录访客输出整页缓存，首屏 TTFB 从数百毫秒降至数毫秒；内容更新自动失效。已迁出「资源优化」面板，改由本页统一管控。若站点装有 WP Super Cache / WP Rocket 等整页缓存插件，主题缓存会自动让位，不会双层冲突。',
+			'desc'  => __( '去除整页 HTML 的标签间空白与注释（仅前台完整文档，跳过后台/接口，且 <script>/<style>/<pre>/<textarea> 等原始块不被折叠）。首屏体积更小；出现极端排版问题时可关闭。', 'jinyu' ),
+
 		],
 		'dns_preconnect'        => [
-			'label' => '关键域名 DNS 预连接（Preconnect）',
+			'label' => __( '关键域名 DNS 预连接（Preconnect）', 'jinyu' ),
+
 			'group' => 'front',
-			'desc'  => '在 <head> 最前面为静态资源 CDN 域名提前建好 DNS+TCP+TLS 连接（并附 dns-prefetch 兼容老浏览器）。首屏图片/脚本命中该域名时省去建连往返，TTFB 与 LCP 略降。仅作用于已配置的「静态资源 CDN 域名」（主题设置→资源），未配置 CDN 时不发任何多余请求；不影响其它域名。还可通过 jinyu_perf_preconnect_hosts 过滤器追加字体/统计等源。',
+			'desc'  => __( '在 <head> 最前面为静态资源 CDN 域名提前建好 DNS+TCP+TLS 连接（并附 dns-prefetch 兼容老浏览器）。首屏图片/脚本命中该域名时省去建连往返，TTFB 与 LCP 略降。仅作用于已配置的「静态资源 CDN 域名」（主题设置→资源），未配置 CDN 时不发任何多余请求；不影响其它域名。还可通过 jinyu_perf_preconnect_hosts 过滤器追加字体/统计等源。', 'jinyu' ),
+
 		],
 		'comment_lazyload'      => [
-			'label' => '评论懒加载（加载更多）',
+			'label' => __( '评论懒加载（加载更多）', 'jinyu' ),
+
 			'group' => 'cache',
-			'desc'  => '评论数多的文章，首屏只渲染第一页评论，底部出现「加载更多评论」按钮，点击后通过 admin-ajax 增量拉取后续评论页并追加（完美复用主题评论回调与嵌套结构，锚点/SEO 不受影响）。长文评论区 DOM 量大幅下降。依赖 WP 原生评论分页（page_comments 需开启），关闭后恢复一次性输出全部评论。默认关，按需开启。',
+			'desc'  => __( '评论数多的文章，首屏只渲染第一页评论，底部出现「加载更多评论」按钮，点击后通过 admin-ajax 增量拉取后续评论页并追加（完美复用主题评论回调与嵌套结构，锚点/SEO 不受影响）。长文评论区 DOM 量大幅下降。依赖 WP 原生评论分页（page_comments 需开启），关闭后恢复一次性输出全部评论。默认关，按需开启。', 'jinyu' ),
+
 		],
 		'iframe_lazy'           => [
-			'label' => 'iframe 懒加载',
+			'label' => __( 'iframe 懒加载', 'jinyu' ),
+
 			'group' => 'front',
-			'desc'  => '自动给正文/小工具里的 <iframe>（视频嵌入、第三方组件等）补上 loading="lazy"，延迟到进入视口才加载，减少首屏请求与带宽。主题 [jinyu_video] 的 B站 嵌入已内置该属性，此处对其它来源的 iframe 兜底。已带 loading 的不会被重复添加。现代浏览器对 iframe 本就默认懒加载，此开关为显式保险，默认开。',
+			'desc'  => __( '自动给正文/小工具里的 <iframe>（视频嵌入、第三方组件等）补上 loading="lazy"，延迟到进入视口才加载，减少首屏请求与带宽。主题 [jinyu_video] 的 B站 嵌入已内置该属性，此处对其它来源的 iframe 兜底。已带 loading 的不会被重复添加。现代浏览器对 iframe 本就默认懒加载，此开关为显式保险，默认开。', 'jinyu' ),
+
 		],
 		'restrict_guest_rest'   => [
-			'label' => '限制游客 REST API 访问（加固）',
+			'label' => __( '限制游客 REST API 访问（加固）', 'jinyu' ),
+
 			'group' => 'security',
-			'desc'  => '未登录访客仅能访问公开内容类 REST 路由（文章/页面/评论/分类/标签/媒体/搜索等），其余内部/管理类路由（用户 /wp/v2/users、设置、插件、主题、区块、菜单、小工具、模板、全局样式、类型/分类法/状态枚举等）一律返回 403。主要阻断「通过 /wp/v2/users 枚举作者用户名」这类常见探测与 API 滥用。登录用户不受影响（后台区块编辑器等照常）。注意：若站内插件在前台依赖被拦截的路由，相关功能会受影响——默认关，确认无依赖后再开。',
+			'desc'  => __( '未登录访客仅能访问公开内容类 REST 路由（文章/页面/评论/分类/标签/媒体/搜索等），其余内部/管理类路由（用户 /wp/v2/users、设置、插件、主题、区块、菜单、小工具、模板、全局样式、类型/分类法/状态枚举等）一律返回 403。主要阻断「通过 /wp/v2/users 枚举作者用户名」这类常见探测与 API 滥用。登录用户不受影响（后台区块编辑器等照常）。注意：若站内插件在前台依赖被拦截的路由，相关功能会受影响——默认关，确认无依赖后再开。', 'jinyu' ),
+
 		],
 	];
 }
@@ -243,7 +268,7 @@ function jinyu_perf_apply(): void {
 			if ( is_string( $url ) && strpos( $url, 'whois.pconline.com.cn' ) !== false ) {
 				return new WP_Error(
 					'jinyu_perf_geo_disabled',
-					'地理查询已被性能优化开关关闭'
+					__( '地理查询已被性能优化开关关闭', 'jinyu' )
 				);
 			}
 			return $preempt;
@@ -295,7 +320,7 @@ function jinyu_perf_apply(): void {
 			if ( $host && preg_match( '/(\.|^)WordPress\.org$/i', $host ) ) {
 				return new WP_Error(
 					'jinyu_perf_wp_org_blocked',
-					'WordPress.org 外部 API 已被性能优化开关屏蔽'
+					__( 'WordPress.org 外部 API 已被性能优化开关屏蔽', 'jinyu' )
 				);
 			}
 			return $preempt;
@@ -367,8 +392,8 @@ function jinyu_perf_apply(): void {
 					var page = parseInt(btn.getAttribute('data-page')||'2',10);
 					var max  = parseInt(btn.getAttribute('data-max')||'1',10);
 					var txt  = btn.querySelector('.jinyu-comments-more-txt');
-					var old  = txt ? txt.textContent : '加载更多评论';
-					if(txt) txt.textContent='加载中…';
+					var old  = txt ? txt.textContent : '<?php echo esc_js( __( '加载更多评论', 'jinyu' ) ); ?>';
+					if(txt) txt.textContent='<?php echo esc_js( __( '加载中…', 'jinyu' ) ); ?>';
 					var url = (btn.getAttribute('data-ajax')||'') + '?action=jinyu_load_comments&post_id=' + encodeURIComponent(btn.getAttribute('data-post-id')||'') + '&page=' + page;
 					fetch(url).then(function(r){return r.json();}).then(function(j){
 						if(j && j.success && j.data && j.data.html){
@@ -442,7 +467,8 @@ function jinyu_perf_apply(): void {
 				if ( is_string( $re ) && preg_match( $re, $route ) ) {
 					return new WP_Error(
 						'jinyu_rest_forbidden',
-						'游客无权访问该 REST 接口',
+						__( '游客无权访问该 REST 接口', 'jinyu' ),
+
 						[ 'status' => 403 ]
 					);
 				}
@@ -451,38 +477,6 @@ function jinyu_perf_apply(): void {
 		}, 10, 3 );
 	}
 }
-
-/* ───────────────────────── 配置迁移：整页缓存键迁入本页 ───────────────────────── */
-
-/**
- * 一次性迁移：把原「资源优化」面板里的 page_cache_enable / page_cache_ttl
- * 迁入 jinyu_perf_options，并从主题配置 JINYU_OPT 中移除，避免两处双重控制。
- * 仅当 perf 选项里尚不存在这些键时才从 JINYU_OPT 取值，已显式保存过的站点不被覆盖。
- */
-function jinyu_perf_migrate_page_cache(): void {
-	if ( get_transient( 'jinyu_perf_migrated_pc' ) ) {
-		return;
-	}
-	$cur  = get_option( 'jinyu_perf_options', [] );
-	$conf = get_option( JINYU_OPT, [] );
-	if ( ! is_array( $cur ) ) {
-		$cur = [];
-	}
-	if ( is_array( $conf ) ) {
-		if ( ! array_key_exists( 'page_cache_enable', $cur ) && array_key_exists( 'page_cache_enable', $conf ) ) {
-			$cur['page_cache_enable'] = $conf['page_cache_enable'] ? 1 : 0;
-		}
-		if ( ! array_key_exists( 'page_cache_ttl', $cur ) && array_key_exists( 'page_cache_ttl', $conf ) ) {
-			$cur['page_cache_ttl'] = max( 60, (int) $conf['page_cache_ttl'] );
-		}
-		// 从主题配置中清掉已迁出的键，防止资源面板再次保存时被 array_merge 带回来
-		unset( $conf['page_cache_enable'], $conf['page_cache_ttl'] );
-		update_option( JINYU_OPT, $conf );
-	}
-	update_option( 'jinyu_perf_options', $cur );
-	set_transient( 'jinyu_perf_migrated_pc', 1, MONTH_IN_SECONDS );
-}
-add_action( 'init', 'jinyu_perf_migrate_page_cache', 4 );
 
 /* ───────────────────────── 状态采集：总览 ───────────────────────── */
 
@@ -523,7 +517,6 @@ function jinyu_perf_status(): array {
 	return [
 		'opcache'           => $opcache ? (bool) $opcache['enabled'] : false,
 		'object_cache'      => (bool) ( $memcached['reachable'] ?? wp_using_ext_object_cache() ),
-		'page_cache'        => ! empty( $o['page_cache_enable'] ),
 		'autoload_bytes'    => $autoload,
 		'transient_total'   => $transient_total,
 		'transient_expired' => $transient_expired,
@@ -677,21 +670,26 @@ function jinyu_perf_web_vitals_stats(): ?array {
  */
 function jinyu_perf_wv_meta(): array {
 	return [
-		'lcp'  => [ 'label' => 'LCP', 'name' => '最大内容绘制', 'ms' => true, 'good' => 2500, 'poor' => 4000,
-			'tip' => '视口内最大元素（图片/标题/区块）渲染完成的时间。≤2.5s 良好，≥4s 较差。',
-			'optimize' => '压缩首屏大图并转 WebP，预加载关键资源，非首屏图片懒加载。' ],
-		'inp'  => [ 'label' => 'INP', 'name' => '交互延迟', 'ms' => true, 'good' => 200, 'poor' => 500,
-			'tip' => '用户点击/输入到页面响应的延迟，反映整体交互流畅度。≤200ms 良好，≥500ms 较差。',
-			'optimize' => '拆分长任务、精简第三方脚本，交互回调避免强制同步布局。' ],
-		'cls'  => [ 'label' => 'CLS', 'name' => '累计布局位移', 'ms' => false, 'good' => 0.1, 'poor' => 0.25,
-			'tip' => '页面加载中元素意外位移的幅度，衡量视觉稳定性。≤0.1 良好，≥0.25 较差。',
-			'optimize' => '为图片/视频/广告预留宽高比，禁止插入内容引发位移。' ],
-		'fcp'  => [ 'label' => 'FCP', 'name' => '首次内容绘制', 'ms' => true, 'good' => 1800, 'poor' => 3000,
-			'tip' => '浏览器首次画出任意文本/图片的时间，首屏出图的快慢。≤1.8s 良好。',
-			'optimize' => '内联关键 CSS，移除阻塞渲染的脚本，启用对象缓存。' ],
-		'ttfb' => [ 'label' => 'TTFB', 'name' => '首字节时间', 'ms' => true, 'good' => 800, 'poor' => 1800,
-			'tip' => '从请求到收到服务器第一个字节的耗时，反映后端与网络。≤0.8s 良好。',
-			'optimize' => '开启页面缓存与对象缓存，优化数据库查询，启用 CDN。' ],
+		'lcp'  => [ 'label' => 'LCP', 'name' => __( '最大内容绘制', 'jinyu' ), 'ms' => true, 'good' => 2500, 'poor' => 4000,
+			'tip' => __( '视口内最大元素（图片/标题/区块）渲染完成的时间。≤2.5s 良好，≥4s 较差。', 'jinyu' ),
+
+			'optimize' => __( '压缩首屏大图并转 WebP，预加载关键资源，非首屏图片懒加载。', 'jinyu' ) ],
+		'inp'  => [ 'label' => 'INP', 'name' => __( '交互延迟', 'jinyu' ), 'ms' => true, 'good' => 200, 'poor' => 500,
+			'tip' => __( '用户点击/输入到页面响应的延迟，反映整体交互流畅度。≤200ms 良好，≥500ms 较差。', 'jinyu' ),
+
+			'optimize' => __( '拆分长任务、精简第三方脚本，交互回调避免强制同步布局。', 'jinyu' ) ],
+		'cls'  => [ 'label' => 'CLS', 'name' => __( '累计布局位移', 'jinyu' ), 'ms' => false, 'good' => 0.1, 'poor' => 0.25,
+			'tip' => __( '页面加载中元素意外位移的幅度，衡量视觉稳定性。≤0.1 良好，≥0.25 较差。', 'jinyu' ),
+
+			'optimize' => __( '为图片/视频/广告预留宽高比，禁止插入内容引发位移。', 'jinyu' ) ],
+		'fcp'  => [ 'label' => 'FCP', 'name' => __( '首次内容绘制', 'jinyu' ), 'ms' => true, 'good' => 1800, 'poor' => 3000,
+			'tip' => __( '浏览器首次画出任意文本/图片的时间，首屏出图的快慢。≤1.8s 良好。', 'jinyu' ),
+
+			'optimize' => __( '内联关键 CSS，移除阻塞渲染的脚本，启用对象缓存。', 'jinyu' ) ],
+		'ttfb' => [ 'label' => 'TTFB', 'name' => __( '首字节时间', 'jinyu' ), 'ms' => true, 'good' => 800, 'poor' => 1800,
+			'tip' => __( '从请求到收到服务器第一个字节的耗时，反映后端与网络。≤0.8s 良好。', 'jinyu' ),
+
+			'optimize' => __( '开启页面缓存与对象缓存，优化数据库查询，启用 CDN。', 'jinyu' ) ],
 	];
 }
 
@@ -816,12 +814,12 @@ function jinyu_perf_optimize_tables(): array {
  */
 function jinyu_perf_reset_opcache(): string {
 	if ( ! function_exists( 'opcache_reset' ) ) {
-		return 'OPcache 未安装，无需重置';
+		return __( 'OPcache 未安装，无需重置', 'jinyu' );
 	}
 	$ok = @opcache_reset();
 	return $ok
-		? 'OPcache 已重置'
-		: 'OPcache 重置未生效（当前可能是 CLI 上下文，请在后台页面点击）';
+		? __( 'OPcache 已重置', 'jinyu' )
+		: __( 'OPcache 重置未生效（当前可能是 CLI 上下文，请在后台页面点击）', 'jinyu' );
 }
 
 /**
@@ -834,7 +832,7 @@ function jinyu_perf_reset_opcache(): string {
 function jinyu_perf_flush_memcached(): string {
 	if ( function_exists( 'wp_cache_flush' ) && wp_using_ext_object_cache() ) {
 		$ok = wp_cache_flush();
-		return $ok ? 'Memcached 对象缓存已清空' : 'Memcached 清空失败';
+		return $ok ? __( 'Memcached 对象缓存已清空', 'jinyu' ) : __( 'Memcached 清空失败', 'jinyu' );
 	}
 	// 降级路径：没有 drop-in 但扩展可用时直连清空
 	if ( class_exists( 'Memcached' ) ) {
@@ -842,37 +840,36 @@ function jinyu_perf_flush_memcached(): string {
 		if ( ! $m->getServerList() ) {
 			$m->addServers( apply_filters( 'jinyu_perf_memcached_servers', [ [ '127.0.0.1', 11211 ] ] ) );
 		}
-		return $m->flush() ? 'Memcached 已清空（直连）' : 'Memcached 清空失败';
+		return $m->flush() ? __( 'Memcached 已清空（直连）', 'jinyu' ) : __( 'Memcached 清空失败', 'jinyu' );
 	}
-	return '对象缓存未启用（无 drop-in 也无 Memcached 扩展）';
+	return __( '对象缓存未启用（无 drop-in 也无 Memcached 扩展）', 'jinyu' );
 }
 
 /**
- * 清整页缓存（WP Super Cache / WP Super Cache 类 drop-in，若有）。
+ * 清第三方整页缓存（WP Super Cache / W3 Total Cache 等，若有）。
  *
  * @return string 空串表示本站没有可清的整页缓存
  */
 function jinyu_perf_flush_page_cache(): string {
 	$msgs = [];
 
-	// 主题自带整页缓存（transient / 对象缓存组）：先清它，否则点「清除整页缓存」
+	// 主题内容缓存（transient / 对象缓存组）：先清它，否则点「清除整页缓存」
 	// 只清了第三方插件、主题缓存原样留存，造成「点了没反应」的假象。
-	if ( ! empty( jinyu_perf_get_options()['page_cache_enable'] )
-		&& function_exists( 'jinyu_cache_flush' ) ) {
+	if ( function_exists( 'jinyu_cache_flush' ) ) {
 		$n      = jinyu_cache_flush();
-		$msgs[] = '主题整页缓存已清空（' . (int) $n . ' 项）';
+		$msgs[] = sprintf( __( '主题内容缓存已清空（%d 项）', 'jinyu' ), $n );
 	}
 
 	// 第三方整页缓存插件
 	if ( function_exists( 'wp_cache_clean_cache' ) ) {       // WP Super Cache
 		wp_cache_clean_cache( true );
-		$msgs[] = '整页缓存已清空';
+		$msgs[] = __( '整页缓存已清空', 'jinyu' );
 	} elseif ( function_exists( 'wp_cache_clear_cache' ) ) { // W3 Total Cache
 		wp_cache_clear_cache();
-		$msgs[] = '整页缓存已清空';
+		$msgs[] = __( '整页缓存已清空', 'jinyu' );
 	}
 
-	return implode( '；', $msgs );
+	return implode( __( '；', 'jinyu' ), $msgs );
 }
 
 /**
@@ -908,7 +905,7 @@ function jinyu_perf_human( float $bytes ): string {
 function jinyu_perf_human_uptime( int $s ): string {
 	$d = intdiv( $s, 86400 );
 	$h = intdiv( $s % 86400, 3600 );
-	return $d > 0 ? $d . ' 天 ' . $h . ' 小时' : ( $h > 0 ? $h . ' 小时' : $s . ' 秒' );
+	return $d > 0 ? $d . __( ' 天 ', 'jinyu' ) . $h . __( ' 小时', 'jinyu' ) : ( $h > 0 ? $h . __( ' 小时', 'jinyu' ) : $s . __( ' 秒', 'jinyu' ) );
 }
 
 /* ───────────────────────── 渲染：状态看板（指标条 + 双看板） ───────────────────────── */
@@ -1123,10 +1120,6 @@ function jinyu_perf_ajax_optimize(): void {
 			foreach ( $allowed as $k ) {
 				$opts[ $k ] = ! empty( $posted[ $k ] ) ? 1 : 0;
 			}
-			// 数值型配置（整页缓存有效期）不在开关白名单内，单独落库
-			if ( array_key_exists( 'page_cache_ttl', $posted ) ) {
-				$opts['page_cache_ttl'] = max( 60, (int) $posted['page_cache_ttl'] );
-			}
 			update_option( 'jinyu_perf_options', $opts, false );
 		}
 	}
@@ -1182,10 +1175,10 @@ function jinyu_perf_ajax_flush(): void {
 			$msg = jinyu_perf_flush_memcached();
 			break;
 		case 'page':
-			$msg = jinyu_perf_flush_page_cache() ?: '本站未启用整页缓存，无需清理';
+			$msg = jinyu_perf_flush_page_cache() ?: __( '本站未启用整页缓存插件，无需清理', 'jinyu' );
 			break;
 		default:
-			$msg = implode( '；', array_filter( jinyu_perf_flush_caches(), 'strlen' ) );
+			$msg = implode( __( '；', 'jinyu' ), array_filter( jinyu_perf_flush_caches(), 'strlen' ) );
 	}
 
 		wp_send_json_success( [ 'msg' => $msg ] );
@@ -1203,13 +1196,10 @@ function jinyu_perf_ajax_save(): void {
 			foreach ( $allowed as $k ) {
 				$opts[ $k ] = ! empty( $posted[ $k ] ) ? 1 : 0;
 			}
-			if ( array_key_exists( 'page_cache_ttl', $posted ) ) {
-				$opts['page_cache_ttl'] = max( 60, (int) $posted['page_cache_ttl'] );
-			}
 			update_option( 'jinyu_perf_options', $opts, false );
 		}
 	}
-	wp_send_json_success( [ 'msg' => '设置已保存，下一次请求起生效' ] );
+	wp_send_json_success( [ 'msg' => __( '设置已保存，下一次请求起生效', 'jinyu' ) ] );
 }
 
 /** 清空真实用户体验聚合（调试/重测用）。 */
@@ -1299,25 +1289,23 @@ function jinyu_perf_render_page(): void {
 	$toggles = jinyu_perf_toggle_meta();
 	$st      = jinyu_perf_status();
 	$oc_on   = ! empty( $st['object_cache'] );
-	$pc_on   = ! empty( $st['page_cache'] );
 	?>
 	<div class="wrap jperf-wrap">
 		<header class="jperf-topbar">
 			<div class="jperf-brand">
 				<span class="jperf-mark"><svg viewBox="0 0 24 24"><path d="M12 3l3 6 6 .9-4.5 4.2 1.1 6L12 17.8 6.4 20.1l1.1-6L3 9.9 9 9z"/></svg></span>
 				<div>
-					<h1>性能优化中心</h1>
-					<div class="jperf-sub2">金玉主题 · 运行时健康与一键优化</div>
+					<h1><?php esc_html_e( '性能优化中心', 'jinyu' ); ?></h1>
+					<div class="jperf-sub2"><?php esc_html_e( '金玉主题 · 运行时健康与一键优化', 'jinyu' ); ?></div>
 				</div>
 			</div>
 			<div class="jperf-topright">
 				<div class="jperf-topstatus">
-					<span class="jperf-pill"><span class="jperf-dot <?php echo $oc_on ? 'ok' : 'off'; ?>"></span><?php echo $oc_on ? '对象缓存运行中' : '对象缓存未启用'; ?></span>
-					<span class="jperf-pill"><span class="jperf-dot <?php echo $pc_on ? 'ok' : 'off'; ?>"></span><?php echo $pc_on ? '整页缓存启用中' : '整页缓存未启用'; ?></span>
+					<span class="jperf-pill"><span class="jperf-dot <?php echo $oc_on ? 'ok' : 'off'; ?>"></span><?php echo $oc_on ? esc_html__( '对象缓存运行中', 'jinyu' ) : esc_html__( '对象缓存未启用', 'jinyu' ); ?></span>
 					<span class="jperf-ts" id="jperf-refreshed-at"></span>
 				</div>
 				<button type="button" class="jperf-btn-ghost" id="jperf-refresh">
-					<svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 11-3-6.7M21 4v5h-5"/></svg>刷新看板
+					<svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 11-3-6.7M21 4v5h-5"/></svg><?php esc_html_e( '刷新看板', 'jinyu' ); ?>
 				</button>
 			</div>
 		</header>
@@ -1332,10 +1320,14 @@ function jinyu_perf_render_page(): void {
 			<div id="jperf-toggles">
 				<?php
 				$jperf_groups = [
-					'front'    => '前端优化',
-					'admin'    => '后台减负',
-					'security' => '安全加固',
-					'cache'    => '缓存与评论',
+					'front'    => __( '前端优化', 'jinyu' ),
+
+					'admin'    => __( '后台减负', 'jinyu' ),
+
+					'security' => __( '安全加固', 'jinyu' ),
+
+					'cache'    => __( '缓存与评论', 'jinyu' ),
+
 				];
 				foreach ( $jperf_groups as $g_id => $g_name ) :
 					$g_items = [];
@@ -1369,11 +1361,6 @@ function jinyu_perf_render_page(): void {
 					</div>
 				</div>
 				<?php endforeach; ?>
-			</div>
-			<div class="jperf-field">
-				<label class="jperf-field-label" for="jperf-page-cache-ttl">整页缓存有效期（秒）</label>
-				<input type="number" id="jperf-page-cache-ttl" class="jperf-input" min="60" step="60" value="<?php echo (int) $opts['page_cache_ttl']; ?>">
-				<span class="jperf-field-hint">默认 3600（1 小时），最短 60 秒</span>
 			</div>
 			<div class="jperf-btnrow">
 				<button type="button" id="jperf-save" class="jperf-btn jperf-btn-primary">
@@ -1867,8 +1854,6 @@ function jinyu_perf_render_page(): void {
 				if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggle(); }
 			});
 		});
-		var ttlEl = document.getElementById('jperf-page-cache-ttl');
-		if (ttlEl) { ttlEl.addEventListener('input', markUnsaved); }
 
 		// 一键应用推荐优化
 		var run = document.getElementById('jperf-run');
@@ -1878,8 +1863,6 @@ function jinyu_perf_render_page(): void {
 				document.querySelectorAll('#jperf-toggles .jperf-sw').forEach(function(sw){
 					opts[sw.dataset.key] = sw.classList.contains('on') ? 1 : 0;
 				});
-				var ttl = document.getElementById('jperf-page-cache-ttl');
-				if (ttl) { opts['page_cache_ttl'] = ttl.value; }
 				run.disabled = true;
 				var lbl = run.querySelector('span');
 				var old = lbl.textContent;
@@ -1917,8 +1900,6 @@ function jinyu_perf_render_page(): void {
 				document.querySelectorAll('#jperf-toggles .jperf-sw').forEach(function(sw){
 					opts[sw.dataset.key] = sw.classList.contains('on') ? 1 : 0;
 				});
-				var ttl = document.getElementById('jperf-page-cache-ttl');
-				if (ttl) { opts['page_cache_ttl'] = ttl.value; }
 				save.disabled = true;
 				var lbl = save.querySelector('span');
 				var old = lbl.textContent;

@@ -30,7 +30,7 @@ if (!function_exists('jinyu_hitokoto_load_packs')) {
             $cache_key = 'jinyu_hitokoto_remote';
             $remote    = get_transient($cache_key);
             if ($remote === false) {
-                $resp = wp_remote_get(JINYU_HITOKOTO_REMOTE, ['timeout' => 5, 'ssl_verify' => true]);
+                $resp = wp_remote_get(JINYU_HITOKOTO_REMOTE, ['timeout' => 5, 'sslverify' => true]);
                 if (!is_wp_error($resp) && wp_remote_retrieve_response_code($resp) === 200) {
                     $body = json_decode(wp_remote_retrieve_body($resp), true);
                     if (is_array($body)) {

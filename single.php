@@ -49,7 +49,7 @@ if ( ! defined( 'ABSPATH' ) ) {
           <?php $ph_feat = jinyu_get_post_cover(get_the_ID(), 'thumbnail'); ?>
           <img class="jinyu-featured jinyu-blur-img" src="<?php echo esc_url($cover); ?>" alt="<?php the_title_attribute(); ?>" loading="eager"<?php echo $ph_feat ? ' data-ph="' . esc_url($ph_feat) . '"' : ''; ?>>
         <?php endif; ?>
-        <div class="jinyu-article-content" data-jinyu-author="<?php echo esc_attr(get_the_author()); ?>" data-jinyu-site="<?php echo esc_attr(get_bloginfo('name')); ?>" data-jinyu-read-min="<?php echo (int)jinyu_read_time(); ?>"><?php the_content(); ?></div>
+        <div class="jinyu-article-content" data-jinyu-author="<?php echo esc_attr(get_the_author()); ?>" data-jinyu-site="<?php echo esc_attr(get_bloginfo('name')); ?>" data-jinyu-read-min="<?php echo (int)jinyu_read_minutes(); ?>"><?php the_content(); ?></div>
         <div class="jinyu-article-tags">
             <?php foreach ((get_the_category() ?: []) as $jy_c): ?>
                 <a class="jinyu-cat-<?php echo $jy_c->term_id % 12; ?>" href="<?php echo esc_url(get_category_link($jy_c)); ?>">

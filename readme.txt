@@ -4,7 +4,7 @@ Tags: blog, cms, responsive, dark-mode, custom-colors, editor-style, featured-im
 Requires at least: 7.1
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.0.9
+Stable tag: 1.1.0
 License: GPL v3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 

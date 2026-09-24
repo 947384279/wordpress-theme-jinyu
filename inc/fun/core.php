@@ -28,7 +28,6 @@ require_once __DIR__ . '/dynamic-style.php';
 require_once __DIR__ . '/carousel.php';
 require_once __DIR__ . '/optimize.php';
 require_once __DIR__ . '/typography.php';
-require_once __DIR__ . '/compat.php';
 require_once __DIR__ . '/nonce.php';
 require_once __DIR__ . '/meta-fields.php';
 require_once __DIR__ . '/misc.php';

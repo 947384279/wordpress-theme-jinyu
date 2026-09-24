@@ -197,7 +197,7 @@ class Jinyu_Posts_Hot_Widget extends WP_Widget {
                     echo '<span class="jinyu-hot-rank' . $rcls . '">' . $rank . '</span>';
                 }
                 echo '<div class="jinyu-hot-info">';
-                echo '<div class="jinyu-hot-title"><a href="' . esc_url(get_permalink($p)) . '">' . get_the_title($p) . '</a></div>';
+                echo '<div class="jinyu-hot-title"><a href="' . esc_url(get_permalink($p)) . '">' . esc_html(get_the_title($p)) . '</a></div>';
                 if (jinyu_show_views()) {
                     echo '<div class="jinyu-hot-views"><i class="fa-regular fa-eye" aria-hidden="true"></i> ' . (int) jinyu_get_post_views($p->ID) . '</div>';
                 }
@@ -338,7 +338,7 @@ class Jinyu_Random_Posts_Widget extends WP_Widget {
                     }
                 }
                 echo '<div class="jinyu-hot-info">';
-                echo '<div class="jinyu-hot-title"><a href="' . esc_url(get_permalink($p->ID)) . '">' . get_the_title($p->ID) . '</a></div>';
+                echo '<div class="jinyu-hot-title"><a href="' . esc_url(get_permalink($p->ID)) . '">' . esc_html(get_the_title($p->ID)) . '</a></div>';
                 echo '</div></li>';
             }
             echo '</ul>';
@@ -596,7 +596,7 @@ class Jinyu_Hot_Comment_Widget extends WP_Widget {
                     echo '<span class="jinyu-hot-rank' . $rcls . '">' . $i . '</span>';
                 }
                 echo '<div class="jinyu-hot-info">';
-                echo '<div class="jinyu-hot-title"><a href="' . esc_url(get_permalink($p->ID)) . '">' . get_the_title($p->ID) . '</a></div>';
+                echo '<div class="jinyu-hot-title"><a href="' . esc_url(get_permalink($p->ID)) . '">' . esc_html(get_the_title($p->ID)) . '</a></div>';
                 echo '<div class="jinyu-hot-views"><i class="fa-regular fa-comment" aria-hidden="true"></i> ' . (int) get_comments_number($p->ID) . '</div>';
                 echo '</div></li>';
             }
