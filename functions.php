@@ -441,9 +441,18 @@ add_action('wp_head', function () {
 // 首屏关键 CSS 内联（主题内置，无需后台开关）
 add_action('wp_head', function () {
     $file = JINYU_ABS_DIR . '/assets/dist/style/critical.min.css';
-    if (is_file($file)) {
-        echo '<style id="jinyu-critical-css"' . jinyu_csp_nonce_attr() . '>' . file_get_contents($file) . '</style>';
+    if (!is_file($file)) {
+        return;
     }
+    // 以文件 mtime 作缓存键：文件内容只在主题更新/重新构建时变化，
+    // 命中缓存（对象缓存/Memcached）时省掉每请求一次的磁盘读。
+    $mtime = filemtime($file);
+    $css   = jinyu_cache_get('critical_css_' . $mtime);
+    if (!is_string($css) || $css === '') {
+        $css = (string) file_get_contents($file);
+        jinyu_cache_set('critical_css_' . $mtime, $css, DAY_IN_SECONDS);
+    }
+    echo '<style id="jinyu-critical-css"' . jinyu_csp_nonce_attr() . '>' . $css . '</style>';
 }, 1);
 
 // Cookie 合规提示条

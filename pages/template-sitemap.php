@@ -10,6 +10,22 @@ get_header();
 
 $cats = get_categories(['hide_empty' => true, 'orderby' => 'count', 'order' => 'DESC']);
 $pages = get_pages(['sort_column' => 'post_title']);
+
+// 预取各分类最新 20 篇文章的 ID 列表（一次性缓存，渲染时按 ID 水合）
+$sitemap_posts_map = jinyu_cache_get('sitemap_posts');
+if (!is_array($sitemap_posts_map)) {
+    $sitemap_posts_map = [];
+    foreach ($cats as $c) {
+        $sitemap_posts_map[$c->term_id] = get_posts([
+            'cat'              => $c->term_id,
+            'posts_per_page'   => 20,
+            'fields'           => 'ids',
+            'no_found_rows'    => true,
+            'ignore_sticky_posts' => true,
+        ]);
+    }
+    jinyu_cache_set('sitemap_posts', $sitemap_posts_map, 12 * HOUR_IN_SECONDS);
+}
 ?>
 <div class="jinyu-container jinyu-main-wrap">
   <main id="jinyu-content" class="jinyu-content jinyu-single-wrap">
@@ -26,7 +42,10 @@ $pages = get_pages(['sort_column' => 'post_title']);
                 <h3><a href="<?php echo esc_url(get_category_link($c->term_id)); ?>"><?php echo esc_html($c->name); ?></a> <span>(<?php echo (int)$c->count; ?>)</span></h3>
                 <ul>
                   <?php
-                  $posts = get_posts(['cat' => $c->term_id, 'posts_per_page' => 20, 'no_found_rows' => true]);
+                  // 各分类文章 ID 列表整体缓存 12 小时（save_post/deleted_post 已挂钩 jinyu_cache_flush 自动失效），
+                  // 避免爬虫高频抓取 sitemap 时每分类各跑一次查询；命中后按 ID 顺序取对象。
+                  $ids   = $sitemap_posts_map[$c->term_id] ?? [];
+                  $posts = $ids ? jinyu_hydrate_posts($ids) : [];
                   foreach ($posts as $p) :
                   ?>
                     <li><a href="<?php echo esc_url(get_permalink($p)); ?>"><?php echo esc_html($p->post_title); ?></a></li>
