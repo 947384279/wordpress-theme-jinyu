@@ -960,63 +960,63 @@ function jinyu_perf_render_status_html(): string {
 	$mc_ok  = ( $m && ! empty( $m['reachable'] ) );
 	$mc_hit = $mc_ok ? $m['hit_rate'] : null;
 	$mver   = $mc_ok ? (string) ( $m['version'] ?? '' ) : '';
-	$mtag   = '' !== $mver ? 'v' . $mver : ( null === $m ? '未安装' : '不可达' );
+	$mtag   = '' !== $mver ? 'v' . $mver : ( null === $m ? __( '未安装', 'jinyu' ) : __( '不可达', 'jinyu' ) );
 
 	$html  = '<div class="jperf-status">';
 
 	// —— 指标条（分隔线，非卡片堆叠）——
 	$html .= '<div class="jperf-stats">';
-	$html .= $stat( 'OPcache 命中率', '—', '字节码缓存有效',
+	$html .= $stat( __( 'OPcache 命中率', 'jinyu' ), '—', __( '字节码缓存有效', 'jinyu' ),
 		null === $op_hit ? null : $op_hit, null === $op_hit ? '' : '<small>%</small>' );
-	$html .= $stat( 'Memcached 命中率', '—', '对象缓存有效',
+	$html .= $stat( __( 'Memcached 命中率', 'jinyu' ), '—', __( '对象缓存有效', 'jinyu' ),
 		null === $mc_hit ? null : $mc_hit, null === $mc_hit ? '' : '<small>%</small>' );
-	$html .= $stat( '待清理 Transient', (string) (int) $s['transient_expired'], '已过期待回收',
+	$html .= $stat( __( '待清理 Transient', 'jinyu' ), (string) (int) $s['transient_expired'], __( '已过期待回收', 'jinyu' ),
 		(int) $s['transient_expired'], '' );
-	$html .= $stat( '活跃插件', (string) (int) $s['active_plugins'], '含主题内置模块',
+	$html .= $stat( __( '活跃插件', 'jinyu' ), (string) (int) $s['active_plugins'], __( '含主题内置模块', 'jinyu' ),
 		(int) $s['active_plugins'], '' );
 	$html .= '</div>';
 
 	// —— 监控双栏 ——
-	$html .= '<p class="jperf-eyebrow jperf-eyebrow-mt">运行时监控</p>';
+	$html .= '' . '<p class="jperf-eyebrow jperf-eyebrow-mt">' . esc_html__( '运行时监控', 'jinyu' ) . '</p>' . ''
 	$html .= '<div class="jperf-panels">';
 
 	// OPcache 面板
 	$html .= '<div class="jperf-panel"><div class="jperf-panel-head">'
 		. '<svg viewBox="0 0 24 24"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg>'
-		. '<h3>OPcache 字节码缓存</h3><span class="jperf-tag">PHP ' . PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION . '</span></div>';
+		. '<h3>' . esc_html__( 'OPcache 字节码缓存', 'jinyu' ) . '</h3><span class="jperf-tag">PHP ' . PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION . '</span></div>';
 	$html .= '<div class="jperf-gauge">';
-	$html .= $ring( $op_hit, 'var(--j-accent)', '命中率' );
+	$html .= $ring( $op_hit, 'var(--j-accent)', __( '命中率', 'jinyu' ) );
 	$html .= '<div class="jperf-kv">';
 	if ( null === $o ) {
-		$html .= '<div class="jperf-kvrow"><span class="jperf-name">状态</span><span class="jperf-val">未安装扩展</span></div>';
+		$html .= '<div class="jperf-kvrow"><span class="jperf-name">' . esc_html__( '状态', 'jinyu' ) . '</span><span class="jperf-val">' . esc_html__( '未安装扩展', 'jinyu' ) . '</span></div>';
 	} elseif ( empty( $o['enabled'] ) ) {
-		$html .= '<div class="jperf-kvrow"><span class="jperf-name">状态</span><span class="jperf-val">当前上下文未启用</span></div>';
+		$html .= '<div class="jperf-kvrow"><span class="jperf-name">' . esc_html__( '状态', 'jinyu' ) . '</span><span class="jperf-val">' . esc_html__( '当前上下文未启用', 'jinyu' ) . '</span></div>';
 	} else {
-		$html .= $kv( '缓存脚本', number_format_i18n( $o['cached_scripts'] ) );
-		$html .= $kv( '内存占用', jinyu_perf_human( $o['memory_used'] ) . ' / ' . jinyu_perf_human( $o['memory_total'] ) );
-		$html .= $kv( '内存使用率', $o['mem_pct'] . '%', $o['mem_pct'] . '%' );
-		$html .= $kv( '浪费内存', jinyu_perf_human( $o['wasted'] ) );
+		$html .= $kv( __( '缓存脚本', 'jinyu' ), number_format_i18n( $o['cached_scripts'] ) );
+		$html .= $kv( __( '内存占用', 'jinyu' ), jinyu_perf_human( $o['memory_used'] ) . ' / ' . jinyu_perf_human( $o['memory_total'] ) );
+		$html .= $kv( __( '内存使用率', 'jinyu' ), $o['mem_pct'] . '%', $o['mem_pct'] . '%' );
+		$html .= $kv( __( '浪费内存', 'jinyu' ), jinyu_perf_human( $o['wasted'] ) );
 	}
 	$html .= '</div></div></div>';
 
 	// Memcached 面板
 	$html .= '<div class="jperf-panel"><div class="jperf-panel-head">'
 		. '<svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg>'
-		. '<h3>Memcached 对象缓存</h3><span class="jperf-tag">' . esc_html( $mtag ) . '</span></div>';
+		. '<h3>' . esc_html__( 'Memcached 对象缓存', 'jinyu' ) . '</h3><span class="jperf-tag">' . esc_html( $mtag ) . '</span></div>';
 	$html .= '<div class="jperf-gauge">';
-	$html .= $ring( $mc_hit, 'var(--j-ink2)', '命中率' );
+	$html .= $ring( $mc_hit, 'var(--j-ink2)', __( '命中率', 'jinyu' ) );
 	$html .= '<div class="jperf-kv">';
 	if ( null === $m ) {
-		$html .= '<div class="jperf-kvrow"><span class="jperf-name">状态</span><span class="jperf-val">未安装扩展</span></div>';
+		$html .= '<div class="jperf-kvrow"><span class="jperf-name">' . esc_html__( '状态', 'jinyu' ) . '</span><span class="jperf-val">' . esc_html__( '未安装扩展', 'jinyu' ) . '</span></div>';
 		} elseif ( empty( $m['reachable'] ) ) {
 			$ext = (bool) wp_using_ext_object_cache();
-			$msg = $ext ? '未连接 Memcached（当前使用其他对象缓存后端）' : '无法连接 127.0.0.1:11211';
-			$html .= '<div class="jperf-kvrow"><span class="jperf-name">状态</span><span class="jperf-val">' . $msg . '</span></div>';
+			$msg = $ext ? __( '未连接 Memcached（当前使用其他对象缓存后端）', 'jinyu' ) : __( '无法连接 127.0.0.1:11211', 'jinyu' );
+			$html .= '<div class="jperf-kvrow"><span class="jperf-name">' . esc_html__( '状态', 'jinyu' ) . '</span><span class="jperf-val">' . esc_html( $msg ) . '</span></div>';
 	} else {
-		$html .= $kv( '缓存条目', number_format_i18n( $m['curr_items'] ) );
-		$html .= $kv( '内存占用', jinyu_perf_human( (float) $m['bytes'] ) . ' / ' . jinyu_perf_human( (float) $m['limit'] ) );
-		$html .= $kv( '内存使用率', $m['mem_pct'] . '%', $m['mem_pct'] . '%' );
-		$html .= $kv( '已运行', jinyu_perf_human_uptime( $m['uptime'] ) );
+		$html .= $kv( __( '缓存条目', 'jinyu' ), number_format_i18n( $m['curr_items'] ) );
+		$html .= $kv( __( '内存占用', 'jinyu' ), jinyu_perf_human( (float) $m['bytes'] ) . ' / ' . jinyu_perf_human( (float) $m['limit'] ) );
+		$html .= $kv( __( '内存使用率', 'jinyu' ), $m['mem_pct'] . '%', $m['mem_pct'] . '%' );
+		$html .= $kv( __( '已运行', 'jinyu' ), jinyu_perf_human_uptime( $m['uptime'] ) );
 	}
 	$html .= '</div></div></div>';
 	$html .= '</div>'; // 闭合 .jperf-panels：Web Vitals 区是全宽板块，不进监控双栏
@@ -1025,10 +1025,10 @@ function jinyu_perf_render_status_html(): string {
 	$wv  = jinyu_perf_web_vitals_stats();
 	$wvm = jinyu_perf_wv_meta();
 	$wv_score = ( null !== $wv ) ? jinyu_perf_wv_score( $wv, $wvm ) : null;
-	$html .= '<p class="jperf-eyebrow jperf-eyebrow-mt">真实用户体验（近 7 天）</p>';
+	$html .= '' . '<p class="jperf-eyebrow jperf-eyebrow-mt">' . esc_html__( '真实用户体验（近 7 天）', 'jinyu' ) . '</p>' . ''
 	$html .= '<div class="jperf-wv">';
 	if ( null === $wv ) {
-		$html .= '<div class="jperf-wv-empty">暂无样本。前端已采集 LCP / INP / CLS / FCP / TTFB，访客浏览后这里会出现真实均值。</div>';
+		$html .= '<div class="jperf-wv-empty">' . esc_html__( '暂无样本。前端已采集 LCP / INP / CLS / FCP / TTFB，访客浏览后这里会出现真实均值。', 'jinyu' ) . '</div>';
 	} else {
 		foreach ( $wvm as $k => $meta ) {
 			$avg   = (float) $wv['avg'][ $k ];
@@ -1036,49 +1036,49 @@ function jinyu_perf_render_status_html(): string {
 			$rate  = jinyu_perf_wv_rate( $avg, $meta );
 			$val   = $meta['ms'] ? number_format_i18n( (int) $avg ) . ' ms' : $avg;
 			$worst = $meta['ms'] ? number_format_i18n( (int) $max ) . ' ms' : $max;
-			$badge = 'good' === $rate ? '良好' : ( 'poor' === $rate ? '较差' : '需优化' );
+			$badge = 'good' === $rate ? __( '良好', 'jinyu' ) : ( 'poor' === $rate ? __( '较差', 'jinyu' ) : __( '需优化', 'jinyu' ) );
 			$html .= '<div class="jperf-wv-chip rate-' . $rate . '" title="' . esc_attr( $meta['tip'] ) . '">'
 				. '<div class="jperf-wv-top"><span class="jperf-wv-lab">' . $meta['label'] . '</span>'
 				. '<span class="jperf-wv-badge">' . $badge . '</span></div>'
 				. '<div class="jperf-wv-val">' . $val . '</div>'
 				. '<div class="jperf-wv-name">' . $meta['name'] . '</div>'
-				. '<div class="jperf-wv-worst">最差 ' . $worst . '</div>'
-				. '<div class="jperf-wv-opt" title="' . esc_attr( $meta['optimize'] ) . '"><b>优化</b> · ' . esc_html( $meta['optimize'] ) . '</div></div>';
+				. '' . '<div class="jperf-wv-worst">' . esc_html__( '最差 ', 'jinyu' ) . $worst . '</div>' . ''
+				. '<div class="jperf-wv-opt" title="' . esc_attr( $meta['optimize'] ) . '"><b>' . esc_html__( '优化', 'jinyu' ) . '</b> · ' . esc_html( $meta['optimize'] ) . '</div></div>';
 		}
 		if ( null !== $wv_score ) {
 			$sr     = $wv_score['rate'];
-			$sbadge = 'good' === $sr ? '优秀' : ( 'poor' === $sr ? '待提升' : '一般' );
+			$sbadge = 'good' === $sr ? __( '优秀', 'jinyu' ) : ( 'poor' === $sr ? __( '待提升', 'jinyu' ) : __( '一般', 'jinyu' ) );
 			$html .= '<div class="jperf-wv-chip jperf-wv-score rate-' . $sr . '">'
-				. '<div class="jperf-wv-top"><span class="jperf-wv-lab">综合体验评分</span>'
+				. '<div class="jperf-wv-top"><span class="jperf-wv-lab">' . esc_html__( '综合体验评分', 'jinyu' ) . '</span>'
 				. '<span class="jperf-wv-badge">' . $sbadge . '</span></div>'
 				. '<div class="jperf-wv-val jperf-score-num" data-count="' . $wv_score['score'] . '">0</div>'
-				. '<div class="jperf-wv-name">Field Performance Score · 满分 100</div>'
+				. '<div class="jperf-wv-name">' . esc_html__( 'Field Performance Score · 满分 100', 'jinyu' ) . '</div>'
 				. '<div class="jperf-wv-scorebar"><i style="width:' . $wv_score['score'] . '%"></i></div>'
-				. '<div class="jperf-wv-note">5 项加权 · 近 7 天滚动均值</div></div>';
+				. '<div class="jperf-wv-note">' . esc_html__( '5 项加权 · 近 7 天滚动均值', 'jinyu' ) . '</div></div>';
 		}
-		$foot = '基于 ' . number_format_i18n( $wv['n'] ) . ' 次真实访问';
+		$foot = sprintf( __( '基于 %s 次真实访问', 'jinyu' ), number_format_i18n( $wv['n'] ) );
 		if ( empty( $wv['fresh'] ) ) {
-			$foot .= '（窗口已过期，等待新样本）';
+			$foot .= __( '（窗口已过期，等待新样本）', 'jinyu' );
 		}
 		$html .= '<div class="jperf-wv-foot">' . $foot . '</div>';
-		$html .= '<div class="jperf-wv-legend"><span class="lg good">良好</span><span class="lg mid">需优化</span>'
-			. '<span class="lg poor">较差</span><span class="lg-note">除综合评分外，数值越低越好</span></div>';
+		$html .= '<div class="jperf-wv-legend"><span class="lg good">' . esc_html__( '良好', 'jinyu' ) . '</span><span class="lg mid">' . esc_html__( '需优化', 'jinyu' ) . '</span>'
+			. '<span class="lg poor">' . esc_html__( '较差', 'jinyu' ) . '</span><span class="lg-note">' . esc_html__( '除综合评分外，数值越低越好', 'jinyu' ) . '</span></div>';
 		if ( ! empty( $wv['slowest'] ) && is_array( $wv['slowest'] ) ) {
 			$html .= '<div class="jperf-slow">'
-				. '<div class="jperf-slow-head"><span class="jperf-slow-t">最慢路径（按 LCP 最差）</span>'
-				. '<span class="jperf-slow-hint">各路径真实访客的首屏最慢渲染时长</span></div>'
+				. '<div class="jperf-slow-head"><span class="jperf-slow-t">' . esc_html__( '最慢路径（按 LCP 最差）', 'jinyu' ) . '</span>'
+				. '<span class="jperf-slow-hint">' . esc_html__( '各路径真实访客的首屏最慢渲染时长', 'jinyu' ) . '</span></div>'
 				. '<div class="jperf-slow-list">';
 			$rank = 0;
 			foreach ( $wv['slowest'] as $srow ) {
 				$rank++;
 				$srate  = jinyu_perf_wv_rate( (float) $srow['lcp_max'], $wvm['lcp'] );
-				$sbadge = 'good' === $srate ? '良好' : ( 'poor' === $srate ? '较差' : '需优化' );
+				$sbadge = 'good' === $srate ? __( '良好', 'jinyu' ) : ( 'poor' === $srate ? __( '较差', 'jinyu' ) : __( '需优化', 'jinyu' ) );
 				$spct   = min( 100, (int) ( (float) $srow['lcp_max'] / (float) $wvm['lcp']['poor'] * 100 ) );
 				$slcp   = number_format_i18n( (int) $srow['lcp_max'] ) . ' ms';
 				$html  .= '<div class="jperf-slow-row rate-' . $srate . '">'
 					. '<span class="jperf-slow-rank">' . $rank . '</span>'
 					. '<span class="jperf-slow-path" title="' . esc_attr( $srow['path'] ) . '">' . esc_html( $srow['path'] ) . '</span>'
-					. '<span class="jperf-slow-meta">最差 ' . $slcp . ' · ' . number_format_i18n( (int) $srow['n'] ) . ' 次</span>'
+					. '<span class="jperf-slow-meta">' . sprintf( __( '最差 %1$s · %2$s 次', 'jinyu' ), $slcp, number_format_i18n( (int) $srow['n'] ) ) . '</span>'
 					. '<span class="jperf-slow-bar"><i style="width:' . $spct . '%"></i></span>'
 					. '<span class="jperf-slow-badge">' . $sbadge . '</span></div>';
 			}
@@ -1096,7 +1096,7 @@ function jinyu_perf_render_status_html(): string {
 /** AJAX 公共门卫：权限 + nonce。失败直接中断响应。 */
 function jinyu_perf_guard(): void {
 	if ( ! current_user_can( 'manage_options' ) ) {
-		wp_send_json_error( [ 'msg' => '权限不足' ], 403 );
+		wp_send_json_error( [ 'msg' => __( '权限不足', 'jinyu' ) ], 403 );
 	}
 	check_ajax_referer( 'jinyu_perf_nonce', 'nonce' );
 }
@@ -1206,7 +1206,7 @@ function jinyu_perf_ajax_save(): void {
 function jinyu_perf_ajax_reset_wv(): void {
 	jinyu_perf_guard();
 	delete_option( 'jinyu_web_vitals_stats' );
-	wp_send_json_success( [ 'msg' => '体验数据已清空' ] );
+	wp_send_json_success( [ 'msg' => __( '体验数据已清空', 'jinyu' ) ] );
 }
 
 add_action( 'wp_ajax_jinyu_perf_save', 'jinyu_perf_ajax_save' );
@@ -1314,8 +1314,8 @@ function jinyu_perf_render_page(): void {
 
 		<section class="jperf-block">
 			<div class="jperf-block-head">
-				<p class="jperf-eyebrow">优化开关</p>
-				<span class="jperf-hint">每项均可单独开启 / 回退，不影响有效数据</span>
+				<p class="jperf-eyebrow"><?php esc_html_e( '优化开关', 'jinyu' ); ?></p>
+				<span class="jperf-hint"><?php esc_html_e( '每项均可单独开启 / 回退，不影响有效数据', 'jinyu' ); ?></span>
 			</div>
 			<div id="jperf-toggles">
 				<?php
@@ -1343,13 +1343,13 @@ function jinyu_perf_render_page(): void {
 				<div class="jgroup">
 					<div class="jgroup-head">
 						<span class="jgroup-tt"><?php echo esc_html( $g_name ); ?></span>
-						<span class="jgroup-n"><?php echo (int) count( $g_items ); ?> 项</span>
+						<span class="jgroup-n"><?php echo (int) count( $g_items ); ?> <?php esc_html_e( '项', 'jinyu' ); ?></span>
 					</div>
 					<div class="jgrid">
 						<?php foreach ( $g_items as $key => $meta ) : ?>
 						<div class="jcard">
 							<div class="jcard-body">
-								<div class="jcard-t"><?php echo esc_html( $meta['label'] ); ?><?php if ( ! empty( $opts[ $key ] ) ) : ?><span class="jbadge">默认开</span><?php endif; ?></div>
+								<div class="jcard-t"><?php echo esc_html( $meta['label'] ); ?><?php if ( ! empty( $opts[ $key ] ) ) : ?><span class="jbadge"><?php esc_html_e( '默认开', 'jinyu' ); ?></span><?php endif; ?></div>
 								<div class="jcard-c"><?php echo esc_html( $meta['desc'] ); ?></div>
 							</div>
 							<div class="jperf-sw <?php echo ! empty( $opts[ $key ] ) ? 'on' : ''; ?>"
@@ -1364,14 +1364,14 @@ function jinyu_perf_render_page(): void {
 			</div>
 			<div class="jperf-btnrow">
 				<button type="button" id="jperf-save" class="jperf-btn jperf-btn-primary">
-					<svg viewBox="0 0 24 24"><path d="M5 3h11l3 3v15H5z"/><path d="M8 3v5h6M8 13h8M8 17h5"/></svg><span>保存设置</span>
+					<svg viewBox="0 0 24 24"><path d="M5 3h11l3 3v15H5z"/><path d="M8 3v5h6M8 13h8M8 17h5"/></svg><span><?php esc_html_e( '保存设置', 'jinyu' ); ?></span>
 				</button>
 				<button type="button" id="jperf-run" class="jperf-btn">
-					<svg viewBox="0 0 24 24"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg><span>一键应用推荐优化</span>
+					<svg viewBox="0 0 24 24"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg><span><?php esc_html_e( '一键应用推荐优化', 'jinyu' ); ?></span>
 				</button>
-				<span id="jperf-unsaved" class="jperf-unsaved" hidden>● 有改动未保存</span>
+				<span id="jperf-unsaved" class="jperf-unsaved" hidden>● <?php esc_html_e( '有改动未保存', 'jinyu' ); ?></span>
 			</div>
-			<p class="jperf-hint" style="margin-top:10px">「推荐优化」= 勾选项全部保存 + 清理过期 transient + 优化碎片表 + 重置 OPcache 与 Memcached。也可单独点「保存设置」仅保存开关。</p>
+			<p class="jperf-hint" style="margin-top:10px"><?php esc_html_e( '「推荐优化」= 勾选项全部保存 + 清理过期 transient + 优化碎片表 + 重置 OPcache 与 Memcached。也可单独点「保存设置」仅保存开关。', 'jinyu' ); ?></p>
 			<div id="jperf-result" class="jperf-result" aria-live="polite"></div>
 		</section>
 
@@ -1380,22 +1380,22 @@ function jinyu_perf_render_page(): void {
 				<div class="jperf-card-head">
 					<span class="jperf-card-ico"><svg viewBox="0 0 24 24"><path d="M4 6c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3z"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg></span>
 					<div class="jperf-card-tt">
-						<h3>缓存管理</h3>
-						<p>部署代码后建议「清除全部缓存」；各层缓存互相独立，可按需单清。</p>
+						<h3><?php esc_html_e( '缓存管理', 'jinyu' ); ?></h3>
+						<p><?php esc_html_e( '部署代码后建议「清除全部缓存」；各层缓存互相独立，可按需单清。', 'jinyu' ); ?></p>
 					</div>
 				</div>
 				<div class="jperf-actions">
 					<button type="button" class="jperf-btn" data-flush="opcache">
-						<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 109 6M12 6v6l4 2"/></svg><span>清除 OPcache</span>
+						<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 109 6M12 6v6l4 2"/></svg><span><?php esc_html_e( '清除 OPcache', 'jinyu' ); ?></span>
 					</button>
 					<button type="button" class="jperf-btn" data-flush="memcached">
-						<svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg><span>清除 Memcached</span>
+						<svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg><span><?php esc_html_e( '清除 Memcached', 'jinyu' ); ?></span>
 					</button>
 					<button type="button" class="jperf-btn" data-flush="page">
-						<svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zM4 9h16"/></svg><span>清除整页缓存</span>
+						<svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zM4 9h16"/></svg><span><?php esc_html_e( '清除整页缓存', 'jinyu' ); ?></span>
 					</button>
 					<button type="button" class="jperf-btn jperf-btn-hero" data-flush="all">
-						<svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg><span>清除全部缓存</span>
+						<svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg><span><?php esc_html_e( '清除全部缓存', 'jinyu' ); ?></span>
 					</button>
 				</div>
 				<div id="jperf-cache-result" class="jperf-result" aria-live="polite"></div>
@@ -1405,13 +1405,13 @@ function jinyu_perf_render_page(): void {
 				<div class="jperf-card-head">
 					<span class="jperf-card-ico"><svg viewBox="0 0 24 24"><path d="M3 12h4l2.5-6 4 12 2.5-6H21"/></svg></span>
 					<div class="jperf-card-tt">
-						<h3>体验数据</h3>
-						<p>真实用户体验聚合（近 7 天滚动），清空后随新访客浏览重新累积。</p>
+						<h3><?php esc_html_e( '体验数据', 'jinyu' ); ?></h3>
+						<p><?php esc_html_e( '真实用户体验聚合（近 7 天滚动），清空后随新访客浏览重新累积。', 'jinyu' ); ?></p>
 					</div>
 				</div>
 				<div class="jperf-actions">
 					<button type="button" class="jperf-btn jperf-btn-danger" id="jperf-reset-wv">
-						<svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg><span>清空体验数据</span>
+						<svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg><span><?php esc_html_e( '清空体验数据', 'jinyu' ); ?></span>
 					</button>
 				</div>
 				<div id="jperf-wv-result" class="jperf-result" aria-live="polite"></div>
@@ -1823,7 +1823,7 @@ function jinyu_perf_render_page(): void {
 			box.classList.add('show');
 			var d = document.createElement('div');
 			d.className = 'item';
-			d.textContent = '失败：' + msg;
+			d.textContent = '<?php echo esc_js( __( '失败：', 'jinyu' ) ); ?>' + msg;
 			box.appendChild(d);
 		}
 
@@ -1834,7 +1834,7 @@ function jinyu_perf_render_page(): void {
 					document.getElementById('jperf-status-zone').innerHTML = j.data.html;
 					animateBoards();
 					var at = document.getElementById('jperf-refreshed-at');
-					if (at) { at.textContent = '更新于 ' + new Date().toLocaleTimeString(); }
+					if (at) { at.textContent = '<?php echo esc_js( __( '更新于 ', 'jinyu' ) ); ?>' + new Date().toLocaleTimeString(); }
 				}
 			});
 		}
@@ -1866,25 +1866,25 @@ function jinyu_perf_render_page(): void {
 				run.disabled = true;
 				var lbl = run.querySelector('span');
 				var old = lbl.textContent;
-				lbl.textContent = '优化中…';
+				lbl.textContent = '<?php echo esc_js( __( '优化中…', 'jinyu' ) ); ?>';
 				post('jinyu_perf_optimize', {options: JSON.stringify(opts)})
 					.then(function(j){
 						run.disabled = false; lbl.textContent = old;
-						if (!j.success) { showErr('jperf-result', j.data && j.data.msg ? j.data.msg : '未知错误'); return; }
+						if (!j.success) { showErr('jperf-result', j.data && j.data.msg ? j.data.msg : '<?php echo esc_js( __( '未知错误', 'jinyu' ) ); ?>'); return; }
 						var d = j.data, lines = [];
-						lines.push('清理过期 transient：' + d.cleaned_transients + ' 条');
-						lines.push('优化数据表：' + d.optimized_tables + ' 张' + (d.table_list && d.table_list.length ? '（' + d.table_list.join('、') + '）' : ''));
+						lines.push('<?php echo esc_js( __( '清理过期 transient：', 'jinyu' ) ); ?>' + d.cleaned_transients + '<?php echo esc_js( __( ' 条', 'jinyu' ) ); ?>');
+						lines.push('<?php echo esc_js( __( '优化数据表：', 'jinyu' ) ); ?>' + d.optimized_tables + '<?php echo esc_js( __( ' 张', 'jinyu' ) ); ?>' + (d.table_list && d.table_list.length ? '<?php echo esc_js( __( '（', 'jinyu' ) ); ?>' + d.table_list.join('<?php echo esc_js( __( '、', 'jinyu' ) ); ?>') + '<?php echo esc_js( __( '）', 'jinyu' ) ); ?>' : ''));
 						(d.cache || []).forEach(function(m){ lines.push(m); });
 						var fmtHit = function(name, b, a){
-							if (b === null || b === undefined) return name + '：未启用';
+							if (b === null || b === undefined) return name + '<?php echo esc_js( __( '：未启用', 'jinyu' ) ); ?>';
 							return name + '：' + b + '% → ' + a + '%';
 						};
-						lines.push(fmtHit('OPcache 命中率', d.before_hit.opcache, d.after_hit.opcache));
-						lines.push(fmtHit('Memcached 命中率', d.before_hit.memcached, d.after_hit.memcached));
-						lines.push('自动加载选项：' + d.before_d.autoload_bytes + ' → ' + d.after_d.autoload_bytes);
-						lines.push('过期 transient：' + d.before_d.transient_expired + ' → ' + d.after_d.transient_expired + ' 条');
-						lines.push('数据表碎片：' + d.before_d.table_overhead + ' → ' + d.after_d.table_overhead);
-						lines.push('开关已保存，下一次请求起生效。');
+						lines.push(fmtHit('<?php echo esc_js( __( 'OPcache 命中率', 'jinyu' ) ); ?>', d.before_hit.opcache, d.after_hit.opcache));
+						lines.push(fmtHit('<?php echo esc_js( __( 'Memcached 命中率', 'jinyu' ) ); ?>', d.before_hit.memcached, d.after_hit.memcached));
+						lines.push('<?php echo esc_js( __( '自动加载选项：', 'jinyu' ) ); ?>' + d.before_d.autoload_bytes + '<?php echo esc_js( __( ' → ', 'jinyu' ) ); ?>' + d.after_d.autoload_bytes);
+						lines.push('<?php echo esc_js( __( '过期 transient：', 'jinyu' ) ); ?>' + d.before_d.transient_expired + '<?php echo esc_js( __( ' → ', 'jinyu' ) ); ?>' + d.after_d.transient_expired + '<?php echo esc_js( __( ' 条', 'jinyu' ) ); ?>');
+						lines.push('<?php echo esc_js( __( '数据表碎片：', 'jinyu' ) ); ?>' + d.before_d.table_overhead + '<?php echo esc_js( __( ' → ', 'jinyu' ) ); ?>' + d.after_d.table_overhead);
+						lines.push('<?php echo esc_js( __( '开关已保存，下一次请求起生效。', 'jinyu' ) ); ?>');
 						showResult('jperf-result', lines);
 						refreshStatus();
 					})
@@ -1903,19 +1903,19 @@ function jinyu_perf_render_page(): void {
 				save.disabled = true;
 				var lbl = save.querySelector('span');
 				var old = lbl.textContent;
-				lbl.textContent = '保存中…';
+				lbl.textContent = '<?php echo esc_js( __( '保存中…', 'jinyu' ) ); ?>';
 				post('jinyu_perf_save', {options: JSON.stringify(opts)})
 					.then(function(j){
 						save.disabled = false; lbl.textContent = old;
-						if (!j.success) { showErr('jperf-result', j.data && j.data.msg ? j.data.msg : '未知错误'); return; }
+						if (!j.success) { showErr('jperf-result', j.data && j.data.msg ? j.data.msg : '<?php echo esc_js( __( '未知错误', 'jinyu' ) ); ?>'); return; }
 						showResult('jperf-result', [j.data.msg]);
 						if (unsaved) {
 							unsaved.hidden = false;
-							unsaved.textContent = '✓ 已保存';
+							unsaved.textContent = '<?php echo esc_js( __( '✓ 已保存', 'jinyu' ) ); ?>';
 							unsaved.classList.add('saved');
 							setTimeout(function(){
 								unsaved.hidden = true;
-								unsaved.textContent = '● 有改动未保存';
+								unsaved.textContent = '● <?php echo esc_js( __( '有改动未保存', 'jinyu' ) ); ?>';
 								unsaved.classList.remove('saved');
 							}, 2500);
 						}
@@ -1931,11 +1931,11 @@ function jinyu_perf_render_page(): void {
 				b.disabled = true;
 				var lbl = b.querySelector('span');
 				var old = lbl.textContent;
-				lbl.textContent = '清除中…';
+				lbl.textContent = '<?php echo esc_js( __( '清除中…', 'jinyu' ) ); ?>';
 				post('jinyu_perf_flush', {target: b.getAttribute('data-flush')})
 					.then(function(j){
 						b.disabled = false; lbl.textContent = old;
-						if (!j.success) { showErr('jperf-cache-result', j.data && j.data.msg ? j.data.msg : '未知错误'); return; }
+						if (!j.success) { showErr('jperf-cache-result', j.data && j.data.msg ? j.data.msg : '<?php echo esc_js( __( '未知错误', 'jinyu' ) ); ?>'); return; }
 						showResult('jperf-cache-result', [j.data.msg]);
 						refreshStatus();
 					})
@@ -1947,15 +1947,15 @@ function jinyu_perf_render_page(): void {
 		var rwv = document.getElementById('jperf-reset-wv');
 		if (rwv) {
 			rwv.addEventListener('click', function(){
-				if (!window.confirm('确定清空真实用户体验聚合数据？此操作不可撤销。')) { return; }
+				if (!window.confirm('<?php echo esc_js( __( '确定清空真实用户体验聚合数据？此操作不可撤销。', 'jinyu' ) ); ?>')) { return; }
 				rwv.disabled = true;
 				var lbl = rwv.querySelector('span');
 				var old = lbl.textContent;
-				lbl.textContent = '清空中…';
+				lbl.textContent = '<?php echo esc_js( __( '清空中…', 'jinyu' ) ); ?>';
 				post('jinyu_perf_reset_wv')
 					.then(function(j){
 						rwv.disabled = false; lbl.textContent = old;
-						if (!j.success) { showErr('jperf-wv-result', j.data && j.data.msg ? j.data.msg : '未知错误'); return; }
+						if (!j.success) { showErr('jperf-wv-result', j.data && j.data.msg ? j.data.msg : '<?php echo esc_js( __( '未知错误', 'jinyu' ) ); ?>'); return; }
 						showResult('jperf-wv-result', [j.data.msg]);
 						refreshStatus();
 					})
