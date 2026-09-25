@@ -50,7 +50,7 @@ $jinyu_profile_rows = [
                         <li>
                             <span class="jinyu-fa-k"><?php esc_html_e( '网站图标', 'jinyu'); ?></span>
                             <span class="jinyu-fa-v">
-                                <img class="jinyu-fa-thumb" src="<?php echo esc_url( $jinyu_site['icon'] ); ?>" alt="" loading="lazy" decoding="async" onerror="this.remove()">
+                                <img class="jinyu-fa-thumb" src="<?php echo esc_url( $jinyu_site['icon'] ); ?>" alt="" loading="lazy" decoding="async" data-jinyu-fallback-remove>
                                 <?php echo esc_html( $jinyu_site['icon'] ); ?>
                             </span>
                             <button type="button" class="jinyu-fa-copy" data-jinyu-copy="<?php echo esc_attr( $jinyu_site['icon'] ); ?>">

@@ -111,3 +111,47 @@
         padding-left: 1.4em; li { margin-bottom: @s-2; }
     }
 }
+
+/* ==========================================================================
+   主题区块图案（patterns/）专属样式
+   全局作用域（不限 .jinyu-article-content）：图案也可用于页面模板等非正文区域。
+   类名统一 jy-pat- 前缀，避免与核心区块类及第三方插件冲突。
+   ========================================================================== */
+
+/* 特性卡：图标底座（内联 SVG 用 currentColor 取色，明暗自动跟随） */
+.jy-pat-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: @radius-md;
+    background: @primary-light;
+    color: @primary;
+    margin-bottom: @s-3;
+}
+
+/* FAQ：问题行主题色侧标 */
+.jy-pat-faq {
+    h4 {
+        border-left: 3px solid @primary;
+        padding-left: @s-3;
+        margin-bottom: @s-2;
+    }
+    p { color: @text-2; margin-bottom: @s-5; }
+}
+
+/* 行动号召：主色渐变浅底卡片 */
+.jy-pat-cta {
+    padding: @s-8 @s-6;
+    border-radius: @radius-lg;
+    background:
+        linear-gradient(180deg, @primary-light, transparent 80%);
+    text-align: center;
+}
+
+/* 精选文章三栏：日期弱化为辅助色 */
+.jy-pat-posts .wp-block-post-date {
+    color: @text-3;
+    font-size: @fs-sm;
+}

@@ -78,7 +78,7 @@ get_header();
       <div class="jinyu-cms-grid">
         <?php foreach ($jinyu_grid as $jinyu_g) : ?>
           <a class="jinyu-cms-grid-item" href="<?php echo esc_url($jinyu_g['link'] ?: '#'); ?>"<?php echo $jinyu_g['blank'] ? ' target="_blank" rel="noopener noreferrer"' : ''; ?>>
-            <?php $ph_g = ''; $aid_g = attachment_url_to_postid($jinyu_g['img']); if ($aid_g) { $tg = wp_get_attachment_image_src($aid_g, 'thumbnail'); if (!empty($tg[0])) $ph_g = $tg[0]; } ?>
+            <?php $ph_g = ''; $aid_g = jinyu_url_to_postid($jinyu_g['img']); if ($aid_g) { $tg = wp_get_attachment_image_src($aid_g, 'thumbnail'); if ($tg && !empty($tg[0])) $ph_g = jinyu_lqip_url($tg[0]); } ?>
             <img class="jinyu-blur-img" src="<?php echo esc_url(jinyu_img_to_webp_url($jinyu_g['img'])); ?>" alt="<?php echo esc_attr($jinyu_g['title']); ?>" loading="lazy" decoding="async"<?php echo $ph_g ? ' data-ph="' . esc_url($ph_g) . '"' : ''; ?>>
             <span class="jinyu-cms-grid-cap"><?php echo esc_html($jinyu_g['title']); ?></span>
           </a>

@@ -23,7 +23,7 @@ get_header();
                 <div class="jinyu-about-header">
                     <img class="jinyu-about-avatar"
                          src="<?php echo $jinyu_about_url ? esc_url( $jinyu_about_url ) : esc_attr( $jinyu_about_tiny ); ?>"
-                         onerror="this.onerror=null;this.src='<?php echo esc_attr( $jinyu_about_tiny ); ?>';"
+                         data-jinyu-fallback="<?php echo esc_url( $jinyu_about_tiny ); ?>"
                          alt="">
                     <div class="jinyu-about-id">
                         <h1 class="jinyu-article-title"><?php echo esc_html( get_the_author() ); ?></h1>

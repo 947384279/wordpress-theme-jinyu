@@ -94,7 +94,7 @@ class Jinyu_Author_Widget extends WP_Widget {
      *   2. 站点图标（外观 › 自定义 › 站点身份）——正方形品牌标记
      *   3. 后台「头像来源」= letter → 首字母占位 SVG（与评论/头部一致，不联网、永不破图）
      *   4. 其余来源走 Gravatar 协议（真实源站由 inc/fun/user.php 的全站过滤器决定），
-     *      并挂 onerror 兜底首字母占位，避免头像服务不可达时留个破图
+     *      并挂 data-jinyu-fallback 兜底首字母占位，避免头像服务不可达时留个破图
      *
      * 站点图标优于 header 的宽幅字标 logo：后者塞进圆里会变形。
      * 第 3 步的字母取**卡片名称**而非管理员 display_name——站点卡代表站点，与卡片标题一致。
@@ -119,13 +119,13 @@ class Jinyu_Author_Widget extends WP_Widget {
         if (jinyu_get_option('comment_avatar_src', 'gravatar') === 'letter') {
             return '<img src="' . esc_attr($letter) . '"' . $attr . '>';
         }
-        // 4) 头像服务；取 192 让高分屏不糊，挂 onerror 兜底
+        // 4) 头像服务；取 192 让高分屏不糊，挂 data-jinyu-fallback 兜底（CSP 安全，无内联 onerror）
         $src = (string) get_avatar_url((int) (get_the_author_meta('ID') ?: 1), ['size' => 192]);
         if ($src === '') {
             return '<img src="' . esc_attr($letter) . '"' . $attr . '>';
         }
-        return '<img src="' . esc_url($src) . '" onerror="this.onerror=null;this.src=\''
-            . esc_attr($letter) . '\'"' . $attr . '>';
+        return '<img src="' . esc_url($src) . '" data-jinyu-fallback="'
+            . esc_url($letter) . '"' . $attr . '>';
     }
     public function form($instance) {
         $name = $instance['name'] ?? '';
@@ -449,13 +449,20 @@ class Jinyu_Stats_Widget extends WP_Widget {
         $title = $instance['title'] ?? __('<i class="fa-solid fa-chart-simple"></i> 站点统计', 'jinyu');
         echo $args['before_widget'];
         echo $args['before_title'] . jinyu_widget_title($title) . $args['after_title'];
-        $stats = [
-            __('文章', 'jinyu') => (int) wp_count_posts('post')->publish,
-            __('页面', 'jinyu') => (int) wp_count_posts('page')->publish,
-            __('评论', 'jinyu') => (int) wp_count_comments()->approved,
-            __('分类', 'jinyu') => (int) wp_count_terms('category'),
-            __('标签', 'jinyu') => (int) wp_count_terms('post_tag'),
-        ];
+
+        // 统计数字缓存 1 天：wp_count_posts 每次 COUNT(*) 全表分组，
+        // 且核心 counts 缓存组在本站环境不稳定；内容变化时由下方钩子主动失效。
+        $stats = jinyu_cache_get('stats_counts');
+        if (!is_array($stats) || empty($stats)) {
+            $stats = [
+                __('文章', 'jinyu') => (int) wp_count_posts('post')->publish,
+                __('页面', 'jinyu') => (int) wp_count_posts('page')->publish,
+                __('评论', 'jinyu') => (int) wp_count_comments()->approved,
+                __('分类', 'jinyu') => (int) wp_count_terms('category'),
+                __('标签', 'jinyu') => (int) wp_count_terms('post_tag'),
+            ];
+            jinyu_cache_set('stats_counts', $stats, DAY_IN_SECONDS);
+        }
         echo '<ul class="jinyu-widget-list jinyu-stats-list">';
         foreach ($stats as $k => $v) {
             echo '<li><span>' . esc_html($k) . '</span><b>' . $v . '</b></li>';
@@ -468,6 +475,13 @@ class Jinyu_Stats_Widget extends WP_Widget {
         echo "<p>" . esc_html__('标题', 'jinyu') . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr($title) . "' class='widefat'></p>";
     }
     public function update($new, $old) { return $new; }
+}
+
+// 内容变化时立即失效统计缓存（文章/评论/分类标签增删改；钩子廉价，直接删 key）
+foreach (['save_post', 'deleted_post', 'comment_post', 'edit_comment', 'deleted_comment', 'created_term', 'edited_term', 'delete_term'] as $jinyu_stats_hook) {
+    add_action($jinyu_stats_hook, function () {
+        jinyu_cache_delete('stats_counts');
+    }, 30);
 }
 
 class Jinyu_Related_Widget extends WP_Widget {
@@ -632,14 +646,22 @@ class Jinyu_Reader_Wall_Widget extends WP_Widget {
         $num   = (int)($instance['num'] ?? 20);
         echo $args['before_widget'];
         echo $args['before_title'] . jinyu_widget_title($title) . $args['after_title'];
-        global $wpdb;
-        $rows = $wpdb->get_results($wpdb->prepare(
-            "SELECT DISTINCT comment_author, comment_author_email, comment_author_url
-             FROM {$wpdb->comments}
-             WHERE comment_approved = '1' AND comment_author_email <> ''
-             ORDER BY comment_ID DESC LIMIT %d",
-            $num
-        ));
+        // 读者墙数据：DISTINCT 查 comments 表，结果按上限缓存 1 小时（评论变动时精确失效）。
+        // 缓存取前 50 条，再按实例 $num 截断，避免不同实例数量导致缓存错乱。
+        $rows = jinyu_cache_get('reader_wall_rows');
+        if (!is_array($rows)) {
+            global $wpdb;
+            $rows = $wpdb->get_results(
+                "SELECT DISTINCT comment_author, comment_author_email, comment_author_url
+                 FROM {$wpdb->comments}
+                 WHERE comment_approved = '1' AND comment_author_email <> ''
+                 ORDER BY comment_ID DESC LIMIT 50"
+            ) ?: [];
+            jinyu_cache_set('reader_wall_rows', $rows, HOUR_IN_SECONDS);
+        }
+        if ($num > 0 && count($rows) > $num) {
+            $rows = array_slice($rows, 0, $num);
+        }
         if ($rows) {
             // 头像与「最新评论」同源：后台开启首字母模式时走离线首字母（Gravatar 被墙时不再破图），
             // 否则回落 Gravatar。避免读者墙与同站其它卡（最新评论/最近加入）的头像表现不一致。

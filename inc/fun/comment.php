@@ -15,7 +15,7 @@ add_filter('comments_open', function ($open) {
 if (!function_exists('jinyu_comment_avatar')) {
     /**
      * 按后台「评论头像来源」返回头像 HTML
-     * - gravatar：默认（含主题自定义的微信/QQ头像、Gravatar）
+     * - gravatar：默认（含主题自定义的微信/QQ头像、Gravatar；无头像者前端兜底首字母图）
      * - letter：始终用首字母占位 SVG，不依赖 Gravatar 服务器
      */
     function jinyu_comment_avatar($comment): string
@@ -26,7 +26,16 @@ if (!function_exists('jinyu_comment_avatar')) {
             // data URI 必须用 esc_attr：esc_url 会把 data: 协议整条清空 → src="" 破图
             return '<img class="jinyu-avatar-img" src="' . esc_attr($src) . '" alt="">';
         }
-        return get_avatar($comment, 48, '', '', ['class' => 'jinyu-avatar-img']);
+        // gravatar/国内镜像模式：d=404 探测 —— 评论者没设过 Gravatar 时源站返回 404，
+        // 前端经 data-jinyu-fallback（jinyu.js 图片兜底模块）换成首字母占位图，
+        // 替代 WP 默认的灰色「神秘人」剪影，让无头像评论者也有稳定视觉。
+        // 有真实头像的评论者不受影响（200 正常加载，兜底不触发）。
+        $fallback = jinyu_letter_avatar((string) $comment->comment_author, 48);
+        return get_avatar($comment, 48, '404', (string) $comment->comment_author, [
+            'class'      => 'jinyu-avatar-img',
+            'loading'    => 'lazy',
+            'extra_attr' => 'data-jinyu-fallback="' . esc_attr($fallback) . '"',
+        ]);
     }
 }
 
@@ -223,7 +232,9 @@ function jinyu_comment_form_fields($fields)
  */
 add_action('wp_insert_comment', function ($comment_id, $comment) {
     if (!empty($comment->comment_post_ID)) {
-        jinyu_cache_delete('jinyu_post_' . $comment->comment_post_ID);
+        // 注意：jinyu_cache_delete 已自动加 jinyu_ 前缀，此处不再重复，否则会出现
+        // jinyu_jinyu_post_X 双重前缀、与 post_X 缓存键不匹配、导致失效失效。
+        jinyu_cache_delete('post_' . $comment->comment_post_ID);
     }
 }, 10, 2);
 
@@ -246,7 +257,7 @@ if (!function_exists('jinyu_author_box')) {
         $bio = get_the_author_meta('description', $uid);
 
         $html = '<section class="jinyu-author-box" aria-label="' . esc_attr__('关于作者', 'jinyu') . '">';
-        $html .= '<img class="jinyu-author-avatar" src="' . ($custom_avatar !== '' ? esc_url($custom_avatar) : $fallback) . '" alt="' . esc_attr($user->display_name) . '" loading="lazy" onerror="this.onerror=null;this.src=\'' . esc_attr($fallback) . '\'">';
+        $html .= '<img class="jinyu-author-avatar" src="' . ($custom_avatar !== '' ? esc_url($custom_avatar) : $fallback) . '" alt="' . esc_attr($user->display_name) . '" loading="lazy" data-jinyu-fallback="' . esc_url($fallback) . '">';
         $html .= '<div class="jinyu-author-info">';
         $html .= '<div class="jinyu-author-top">';
         $html .= '<span class="jinyu-author-name">' . esc_html($user->display_name) . '</span>';

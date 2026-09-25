@@ -140,15 +140,30 @@ if ( ! defined( 'ABSPATH' ) ) {
                     $avatar_url = jinyu_user_avatar_url($uid, 64);
                     echo $avatar_url ? esc_url($avatar_url) : esc_attr(jinyu_avatar_default($uid));
                  ?>"
-                 onerror="this.onerror=null;this.src='<?php echo esc_attr(jinyu_avatar_default(get_current_user_id())); ?>';"
+                 data-jinyu-fallback="<?php echo esc_url(jinyu_avatar_default(get_current_user_id())); ?>"
                  alt="">
           </button>
           <div class="jinyu-user-drop" data-jinyu-user-drop hidden>
+            <div class="jinyu-user-drop-head">
+              <img class="jinyu-user-drop-avatar"
+                   src="<?php
+                      $uid = get_current_user_id();
+                      $avatar_url = jinyu_user_avatar_url($uid, 64);
+                      echo $avatar_url ? esc_url($avatar_url) : esc_attr(jinyu_avatar_default($uid));
+                   ?>"
+                   data-jinyu-fallback="<?php echo esc_url(jinyu_avatar_default(get_current_user_id())); ?>"
+                   alt="">
+              <div class="jinyu-user-drop-info">
+                <b><?php echo esc_html(wp_get_current_user()->display_name); ?></b>
+                <span><?php echo esc_html(jinyu_user_role_label(get_current_user_id())); ?></span>
+              </div>
+            </div>
+            <div class="jinyu-user-drop-sep"></div>
             <?php if (jinyu_is_checked('user_center_enable')) : ?>
               <a href="<?php echo esc_url(jinyu_user_page_url()); ?>"><i class="fa-solid fa-gauge-high" aria-hidden="true"></i><?php esc_html_e('用户中心', 'jinyu'); ?></a>
             <?php endif; ?>
             <?php if (jinyu_is_checked('user_can_submit')) : ?>
-              <a href="<?php echo esc_url(jinyu_user_page_url('submit')); ?>"><i class="fa-solid fa-pen-to-square" aria-hidden="true"></i><?php esc_html_e('投稿', 'jinyu'); ?></a>
+              <a href="<?php echo esc_url(add_query_arg(['tab' => 'posts', 'compose' => '1'], jinyu_user_page_url())); ?>"><i class="fa-solid fa-pen-to-square" aria-hidden="true"></i><?php esc_html_e('投稿', 'jinyu'); ?></a>
             <?php endif; ?>
             <a href="<?php echo esc_url(jinyu_user_page_url('profile')); ?>"><i class="fa-solid fa-user-gear" aria-hidden="true"></i><?php esc_html_e('账号设置', 'jinyu'); ?></a>
             <a href="<?php echo esc_url(jinyu_user_page_url('notifications')); ?>" class="jinyu-user-notif-link">
@@ -156,7 +171,8 @@ if ( ! defined( 'ABSPATH' ) ) {
               <?php $jinyu_unread = function_exists('jinyu_get_unread_count') ? jinyu_get_unread_count(get_current_user_id()) : 0; ?>
               <?php if ($jinyu_unread > 0) : ?><span class="jinyu-badge"><?php echo $jinyu_unread > 99 ? '99+' : (int)$jinyu_unread; ?></span><?php endif; ?>
             </a>
-            <a href="<?php echo esc_url(wp_logout_url(home_url())); ?>"><i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i><?php esc_html_e('退出登录', 'jinyu'); ?></a>
+            <div class="jinyu-user-drop-sep"></div>
+            <a href="<?php echo esc_url(wp_logout_url(home_url())); ?>" class="jinyu-user-drop-warn" data-jinyu-confirm="<?php esc_attr_e('确定退出登录吗？', 'jinyu'); ?>"><i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i><?php esc_html_e('退出登录', 'jinyu'); ?></a>
           </div>
         </div>
       <?php elseif (jinyu_is_checked('user_center_enable')) : ?>

@@ -15,7 +15,7 @@ if (jinyu_is_checked('related_enable')) {
         <?php while ($q->have_posts()): $q->the_post(); ?>
         <a class="jinyu-relevant-card" href="<?php the_permalink(); ?>">
             <div class="jinyu-relevant-cover">
-                <?php $ph_rel = jinyu_get_post_cover(get_the_ID(), 'thumbnail'); ?>
+                <?php $ph_rel = jinyu_lqip_url( jinyu_get_post_cover(get_the_ID(), 'thumbnail') ); ?>
                 <img class="jinyu-blur-img" src="<?php echo esc_url(jinyu_get_post_cover()); ?>" alt=""<?php echo $ph_rel ? ' data-ph="' . esc_url($ph_rel) . '"' : ''; ?>>
             </div>
             <div class="jinyu-relevant-title"><?php the_title(); ?></div>

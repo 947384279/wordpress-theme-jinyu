@@ -13,6 +13,68 @@ if ( ! defined( 'ABSPATH' ) ) {
 // URL 替换统一收口在 jinyu_img_to_webp_url()，仅处理本站 uploads 内 jpg/png。
 // ─────────────────────────────────────────────────────────────
 
+if (!function_exists('jinyu_url2pid_ver')) {
+    /**
+     * 附件 URL→ID 映射的版本号：附件增/改/删时 +1，旧映射 key 全部自然失效。
+     * 请求内静态化，避免同请求多次读版本 key。
+     */
+    function jinyu_url2pid_ver(): int
+    {
+        static $ver = null;
+        if ($ver === null) {
+            $ver = (int) jinyu_cache_get('url2pid_ver', 0);
+        }
+        return $ver;
+    }
+}
+
+if (!function_exists('jinyu_url2pid_bump_ver')) {
+    /** 附件变化时递增映射版本（挂 add/edit/delete_attachment）。 */
+    function jinyu_url2pid_bump_ver(): void
+    {
+        jinyu_cache_set('url2pid_ver', (int) jinyu_cache_get('url2pid_ver', 0) + 1, 0);
+    }
+    add_action('add_attachment', 'jinyu_url2pid_bump_ver');
+    add_action('edit_attachment', 'jinyu_url2pid_bump_ver');
+    add_action('delete_attachment', 'jinyu_url2pid_bump_ver');
+}
+
+if (!function_exists('jinyu_url_to_postid')) {
+    /**
+     * attachment_url_to_postid 的记忆化包装（请求内 + 跨请求双层）。
+     *
+     * WP 核心的 attachment_url_to_postid 每调用一次就直查一次 postmeta
+     * （meta_key='_wp_attached_file'），且无任何缓存：同一张图在轮播、封面、
+     * srcset、LQIP、OG 等多处被重复反查，实测首页 19 次查询里仅 3 个不同文件。
+     * 双层缓存后同 URL 全站只打一次库：
+     * - 请求内：静态 $memo；
+     * - 跨请求：jinyu_ 缓存组（有 Memcached 持久命中，无则落 transient），
+     *   版本号在附件增/改/删时失效，TTL 7 天兜底。
+     *
+     * @param string $url 附件完整 URL
+     * @return int 附件 ID，查不到返回 0
+     */
+    function jinyu_url_to_postid($url)
+    {
+        static $memo = [];
+        $url = (string) $url;
+        if ($url === '') return 0;
+        if (!function_exists('attachment_url_to_postid')) return 0;
+        if (array_key_exists($url, $memo)) return $memo[$url];
+
+        $key = 'url2pid_' . jinyu_url2pid_ver() . '_' . md5($url);
+        $hit = jinyu_cache_get($key, null);
+        if ($hit !== null) {
+            $memo[$url] = (int) $hit;
+            return $memo[$url];
+        }
+
+        $memo[$url] = (int) attachment_url_to_postid($url);
+        jinyu_cache_set($key, $memo[$url], 7 * DAY_IN_SECONDS);
+        return $memo[$url];
+    }
+}
+
 if (!function_exists('jinyu_generate_webp_file')) {
     /**
      * 由 jpg/png 源文件生成同尺寸 WebP（质量 80），带原子锁防止并发重复生成。
@@ -129,6 +191,79 @@ if (!function_exists('jinyu_strip_transform_suffix')) {
     }
 }
 
+if (!function_exists('jinyu_lqip_transform_suffix')) {
+    /**
+     * LQIP（Low-Quality Image Placeholder）转码指令后缀：在 CDN 边缘把原图缩到极小宽、
+     * 转 WebP，产出约 0.3KB 的模糊占位图。仅当存储后端支持即时转码时返回非空字符串。
+     */
+    function jinyu_lqip_transform_suffix()
+    {
+        $provider = (string) jinyu_get_option('storage_provider', '');
+        switch ($provider) {
+            case 'upyun':
+                return '!/fw/40/format/webp/quality/40';
+            case 'aliyun':
+                return '?x-oss-process=image/resize,w_40/format,webp/quality,q_40';
+            case 'tencent':
+            case 'qiniu':
+                return '?imageMogr2/thumbnail/40x/format,webp/quality/40';
+            default:
+                return '';
+        }
+    }
+}
+
+if (!function_exists('jinyu_lqip_url')) {
+    /**
+     * 把任意“本站上传图”URL 转成极小 LQIP 占位图 URL，用于 blur-up 的 data-ph。
+     * 流程：还原存储加速域到本地 baseurl → 剥即时转码指令与 -WxH 尺寸后缀
+     * → 仅保留原图文件 → 由存储加速域在边缘实时缩放+转 WebP。
+     * 未配置存储加速域或不支持的图（外链/SVG）返回 ''，前端以纯色占位兜底，绝不下载原图。
+     *
+     * @param string $url
+     * @return string 约 0.3KB 的 webp 占位 URL，或 ''
+     */
+    function jinyu_lqip_url($url)
+    {
+        if (empty($url) || !is_string($url)) {
+            return '';
+        }
+        $up = wp_get_upload_dir();
+        if (empty($up['baseurl']) || empty($up['basedir'])) {
+            return '';
+        }
+        // 把存储加速域还原回本地 baseurl
+        $local = (string) $url;
+        $roots = array(rtrim($up['baseurl'], '/'));
+        if (($sd = trim((string) jinyu_get_option('storage_domain', ''))) !== '') {
+            $sp = trim((string) jinyu_get_option('storage_prefix', ''), '/');
+            $roots[] = rtrim($sd, '/') . ($sp !== '' ? '/' . $sp : '');
+        }
+        foreach ($roots as $root) {
+            if ($root && strpos($local, $root) === 0) {
+                $local = $up['baseurl'] . substr($local, strlen($root));
+                break;
+            }
+        }
+        if (strpos($local, $up['baseurl']) !== 0) {
+            return ''; // 非本站上传图（外链/SVG/主题资源）
+        }
+        // 剥即时转码指令（!/... 或 ?x-oss...），再剥 -WxH 尺寸后缀，回到原图文件
+        $local = jinyu_strip_transform_suffix($local);
+        $local = preg_replace('/-\d+x\d+(?=\.(?:jpe?g|png|gif|webp)$)/i', '', $local);
+        if (!preg_match('/\.(jpe?g|png)$/i', $local)) {
+            return ''; // GIF/WebP 等：LQIP 无意义，放弃占位
+        }
+        $rel  = substr($local, strlen($up['baseurl'])); // 如 /2026/09/x.png
+        $base = jinyu_webp_storage_cdn_url($rel);
+        if ($base === '') {
+            return ''; // 未配置存储加速域：放弃占位，纯色兜底
+        }
+        $suffix = jinyu_lqip_transform_suffix();
+        return $suffix === '' ? '' : $base . $suffix;
+    }
+}
+
 if (!function_exists('jinyu_webp_storage_cdn_url')) {
     /**
      * 由上传相对路径拼出存储 CDN 原图 URL（不含转码指令）。
@@ -193,33 +328,6 @@ if (!function_exists('jinyu_webp_onthefly_confirmed')) {
     }
 }
 
-if (!function_exists('jinyu_webp_push_to_storage')) {
-    /**
-     * 通道 B：把本地生成的 .webp 推送到存储后端，返回其 CDN URL；失败返回 ''。
-     * @param string $local_webp 本地 .webp 绝对路径
-     * @param string $rel_webp   上传相对路径（含 .webp 后缀），如 /2026/09/x.webp
-     */
-    function jinyu_webp_push_to_storage($local_webp, $rel_webp)
-    {
-        // 云存储由配套插件提供；未安装时跳过（主题自带本地 WebP 仍可用）
-        if (!function_exists('jinyu_is_storage_enabled') || !function_exists('jinyu_storage_config') || !jinyu_is_storage_enabled()) {
-            return '';
-        }
-        $cfg = jinyu_storage_config();
-        $ad  = Jinyu_Storage_Factory::make($cfg);
-        if (!$ad) {
-            return '';
-        }
-        $prefix = rtrim($cfg['prefix'], '/') . '/';
-        $key    = $prefix . ltrim($rel_webp, '/');
-        if (!$ad->put($local_webp, $key)) {
-            return '';
-        }
-        $domain = rtrim((string) jinyu_get_option('storage_domain', ''), '/');
-        return $domain . '/' . $key;
-    }
-}
-
 if (!function_exists('jinyu_img_to_webp_url')) {
     /**
      * 将本站 uploads 内的 jpg/png URL 映射为 WebP 交付 URL。
@@ -239,13 +347,8 @@ if (!function_exists('jinyu_img_to_webp_url')) {
             return $url;
         }
 
-        // 兼容 CDN：主题 cdn_url 与存储加速域名(storage_domain+prefix) 都可能改写附件 URL，
-        // 须统一还原回本地 baseurl 才能映射到本地文件。
+        // 存储加速域名(storage_domain+prefix) 改写附件 URL，须还原回本地 baseurl 才能映射到本地文件。
         $roots = array();
-        $cdn_theme = trim((string) jinyu_get_option('cdn_url', ''));
-        if ($cdn_theme) {
-            $roots[] = rtrim($cdn_theme, '/');
-        }
         if (($sd = trim((string) jinyu_get_option('storage_domain', ''))) !== '') {
             $sp = trim((string) jinyu_get_option('storage_prefix', ''), '/');
             $roots[] = rtrim($sd, '/') . ($sp !== '' ? '/' . $sp : '');
@@ -302,11 +405,12 @@ if (!function_exists('jinyu_img_to_webp_url')) {
             }
         }
 
-        // 已配置存储 → 推上云走 CDN；否则源站直出（push 模式 CDN 不会自动同步 webp）
-        $pushed = jinyu_webp_push_to_storage($dst, $dstRel);
-        if ($pushed !== '') {
-            return $pushed;
-        }
+        // 通道 B：本地生成 WebP 后只返回源站 URL。
+        // 设计铁律：渲染路径（每次请求）绝不同步推送。把"部署动作"（推送文件上云）塞进
+        // "渲染动作"（拼 URL）会造成首屏 62 次同步 PUT≈15s 卡顿，且与用户意图相悖——
+        // 用户填了 CDN 域名、点「一键替换为 CDN 链接」只是改写前端 URL（见 companion
+        // storage.php 的 wp_get_attachment_url 过滤器），文件实际上云由后台「主动推送」功能
+        // 负责（companion storage.php:1132 的 AJAX 一键推送，批内并行）。二者彻底解耦。
         return preg_replace('/\.(jpe?g|png)$/i', '.webp', $path);
     }
 }
@@ -321,15 +425,6 @@ add_filter('wp_handle_upload', function($result) {
         jinyu_generate_webp_file($result['file'], $dst);
     }
     return $result;
-});
-
-// CDN URL 替换
-add_filter('wp_get_attachment_url', function($url) {
-    $cdn = jinyu_get_option('cdn_url', '');
-    if ($cdn && strpos($url, wp_upload_dir()['baseurl']) === 0) {
-        return str_replace(wp_upload_dir()['baseurl'], rtrim($cdn, '/'), $url);
-    }
-    return $url;
 });
 
 // 图片懒加载增强 + blur-up 淡入占位
@@ -354,8 +449,8 @@ add_filter('wp_get_attachment_image_attributes', function($attrs, $attachment, $
         }
     }
     $t = wp_get_attachment_image_src($attachment->ID, 'thumbnail');
-    if (!empty($t[0])) {
-        $attrs['data-ph'] = $t[0];
+    if ($t && !empty($t[0])) {
+        $attrs['data-ph'] = jinyu_lqip_url($t[0]);
     }
     return $attrs;
 }, 10, 3);

@@ -1,10 +1,10 @@
 === Jinyu ===
 Contributors: huanxiang88
-Tags: blog, cms, responsive, dark-mode, custom-colors, editor-style, featured-images, microformats, post-formats, rtl-language-support, sticky-post, threaded-comments, translation-ready, two-columns, three-columns
+Tags: blog, cms, responsive, dark-mode, custom-colors, custom-logo, custom-menu, editor-style, featured-images, microformats, post-formats, rtl-language-support, sticky-post, threaded-comments, translation-ready, two-columns, three-columns, block-styles, wide-blocks, full-width-template
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 License: GPL v3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -15,6 +15,12 @@ License URI: https://www.gnu.org/licenses/gpl-3.0.html
 * 侧栏访客归属地查询（高级设置 › 侧栏访客归属地查询，默认关闭）：开启后会把访客 IP 发往 whois.pconline.com.cn 查询归属地，结果在站内缓存 12 小时。
 * 头像来源（用户互动 › 头像来源，默认 Gravatar）：选择国内镜像（Cravatar / WeAvatar 等）时，评论者邮箱哈希会按同一协议发往所选镜像。
 * 每日一句语料（默认本地内置语料，零外部请求）：仅当站长手动定义 JINYU_HITOKOTO_REMOTE 常量时才拉取远程 JSON。
+
+== Compatibility ==
+
+* 多语言：文本域 `jinyu`，随主题提供 `.pot` 模板；字符串均可被 WPML / Polylang 翻译接管，推荐菜单使用「外观 → 菜单」注册的菜单位置。
+* 页面构建器：兼容 Gutenberg 区块编辑器（支持 block-styles / wide-blocks / align-wide）；提供「全宽页面」页面模板，适配 Elementor 等构建器的全宽布局需求。
+* 商城：未内置 WooCommerce 深度定制，但保持基础样式兼容。
 
 == Resources ==
 
@@ -65,6 +71,14 @@ License URI: https://www.gnu.org/licenses/gpl-3.0.html
 每个设置分组面板头部都有「重置本组」按钮，仅清空该分组、回退默认值，不影响其它设置。
 
 == Changelog ==
+
+= 1.2.0 =
+* 新增 6 个 Gutenberg 区块图案（patterns/ 目录，WordPress 6.0+ 自动注册）：图文横排、三栏特性卡、常见问答、行动号召、精选文章三栏（动态取最新文章）、作者介绍卡。编辑器插入面板新增「金玉」图案分类。
+* 新增 inc/fun/patterns.php 注册图案分类；block.less 追加 jy-pat-* 图案专属样式（跟随明暗模式与主题主色）。
+
+= 1.1.1 =
+* 兼容性声明补全：style.css / readme.txt 补充 .org 官方标签（block-styles、wide-blocks、full-width-template、custom-logo、custom-menu），并新增 Compatibility 段说明多语言（WPML/Polylang）与页面构建器（Gutenberg/Elementor）兼容。
+* 新增「全宽页面」页面模板（pages/template-fullwidth.php），适配 Elementor 等构建器的全宽布局需求。
 
 = 1.1.0 =
 * 隐私合规：侧栏 IP 归属地外部查询改为默认关闭，需在「高级设置」显式开启（新增开关），并在 readme 增加隐私披露。

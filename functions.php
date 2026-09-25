@@ -61,13 +61,20 @@ if (version_compare(PHP_VERSION, '8.0', '<')) {
 
 require_once JINYU_ABS_DIR . '/inc/fun/crypto.php';
 require_once JINYU_ABS_DIR . '/inc/fun/core.php';
+require_once JINYU_ABS_DIR . '/inc/fun/patterns.php';
 require_once JINYU_ABS_DIR . '/inc/fun/maintenance.php';
 // 性能优化中心已迁至配套插件 jinyu-theme-companion（perf-center.php）。
 // 主题仅在呈现层按需读取开关值（HTML 压缩 / 评论懒加载），插件缺席时按 $default 降级。
 function jinyu_perf_opt( string $key, bool $default = false ): bool {
 	// 唯一真源：配套插件 jinyu-theme-companion 的 jyc_perf_options；
 	// 兼容主题时代旧键 jinyu_perf_options（插件接管前保存过的历史配置）。
-	$opts = get_option( 'jyc_perf_options', get_option( 'jinyu_perf_options', [] ) );
+	// 同一次请求内只读取一次（静态缓存），避免被 wp_enqueue_scripts / template_redirect
+	// 等多处高频调用时反复 get_option + 冗长的降级查询。
+	static $opts_cache = null;
+	if ( $opts_cache === null ) {
+		$opts_cache = get_option( 'jyc_perf_options', get_option( 'jinyu_perf_options', [] ) );
+	}
+	$opts = $opts_cache;
 	if ( ! is_array( $opts ) || ! array_key_exists( $key, $opts ) ) {
 		return $default;
 	}

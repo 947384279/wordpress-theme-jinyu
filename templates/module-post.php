@@ -26,7 +26,7 @@ $card_class = is_sticky() ? ' is-sticky' : '';
     <div class="jinyu-post-cover">
         <a class="jinyu-post-cover-link" href="<?php the_permalink(); ?>" tabindex="-1" aria-hidden="true">
             <?php if ($cover) : ?>
-                <?php $ph_card = jinyu_get_post_cover($pid, 'thumbnail', false); ?>
+                <?php $ph_card = jinyu_lqip_url( jinyu_get_post_cover($pid, 'thumbnail', false) ); ?>
                 <?php $cover_srcset = jinyu_get_post_cover_srcset($pid); ?>
                 <img class="jinyu-post-cover-img jinyu-blur-img" src="<?php echo esc_url($cover); ?>" alt="" width="640" height="360"<?php if ($cover_srcset) : ?> srcset="<?php echo esc_attr($cover_srcset); ?>" sizes="(max-width: 768px) 92vw, 420px"<?php endif; ?> loading="<?php echo $cover_loading; ?>" decoding="async"<?php echo $cover_fetch; ?><?php echo $ph_card ? ' data-ph="' . esc_url($ph_card) . '"' : ''; ?>>
             <?php else : ?>

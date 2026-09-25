@@ -30,7 +30,7 @@ get_header();
           ?>
             <a class="jinyu-book-card" href="<?php the_permalink(); ?>">
               <div class="jinyu-book-cover">
-                <?php $ph_book = jinyu_get_post_cover(get_the_ID(), 'thumbnail'); ?>
+                <?php $ph_book = jinyu_lqip_url( jinyu_get_post_cover(get_the_ID(), 'thumbnail') ); ?>
                 <img class="jinyu-blur-img" src="<?php echo esc_url($cover); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy"<?php echo $ph_book ? ' data-ph="' . esc_url($ph_book) . '"' : ''; ?>>
               </div>
               <div class="jinyu-book-meta">

@@ -205,8 +205,8 @@ html[data-theme="dark"] .jinyu-logo--dual .jinyu-logo-dark { display: block; }
     .jinyu-icon-btn {
         width: 36px;
         height: 36px;
-        border: 0;
-        background: transparent;
+        border: 1px solid @border-strong;
+        background: @bg-subtle;
         border-radius: @radius-sm;
         cursor: pointer;
         color: @text-2;
@@ -218,6 +218,7 @@ html[data-theme="dark"] .jinyu-logo--dual .jinyu-logo-dark { display: block; }
 
         i { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; line-height: 1; }
         &:hover { color: @primary; background: @primary-light; }
+        &[aria-pressed='true'] { color: @primary; background: @primary-light; border-color: rgba(var(--jinyu-c-primary-rgb), .4); }
         &.jinyu-d-none { display: none; }
     }
 }
@@ -707,7 +708,7 @@ html[data-theme='dark'] {
     /* ⚠️ 必须与 tokens.less 的 .jinyu-dark-tokens() 保持一致：本块是首屏暗色防闪烁的兜底，
        主样式加载后会被其覆盖；改 tokens.less 暗色时务必同步此处，否则首屏先旧色后新色闪烁。 */
     --jinyu-c-primary: #ff8a5c; --jinyu-c-primary-dark: #ff6b35; --jinyu-c-primary-light: rgba(255,107,53,.14); --jinyu-c-primary-rgb: 255,138,92;
-    --jinyu-c-bg: #3a4150; --jinyu-c-bg-card: #434a5a; --jinyu-c-bg-subtle: #4d5568; --jinyu-c-bg-input: #3f4654; --jinyu-c-bg-code: #2c313d; --jinyu-c-bg-code-bar: #383e4c; --jinyu-c-bg-header: rgba(58,65,80,.82); --jinyu-c-bg-footer: #353b47; --jinyu-c-bg-mask: rgba(0,0,0,.55);
+    --jinyu-c-bg: #3a4150; --jinyu-c-bg-card: #434a5a; --jinyu-c-bg-subtle: #4d5568; --jinyu-c-bg-input: #333947; --jinyu-c-bg-code: #2c313d; --jinyu-c-bg-code-bar: #383e4c; --jinyu-c-bg-header: rgba(58,65,80,.82); --jinyu-c-bg-footer: #353b47; --jinyu-c-bg-mask: rgba(0,0,0,.55);
     --jinyu-c-text-1: #eef0f4; --jinyu-c-text-2: #d6dae2; --jinyu-c-text-3: #aab2c0; --jinyu-c-text-4: #9aa3b3; --jinyu-c-text-invert: #fff; --jinyu-c-text-footer-strong: #fff; --jinyu-c-text-footer: #aab2c0;
     --jinyu-c-border: rgba(255,255,255,.12); --jinyu-c-border-strong: rgba(255,255,255,.18); --jinyu-c-border-footer: #4a515f;
     --jinyu-shadow-card: 0 4px 20px rgba(0,0,0,.35); --jinyu-shadow-hover: 0 12px 32px rgba(var(--jinyu-c-primary-rgb),.22); --jinyu-shadow-float: 0 16px 44px rgba(0,0,0,.45); --jinyu-shadow-header: 0 4px 24px rgba(0,0,0,.4);
@@ -717,7 +718,7 @@ html[data-theme='dark'] {
             color-scheme: dark;
             /* 与上方 html[data-theme='dark'] 块保持一致（见其同步说明） */
             --jinyu-c-primary: #ff8a5c; --jinyu-c-primary-dark: #ff6b35; --jinyu-c-primary-light: rgba(255,107,53,.14); --jinyu-c-primary-rgb: 255,138,92;
-            --jinyu-c-bg: #3a4150; --jinyu-c-bg-card: #434a5a; --jinyu-c-bg-subtle: #4d5568; --jinyu-c-bg-input: #3f4654; --jinyu-c-bg-code: #2c313d; --jinyu-c-bg-code-bar: #383e4c; --jinyu-c-bg-header: rgba(58,65,80,.82); --jinyu-c-bg-footer: #353b47; --jinyu-c-bg-mask: rgba(0,0,0,.55);
+            --jinyu-c-bg: #3a4150; --jinyu-c-bg-card: #434a5a; --jinyu-c-bg-subtle: #4d5568; --jinyu-c-bg-input: #333947; --jinyu-c-bg-code: #2c313d; --jinyu-c-bg-code-bar: #383e4c; --jinyu-c-bg-header: rgba(58,65,80,.82); --jinyu-c-bg-footer: #353b47; --jinyu-c-bg-mask: rgba(0,0,0,.55);
             --jinyu-c-text-1: #eef0f4; --jinyu-c-text-2: #d6dae2; --jinyu-c-text-3: #aab2c0; --jinyu-c-text-4: #9aa3b3; --jinyu-c-text-invert: #fff; --jinyu-c-text-footer-strong: #fff; --jinyu-c-text-footer: #aab2c0;
             --jinyu-c-border: rgba(255,255,255,.12); --jinyu-c-border-strong: rgba(255,255,255,.18); --jinyu-c-border-footer: #4a515f;
             --jinyu-shadow-card: 0 4px 20px rgba(0,0,0,.35); --jinyu-shadow-hover: 0 12px 32px rgba(var(--jinyu-c-primary-rgb),.22); --jinyu-shadow-float: 0 16px 44px rgba(0,0,0,.45); --jinyu-shadow-header: 0 4px 24px rgba(0,0,0,.4);

@@ -32,7 +32,7 @@ class Jinyu_Setting
      */
     public static function option_classes(): array
     {
-        return ['Jinyu_OptionBasic','Jinyu_OptionGlobal','Jinyu_OptionStyle','Jinyu_OptionContent','Jinyu_OptionComment','Jinyu_OptionCarousel','Jinyu_OptionResource','Jinyu_OptionExtend','Jinyu_OptionUser','Jinyu_OptionFooter','Jinyu_OptionCode'];
+        return ['Jinyu_OptionBasic','Jinyu_OptionGlobal','Jinyu_OptionStyle','Jinyu_OptionContent','Jinyu_OptionComment','Jinyu_OptionCarousel','Jinyu_OptionExtend','Jinyu_OptionUser','Jinyu_OptionFooter','Jinyu_OptionCode'];
     }
 
     /**

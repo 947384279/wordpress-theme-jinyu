@@ -35,6 +35,37 @@
     var root = null;
     var dirtybar = null;
 
+    /* 左侧导航：扁平高级列表，无分区标题（保持大厂审美）。分组级脏检测仍按字段映射进行。 */
+
+    /* 分组 → 字段 id 映射（仅取已在面板渲染的字段），用于分组级脏检测 */
+    var groupFieldMap = {};
+    GROUPS.forEach(function (g) {
+        groupFieldMap[g.key] = (g.fields || []).map(function (f) { return f.id; });
+    });
+    var groupSnapshots = {};
+    function groupSig(all, key) {
+        var ids = groupFieldMap[key] || [];
+        var sub = {};
+        ids.forEach(function (id) { if (id in all) sub[id] = all[id]; });
+        return JSON.stringify(sub);
+    }
+    function buildGroupSnapshots() {
+        var all = collect();
+        GROUPS.forEach(function (g) {
+            if (groupFieldMap[g.key]) groupSnapshots[g.key] = groupSig(all, g.key);
+        });
+    }
+    function refreshNavModified() {
+        if (!root) return;
+        var all = collect();
+        GROUPS.forEach(function (g) {
+            if (!groupFieldMap[g.key]) return;
+            var nav = qs('.jinyu-nav-item[data-nav="' + g.key + '"]', root);
+            if (!nav) return;
+            nav.classList.toggle('is-modified', groupSig(all, g.key) !== groupSnapshots[g.key]);
+        });
+    }
+
     /* ---------- 工具函数 ---------- */
     function esc(s) {
         if (s === null || s === undefined) return '';
@@ -444,6 +475,11 @@
         var id = f.id || '';
         var hasVal = (SAVED[id] !== undefined && SAVED[id] !== null);
         var type = f.type || 'string';
+        // 面板内小节标题：整行分节标题，无 id、不进入保存数据。
+        // （必须显式处理：否则会掉进 default 分支被渲染成空 <input> 输入框）
+        if (type === 'subhead') {
+            return '<div class="jinyu-subhead">' + esc(f.title || '') + '</div>';
+        }
         var v;
         if (hasVal) {
             v = SAVED[id];
@@ -712,17 +748,28 @@
     }
 
     function sidebarHtml() {
-        var html = '<nav class="jinyu-nav" aria-label="设置分组">';
+        var head = '<div class="jinyu-nav-head">' +
+            '<span class="jinyu-nav-brand"><span class="jinyu-nav-logo" aria-hidden="true"></span>' +
+            '<span class="jinyu-nav-title">金玉设置</span></span>' +
+            '<button type="button" class="jinyu-nav-toggle" data-nav-toggle aria-label="折叠 / 展开侧栏" title="折叠 / 展开侧栏">' +
+            '<span class="dashicons dashicons-arrow-left-alt2"></span></button>' +
+            '</div>';
+        var html = '<nav class="jinyu-nav" aria-label="设置分组">' + head;
         GROUPS.forEach(function (g) {
             if (g.hidden) return;
-            var ic = ICONS[g.key] || 'dashicons-admin-generic';
-            html += '<button type="button" class="jinyu-nav-item' + (g.key === currentKey ? ' is-active' : '') + '" data-nav="' + esc(g.key) + '">' +
-                '<span class="dashicons ' + ic + '"></span>' +
-                '<span class="jinyu-nav-text">' + esc(g.title) + '</span>' +
-                '</button>';
+            html += navItemHtml(g);
         });
         html += '</nav>';
         return html;
+    }
+
+    function navItemHtml(g) {
+        var ic = ICONS[g.key] || 'dashicons-admin-generic';
+        return '<button type="button" class="jinyu-nav-item' + (g.key === currentKey ? ' is-active' : '') + '" data-nav="' + esc(g.key) + '" data-label="' + esc(g.title) + '">' +
+            '<span class="jinyu-nav-ic"><span class="dashicons ' + ic + '"></span></span>' +
+            '<span class="jinyu-nav-text">' + esc(g.title) + '</span>' +
+            '<span class="jinyu-nav-dot" aria-hidden="true"></span>' +
+            '</button>';
     }
 
     /* ---------- 数据收集 ---------- */
@@ -743,6 +790,7 @@
         if (!dirtybar) return;
         var dirty = JSON.stringify(collect()) !== snapshot;
         dirtybar.hidden = !dirty;
+        refreshNavModified();
     }
 
     /* ---------- 条件显示（showRefId 依赖） ---------- */
@@ -763,6 +811,14 @@
             '<div class="jinyu-search-empty" hidden>没有匹配的设置项，换个关键词试试</div>' +
             '</div></div></div>';
 
+        // 恢复侧栏折叠态（localStorage 持久化，刷新不丢）
+        try {
+            if (localStorage.getItem('jinyu_nav_collapsed') === '1') {
+                var lay = qs('.jinyu-layout', root);
+                if (lay) lay.classList.add('nav-collapsed');
+            }
+        } catch (e) {}
+
         // 委托事件
         root.addEventListener('click', onRootClick);
         root.addEventListener('input', onInput);
@@ -774,6 +830,8 @@
         snapshot = JSON.stringify(collect());
         applyShowRef();
         layoutMultiAll();   // 初始可见面板的多选框按宽度自适应折叠
+        buildGroupSnapshots();
+        refreshNavModified();
 
     }
 
@@ -807,6 +865,17 @@
     }
 
     function onRootClick(e) {
+        // 折叠 / 展开侧栏开关
+        var tog = e.target.closest('[data-nav-toggle]');
+        if (tog) {
+            var layout = qs('.jinyu-layout', root);
+            if (layout) {
+                var collapsed = layout.classList.toggle('nav-collapsed');
+                try { localStorage.setItem('jinyu_nav_collapsed', collapsed ? '1' : '0'); } catch (err) {}
+            }
+            return;
+        }
+
         var nav = e.target.closest('.jinyu-nav-item');
         if (nav) { activate(nav.getAttribute('data-nav')); return; }
 
@@ -1162,6 +1231,8 @@
                 if (json && json.success) {
                     SAVED = data;
                     snapshot = JSON.stringify(data);
+                    buildGroupSnapshots();
+                    refreshNavModified();
                     if (dirtybar) dirtybar.hidden = true;
                     var st = qs('#jinyu-saved-time');
                     if (st) st.textContent = '已保存 ' + new Date().toLocaleTimeString();

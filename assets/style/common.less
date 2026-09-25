@@ -414,8 +414,10 @@ html.jinyu-tools-compact {
     .jinyu-icon-btn {
         width: 36px;
         height: 36px;
-        border: 0;
-        background: transparent;
+        /* 底座：原 transparent 裸图标在暗色顶栏上不可辨（搜索/明暗切换均受影响）。
+           bg-subtle + border-strong 让按钮在明暗两模式都有清晰轮廓。 */
+        border: 1px solid @border-strong;
+        background: @bg-subtle;
         border-radius: @radius-sm;
         cursor: pointer;
         color: @text-2;
@@ -435,6 +437,8 @@ html.jinyu-tools-compact {
         }
 
         &:hover { color: @primary; background: @primary-light; }
+        /* 明暗切换按钮的按下态（暗色激活时）：主色高亮，与裸图标态明显区分 */
+        &[aria-pressed='true'] { color: @primary; background: @primary-light; border-color: rgba(var(--jinyu-c-primary-rgb), .4); }
         &.jinyu-d-none { display: none; }
     }
 }
@@ -1137,7 +1141,7 @@ html.jinyu-tools-compact {
 .jinyu-search-box input {
     flex: 1;
     height: 42px;
-    border: 1px solid @border;
+    border: 1px solid @border-strong;
     border-radius: @radius-pill;
     padding: 0 @s-5;
     font-size: @fs-sm;
@@ -2721,7 +2725,7 @@ html.jinyu-tools-compact {
         }
 
         /* 链接前的图标：默认是主题自带 Font Awesome 链接图标（零网络请求），
-           若目标站根目录 favicon.ico 可取则绝对覆盖其上；取不到时 onerror 删 img，露出默认图标 */
+           若目标站根目录 favicon.ico 可取则绝对覆盖其上；取不到时 JS 兜底删 img（data-jinyu-fallback-remove），露出默认图标 */
         .jinyu-flink-ico {
             position: relative;
             display: inline-flex;

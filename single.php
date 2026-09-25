@@ -46,7 +46,7 @@ if ( ! defined( 'ABSPATH' ) ) {
         <?php $jy_ext = get_post_meta(get_the_ID(), '_jinyu_external_url', true); ?>
         <?php if ($jy_ext): ?><div class="jinyu-article-external"><a class="jinyu-btn" href="<?php echo esc_url($jy_ext); ?>" target="_blank" rel="noopener"><?php esc_html_e('查看原文', 'jinyu'); ?> <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div><?php endif; ?>
         <?php $cover = jinyu_get_post_cover(); if ($cover && jinyu_is_checked('show_cover') && !get_post_meta(get_the_ID(), '_jinyu_hide_cover', true)): ?>
-          <?php $ph_feat = jinyu_get_post_cover(get_the_ID(), 'thumbnail'); ?>
+          <?php $ph_feat = jinyu_lqip_url( jinyu_get_post_cover(get_the_ID(), 'thumbnail') ); ?>
           <img class="jinyu-featured jinyu-blur-img" src="<?php echo esc_url($cover); ?>" alt="<?php the_title_attribute(); ?>" loading="eager"<?php echo $ph_feat ? ' data-ph="' . esc_url($ph_feat) . '"' : ''; ?>>
         <?php endif; ?>
         <div class="jinyu-article-content" data-jinyu-author="<?php echo esc_attr(get_the_author()); ?>" data-jinyu-site="<?php echo esc_attr(get_bloginfo('name')); ?>" data-jinyu-read-min="<?php echo (int)jinyu_read_minutes(); ?>"><?php the_content(); ?></div>

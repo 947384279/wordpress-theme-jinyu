@@ -803,6 +803,44 @@
     }
 
     /* ======================================================================
+       模块：图片兜底（CSP 安全，全站替代内联 onerror）
+       - data-jinyu-fallback="url"   加载失败换兜底图（只换一次，防循环）
+       - data-jinyu-fallback-remove  加载失败移除 <img>，露出底层图标
+       - data-jinyu-fallback-unset="cls" 配合 remove，同时移除最近祖先的 cls
+       error 事件不冒泡，必须捕获阶段监听；文档级委托对 AJAX/PJAX 动态图同样生效。
+       ====================================================================== */
+    function imgFallback() {
+        function apply(img) {
+            var fb = img.getAttribute('data-jinyu-fallback');
+            if (fb) {
+                img.removeAttribute('data-jinyu-fallback');
+                img.src = fb;
+                return;
+            }
+            if (img.hasAttribute('data-jinyu-fallback-remove')) {
+                var unset = img.getAttribute('data-jinyu-fallback-unset');
+                if (unset) {
+                    var anc = img.closest('.' + unset);
+                    if (anc) anc.classList.remove(unset);
+                }
+                if (img.parentNode) img.parentNode.removeChild(img);
+            }
+        }
+        // 首屏图可能在监听器挂上前就已 404 完毕（缓存 404/失败极快），boot 时补扫一次；
+        // complete + naturalWidth===0 只命中「已加载且失败」的图，加载中/懒加载未触发的不受影响。
+        $$('img').forEach(function (img) {
+            if (!img.hasAttribute('data-jinyu-fallback') && !img.hasAttribute('data-jinyu-fallback-remove')) return;
+            if (img.complete && img.naturalWidth === 0 && img.getAttribute('src')) apply(img);
+        });
+        doc.addEventListener('error', function (e) {
+            var img = e.target;
+            if (!img || img.tagName !== 'IMG') return;
+            if (!img.hasAttribute('data-jinyu-fallback') && !img.hasAttribute('data-jinyu-fallback-remove')) return;
+            apply(img);
+        }, true);
+    }
+
+    /* ======================================================================
        模块：图片懒加载兜底（无原生 loading 支持时）
        ====================================================================== */
     function lazyImg() {
@@ -1522,6 +1560,29 @@
             });
         });
 
+        // 面板内快捷跳转（如「忘记密码？」→ 找回密码）
+        $$('[data-jinyu-auth-goto]', modal).forEach(function (l) {
+            l.addEventListener('click', function () {
+                switchAuthTab(modal, l.getAttribute('data-jinyu-auth-goto'));
+            });
+        });
+
+        // 密码显示 / 隐藏切换
+        modal.addEventListener('click', function (e) {
+            var toggle = e.target.closest('[data-jinyu-pw-toggle]');
+            if (!toggle) return;
+            var field = toggle.closest('.jinyu-field');
+            var input = field ? field.querySelector('input') : null;
+            if (!input) return;
+            var show = input.type === 'password';
+            input.type = show ? 'text' : 'password';
+            toggle.setAttribute('aria-pressed', String(show));
+            toggle.setAttribute('aria-label', show ? _t('hidePassword', '隐藏密码') : _t('showPassword', '显示密码'));
+            var icon = toggle.querySelector('i');
+            if (icon) icon.className = show ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+            input.focus();
+        });
+
         // 验证码：刷新 / 点图换一张
         modal.addEventListener('click', function (e) {
             var trigger = e.target.closest('[data-jinyu-captcha-refresh], .jinyu-captcha-img');
@@ -1536,15 +1597,77 @@
             });
         });
 
+        var lastFocus = null;
+        var closeTimer = null;
+
+        // Tab 滑动指示器：胶囊背景在三个 tab 间平滑滑动
+        var tabsBox = $('[data-jinyu-auth-tabs]', modal);
+        var indicator = null;
+        if (tabsBox) {
+            indicator = doc.createElement('span');
+            indicator.className = 'jinyu-auth-tabs-indicator';
+            tabsBox.appendChild(indicator);
+        }
+        function moveIndicator() {
+            if (!indicator || !tabsBox) return;
+            var active = $('.is-active', tabsBox);
+            if (!active) return;
+            indicator.style.width = active.offsetWidth + 'px';
+            indicator.style.transform = 'translateX(' + active.offsetLeft + 'px)';
+        }
+         window.addEventListener('resize', function () { moveIndicator(); fitAuth(); });
+
+        // 超高自适应兜底：面板比视口还高时整体等比缩小（不出滚动条），下限 0.75
+        var authCard = $('.jinyu-auth', modal);
+        function fitAuth() {
+            if (!authCard) return;
+            authCard.style.setProperty('--jinyu-auth-fit', '1');
+            var avail = window.innerHeight - 40; // 遮罩上下 padding 32 + 8px 安全边
+            var h = authCard.offsetHeight;
+            if (h > avail) {
+                var s = Math.max(avail / h, 0.75);
+                authCard.style.setProperty('--jinyu-auth-fit', s.toFixed(3));
+            }
+        }
+
         function openAuth(m, tab) {
+            if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; m.classList.remove('is-closing'); }
+            lastFocus = doc.activeElement;
             doc.body.style.overflow = 'hidden';
             m.hidden = false;
             switchAuthTab(m, tab || 'login');
+            requestAnimationFrame(moveIndicator);
+            requestAnimationFrame(fitAuth);
+            var pane = $('.jinyu-auth-form:not([hidden])', m);
+            var first = pane ? pane.querySelector('input:not([type="hidden"])') : null;
+            if (first) first.focus();
         }
         function closeAuth(m) {
-            m.hidden = true;
-            doc.body.style.overflow = '';
+            var done = function () {
+                m.hidden = true;
+                m.classList.remove('is-closing');
+                doc.body.style.overflow = '';
+            };
+            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                done();
+            } else {
+                m.classList.add('is-closing');
+                closeTimer = setTimeout(done, 180);
+            }
+            if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();
         }
+        // 焦点陷阱：Tab / Shift+Tab 循环限制在弹窗内，不漏到背景页面
+        doc.addEventListener('keydown', function (e) {
+            if (e.key !== 'Tab' || modal.hidden) return;
+            var list = Array.prototype.filter.call(
+                modal.querySelectorAll('button:not([disabled]), input:not([disabled]):not([type="hidden"]), select, textarea, a[href]'),
+                function (el) { return el.offsetParent !== null; }
+            );
+            if (!list.length) return;
+            var first = list[0], last = list[list.length - 1];
+            if (e.shiftKey && doc.activeElement === first) { e.preventDefault(); last.focus(); }
+            else if (!e.shiftKey && doc.activeElement === last) { e.preventDefault(); first.focus(); }
+        });
         function switchAuthTab(m, tab) {
             $$('[data-jinyu-auth-tab]', m).forEach(function (t) {
                 t.classList.toggle('is-active', t.getAttribute('data-jinyu-auth-tab') === tab);
@@ -1552,9 +1675,14 @@
             $$('.jinyu-auth-form', m).forEach(function (f) {
                 f.hidden = f.getAttribute('data-jinyu-auth-pane') !== tab;
             });
+            // 切换面板时清空各面板遗留的错误/成功提示
+            $$('[data-jinyu-auth-tip]', m).forEach(function (t) { t.textContent = ''; });
+            moveIndicator();
+            fitAuth();
             var pane = $('.jinyu-auth-form[data-jinyu-auth-pane="' + tab + '"]', m);
             var cap = pane ? $('[data-jinyu-captcha]', pane) : null;
-            if (cap && cap.querySelector('.jinyu-captcha-img').hidden) refreshCaptcha(cap);
+            var img = cap ? cap.querySelector('.jinyu-captcha-img') : null;
+            if (img && img.hidden) refreshCaptcha(cap);
         }
         function refreshCaptcha(cap) {
             if (!cap) return;
@@ -1562,6 +1690,97 @@
             img.hidden = false;
             img.src = cap.getAttribute('data-jinyu-captcha-src') + '&r=' + Date.now();
         }
+        // 前端即时校验：减少一次无谓的服务器往返，返回 {msg, name} 便于标记出错字段
+        function validateAuth(form, pane) {
+            var val = function (name) {
+                var el = form.querySelector('[name="' + name + '"]');
+                return el ? el.value.trim() : '';
+            };
+            var need = function (msg, name) { return { msg: msg, name: name || '' }; };
+            if (pane === 'login') {
+                if (!val('log')) return need(_t('fillUser', '请输入用户名或邮箱'), 'log');
+                if (!val('pwd')) return need(_t('fillPwd', '请输入密码'), 'pwd');
+                return null;
+            }
+            if (pane === 'register') {
+                var log = val('log');
+                if (log.length < 3 || log.length > 30) return need(_t('userNameLen', '用户名需 3-30 位'), 'log');
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val('email'))) return need(_t('emailBad', '邮箱格式不正确'), 'email');
+                if (val('pwd').length < 6) return need(_t('pwdShort', '密码至少 6 位'), 'pwd');
+                if (val('pwd') !== val('pwd2')) return need(_t('pwdMismatch', '两次输入的密码不一致'), 'pwd2');
+                return null;
+            }
+            return val('log') ? null : need(_t('fillUser', '请输入用户名或邮箱'), 'log');
+        }
+        function clearFieldErrors(form) {
+            $$('.jinyu-field.is-error', form).forEach(function (f) { f.classList.remove('is-error'); });
+        }
+        function markFieldError(form, name) {
+            clearFieldErrors(form);
+            if (!name) return;
+            var el = form.querySelector('[name="' + name + '"]');
+            var field = el ? el.closest('.jinyu-field') : null;
+            if (field) field.classList.add('is-error');
+        }
+        // 输入即清除该字段错误标红
+        modal.addEventListener('input', function (e) {
+            var field = e.target.closest ? e.target.closest('.jinyu-field') : null;
+            if (field) field.classList.remove('is-error');
+        });
+
+        // Caps Lock 提示：密码框检测大写锁定，悬出小徽标；失焦即清除
+        ['keydown', 'keyup'].forEach(function (evt) {
+            modal.addEventListener(evt, function (e) {
+                var t = e.target;
+                if (!t || t.tagName !== 'INPUT' || t.type !== 'password') return;
+                var field = t.closest('.jinyu-field');
+                if (!field) return;
+                var on = !!(e.getModifierState && e.getModifierState('CapsLock'));
+                var badge = field.querySelector('.jinyu-caps-badge');
+                if (on && !badge) {
+                    badge = doc.createElement('span');
+                    badge.className = 'jinyu-caps-badge';
+                    badge.textContent = _t('capsOn', '大写锁定已开启');
+                    field.appendChild(badge);
+                } else if (!on && badge) {
+                    badge.remove();
+                }
+            });
+        });
+        modal.addEventListener('focusout', function (e) {
+            var t = e.target;
+            if (!t || t.tagName !== 'INPUT' || t.type !== 'password') return;
+            var field = t.closest('.jinyu-field');
+            var badge = field ? field.querySelector('.jinyu-caps-badge') : null;
+            if (badge) badge.remove();
+        });
+
+        // 密码强度条（仅注册面板，纯前端提示，不拦截提交）
+        var regForm = $('.jinyu-auth-form[data-jinyu-auth-pane="register"]', modal);
+        var regPwd = regForm ? regForm.querySelector('[name="pwd"]') : null;
+        if (regForm && regPwd) {
+            var meter = doc.createElement('div');
+            meter.className = 'jinyu-pwd-meter';
+            meter.hidden = true;
+            meter.innerHTML = '<span class="jinyu-pwd-bars"><i></i><i></i><i></i><i></i></span><span class="jinyu-pwd-label"></span>';
+            regPwd.closest('.jinyu-field').after(meter);
+            regPwd.addEventListener('input', function () {
+                var v = regPwd.value;
+                if (!v) { meter.hidden = true; return; }
+                meter.hidden = false;
+                var score = 0;
+                if (v.length >= 6) score++;
+                if (v.length >= 10) score++;
+                if (/[a-z]/.test(v) && /[A-Z]/.test(v)) score++;
+                if (/\d/.test(v)) score++;
+                if (/[^A-Za-z0-9]/.test(v)) score++;
+                var level = score <= 1 ? 0 : score === 2 ? 1 : score === 3 ? 2 : 3;
+                var labels = [_t('pwdWeak', '弱'), _t('pwdMid', '中'), _t('pwdStrong', '强'), _t('pwdVStrong', '极强')];
+                meter.setAttribute('data-level', String(level));
+                $('.jinyu-pwd-label', meter).textContent = labels[level];
+            });
+        }
+
         function submitAuth(form) {
             var tip = $('[data-jinyu-auth-tip]', form);
             var btn = form.querySelector('.jinyu-auth-submit');
@@ -1569,22 +1788,35 @@
             var action = pane === 'login' ? 'jinyu_login'
                 : pane === 'register' ? 'jinyu_register' : 'jinyu_reset_password';
 
+            var fail = validateAuth(form, pane);
+            if (fail) {
+                Util.showTip(tip, fail.msg, false);
+                markFieldError(form, fail.name);
+                form.classList.remove('is-shake');
+                void form.offsetWidth; // 强制重排，让动画可重复播放
+                form.classList.add('is-shake');
+                return;
+            }
+            clearFieldErrors(form);
+
             var data = {};
             Array.prototype.forEach.call(form.querySelectorAll('input, select, textarea'), function (el) {
                 if (el.name) data[el.name] = el.value;
             });
 
             Util.showTip(tip, '');
-            if (btn) { btn.disabled = true; var label = btn.textContent; btn.textContent = _t('processing', '处理中…'); }
+            if (btn) { btn.disabled = true; btn.classList.add('is-loading'); var label = btn.textContent; btn.textContent = _t('processing', '处理中…'); }
 
             Util.ajax(action, data, function (err, res) {
-                if (btn) { btn.disabled = false; btn.textContent = label; }
+                if (btn) { btn.disabled = false; btn.classList.remove('is-loading', 'is-success'); btn.textContent = label; }
                 if (err || !res || !res.success) {
                     Util.showTip(tip, (res && res.data) ? res.data : '请求失败，请稍后重试', false);
                     var cap = form.querySelector('[data-jinyu-captcha]');
                     if (cap) refreshCaptcha(cap);
                     return;
                 }
+                // 成功态：按钮保持禁用变绿打勾，稍后跳转（防重复提交）
+                if (btn) { btn.disabled = true; btn.classList.add('is-success'); btn.textContent = '✓ ' + (res.data.message || _t('opSuccess', '操作成功')); }
                 Util.showTip(tip, res.data.message || _t('opSuccess', '操作成功'), true);
                 setTimeout(function () {
                     if (res.data && res.data.redirect) location.href = res.data.redirect;
@@ -1592,6 +1824,20 @@
                 }, 600);
             });
         }
+    }
+
+    /* ======================================================================
+       模块：data-jinyu-confirm 通用二次确认（退出登录等危险链接）
+       ====================================================================== */
+    function confirmGuard() {
+        // 注意：doc 是 document 对象，本身没有 dataset（dataset 仅存在于 Element 上）。
+        // 防重复绑定标记必须挂在 <html> 元素（root = doc.documentElement）上。
+        if (root.dataset.jinyuConfirmBound) return;
+        root.dataset.jinyuConfirmBound = '1';
+        doc.addEventListener('click', function (e) {
+            var el = e.target.closest('[data-jinyu-confirm]');
+            if (el && !window.confirm(el.getAttribute('data-jinyu-confirm'))) e.preventDefault();
+        });
     }
 
     /* ======================================================================
@@ -1614,7 +1860,13 @@
                 }
                 Util.showTip(tip, res.data.message, true);
                 var url = (fd.get('avatar_url') || '').toString();
-                if (url) { var p = $('.jinyu-avatar-preview', wrap); if (p) p.src = url; }
+                if (url) {
+                    var p = $('.jinyu-avatar-preview', wrap);
+                    if (p) p.src = url;
+                    // 同步侧栏用户卡头像
+                    var side = $('.jinyu-user-card-avatar', wrap);
+                    if (side) side.src = url;
+                }
             });
         });
 
@@ -1631,6 +1883,101 @@
                     pw.reset();
                 }
             });
+        });
+
+        // 第三方账号解绑：确认 → AJAX → 行内切回「去绑定」
+        $$('[data-jinyu-unbind]', wrap).forEach(function (btn) {
+            if (btn.dataset.unbindBound) return;
+            btn.dataset.unbindBound = '1';
+            btn.addEventListener('click', function () {
+                if (btn.dataset.loading) return;
+                var platform = btn.getAttribute('data-jinyu-unbind');
+                if (!window.confirm(btn.getAttribute('data-bind-label') || '确定解除该平台的绑定吗？')) return;
+                btn.dataset.loading = '1';
+                Util.ajax('jinyu_sl_unbind', { platform: platform, nonce: btn.getAttribute('data-nonce') }, function (err, res) {
+                    delete btn.dataset.loading;
+                    if (err || !res || !res.success) {
+                        window.alert((res && res.data && res.data.msg) || '解绑失败，请稍后再试');
+                        return;
+                    }
+                    Util.toast(res.data.msg || '解绑成功');
+                    // 行内切回「去绑定」链接（绑定 URL 预置在 data-bind-url）
+                    var a = doc.createElement('a');
+                    a.className = 'jinyu-bind-go';
+                    a.href = btn.getAttribute('data-bind-url');
+                    a.textContent = '去绑定';
+                    btn.parentNode.replaceChild(a, btn);
+                });
+            });
+        });
+
+        // 修改密码：强度条 + CapsLock 提示（与登录弹窗同款交互）；userForms 会重跑，dataset 防重复绑
+        if (pw && !pw.dataset.meterBound) {
+            pw.dataset.meterBound = '1';
+            var newPwd = pw.querySelector('[name="new_pwd"]');
+            if (newPwd) {
+                var meter = doc.createElement('div');
+                meter.className = 'jinyu-pwd-meter';
+                meter.hidden = true;
+                meter.innerHTML = '<span class="jinyu-pwd-bars"><i></i><i></i><i></i><i></i></span><span class="jinyu-pwd-label"></span>';
+                newPwd.closest('.jinyu-field').after(meter);
+                newPwd.addEventListener('input', function () {
+                    var v = newPwd.value;
+                    if (!v) { meter.hidden = true; return; }
+                    meter.hidden = false;
+                    var score = 0;
+                    if (v.length >= 6) score++;
+                    if (v.length >= 10) score++;
+                    if (/[a-z]/.test(v) && /[A-Z]/.test(v)) score++;
+                    if (/\d/.test(v)) score++;
+                    if (/[^A-Za-z0-9]/.test(v)) score++;
+                    var level = score <= 1 ? 0 : score === 2 ? 1 : score === 3 ? 2 : 3;
+                    meter.setAttribute('data-level', String(level));
+                    $('.jinyu-pwd-label', meter).textContent = ['弱', '中', '强', '极强'][level];
+                });
+            }
+            ['keydown', 'keyup'].forEach(function (evt) {
+                pw.addEventListener(evt, function (e) {
+                    var t = e.target;
+                    if (!t || t.tagName !== 'INPUT' || t.type !== 'password') return;
+                    var field = t.closest('.jinyu-field');
+                    if (!field) return;
+                    var on = !!(e.getModifierState && e.getModifierState('CapsLock'));
+                    var badge = field.querySelector('.jinyu-caps-badge');
+                    if (on && !badge) {
+                        badge = doc.createElement('span');
+                        badge.className = 'jinyu-caps-badge';
+                        badge.textContent = '大写锁定已开启';
+                        field.appendChild(badge);
+                    } else if (!on && badge) {
+                        badge.remove();
+                    }
+                });
+            });
+            pw.addEventListener('focusout', function (e) {
+                var t = e.target;
+                var field = (t && t.closest) ? t.closest('.jinyu-field') : null;
+                var badge = field ? field.querySelector('.jinyu-caps-badge') : null;
+                if (badge) badge.remove();
+            });
+        }
+
+        // 字数计数器（投稿标题/正文）：实时反馈，区间内计数、越界标红
+        $$('[data-jinyu-count]', wrap).forEach(function (counter) {
+            var input = wrap.querySelector('[name="' + counter.getAttribute('data-jinyu-count') + '"]');
+            if (!input || input.dataset.countBound) return;
+            input.dataset.countBound = '1';
+            var min = parseInt(counter.getAttribute('data-min'), 10) || 0;
+            var max = parseInt(counter.getAttribute('data-max'), 10) || 0;
+            function updateCount() {
+                var n = input.value.trim().length;
+                counter.textContent = max ? n + ' / ' + max : String(n);
+                var ok = n >= min && (!max || n <= max);
+                counter.classList.toggle('is-ok', ok && n > 0);
+                counter.classList.toggle('is-bad', n > 0 && !ok);
+            }
+            input.addEventListener('input', updateCount);
+            updateCount();
         });
 
         // 投稿
@@ -1717,7 +2064,8 @@
             btn.addEventListener('click', function () {
                 var pid = btn.getAttribute('data-post-id');
                 if (!pid) return;
-                if (!window.confirm('确定撤回该投稿吗？撤回后不可恢复。')) return;
+                var confirmMsg = btn.getAttribute('data-confirm') || '确定撤回该投稿吗？撤回后不可恢复。';
+                if (!window.confirm(confirmMsg)) return;
                 btn.disabled = true;
                 var fd = new FormData();
                 fd.append('post_id', pid);
@@ -1754,6 +2102,177 @@
                     }
                 }
             });
+        });
+
+        // 投稿封面图：拖拽/点击上传 + 本地预览 + 悬浮「更换 / 移除」（文件随 FormData 一起提交，服务端建附件设特色图）
+        var coverInput = $('input[name="post_cover"]', wrap);
+        if (coverInput) {
+            var coverDrop = coverInput.closest('.jinyu-cover-drop');
+            var coverPreview = $('.jinyu-cover-preview', wrap);
+            var coverMask = $('.jinyu-cover-mask', wrap);
+            var coverEmpty = $('[data-jinyu-cover-empty]', wrap);
+            var coverClear = $('.jinyu-cover-clear', wrap);
+            var coverUrl = '';
+            function setCoverState(has) {
+                if (coverDrop) coverDrop.classList.toggle('has-file', has);
+                if (coverEmpty) coverEmpty.hidden = has;
+                if (coverMask) coverMask.hidden = !has;
+            }
+            function resetCover() {
+                coverInput.value = '';
+                if (coverPreview) { coverPreview.hidden = true; coverPreview.removeAttribute('src'); }
+                if (coverUrl) { URL.revokeObjectURL(coverUrl); coverUrl = ''; }
+                setCoverState(false);
+            }
+            function acceptCover(f) {
+                if (!f) { resetCover(); return; }
+                if (coverUrl) { URL.revokeObjectURL(coverUrl); coverUrl = ''; }
+                coverUrl = URL.createObjectURL(f);
+                if (coverPreview) { coverPreview.src = coverUrl; coverPreview.hidden = false; }
+                setCoverState(true);
+            }
+            coverInput.addEventListener('change', function () {
+                acceptCover(coverInput.files && coverInput.files[0]);
+            });
+            if (coverClear) coverClear.addEventListener('click', function (e) {
+                e.stopPropagation();
+                resetCover();
+            });
+            if (coverDrop) {
+                // 点击空白区 / 「更换」都唤起选择器；「移除」已在上方 stopPropagation
+                coverDrop.addEventListener('click', function (e) {
+                    if (e.target.closest('.jinyu-cover-clear')) return;
+                    coverInput.click();
+                });
+                // 拖拽上传
+                ['dragover', 'dragenter'].forEach(function (ev) {
+                    coverDrop.addEventListener(ev, function (e) { e.preventDefault(); coverDrop.classList.add('is-dragover'); });
+                });
+                coverDrop.addEventListener('dragleave', function () { coverDrop.classList.remove('is-dragover'); });
+                coverDrop.addEventListener('drop', function (e) {
+                    e.preventDefault();
+                    coverDrop.classList.remove('is-dragover');
+                    var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+                    if (!f || f.type.indexOf('image/') !== 0) return;
+                    try {
+                        var dt = new DataTransfer();
+                        dt.items.add(f);
+                        coverInput.files = dt.files;
+                        acceptCover(f);
+                    } catch (err) { /* 老浏览器不支持 DataTransfer 赋值，忽略拖拽 */ }
+                });
+            }
+        }
+    }
+
+    /* ======================================================================
+       模块：用户中心 tab 无刷新切换
+       侧栏页签点击 → jinyu_get_tab 拉服务端渲染的 tab HTML → 替换主区，
+       pushState 同步 URL；后退/前进按 URL 重新拉取。失败降级整页跳转。
+       内容置换后重跑 userForms()（其只绑元素级事件，可安全重复调用）。
+       ====================================================================== */
+    function userTabs() {
+        function currentTab() {
+            var m = /[?&]tab=([^&]+)/.exec(location.search);
+            return m ? decodeURIComponent(m[1]) : 'dashboard';
+        }
+
+        function loadTab(tab, href, push, extra) {
+            var wrap = $('.jinyu-user-center');
+            if (!wrap) return;
+            var main = $('[data-jinyu-user-main]', wrap);
+            if (!main || main.dataset.loading) return;
+            main.dataset.loading = '1';
+            main.classList.add('is-switching');
+            var data = { tab: tab };
+            if (extra) { for (var k in extra) { if (extra[k]) data[k] = extra[k]; } }
+            Util.ajax('jinyu_get_tab', data, function (err, res) {
+                delete main.dataset.loading;
+                main.classList.remove('is-switching');
+                if (err || !res || !res.success) {
+                    if (href) location.href = href; // 降级整页跳转
+                    return;
+                }
+                main.innerHTML = res.data.html;
+                $$('.jinyu-user-nav-item', wrap).forEach(function (a) {
+                    var m2 = /[?&]tab=([^&]+)/.exec(a.getAttribute('href') || '');
+                    a.classList.toggle('is-active', (m2 ? decodeURIComponent(m2[1]) : 'dashboard') === tab);
+                });
+                if (push && href && window.history && history.pushState) {
+                    try { history.pushState({ jinyuTab: tab }, '', href); } catch (e2) { /* 忽略 */ }
+                }
+                // 重绑 tab 内表单（资料/密码/投稿/头像/封面/撤回均为元素级绑定）
+                try { userForms(); } catch (e3) { /* 单模块异常不阻断 */ }
+                // 通知模块监听该事件：进入消息 tab 时拉取列表
+                doc.dispatchEvent(new CustomEvent('jinyu:tab-loaded'));
+                // 移动端切完页签滚动到主区顶部，避免停留在侧栏
+                if (window.innerWidth <= 768) {
+                    var top = main.getBoundingClientRect().top + window.pageYOffset - 84;
+                    window.scrollTo({ top: top, behavior: reduceMotion ? 'auto' : 'smooth' });
+                }
+            });
+        }
+
+        // 解析 query 里的 tab / sub / compose / 分页参数（侧栏页签、互动子页签、分页共用）
+        function parseTabParams(search) {
+            var out = { tab: 'dashboard', extra: {} };
+            (search || '').replace(/^\?/, '').split('&').forEach(function (kv) {
+                if (!kv) return;
+                var p = kv.split('=');
+                var k = decodeURIComponent(p[0] || '');
+                var v = p[1] !== undefined ? decodeURIComponent(p[1].replace(/\+/g, '%20')) : '';
+                if (k === 'tab') {
+                    out.tab = v || 'dashboard';
+                } else if (k === 'sub' || k === 'compose' || k === 'paged' || k === 'page') {
+                    if (v) out.extra[k] = v;
+                }
+            });
+            return out;
+        }
+
+        // 无刷新点击统一出口：主区不存在或环境不支持时放行整页跳转
+        function userCenterAjaxClick(e, selector) {
+            var item = e.target.closest(selector);
+            if (!item || item.classList.contains('jinyu-user-nav-logout')) return;
+            var wrap = $('.jinyu-user-center');
+            var main = wrap ? $('[data-jinyu-user-main]', wrap) : null;
+            if (!main || !window.history || !history.pushState) return;
+            var href = item.getAttribute('href') || '';
+            var parsed = parseTabParams(href.split('?')[1] || '');
+            var ex = parsed.extra;
+            if (item.classList.contains('is-active') && parsed.tab === currentTab() && !ex.sub && !ex.compose && !ex.paged) return; // 完全同页：走原生跳转
+            e.preventDefault();
+            loadTab(parsed.tab, href, true, ex);
+        }
+
+        // 侧栏页签
+        doc.addEventListener('click', function (e) {
+            userCenterAjaxClick(e, '.jinyu-user-nav-item');
+        });
+        // 互动 tab 内的子页签（评论 / 收藏 / 关注）
+        doc.addEventListener('click', function (e) {
+            userCenterAjaxClick(e, '.jinyu-user-sub-item');
+        });
+
+        // 分页链接：与 tab 切换同一套无刷新置换（href 带 paged/page/sub 参数，随 AJAX 透传）
+        doc.addEventListener('click', function (e) {
+            var link = e.target.closest('.jinyu-user-pagination a.page-numbers');
+            if (!link) return;
+            var wrap = $('.jinyu-user-center');
+            var main = wrap ? $('[data-jinyu-user-main]', wrap) : null;
+            if (!main || !window.history || !history.pushState) return; // 环境不支持则放行整页跳转
+            e.preventDefault();
+            var href = link.getAttribute('href') || '';
+            var parsed = parseTabParams(href.split('?')[1] || '');
+            loadTab(parsed.tab, href, true, parsed.extra);
+        });
+
+        // 浏览器前进 / 后退：按 URL 重新拉对应 tab（含 sub/compose/分页），不重复推栈
+        window.addEventListener('popstate', function () {
+            var wrap = $('.jinyu-user-center');
+            if (!wrap) return;
+            var parsed = parseTabParams(location.search);
+            loadTab(parsed.tab, null, false, parsed.extra);
         });
     }
 
@@ -3457,6 +3976,38 @@ id: btn.dataset.id
                 return;
             }
 
+            // 用户中心收藏卡片：取消收藏后局部刷新网格
+            var favRemove = e.target.closest('[data-jinyu-fav-remove]');
+            if (favRemove) {
+                e.preventDefault();
+                if (!CFG.logged_in) return;
+                if (favRemove.classList.contains('jinyu-loading')) return;
+                if (!window.confirm('确定取消收藏这篇文章吗？')) return;
+                favRemove.classList.add('jinyu-loading');
+                Util.ajax('jinyu_fav', {
+                    post_id: favRemove.dataset.postId,
+                    fav: '0'
+                }, function (err, res) {
+                    favRemove.classList.remove('jinyu-loading');
+                    if (err || !res || !res.success) {
+                        if (res && res.data) Util.toast(res.data);
+                        return;
+                    }
+                    // 服务端渲染同结构网格（jinyu_fav_cell 出口），事件走委托无需重绑
+                    var wrap = doc.querySelector('[data-jinyu-fav-list]');
+                    if (wrap) {
+                        Util.ajax('jinyu_fav_list', {}, function (err2, res2) {
+                            if (!err2 && res2 && res2.success) wrap.innerHTML = res2.data.html;
+                        });
+                    }
+                    // 同步侧栏「收藏」计数
+                    var stat = doc.querySelector('[data-stat="favs"]');
+                    if (stat) stat.textContent = String(Math.max(0, (parseInt(stat.textContent, 10) || 0) - 1));
+                    Util.toast('已取消收藏');
+                });
+                return;
+            }
+
             // 全部已读
             var readAll = e.target.closest('[data-jinyu-notif-readall]');
             if (readAll) {
@@ -3476,31 +4027,85 @@ id: btn.dataset.id
             }
         });
 
-        // 首屏若在消息 tab，自动加载列表
-        var listEl = doc.querySelector('[data-jinyu-notif-list]');
-        if (listEl && !listEl.dataset.loaded) {
+        // 消息 tab 列表加载：首屏在消息 tab，或 tab 无刷新切换（jinyu:tab-loaded 事件）进入时触发
+        function initNotifTab() {
+            var listEl = doc.querySelector('[data-jinyu-notif-list]');
+            if (!listEl || listEl.dataset.loaded) return;
             listEl.dataset.loaded = '1';
-            Util.ajax('jinyu_get_notifications', { page: 1 }, function (err, res) {
-                if (err || !res || !res.success) return;
-                listEl.innerHTML = res.data.html;
-                updateNotifBadge(res.data.unread);
+            var notifPage = 1;
+            var moreBtn = doc.querySelector('[data-jinyu-notif-more]');
+
+            // 追加时只取 .jinyu-notif-item，避免把服务端可能返回的空态占位重复插入
+            function appendNotifs(html, append) {
+                if (!append) { listEl.innerHTML = html; return; }
+                var tmp = doc.createElement('ul');
+                tmp.innerHTML = html;
+                var frag = doc.createDocumentFragment();
+                var items = tmp.querySelectorAll('.jinyu-notif-item');
+                for (var i = 0; i < items.length; i++) frag.appendChild(items[i]);
+                if (frag.childNodes.length) listEl.appendChild(frag);
+            }
+
+            function loadNotifs(page, append) {
+                Util.ajax('jinyu_get_notifications', { page: page }, function (err, res) {
+                    if (moreBtn) moreBtn.disabled = false;
+                    if (err || !res || !res.success) {
+                        if (!append) {
+                            listEl.innerHTML = '<li class="jinyu-empty">' + _t('notifLoadFailed', '加载失败，请刷新重试') + '</li>';
+                        }
+                        return;
+                    }
+                    appendNotifs(res.data.html, append);
+                    updateNotifBadge(res.data.unread);
+                    if (moreBtn) moreBtn.hidden = !res.data.has_more;
+                });
+            }
+
+            loadNotifs(1, false);
+
+            if (moreBtn) moreBtn.addEventListener('click', function () {
+                if (moreBtn.disabled) return;
+                moreBtn.disabled = true;
+                notifPage += 1;
+                loadNotifs(notifPage, true);
+            });
+
+            // 点开即读：点击未读消息跳转前顺手标记已读（不拦截跳转）。
+            // ids 用 'ids[]' 键名传数组（Util.ajax 平铺序列化），避免落空被后端按「全部已读」处理
+            listEl.addEventListener('click', function (e) {
+                var link = e.target.closest('.jinyu-notif-link');
+                if (!link) return;
+                var item = link.closest('.jinyu-notif-item');
+                if (!item || item.classList.contains('is-read') || !item.dataset.notifId) return;
+                var fd = {};
+                fd['ids[]'] = item.dataset.notifId;
+                Util.ajax('jinyu_mark_read', fd, function (err, res) {
+                    if (err || !res || !res.success) return;
+                    item.classList.add('is-read');
+                    updateNotifBadge(res.data.unread);
+                });
             });
         }
+        initNotifTab();
+        doc.addEventListener('jinyu:tab-loaded', initNotifTab);
 
         function updateNotifBadge(unread) {
-            var link = doc.querySelector('.jinyu-user-notif-link');
-            if (!link) return;
-            var badge = link.querySelector('.jinyu-badge');
+            // 侧栏导航与头部下拉都可能挂着 .jinyu-user-notif-link，全部同步
+            var links = doc.querySelectorAll('.jinyu-user-notif-link');
             unread = parseInt(unread, 10) || 0;
-            if (unread > 0) {
-                if (!badge) {
-                    badge = doc.createElement('span');
-                    badge.className = 'jinyu-badge';
-                    link.appendChild(badge);
+            for (var i = 0; i < links.length; i++) {
+                var link = links[i];
+                var badge = link.querySelector('.jinyu-badge');
+                if (unread > 0) {
+                    if (!badge) {
+                        badge = doc.createElement('span');
+                        badge.className = 'jinyu-badge';
+                        link.appendChild(badge);
+                    }
+                    badge.textContent = unread > 99 ? '99+' : String(unread);
+                } else if (badge) {
+                    badge.parentNode.removeChild(badge);
                 }
-                badge.textContent = unread > 99 ? '99+' : String(unread);
-            } else if (badge) {
-                badge.parentNode.removeChild(badge);
             }
         }
     }
@@ -3764,7 +4369,8 @@ id: btn.dataset.id
         [toc, codeBlock, codeHighlight, lightbox, reveal, carousel,
          readProgress, backTop, loadMore, pageJump, headerScroll, coverFallback,
          liveSearch, fontScale, recentViewed, hoverCard, coView, articleVote, copyGuard, paraCopy, sidebarLive,
-         widgetAnim, hitokoto, sales, social, coverIons, flinkApply, commentSmiley, ajaxComment, commentCounter].forEach(function (fn) {
+         widgetAnim, hitokoto, sales, social, coverIons, flinkApply, commentSmiley, ajaxComment, commentCounter,
+         userForms, confirmGuard].forEach(function (fn) {
             try { fn(); } catch (e) { /* 单模块异常不阻断 */ }
         });
     };
@@ -3858,8 +4464,8 @@ id: btn.dataset.id
     var MODULES = [
         theme, greyMode, nav, search, readProgress, readEstimate, backTop, toc, liveSearch, fontScale, recentViewed,
         hoverCard, coView, articleVote, copyGuard, paraCopy,
-        codeBlock, codeHighlight, coverFallback, lazyImg, blurImg, postActions, share, reveal,
-        headerScroll, loadMore, pageJump, shortcodes, ajaxComment, auth, userForms, commentCounter,
+        codeBlock, codeHighlight, coverFallback, imgFallback, lazyImg, blurImg, postActions, share, reveal,
+        headerScroll, loadMore, pageJump, shortcodes, ajaxComment, auth, userForms, userTabs, commentCounter, confirmGuard,
         poster, qrcodeModule, donate, lightbox, carousel, pjax, luck, faviconBadge, sidebarLive,
         widgetAnim, hitokoto, sales, social, webVitals, coverIons, flinkApply
     ];

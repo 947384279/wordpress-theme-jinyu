@@ -84,7 +84,7 @@ if (!function_exists('jinyu_get_post_cover')) {
             $last  = '';
             foreach ($sizes as $sz) {
                 $src = wp_get_attachment_image_src($aid, $sz);
-                if (empty($src[0]) || empty($src[1])) continue;
+                if (!$src || empty($src[0]) || empty($src[1])) continue;
                 $url = $webp ? jinyu_img_to_webp_url($src[0]) : $src[0];
                 if ($url === $last) continue; // 去重（内容首图降级后多尺寸同 URL）
                 $parts[] = $url . ' ' . (int) $src[1] . 'w';
@@ -112,10 +112,8 @@ if (!function_exists('jinyu_get_post_cover')) {
             $base  = !empty($up['baseurl']) ? $up['baseurl'] : '';
             if (!$base) return '';
 
-            // 兼容 CDN：把 CDN 域名还原回本地 baseurl 以便 attachment_url_to_postid 命中
+            // 把存储加速域名还原回本地 baseurl 以便 attachment_url_to_postid 命中
             $roots = [$base];
-            $cdn   = trim((string) jinyu_get_option('cdn_url', ''));
-            if ($cdn) $roots[] = rtrim($cdn, '/');
             if (($sd = trim((string) jinyu_get_option('storage_domain', ''))) !== '') {
                 $sp = trim((string) jinyu_get_option('storage_prefix', ''), '/');
                 $roots[] = rtrim($sd, '/') . ($sp !== '' ? '/' . $sp : '');
@@ -129,7 +127,7 @@ if (!function_exists('jinyu_get_post_cover')) {
             }
             if (strpos($local, $base) !== 0) return ''; // 非本站上传图
             if (!function_exists('attachment_url_to_postid')) return '';
-            $aid = (int) attachment_url_to_postid($local);
+            $aid = jinyu_url_to_postid($local);
             if ($aid <= 0) return '';
 
             $sizes = ['medium', 'medium_large', 'large'];
@@ -137,7 +135,7 @@ if (!function_exists('jinyu_get_post_cover')) {
             $last  = '';
             foreach ($sizes as $sz) {
                 $src = wp_get_attachment_image_src($aid, $sz);
-                if (empty($src[0]) || empty($src[1])) continue;
+                if (!$src || empty($src[0]) || empty($src[1])) continue;
                 $u = $webp ? jinyu_img_to_webp_url($src[0]) : $src[0];
                 if ($u === $last) continue;
                 $parts[] = $u . ' ' . (int) $src[1] . 'w';
@@ -224,17 +222,31 @@ if (!function_exists('jinyu_get_post_cover')) {
                 return $memo[$url];
             }
 
-            $dead = false;
+            // 缓存未命中：渲染路径（列表 / 归档循环）里绝不能阻塞首屏——
+            // 直接 fail-open（视为活图）返回，并把实际探测推迟到本请求 shutdown 阶段后台执行，
+            // 避免「N 篇外链封面 × 串行 3s 远程 GET + gethostbyname 阻塞 DNS」把列表页首屏拖垮。
+            // 同请求内按 URL 去重，每个 URL 最多探测一次。
+            static $pending = [];
+            if (!isset($pending[$url])) {
+                $pending[$url] = true;
+                add_action('shutdown', function () use ($url, $key) {
+                    jinyu_external_cover_dead_probe($url, $key);
+                });
+            }
+            $memo[$url] = false;
+            return false;
+        }
 
+        function jinyu_external_cover_dead_probe($url, $key)
+        {
             // SSRF 防护：URL 来自文章自定义字段（作者级可写），探测前必须校验。
             // 仅允许 http/https 公网地址；主机解析到内网/保留段（127.0.0.1、10.x、192.168.x、169.254.x 等）
-            // 一律不发起请求（fail-open 视为活图，不误杀）。注：重定向目标不在本函数控制内，
-            // 依赖 WP HTTP 层限制，此处按图片探测的低风险场景接受。
+            // 一律不发起请求（fail-open 视为活图，不误杀）。
             $parts = wp_parse_url($url);
             $scheme = strtolower((string) ($parts['scheme'] ?? ''));
             $host = (string) ($parts['host'] ?? '');
             if (!in_array($scheme, ['http', 'https'], true) || $host === '') {
-                return false;
+                return;
             }
             // 主机为字面 IP 时直接校验；域名则解析后校验（gethostbyname 仅 IPv4，
             // 纯 IPv6 主机解析不到 A 记录时按失败处理 → fail-open 不误杀）。
@@ -242,8 +254,7 @@ if (!function_exists('jinyu_get_post_cover')) {
                 ? $host
                 : gethostbyname($host);
             if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
-                $memo[$url] = false;
-                return false;
+                return;
             }
 
             $res  = wp_remote_get($url, [
@@ -255,16 +266,14 @@ if (!function_exists('jinyu_get_post_cover')) {
                     'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
                 ],
             ]);
+            $dead = false;
             if (!is_wp_error($res)) {
                 $code = (int) wp_remote_retrieve_response_code($res);
                 if ($code === 404 || $code === 410 || $code === 403) {
                     $dead = true;
                 }
             }
-
             set_transient($key, $dead ? '1' : '0', 12 * HOUR_IN_SECONDS);
-            $memo[$url] = $dead;
-            return $dead;
         }
     }
 
@@ -298,8 +307,8 @@ if (!function_exists('jinyu_get_post_cover')) {
                     if ($aid === 0) {
                         $up   = wp_get_upload_dir();
                         $base = !empty($up['baseurl']) ? $up['baseurl'] : '';
-                        if ($base && strpos($cached, $base) === 0 && function_exists('attachment_url_to_postid')) {
-                            $aid = (int) attachment_url_to_postid($cached);
+                        if ($base && strpos($cached, $base) === 0) {
+                            $aid = jinyu_url_to_postid($cached);
                             if ($aid) {
                                 update_post_meta($pid, '_jinyu_cover_attach_id', $aid);
                             }
@@ -309,16 +318,24 @@ if (!function_exists('jinyu_get_post_cover')) {
                 }
             }
 
-            // 3. 从正文提取第一张 <img>
+            // 3. 从正文提取第一张 <img>（仅在尚未缓存封面时执行，缓存命中后不再跑）
             if ($src === '') {
-                $content = get_post_field('post_content', $pid);
+                $existing = get_post_meta($pid, '_jinyu_cover_from_content', true);
+                $content  = get_post_field('post_content', $pid);
                 if ($content && preg_match('/<img[^>]+src=["\']([^"\']+)["\']/', $content, $m)) {
                     $url = $m[1];
                     if (!preg_match('/\.(gif|svg)$/i', $url)) {
-                        $aid = function_exists('attachment_url_to_postid') ? (int) attachment_url_to_postid($url) : 0;
-                        update_post_meta($pid, '_jinyu_cover_from_content', $url);
+                        $aid = jinyu_url_to_postid($url);
+                        // 仅在值发生变化时才回写 post meta，避免每次渲染都无谓 UPDATE
+                        // （封面解析结果已跨请求缓存，缓存未过期时根本不会走到这里）。
+                        if ($url !== $existing) {
+                            update_post_meta($pid, '_jinyu_cover_from_content', $url);
+                        }
                         if ($aid) {
-                            update_post_meta($pid, '_jinyu_cover_attach_id', $aid);
+                            $cur_aid = (int) get_post_meta($pid, '_jinyu_cover_attach_id', true);
+                            if ($aid !== $cur_aid) {
+                                update_post_meta($pid, '_jinyu_cover_attach_id', $aid);
+                            }
                         }
                         $src = $url;
                     }
@@ -374,13 +391,9 @@ if (!function_exists('jinyu_cover_url')) {
         // 旧的硬编码 '/wp-content/uploads/' 会在自定义上传目录或 CDN 下误判为站外，跳过降采样与原图直出。
         $up   = wp_get_upload_dir();
         $base = !empty($up['baseurl']) ? $up['baseurl'] : '';
-        // 兼容 CDN：同 jinyu_img_to_webp_url，识别主题 cdn_url 与存储加速域名(storage_domain+prefix)，
+        // 同 jinyu_img_to_webp_url，识别存储加速域名(storage_domain+prefix)，
         // 把 CDN URL 还原回本地 baseurl 以便 attachment_url_to_postid 命中、做 large 降采样。
         $roots = [];
-        $cdn_theme = trim((string) jinyu_get_option('cdn_url', ''));
-        if ($cdn_theme) {
-            $roots[] = rtrim($cdn_theme, '/');
-        }
         if (($sd = trim((string) jinyu_get_option('storage_domain', ''))) !== '') {
             $sp = trim((string) jinyu_get_option('storage_prefix', ''), '/');
             $roots[] = rtrim($sd, '/') . ($sp !== '' ? '/' . $sp : '');
@@ -394,14 +407,14 @@ if (!function_exists('jinyu_cover_url')) {
         }
 
         $is_local_upload = $base && strpos($local_url, $base) === 0;
-        if ($is_local_upload && preg_match('/-\d+x\d+\./', $clean) === 0 && function_exists('attachment_url_to_postid')) {
+        if ($is_local_upload && preg_match('/-\d+x\d+\./', $clean) === 0) {
             if (!array_key_exists($clean, $memo)) {
                 // 已有附件 ID 直接复用，避免反查；否则用本地 URL 反查（CDN URL 无法命中 meta）
-                $aid = $attachment_id > 0 ? (int) $attachment_id : attachment_url_to_postid($local_url);
+                $aid = $attachment_id > 0 ? (int) $attachment_id : jinyu_url_to_postid($local_url);
                 $memo[$clean] = '';
                 if ($aid) {
                     $l = wp_get_attachment_image_src($aid, 'large');
-                    if (!empty($l[0]) && basename($l[0]) !== basename($clean)) {
+                    if ($l && !empty($l[0]) && basename($l[0]) !== basename($clean)) {
                         $memo[$clean] = $l[0];
                     }
                 }
@@ -426,7 +439,7 @@ add_action('save_post', function ($post_id) {
     if ($content && preg_match('/<img[^>]+src=["\']([^"\']+)["\']/', $content, $m)) {
         $url = $m[1];
         if (!preg_match('/\.(gif|svg)$/i', $url)) {
-            $aid = function_exists('attachment_url_to_postid') ? (int) attachment_url_to_postid($url) : 0;
+            $aid = jinyu_url_to_postid($url);
             update_post_meta($post_id, '_jinyu_cover_from_content', $url);
             if ($aid) {
                 update_post_meta($post_id, '_jinyu_cover_attach_id', $aid);
@@ -475,7 +488,7 @@ function jinyu_auto_increment_views()
         // 冷却秒数：后台「全局设置 › 同一 IP 浏览量冷却秒数」
         // 按 IP + 文章做瞬时冷却，同一 IP 在冷却期内重复刷新不重复计数（防狂刷）
         $wait = max(1, (int) jinyu_get_option('views_wait_seconds', 10));
-        $key  = 'jinyu_vw_' . md5(($_SERVER['REMOTE_ADDR'] ?? '') . '|' . $pid);
+        $key  = 'jinyu_vw_' . md5(jinyu_client_ip() . '|' . $pid);
         if (!get_transient($key)) {
             set_transient($key, 1, $wait);
             add_action('shutdown', function () use ($pid) {

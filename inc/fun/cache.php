@@ -329,43 +329,66 @@ add_action('loop_start', function ($q) {
 });
 
 /* ==========================================================================
-   自动失效：内容或设置发生变化时清理对应缓存，避免前台读到旧数据
+   自动失效：内容或设置发生变化时清理对应缓存，避免前台读到旧数据。
+
+   关键原则：只失效「确实会变」的缓存，严禁每次评论 / 文章变更就全组清空
+   （jinyu_cache_flush 会 DELETE 整个 jinyu_ transient 组）。全组清空会让
+   hot_posts / related / archives_list / cover_src 等精心构建的查询缓存同时被打冷，
+   高交互站点命中率趋近 0，等于自废武功。仅「主题设置变更 / 切换主题」这类影响
+   全局的场景才做全组清空。
    ========================================================================== */
+
+// 跨文章的内容聚合缓存：任意文章新增 / 更新 / 删除都会变化，需一并失效
+if (!function_exists('jinyu_cache_flush_content_lists')) {
+    function jinyu_cache_flush_content_lists(): void
+    {
+        foreach (['hot_posts', 'archives_list', 'sitemap_posts', 'carousel'] as $k) {
+            jinyu_cache_delete($k);
+        }
+    }
+}
 
 // 文章新增 / 更新 / 删除
 add_action('save_post', function ($post_id) {
     jinyu_cache_delete('post_' . $post_id);
     jinyu_cache_delete('related_' . $post_id);
-    jinyu_cache_delete('hot_posts');
-    // 整页缓存（首页 / 归档等）依赖文章列表，必须一并失效，
-    // 否则开启整页缓存后发新文章，首页要等 TTL 才刷新（最长 1 小时）。
-    jinyu_cache_flush();
+    // 封面解析结果按尺寸缓存，特色图/内容首图变更后须在 1h TTL 内即失效
+    foreach (['medium', 'thumbnail', 'large'] as $s) {
+        jinyu_cache_delete('cover_src_' . $post_id . '_' . $s);
+    }
+    jinyu_cache_flush_content_lists();
 }, 10, 1);
 
 add_action('deleted_post', function ($post_id) {
     jinyu_cache_delete('post_' . $post_id);
-    jinyu_cache_delete('hot_posts');
-    jinyu_cache_flush();
+    jinyu_cache_delete('related_' . $post_id);
+    jinyu_cache_flush_content_lists();
 }, 10, 1);
 
-// 评论变动（含审核通过 / 删除）
+// 评论变动（含审核通过 / 删除）：仅影响依赖评论的缓存，不要动文章聚合缓存。
+// 注意：wp_insert_comment → post_<id> 失效已在 inc/fun/comment.php 统一处理，此处不再重复挂钩。
 add_action('wp_set_comment_status', function ($comment_id, $status) {
     $comment = get_comment($comment_id);
-    if ($comment) {
+    if ($comment && !empty($comment->comment_post_ID)) {
         jinyu_cache_delete('post_' . $comment->comment_post_ID);
     }
 }, 10, 2);
 
-// 评论硬删除 / 状态流转：最新评论等全局小工具依赖评论数据，必须失效整页缓存。
+// 评论硬删除 / 状态流转：仅失效依赖评论的全局小工具缓存，不动文章缓存。
 // 注意 wp_delete_comment(force=true) 不会触发 wp_set_comment_status，故单独挂钩。
 add_action('delete_comment', function ($comment_id) {
-    jinyu_cache_flush();
+    jinyu_cache_delete('stats_counts');
+    jinyu_cache_delete('reader_wall_rows');
 }, 10, 1);
 add_action('transition_comment_status', function ($new_status, $old_status, $comment) {
-    jinyu_cache_flush();
+    jinyu_cache_delete('stats_counts');
+    jinyu_cache_delete('reader_wall_rows');
+    if (!empty($comment->comment_post_ID)) {
+        jinyu_cache_delete('post_' . $comment->comment_post_ID);
+    }
 }, 10, 3);
 
-// 主题设置保存
+// 主题设置保存：影响全局（轮播 / 默认缩略图 / 性能开关等），全组清空合理
 add_action('update_option_' . JINYU_OPT, function () {
     jinyu_cache_flush();
 });

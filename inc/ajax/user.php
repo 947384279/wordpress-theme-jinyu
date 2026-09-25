@@ -369,6 +369,9 @@ function jinyu_ajax_update_password(): void
     }
 
     wp_set_password($new, $uid);
+    // OAuth 自动建号用户带 jinyu_sl_no_password 标记（密码为随机串不可登录），
+    // 成功改密即解除标记——companion 插件 jinyu_sl_unbind 防锁号判断依赖此数据契约
+    delete_user_meta($uid, 'jinyu_sl_no_password');
     wp_clear_auth_cookie();
     wp_set_current_user($uid);
     wp_set_auth_cookie($uid, true, is_ssl());
@@ -428,6 +431,64 @@ function jinyu_ajax_upload_avatar(): void
 }
 
 /* ==========================================================================
+   用户中心 tab 无刷新切换：返回指定页签的服务端渲染 HTML
+   ========================================================================== */
+add_action('wp_ajax_jinyu_get_tab', 'jinyu_ajax_get_tab');
+function jinyu_ajax_get_tab(): void
+{
+    jinyu_ajax_guard();
+
+    $uid = get_current_user_id();
+    if (!$uid) {
+        wp_send_json_error(__('请先登录', 'jinyu'));
+    }
+
+    $tab = sanitize_key($_POST['tab'] ?? 'dashboard');
+    // 旧 tab slug 兼容（收藏局部刷新等场景可能仍带旧链接）：映射到新信息架构
+    $legacy = jinyu_user_legacy_tabs();
+    if (!array_key_exists($tab, jinyu_user_tabs()) && isset($legacy[$tab])) {
+        if ('' !== $legacy[$tab][1]) {
+            $_POST['sub'] = $legacy[$tab][1];
+        } else {
+            $_POST['compose'] = '1';
+        }
+        $tab = $legacy[$tab][0];
+    }
+    if (!array_key_exists($tab, jinyu_user_tabs())) {
+        wp_send_json_error(__('页签不存在', 'jinyu'));
+    }
+
+    // 互动子页签 / 撰写态同步进 $_GET：模板内 jinyu_current_interact_sub() 与 compose 判断依赖
+    if ('interact' === $tab) {
+        $sub = sanitize_key($_POST['sub'] ?? '');
+        $_GET['sub'] = '' !== $sub && array_key_exists($sub, jinyu_user_interact_tabs()) ? $sub : 'comments';
+    } else {
+        unset($_GET['sub']);
+    }
+    if ('posts' === $tab && !empty($_POST['compose']) && jinyu_user_can_submit()) {
+        $_GET['compose'] = '1';
+    } else {
+        unset($_GET['compose']);
+    }
+
+    // 分页：AJAX 拉取时把页码注入 query var，模板内 jinyu_user_paged() 即可读到
+    $paged = isset($_POST['paged']) ? absint($_POST['paged']) : 0;
+    if ($paged > 0) {
+        set_query_var('paged', $paged);
+    }
+    // tab 同步进 $_GET：模板内 jinyu_current_user_tab() / 分页 base 构建依赖它
+    $_GET['tab'] = $tab;
+
+    ob_start();
+    // query_var 传递：get_template_part 经 load_template include，函数局部变量对模板不可见
+    set_query_var('jinyu_tab', $tab);
+    get_template_part('pages/template-user-tabs');
+    $html = (string) ob_get_clean();
+
+    wp_send_json_success(['tab' => $tab, 'html' => $html]);
+}
+
+/* ==========================================================================
    前台投稿
    ========================================================================== */
 add_action('wp_ajax_jinyu_submit_post', 'jinyu_ajax_submit_post');
@@ -455,6 +516,25 @@ function jinyu_ajax_submit_post(): void
         wp_send_json_error(__('正文至少 20 个字符', 'jinyu'));
     }
 
+    // 封面图（可选）：订阅者无 upload_files 权限，与头像同套白名单自校验。
+    // 校验前置到 wp_insert_post 之前，封面非法时直接拒绝，不产生半截投稿。
+    $cover_file  = null;
+    $cover_mimes = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp', 'image/gif' => 'gif'];
+    if (!empty($_FILES['post_cover']) && is_array($_FILES['post_cover'])
+        && isset($_FILES['post_cover']['error']) && UPLOAD_ERR_NO_FILE !== (int) $_FILES['post_cover']['error']) {
+        $cover_file = $_FILES['post_cover'];
+        if (UPLOAD_ERR_OK !== (int) $cover_file['error']) {
+            wp_send_json_error(__('封面上传失败，请重试', 'jinyu'));
+        }
+        if ($cover_file['size'] > 5 * MB_IN_BYTES) {
+            wp_send_json_error(__('封面图不能超过 5MB', 'jinyu'));
+        }
+        $cover_type = mime_content_type($cover_file['tmp_name']);
+        if (!isset($cover_mimes[$cover_type])) {
+            wp_send_json_error(__('封面仅支持 JPG / PNG / WebP / GIF', 'jinyu'));
+        }
+    }
+
     $pid = wp_insert_post([
         'post_title'    => $title,
         'post_content'  => wp_kses_post($content),
@@ -466,6 +546,29 @@ function jinyu_ajax_submit_post(): void
 
     if (is_wp_error($pid)) {
         wp_send_json_error($pid->get_error_message());
+    }
+
+    // 封面落盘 + 建附件 + 设为特色图。投稿已创建，封面失败仅降级（无封面）不报错回滚
+    if ($cover_file) {
+        require_once ABSPATH . 'wp-admin/includes/file.php';
+        require_once ABSPATH . 'wp-admin/includes/image.php';
+        $upload = wp_handle_upload($cover_file, [
+            'test_form' => false,
+            // wp_handle_upload 要求 扩展名 => MIME，写反会导致扩展名正则永不匹配、一律拒绝上传
+            'mimes'     => array_flip($cover_mimes),
+        ]);
+        if (empty($upload['error']) && !empty($upload['file'])) {
+            $attach_id = wp_insert_attachment([
+                'post_mime_type' => $upload['type'],
+                'post_title'     => $title,
+                'post_status'    => 'inherit',
+                'post_author'    => $uid,
+            ], $upload['file'], $pid);
+            if ($attach_id && !is_wp_error($attach_id)) {
+                wp_update_attachment_metadata($attach_id, wp_generate_attachment_metadata($attach_id, $upload['file']));
+                set_post_thumbnail($pid, $attach_id);
+            }
+        }
     }
 
     set_transient('jy_submit_' . $uid, 1, 5 * MINUTE_IN_SECONDS);
@@ -529,14 +632,17 @@ function jinyu_ajax_fav_list(): void
     ob_start();
     $q = new WP_Query([
         'post__in'            => $ids,
+        // 与模板一致：按收藏先后排序
+        'orderby'             => 'post__in',
         'post_type'           => 'post',
         'post_status'         => 'publish',
-        'posts_per_page'      => count($ids),
+        'posts_per_page'      => 20,
         'ignore_sticky_posts' => true,
     ]);
     while ($q->have_posts()) {
         $q->the_post();
-        get_template_part('templates/module', 'post');
+        // 与模板同一出口（卡片 + 取消收藏按钮），局部刷新后结构一致、事件靠委托无需重绑
+        jinyu_fav_cell();
     }
     wp_reset_postdata();
 

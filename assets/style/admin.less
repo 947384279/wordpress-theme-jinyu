@@ -18,6 +18,8 @@
    同样裁掉横向溢出，但不创建滚动容器，sticky 继续相对视口生效。
    （不支持 clip 的老浏览器会忽略本条回落 WP 原样，不劣化。） */
 body.toplevel_page_jinyu-options { overflow-x: clip; }
+/* 固定 App 外壳锁定整屏高度，WP 默认页脚（绝对定位）会浮在内容底部，隐藏之 */
+body.toplevel_page_jinyu-options #wpfooter { display: none; }
 
 .toplevel_page_jinyu-options #wpbody-content,
 .toplevel_page_jinyu-options .wrap {
@@ -29,7 +31,16 @@ body.toplevel_page_jinyu-options { overflow-x: clip; }
     width: 100%;
     margin: 0;
     padding: 0;
+    /* 应用外壳：锁定整屏高度，顶栏+侧栏为固定 chrome，仅 .jinyu-main 内部滚动（Linear / Vercel / Stripe 范式）。
+       padding-top 避让 WP 固定管理栏；box-sizing:border-box 已全局设定，height:100vh 含此 padding 不会撑破。 */
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    padding-top: var(--wp-admin--admin-bar--height, 32px);
+    overflow: hidden;
 }
+/* App 主体填满剩余高度，作为内部滚动区的父级 */
+#jinyu-setting-app { flex: 1 1 auto; min-height: 0; display: flex; }
 
 /* 盒模型基线：WP 后台只给 button/input 设了 border-box，nav/div/header 等仍是 content-box。
    本页「width:100% + 横向 padding」的容器在 content-box 下会被 padding 撑破父级
@@ -139,9 +150,8 @@ body.toplevel_page_jinyu-options { overflow-x: clip; }
     border-bottom: 1px solid var(--ja-border);
     border-radius: 0;
     box-shadow: var(--ja-shadow-sm);
-    position: sticky;
-    top: 0;
-    z-index: 40;
+    position: relative;
+    flex: 0 0 auto;
     flex-wrap: wrap;
 }
 /* 顶栏不再加渐变装饰线（克制、去模板感，品牌识别靠左侧品牌块） */
@@ -248,107 +258,279 @@ body.toplevel_page_jinyu-options { overflow-x: clip; }
 /* ---------------- 主体布局 ---------------- */
 .jinyu-layout {
     display: flex;
-    align-items: flex-start;
+    align-items: stretch;
     gap: 0;
     margin-top: 0;
+    flex: 1 1 auto;
+    min-height: 0;
 }
 
 /* 侧边栏导航：吸顶（与右侧面板头顶部对齐、不随页面滚动）；整条菜单直接显示，
    仅当视口矮到放不下时才出现兜底内部滚动（绝大多数笔记本一次看全） */
 .jinyu-nav {
-    width: 300px;
+    width: 264px;
     flex-shrink: 0;
     background: var(--ja-surface);
     border: none;
     border-right: 1px solid var(--ja-border);
     border-radius: 0;
-    padding: 16px 18px;
-    position: sticky;
-    /* 吸顶需避让两层：WP 固定管理栏（官方变量 32/46px）+ 主题自绘顶栏（--jh-topbar-h 实测）。
-       只减自绘顶栏会让侧栏底部多出管理栏高度，导致超出视口。 */
-    top: calc(var(--jh-topbar-h, 0px) + var(--wp-admin--admin-bar--height, 32px));
-    /* 撑满全屏：从顶栏到视口底部，15 个分组用 space-between 均匀分布，
-       一眼看全、不滚动；极端矮屏 overflow-y 兜底（平时不触发）。
-       用 100vh 而非 100dvh：桌面端无移动浏览器地址栏伸缩问题，兼容性更好。 */
-    min-height: calc(100vh - var(--jh-topbar-h, 0px) - var(--wp-admin--admin-bar--height, 32px));
+    padding: 14px 14px;
+    /* 改用 App 外壳：侧栏为固定 chrome，高度填满布局列、内部独立滚动；
+       不再依赖 sticky + 100vh 魔法数字，彻底消除「整页滚动 + 多层 sticky 互相避让」的网页感。 */
+    height: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start;
+    gap: 3px;
     overflow-y: auto;
     overflow-anchor: none;
     box-shadow: 1px 0 0 var(--ja-border), 10px 0 26px -22px rgba(16, 24, 40, .35);
+    transition: width var(--ja-dur) var(--ja-ease), box-shadow var(--ja-dur) var(--ja-ease);
+    will-change: width;
 }
 
-/* 菜单项 */
+/* 菜单项：大厂审美——图标入「圆角图标牌」+ 文字，悬停/选中用克制主色填充；
+   无分区标题、无侧边竖条，纯扁平高级列表 */
 .jinyu-nav-item {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
     width: 100%;
-    padding: 8px 14px;
+    padding: 7px 10px;
     margin: 0;
     border: none;
     background: transparent;
-    border-radius: 10px;
+    border-radius: 12px;
     color: var(--ja-text-2);
     font-size: 13.5px;
     font-weight: 500;
     text-align: left;
     cursor: pointer;
     position: relative;
-    transition: background var(--ja-dur) var(--ja-ease), color var(--ja-dur) var(--ja-ease), transform var(--ja-dur) var(--ja-ease), box-shadow var(--ja-dur) var(--ja-ease);
+    transition: background var(--ja-dur) var(--ja-ease), color var(--ja-dur) var(--ja-ease);
 }
-/* 图标：去掉橙色底块，改为深色矢量图标（dashicons 为矢量字体，渲染等同黑色 SVG 图标）。
-   克制风格——未激活深灰、激活态与文字同橙；激活信号只保留浅橙胶囊底，不再叠左侧竖条。 */
-.jinyu-nav-item > .dashicons {
-    font-size: 17px;
-    width: 24px;
-    height: 24px;
+/* 图标牌：未激活为浅灰圆角块（细腻内描边提升质感），激活态转主色实心——视觉重心清晰、克制不抢戏 */
+.jinyu-nav-ic {
+    flex: none;
+    width: 30px;
+    height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--ja-text-2);
-    background: transparent;
-    border-radius: 0;
-    flex-shrink: 0;
-    transition: color var(--ja-dur) var(--ja-ease);
-}
-.jinyu-nav-item:hover {
+    border-radius: 9px;
     background: var(--ja-surface-2);
-    color: var(--ja-text);
+    color: var(--ja-text-2);
+    font-size: 16px;
+    box-shadow: inset 0 0 0 1px var(--ja-border);
+    transition: background var(--ja-dur) var(--ja-ease), color var(--ja-dur) var(--ja-ease), box-shadow var(--ja-dur) var(--ja-ease);
 }
-.jinyu-nav-item:hover > .dashicons { color: var(--ja-text); }
+.jinyu-nav-item:hover { background: var(--ja-surface-2); }
+.jinyu-nav-item:hover .jinyu-nav-ic { background: var(--ja-border); color: var(--ja-text); }
 .jinyu-nav-item.is-active {
     background: var(--ja-primary-soft);
     color: var(--ja-primary-700);
     font-weight: 600;
 }
-.jinyu-nav-item.is-active::before { display: none; }
-.jinyu-nav-item.is-active > .dashicons {
-    color: var(--ja-primary-700);
+.jinyu-nav-item.is-active .jinyu-nav-ic {
+    background: var(--ja-primary);
+    color: #fff;
+    box-shadow: 0 2px 8px -2px rgba(var(--jinyu-c-primary-rgb, 41 116 255), .5);
+}
+/* 导航文字：占满剩余宽度并省略，避免长标题撑破侧栏；折叠态淡出 */
+.jinyu-nav-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: opacity var(--ja-dur) var(--ja-ease);
+}
+/* 分组未保存指示点：仅在该分组字段发生改动时显示（配合 JS refreshNavModified） */
+.jinyu-nav-dot {
+    flex: none;
+    width: 6px;
+    height: 6px;
+    margin-left: 6px;
+    border-radius: 50%;
+    background: var(--ja-primary);
+    box-shadow: 0 0 0 3px var(--ja-primary-soft);
+    opacity: 0;
+    transform: scale(.4);
+    transition: opacity var(--ja-dur) var(--ja-ease), transform var(--ja-dur) var(--ja-ease);
+}
+.jinyu-nav-item.is-modified .jinyu-nav-dot { opacity: 1; transform: scale(1); }
+
+/* ===== 侧栏头部：品牌标识 + 折叠开关 ===== */
+.jinyu-nav-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 10px 14px;
+    margin: 0 0 6px;
+    border-bottom: 1px solid var(--ja-border);
+}
+.jinyu-nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+/* 品牌标记：主色渐变圆角方块（不依赖外部位图，纯 CSS 自绘） */
+.jinyu-nav-logo {
+    width: 26px;
+    height: 26px;
+    flex: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--ja-primary) 0%, var(--ja-primary-700) 100%);
+    box-shadow: 0 2px 8px -2px rgba(var(--jinyu-c-primary-rgb, 41 116 255), .55);
+}
+.jinyu-nav-title {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: .01em;
+    color: var(--ja-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: opacity var(--ja-dur) var(--ja-ease);
+}
+/* 折叠开关：克制的圆形图标按钮，箭头随折叠态旋转 */
+.jinyu-nav-toggle {
+    flex: none;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    border-radius: 9px;
+    color: var(--ja-text-2);
+    cursor: pointer;
+    transition: background var(--ja-dur) var(--ja-ease), color var(--ja-dur) var(--ja-ease);
+}
+.jinyu-nav-toggle:hover { background: var(--ja-surface-2); color: var(--ja-text); }
+.jinyu-nav-toggle:focus-visible { outline: 2px solid var(--ja-primary); outline-offset: 2px; }
+.jinyu-nav-toggle .dashicons { font-size: 18px; transition: transform var(--ja-dur) var(--ja-ease); }
+.jinyu-layout.nav-collapsed .jinyu-nav-toggle .dashicons { transform: rotate(180deg); }
+
+/* 激活态左侧细条指示（Linear/VS Code 风，折叠后落在栏最左缘，成精致标记） */
+.jinyu-nav-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 3px;
+    height: 20px;
+    border-radius: 0 3px 3px 0;
+    background: var(--ja-primary);
+    transform: translateY(-50%) scaleY(0);
+    transform-origin: center;
+    transition: transform var(--ja-dur) var(--ja-ease);
+}
+.jinyu-nav-item.is-active::before { transform: translateY(-50%) scaleY(1); }
+
+/* ===== 折叠态：收成图标轨（约 76px），文字淡出、图标居中 ===== */
+.jinyu-layout.nav-collapsed .jinyu-nav {
+    width: 76px;
+    overflow: visible;
+}
+.jinyu-layout.nav-collapsed .jinyu-nav-head {
+    justify-content: center;
+    padding: 4px 0 14px;
+    border-bottom: none;
+}
+.jinyu-layout.nav-collapsed .jinyu-nav-brand { display: none; }
+.jinyu-layout.nav-collapsed .jinyu-nav-item {
+    justify-content: center;
+    gap: 0;
+    padding-left: 0;
+    padding-right: 0;
+}
+.jinyu-layout.nav-collapsed .jinyu-nav-text { flex: 0 0 0; opacity: 0; width: 0; overflow: hidden; }
+.jinyu-layout.nav-collapsed .jinyu-nav-dot {
+    position: absolute;
+    top: 9px;
+    right: 20px;
+    margin: 0;
+}
+/* 折叠态悬停提示气泡（tooltip） */
+.jinyu-layout.nav-collapsed .jinyu-nav-item::after {
+    content: attr(data-label);
+    position: absolute;
+    left: calc(100% + 14px);
+    top: 50%;
+    transform: translateY(-50%) translateX(-8px);
+    background: #1f2329;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1;
+    padding: 7px 11px;
+    border-radius: 8px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 80;
+    box-shadow: 0 8px 22px -6px rgba(16, 24, 40, .35);
+    transition: opacity var(--ja-dur) var(--ja-ease), transform var(--ja-dur) var(--ja-ease);
+}
+.jinyu-layout.nav-collapsed .jinyu-nav-item:hover::after {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
 }
 
 /* 主内容区（浅灰底衬托白卡） */
 .jinyu-main {
     flex: 1;
     min-width: 0;
+    height: 100%;
     background: var(--ja-page-bg);
     border: none;
     border-radius: 0;
     box-shadow: none;
+    /* 唯一的内容滚动区：滚动条落在内容区、贴合大厂 App 习惯；收敛滚动链、稳定槽位避免跳动 */
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(16, 24, 40, .22) transparent;
 }
+/* 内容区细滚动条（与侧栏同语言，更精致） */
+.jinyu-main::-webkit-scrollbar { width: 10px; }
+.jinyu-main::-webkit-scrollbar-track { background: transparent; }
+.jinyu-main::-webkit-scrollbar-thumb {
+    background: rgba(16, 24, 40, .18);
+    border-radius: 8px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+.jinyu-main::-webkit-scrollbar-thumb:hover {
+    background: rgba(16, 24, 40, .32);
+    background-clip: padding-box;
+}
+/* 暗色：滚动条提亮，避免隐形 */
+@media (prefers-color-scheme: dark) {
+    .jinyu-main { scrollbar-color: rgba(255, 255, 255, .22) transparent; }
+    .jinyu-main::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, .18); background-clip: padding-box; }
+    .jinyu-main::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, .32); background-clip: padding-box; }
+}
+.jinyu-setting-wrap.is-dark .jinyu-main { scrollbar-color: rgba(255, 255, 255, .22) transparent; }
+.jinyu-setting-wrap.is-dark .jinyu-main::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, .18); background-clip: padding-box; }
+.jinyu-setting-wrap.is-dark .jinyu-main::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, .32); background-clip: padding-box; }
 .jinyu-panels { padding: 0 32px 44px; min-height: 360px; }
 .jinyu-search-empty { padding: 56px 0 32px; text-align: center; font-size: 14px; color: var(--ja-text-3); }
 /* hidden 属性必须显式命中：.jinyu-field 是 grid、.jinyu-nav-item 是 flex，
    作者 display 规则会覆盖 UA 默认的 [hidden]{display:none}，漏写会导致搜索过滤"算了不显示" */
 .jinyu-field[hidden] { display: none; }
 .jinyu-nav-item[hidden] { display: none; }
-/* 搜索过滤后剩余项变少，space-between 会把首尾甩到两端、中间大片留白；搜索态改为顶部堆叠 */
+/* 搜索过滤后剩余项变少，改为顶部堆叠、收紧内边距，与全量态的舒展间距区分 */
 .jinyu-nav.is-searching { justify-content: flex-start; gap: 2px; padding: 4px 0; }
+.jinyu-nav.is-searching .jinyu-nav-dot { display: none; }
 /* 命中项之间加细分隔线（box-shadow 不破坏圆角背景），让搜索结果成组更清晰 */
-.jinyu-nav.is-searching .jinyu-nav-item:not(:last-child) { box-shadow: 0 1px 0 var(--ja-border); border-radius: 8px; }
-/* 搜索态命中项统一收紧内边距，与全量态的舒展间距区分 */
-.jinyu-nav.is-searching .jinyu-nav-item { padding-top: 7px; padding-bottom: 7px; }
+.jinyu-nav.is-searching .jinyu-nav-item:not(:last-child) { box-shadow: 0 1px 0 var(--ja-border); border-radius: 10px; }
+.jinyu-nav.is-searching .jinyu-nav-item { padding-top: 6px; padding-bottom: 6px; }
 .jinyu-panel { display: none; }
 .jinyu-panel.is-active { display: block; animation: jinyu-fade var(--ja-dur) var(--ja-ease); }
 @keyframes jinyu-fade {
@@ -367,7 +549,7 @@ body.toplevel_page_jinyu-options { overflow-x: clip; }
     border-radius: var(--ja-r-lg);
     margin: 0 0 18px;
     position: sticky;
-    top: var(--jh-topbar-h);
+    top: 0;
     background: var(--ja-surface);
     box-shadow: var(--ja-shadow-sm);
     z-index: 5;
@@ -403,11 +585,6 @@ body.toplevel_page_jinyu-options { overflow-x: clip; }
     overflow: hidden;
 }
 
-
-/* 后台固定顶栏 #wpadminbar（高 32px）会覆盖 sticky 元素，统一下移 32px */
-.admin-bar .jinyu-topbar { top: 32px; }
-.admin-bar .jinyu-panel-head { top: calc(var(--jh-topbar-h, 0px) + 32px); }
-.admin-bar .jinyu-nav { top: calc(var(--jh-topbar-h, 0px) + 32px); }
 
 /* 设置分组 = 白卡片浮于浅灰底（大气感关键） */
 .jinyu-panel-body {
@@ -478,6 +655,30 @@ body.toplevel_page_jinyu-options { overflow-x: clip; }
 /* 上传字段「移除」按钮 */
 .jinyu-upload-remove { margin-left: 6px; }
 .jinyu-upload-remove[hidden] { display: none; }
+
+/* 面板内小节标题（subhead）：整行分节，左侧主色竖条 + 大字重，与白卡风格统一 */
+.jinyu-subhead {
+    display: flex;
+    align-items: center;
+    margin: 20px -30px 2px;
+    padding: 14px 30px 12px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    color: var(--ja-text);
+    border-top: 1px solid var(--ja-border);
+    position: relative;
+}
+/* 卡片内首个元素就是小节标题时，去掉上边框（顶部圆角已有留白） */
+.jinyu-panel-body > .jinyu-subhead:first-child { border-top: none; margin-top: 6px; }
+.jinyu-subhead::before {
+    content: '';
+    width: 3px;
+    height: 14px;
+    margin-right: 10px;
+    border-radius: 2px;
+    background: var(--ja-primary);
+}
 
 /* ---------------- 字段（两栏式：标签左 / 控件右） ---------------- */
 .jinyu-field {
@@ -1608,8 +1809,19 @@ body.toplevel_page_jinyu-options { overflow-x: clip; }
 
 /* ---------------- 响应式 ---------------- */
 @media (max-width: 900px) {
-    .jinyu-layout { flex-direction: column; }
-    .jinyu-main { width: 100%; }
+    /* 移动端放弃 App 外壳锁定，恢复整页文档流滚动（横向标签条仍 sticky 吸顶）。
+       选择器须与桌面基类同为 .wrap.jinyu-setting-wrap（0,2,0）才能压过其 height/overflow/display。 */
+    .wrap.jinyu-setting-wrap {
+        display: block;
+        height: auto;
+        min-height: 100vh;
+        padding-top: 0;
+        overflow: visible;
+    }
+    #jinyu-setting-app { display: block; flex: none; min-height: 0; }
+    .jinyu-layout { flex-direction: column; flex: none; min-height: 0; }
+    .jinyu-main { width: 100%; height: auto; overflow: visible; min-width: 0; }
+    .jinyu-nav { height: auto; }
     /* 移动端：分组导航改为顶部「横向滚动标签条」，吸顶点选即切，
        只占一行高度，不再把 14 个分组竖排堆满首屏。 */
     .jinyu-nav {
@@ -1641,21 +1853,22 @@ body.toplevel_page_jinyu-options { overflow-x: clip; }
        那是顶栏自身高度，顶栏滚走后标签条会悬空漏出上方滚动内容。 */
     .admin-bar .jinyu-nav { top: var(--wp-admin--admin-bar--height, 32px); }
     .jinyu-nav::-webkit-scrollbar { display: none; }
+    /* 折叠开关是桌面专属交互，移动端横向标签条不需要，直接隐藏头部 */
+    .jinyu-nav-head { display: none; }
 
     .jinyu-nav-item {
         width: auto;
         flex: 0 0 auto;
         white-space: nowrap;
-        padding: 6px 13px;
+        padding: 6px 14px;
         font-size: 13px;
         border-radius: 999px;
         /* 纯文字胶囊：白底描边，轻量不压内容 */
         background: var(--ja-surface);
         border: 1px solid var(--ja-border);
     }
-    .jinyu-nav-item > .dashicons { display: none; }
-    .jinyu-nav-item:hover { transform: none; background: var(--ja-surface); border-color: var(--ja-border-strong); }
-    .jinyu-nav-item::before { display: none; }
+    .jinyu-nav-item .jinyu-nav-ic { display: none; }
+    .jinyu-nav-item:hover { background: var(--ja-surface); border-color: var(--ja-border-strong); }
     .jinyu-nav-item.is-active {
         background: var(--ja-primary-soft);
         border-color: transparent;

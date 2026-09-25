@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
                         $aurl = jinyu_user_avatar_url($aid, 96);
                         echo $aurl ? esc_url($aurl) : esc_attr(jinyu_avatar_default($aid));
                      ?>"
-                     onerror="this.onerror=null;this.src='<?php echo esc_attr(jinyu_avatar_default($author->ID)); ?>';"
+                     data-jinyu-fallback="<?php echo esc_url(jinyu_avatar_default($author->ID)); ?>"
                      alt="">
                 <div class="jinyu-author-meta">
                     <h1><?php echo esc_html($author->display_name); ?></h1>

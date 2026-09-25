@@ -47,7 +47,7 @@ if ( ! $jinyu_link_items ) {
         $jinyu_link_host = $jinyu_link_parsed['host'];
     }
     // 不调用任何第三方 favicon API：直接取该网站自己根目录的 /favicon.ico（向其自身请求，非第三方）。
-    // 取不到或加载失败时，onerror 删掉 <img>，露出底层默认链接图标（主题自带 Font Awesome，零网络请求）。
+    // 取不到或加载失败时，JS 兜底（data-jinyu-fallback-remove）删掉 <img>，露出底层默认链接图标（主题自带 Font Awesome，零网络请求）。
     // 沿用友链自身协议（http/https），避免对仅 http 的站点强行 https 而取不到。
     $jinyu_link_scheme = ( ! empty( $jinyu_link_parsed['scheme'] ) && in_array( $jinyu_link_parsed['scheme'], array( 'http', 'https' ), true ) )
         ? $jinyu_link_parsed['scheme'] : 'https';
@@ -60,7 +60,7 @@ if ( ! $jinyu_link_items ) {
           <?php if ( $jinyu_fav_url ) : ?>
           <img class="jinyu-flink-fav" src="<?php echo esc_url( $jinyu_fav_url ); ?>"
                alt="" width="16" height="16" loading="lazy" decoding="async" referrerpolicy="no-referrer"
-               onerror="this.remove()">
+               data-jinyu-fallback-remove>
           <?php endif; ?>
         </span>
         <?php echo esc_html( $li['title'] ); ?>
