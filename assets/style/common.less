@@ -411,21 +411,21 @@ html.jinyu-tools-compact {
     gap: @s-1;
     flex: 0 0 auto;               /* 工具区永不压缩/挤出：右边缘始终贴齐容器内容区 */
 
+    /* 方案 1（阿里云秩序）：工具按钮裸图标、零容器描边，hover 浮现圆形底色；
+       40px 触控区、20px 图标，与头像/汉堡保持同一视觉权重，无胶囊坞包裹。 */
     .jinyu-icon-btn {
-        width: 36px;
-        height: 36px;
-        /* 底座：原 transparent 裸图标在暗色顶栏上不可辨（搜索/明暗切换均受影响）。
-           bg-subtle + border-strong 让按钮在明暗两模式都有清晰轮廓。 */
-        border: 1px solid @border-strong;
-        background: @bg-subtle;
-        border-radius: @radius-sm;
+        width: 40px;
+        height: 40px;
+        border: 0;
+        background: transparent;
+        border-radius: 50%;
         cursor: pointer;
-        color: @text-2;
+        color: @text-1;
         font-size: @fs-md;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all @transition-fast;
+        transition: color @transition-fast, background @transition-fast, transform @transition-fast;
 
         i {
             display: flex;
@@ -436,9 +436,11 @@ html.jinyu-tools-compact {
             line-height: 1;
         }
 
-        &:hover { color: @primary; background: @primary-light; }
-        /* 明暗切换按钮的按下态（暗色激活时）：主色高亮，与裸图标态明显区分 */
-        &[aria-pressed='true'] { color: @primary; background: @primary-light; border-color: rgba(var(--jinyu-c-primary-rgb), .4); }
+        &:hover { color: @primary; background: @bg-subtle; }
+        &:active { transform: scale(.9); }
+        &:focus-visible { outline: 2px solid @primary; outline-offset: 1px; }
+        /* 明暗切换激活态：主色高亮填充，与裸图标态明显区分 */
+        &[aria-pressed='true'] { color: @primary; background: @primary-light; }
         &.jinyu-d-none { display: none; }
     }
 }
@@ -451,18 +453,21 @@ html.jinyu-tools-compact {
    无需额外 class，避免出现「类和状态不同步」的假打开。 */
 .jinyu-nav-toggle {
     display: none;
-    width: 38px;
-    height: 38px;
+    width: 40px;
+    height: 40px;
     border: 0;
     background: transparent;
-    border-radius: @radius-sm;
+    border-radius: 50%;
     cursor: pointer;
-    color: @text-2;
+    color: @text-1;
     align-items: center;
     justify-content: center;
-    transition: color @transition-fast, background @transition-fast;
+    /* 与 .jinyu-icon-btn 同规格：圆形 hover 浮 bg-subtle 底色，按下同款缩放 */
+    transition: color @transition-fast, background @transition-fast, transform @transition-fast;
 
-    &:hover { color: @primary; background: @primary-light; }
+    &:hover { color: @primary; background: @bg-subtle; }
+    &:active { transform: scale(.9); }
+    &:focus-visible { outline: 2px solid @primary; outline-offset: 1px; }
 
     .jinyu-burger {
         position: relative;
@@ -3756,17 +3761,18 @@ html.jinyu-tools-compact {
     .jinyu-nav ul ul .jinyu-sub-toggle { height: 42px; }
 
     /* 工具区：≤1240 常驻标题栏右侧（不再塞进浮层底部）。
-       DOM 顺序为 汉堡 / Logo / 面板 / 工具，用 order 重排成 Logo(1) → 工具(2) → 汉堡(3)；
+       方案 1（阿里云秩序）：Logo(0) 居左，margin-right:auto 把整组工具推到最右；
+       工具区 order:1（搜索/明暗/头像），汉堡 order:2 压轴最右（拇指热区）。
        面板是固定定位、脱离文档流，order 不影响布局。 */
-    .jinyu-logo { order: 1; }
+    .jinyu-logo { order: 0; margin-right: auto; }
     .jinyu-header-tools {
-        order: 2;
+        order: 1;
         flex: 0 0 auto;
         align-items: center;
         gap: @s-1;
         margin: 0;
     }
-    .jinyu-nav-toggle { order: 3; }
+    .jinyu-nav-toggle { order: 2; margin-right: 0; }
     .jinyu-nav-panel { order: 4; }
 
     /* 用户下拉在标题栏中向下展开即可；z-index 须高于浮层(@z-overlay)以免被盖住 */

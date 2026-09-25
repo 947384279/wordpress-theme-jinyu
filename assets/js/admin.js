@@ -811,9 +811,11 @@
             '<div class="jinyu-search-empty" hidden>没有匹配的设置项，换个关键词试试</div>' +
             '</div></div></div>';
 
-        // 恢复侧栏折叠态（localStorage 持久化，刷新不丢）
+        // 恢复侧栏折叠态（localStorage 持久化，刷新不丢）。
+        // 仅桌面恢复：移动端标签条没有折叠交互，带着折叠类会把胶囊压成细条（文字被 width:0 隐藏）
         try {
-            if (localStorage.getItem('jinyu_nav_collapsed') === '1') {
+            if ((!window.matchMedia || matchMedia('(min-width: 901px)').matches)
+                && localStorage.getItem('jinyu_nav_collapsed') === '1') {
                 var lay = qs('.jinyu-layout', root);
                 if (lay) lay.classList.add('nav-collapsed');
             }
@@ -1618,6 +1620,12 @@
         var search = qs('#jinyu-search');
         var checkUpdateBtn = qs('#jinyu-check-update');
         dirtybar = qs('#jinyu-dirtybar');
+
+        // 快捷键提示随平台自适应：Mac 显示 ⌘K，其余显示 Ctrl + K（与 (ctrlKey||metaKey) 实际监听一致）
+        var kbdHint = qs('.jinyu-search-kbd');
+        if (kbdHint && /Mac|iPhone|iPad|iPod/.test(navigator.platform || navigator.userAgent)) {
+            kbdHint.textContent = '⌘K';
+        }
 
         if (checkUpdateBtn) checkUpdateBtn.addEventListener('click', function () { checkUpdate(checkUpdateBtn); });
         if (saveBtn) saveBtn.addEventListener('click', function () { save(saveBtn); });

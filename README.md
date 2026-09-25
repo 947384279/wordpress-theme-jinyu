@@ -3,7 +3,7 @@
 > 一款面向内容站点的高颜值自适应 WordPress 主题，自研架构全新编写。后台可视化配置中心、暗色模式、文章增强、用户互动、SEO 与变现一应俱全——开箱即用，无需写一行代码。
 
 [![License](https://img.shields.io/badge/License-GPL_v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![WordPress](https://img.shields.io/badge/WordPress-7.1+-blue)](https://wordpress.org)
+[![WordPress](https://img.shields.io/badge/WordPress-6.0+-blue)](https://wordpress.org)
 [![PHP](https://img.shields.io/badge/PHP-8.0+-purple)](https://php.net)
 
 > 主题预览截图见主题包根目录 `screenshot.png`。
@@ -132,7 +132,7 @@
 2. 后台 **外观 → 主题 → 上传主题**，选择 `jinyu.zip` 并启用。
 3. 后台 **外观 → 金玉设置** 打开可视化配置中心，按需开启功能。
 
-> 环境要求：PHP 8.0+，WordPress 7.1+，推荐开启对象缓存与整页缓存。
+> 环境要求：PHP 8.0+，WordPress 6.0+，推荐开启对象缓存与整页缓存。
 
 ## 配置中心
 
@@ -161,7 +161,7 @@
 ## 常见问题
 
 **Q：支持哪些 WordPress / PHP 版本？**
-A：WordPress 7.1+、PHP 8.0+。
+A：WordPress 6.0+、PHP 8.0+。
 
 **Q：如何更新主题？**
 A：通过 WordPress.org 官方渠道自动更新，后台检测到新版本后一键升级。

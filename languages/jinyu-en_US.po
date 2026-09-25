@@ -225,8 +225,8 @@ msgstr ""
 msgid "Open Graph 站点名称"
 msgstr ""
 
-# inc/setting/template.php:16
-msgid "PHP 8.0+ · WordPress 7.1+"
+# inc/setting/template.php:15
+msgid "PHP 8.0+ · WordPress 6.0+"
 msgstr ""
 
 # inc/setting/options/Jinyu_OptionStyle.php:25
@@ -290,7 +290,7 @@ msgid "WebP.se（国内）"
 msgstr ""
 
 # inc/setting/template.php:13
-msgid "WordPress 7+ · 全功能设置中心"
+msgid "全功能可视化设置中心"
 msgstr ""
 
 # inc/setting/options/Jinyu_OptionSeo.php:20

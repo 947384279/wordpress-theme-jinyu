@@ -31,10 +31,6 @@ License URI: https://www.gnu.org/licenses/gpl-3.0.html
   商标声明：Font Awesome 为 Dave Gandy 的商标，本主题仅按其开源许可使用，与商标持有人无隶属关系。
 * Swiper 11（assets/css/vendor/swiper-bundle.min.css 及其字体）：MIT 许可（https://opensource.org/licenses/MIT）。
 
-== 关于 inc/fun/crypto.php 中的 base64 ==
-
-本主题 `inc/fun/crypto.php` 使用 `base64_encode` / `base64_decode` 仅为对**主题设置项（jinyu_options）的敏感字段做对称加密存储**（如社交登录密钥等，避免以明文落库）。它不属于代码混淆、后门或远程通信；算法为公开的 AES-256-CBC + HMAC，密钥由站点自身持有，无可执行载荷、无外部网络请求。该文件不含任何规避审查的逻辑，符合 GPL 与 .org 主题库对「加密仅用于数据保护」的允许范围。
-
 高颜值自适应 WordPress 主题，自研架构全新编写。支持后台可视化配置、暗色模式、多种布局、短代码、评论邮件通知、点赞与无限加载。
 
 == Description ==
@@ -50,7 +46,7 @@ License URI: https://www.gnu.org/licenses/gpl-3.0.html
 * 评论：邮件通知、UA 解析、表情选择器、防暴破限流。
 * SEO：内置 Open Graph / Twitter Card / JSON-LD 结构化数据。
 * 维护模式、统计代码注入、访问统计面板。
-* PHP 8.0+ / WordPress 7.1+，资源按需加载、HTML 压缩、关键 CSS 内联。
+* PHP 8.0+ / WordPress 6.0+，资源按需加载、HTML 压缩、关键 CSS 内联。
 
 == Installation ==
 

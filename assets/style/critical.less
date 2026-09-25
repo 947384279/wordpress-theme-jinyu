@@ -203,38 +203,42 @@ html[data-theme="dark"] .jinyu-logo--dual .jinyu-logo-dark { display: block; }
     flex: 0 0 auto;
 
     .jinyu-icon-btn {
-        width: 36px;
-        height: 36px;
-        border: 1px solid @border-strong;
-        background: @bg-subtle;
-        border-radius: @radius-sm;
+        width: 40px;
+        height: 40px;
+        border: 0;
+        background: transparent;
+        border-radius: 50%;
         cursor: pointer;
-        color: @text-2;
+        color: @text-1;
         font-size: @fs-md;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all @transition-fast;
+        transition: color @transition-fast, background @transition-fast, transform @transition-fast;
 
         i { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; line-height: 1; }
-        &:hover { color: @primary; background: @primary-light; }
-        &[aria-pressed='true'] { color: @primary; background: @primary-light; border-color: rgba(var(--jinyu-c-primary-rgb), .4); }
+        &:hover { color: @primary; background: @bg-subtle; }
+        &:active { transform: scale(.9); }
+        &:focus-visible { outline: 2px solid @primary; outline-offset: 1px; }
+        &[aria-pressed='true'] { color: @primary; background: @primary-light; }
         &.jinyu-d-none { display: none; }
     }
 }
 
 .jinyu-nav-toggle {
     display: none;
-    width: 38px;
-    height: 38px;
+    width: 40px;
+    height: 40px;
     border: 0;
     background: transparent;
-    border-radius: @radius-sm;
+    border-radius: 50%;
     cursor: pointer;
-    color: @text-2;
+    color: @text-1;
     align-items: center;
     justify-content: center;
-    &:hover { color: @primary; background: @primary-light; }
+    &:hover { color: @primary; background: @bg-subtle; }
+    &:active { transform: scale(.9); }
+    &:focus-visible { outline: 2px solid @primary; outline-offset: 1px; }
 }
 
 /* 汉堡三条线的最小骨架：首屏关键 CSS 里必须有，否则主样式到位前按钮是空心的 */
@@ -265,10 +269,10 @@ html[data-theme="dark"] .jinyu-logo--dual .jinyu-logo-dark { display: block; }
    这里只放「不闪错位」所必需的最小集合：面板必须隐藏、必须从头部下沿开始、必须去掉毛玻璃。 */
 .jinyu-nav-overlay-min() {
     .jinyu-nav-toggle { display: inline-flex; }
-    /* 工具区常驻标题栏右侧：重排为 Logo(1) → 工具(2) → 汉堡(3)（与 common.less 一致，避免首屏闪错位） */
-    .jinyu-logo { order: 1; }
-    .jinyu-header-tools { order: 2; margin: 0; }
-    .jinyu-nav-toggle { order: 3; }
+    /* 工具区常驻标题栏右侧：Logo(0) 居左 → 工具(1) → 汉堡(2) 压轴最右（与 common.less 一致，避免首屏闪错位） */
+    .jinyu-logo { order: 0; margin-right: auto; }
+    .jinyu-header-tools { order: 1; margin: 0; }
+    .jinyu-nav-toggle { order: 2; margin-right: 0; }
 
     .jinyu-nav-panel {
         position: fixed;
@@ -667,13 +671,13 @@ html[data-theme="dark"] .jinyu-logo--dual .jinyu-logo-dark { display: block; }
     border: 0;
     background: transparent;
     cursor: pointer;
-    padding: 0 @s-2;
-    height: 36px;
-    border-radius: @radius-pill;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
     color: @text-1;
     vertical-align: middle;
     i { display: flex; align-items: center; justify-content: center; line-height: 1; }
-    &:hover { background: @bg-subtle; }
 }
 .jinyu-user-avatar {
     width: 28px;
@@ -684,6 +688,7 @@ html[data-theme="dark"] .jinyu-logo--dual .jinyu-logo-dark { display: block; }
     background: @bg-subtle;
     display: inline-block;
     vertical-align: middle;
+    box-shadow: 0 0 0 2px @border-strong;
 }
 .jinyu-login-btn {
     display: inline-flex;

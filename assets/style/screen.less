@@ -76,10 +76,10 @@
     .jinyu-logo { flex-shrink: 1; min-width: 0; }
     .jinyu-logo-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
 
-    /* 标题栏按钮在手机端略微缩小，给 Logo 与汉堡留出空间 */
-    .jinyu-header-tools .jinyu-icon-btn { width: 32px; height: 32px; font-size: @fs-base; }
-    .jinyu-header-tools .jinyu-user-btn { height: 32px; padding: 0 @s-1; }
-    .jinyu-header-tools .jinyu-user-avatar { width: 24px; height: 24px; }
+    /* 标题栏按钮在手机端与桌面统一：裸图标 40px 触控区 + 头像 28px 细环（与线图标视觉权重对齐） */
+    .jinyu-header-tools .jinyu-icon-btn { width: 40px; height: 40px; font-size: @fs-md; }
+    .jinyu-header-tools .jinyu-user-btn { width: 40px; height: 40px; padding: 0; }
+    .jinyu-header-tools .jinyu-user-avatar { width: 28px; height: 28px; }
     .jinyu-header-tools .jinyu-login-btn { height: 32px; padding: 0 @s-3; }
 
     /* 手机端首页：隐藏电脑端首页装饰模块（轮播/四宫格/两栏），

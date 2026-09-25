@@ -6,13 +6,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 <div class="wrap jinyu-setting-wrap">
     <div class="jinyu-topbar">
         <div class="jinyu-brand">
-            <span class="dashicons dashicons-admin-customizer"></span>
+            <span class="jinyu-brand-mark" aria-hidden="true"></span>
             <div class="jinyu-brand-text">
                 <h1 class="jinyu-brand-title"><span class="jinyu-brand-title-text"><?php echo esc_html(get_admin_page_title()); ?></span><span class="jinyu-ver-chip">v<?php echo esc_html(JINYU_CUR_VER); ?></span></h1>
                 <div class="jinyu-brand-meta">
-                    <span class="jinyu-brand-sub"><?php esc_html_e('WordPress 7+ · 全功能设置中心', 'jinyu'); ?></span>
+                    <span class="jinyu-brand-sub"><?php esc_html_e('全功能可视化设置中心', 'jinyu'); ?></span>
                     <span class="jinyu-ver-divider" aria-hidden="true"></span>
-                    <span class="jinyu-ver-req"><?php esc_html_e('PHP 8.0+ · WordPress 7.1+', 'jinyu'); ?></span>
+                    <span class="jinyu-ver-req"><?php esc_html_e('PHP 8.0+ · WordPress 6.0+', 'jinyu'); ?></span>
                     <span class="jinyu-update-box jinyu-update-box--head">
                         <button type="button" class="jinyu-btn jinyu-btn-sm jinyu-btn-ghost" id="jinyu-check-update" data-check-update><?php esc_html_e('检查更新', 'jinyu'); ?></button>
                         <span class="jinyu-update-status" data-update-status></span>
@@ -28,7 +28,7 @@ if ( ! defined( 'ABSPATH' ) ) {
                 <button type="button" id="jinyu-search-clear" class="jinyu-search-clear" aria-label="<?php esc_attr_e('清除搜索', 'jinyu'); ?>" hidden>
                     <span class="dashicons dashicons-no-alt"></span>
                 </button>
-                <kbd class="jinyu-search-kbd" aria-hidden="true">⌘K</kbd>
+                <kbd class="jinyu-search-kbd" aria-hidden="true">Ctrl + K</kbd>
             </div>
             <button type="button" id="jinyu-reset" class="button"><?php esc_html_e('恢复默认', 'jinyu'); ?></button>
             <button type="button" id="jinyu-save" class="button button-primary"><?php esc_html_e('保存设置', 'jinyu'); ?></button>

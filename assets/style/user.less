@@ -869,17 +869,18 @@
     border: 0;
     background: transparent;
     cursor: pointer;
-    padding: 0 @s-2;
-    height: 36px;
-    border-radius: @radius-pill;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
     color: @text-1;
     vertical-align: middle;
-    transition: background .15s ease, transform .12s ease;
+    /* 方案 1 微调：按钮 40px 触控区保持透明无环，细环改画在头像自身，
+       视觉直径随头像收缩（此前环画在 40px 按钮上，视觉比 20px 图标大一圈） */
+    transition: transform .12s @ease-std;
 
     /* 按下：轻微缩放，给出点击触感反馈 */
     &:active { transform: scale(.94); }
-    /* 展开态：仅留极淡底色（不再用描边线，用户反馈线条丑），与下拉呼应 */
-    &[aria-expanded="true"] { background: @bg-subtle; }
 }
 .jinyu-user-avatar {
     width: 28px;
@@ -890,13 +891,18 @@
     background: @bg-subtle;
     display: inline-block;
     vertical-align: middle;
-    transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+    /* 2px 细环贴头像：默认灰环，hover/展开转主色环 */
+    box-shadow: 0 0 0 2px @border-strong;
+    transition: box-shadow .2s @ease-std;
 }
-/* 悬停动效：头像柔和放大 + 光晕，明确提示「可点击展开菜单」 */
+/* 悬停 / 展开态：主色细环，与下拉呼应 */
+.jinyu-user-btn:hover .jinyu-user-avatar,
+.jinyu-user-btn[aria-expanded="true"] .jinyu-user-avatar {
+    box-shadow: 0 0 0 2px rgba(var(--jinyu-c-primary-rgb), .55);
+}
+/* 悬停动效：极轻微提亮，明确提示「可点击展开菜单」（环形容器下不再放大，避免破环） */
 .jinyu-user-btn:hover .jinyu-user-avatar {
-    transform: scale(1.16);
-    box-shadow: 0 4px 14px rgba(0, 0, 0, .22);
-    filter: brightness(1.04);
+    filter: brightness(1.05);
 }
 .jinyu-user-drop {
     position: absolute;
