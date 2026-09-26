@@ -32,6 +32,15 @@ if ( ! defined( 'ABSPATH' ) ) {
     <div class="jinyu-skeleton-bar is-wide"></div>
     <div class="jinyu-skeleton-bar is-mid"></div>
 </div>
+<?php
+/* 这块骨架屏是 position:fixed 的实心遮罩，只有等 defer 脚本执行完（DOMContentLoaded）
+   才会淡出——实测 DCL 落在 700ms 左右，等于把真实首屏压到那之后才绘制，
+   FCP / Speed Index 都被它拖住。主题已内联 critical.min.css 且内容是服务端渲染的，
+   首屏本来就有样式，骨架屏在这里纯属负担，所以在解析到它的瞬间直接摘掉。
+   无脚本环境由紧随其后的 noscript 的 display:none 兜底。
+   注意：<script> 内容是 raw text，HTML 实体在这里不会被解码，所以判断符必须写字面量 &&。 */
+?>
+<script>document.getElementById('jinyu-skeleton')&&document.getElementById('jinyu-skeleton').parentNode.removeChild(document.getElementById('jinyu-skeleton'));</script>
 <noscript><style>.jinyu-skeleton{display:none!important}</style></noscript>
 
 <?php if (is_singular('post')) : ?>
@@ -64,10 +73,20 @@ if ( ! defined( 'ABSPATH' ) ) {
     $logo_dual = ($logo_light !== '' && $logo_dark !== '');
     ?>
     <a href="<?php echo esc_url(home_url('/')); ?>" class="jinyu-logo<?php echo $logo_dual ? ' jinyu-logo--dual' : ''; ?>" rel="home">
-      <?php if ($logo_light !== '') : ?>
-        <img class="jinyu-logo-img jinyu-logo-light" src="<?php echo esc_url(jinyu_img_to_webp_url($logo_light)); ?>" alt="<?php echo $brand_alt; ?>">
+      <?php
+    // 补原始宽高：图片加载前就能按比例占位，避免头部在 Logo 到位时发生 CLS
+    $logo_size_light = jinyu_logo_image_size($logo_light);
+    $logo_size_dark  = $logo_dual ? jinyu_logo_image_size($logo_dark) : array(0, 0);
+    $logo_attrs = function ($size) {
+        return ($size && $size[0] && $size[1])
+            ? ' width="' . (int) $size[0] . '" height="' . (int) $size[1] . '"'
+            : '';
+    };
+    ?>
+    <?php if ($logo_light !== '') : ?>
+        <img class="jinyu-logo-img jinyu-logo-light" src="<?php echo esc_url(jinyu_img_to_webp_url($logo_light)); ?>" alt="<?php echo $brand_alt; ?>"<?php echo $logo_attrs($logo_size_light); ?>>
         <?php if ($logo_dual) : ?>
-          <img class="jinyu-logo-img jinyu-logo-dark" src="<?php echo esc_url(jinyu_img_to_webp_url($logo_dark)); ?>" alt="<?php echo $brand_alt; ?>">
+          <img class="jinyu-logo-img jinyu-logo-dark" src="<?php echo esc_url(jinyu_img_to_webp_url($logo_dark)); ?>" alt="<?php echo $brand_alt; ?>"<?php echo $logo_attrs($logo_size_dark); ?>>
         <?php endif; ?>
       <?php elseif ($custom_logo_id > 0) : ?>
         <?php echo wp_get_attachment_image($custom_logo_id, 'full', false, ['class' => 'jinyu-logo-img', 'alt' => $brand_name]); ?>
@@ -185,14 +204,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <?php $notice = trim((string)jinyu_get_option('top_notice', '')); ?>
 <?php if ($notice) : ?>
-  <div class="jinyu-top-notice">
+  <aside class="jinyu-top-notice" aria-label="<?php esc_attr_e('站点公告', 'jinyu'); ?>">
     <div class="jinyu-container">
       <div class="jinyu-top-notice-card">
         <i class="fa-solid fa-bullhorn" aria-hidden="true"></i>
         <span><?php echo esc_html($notice); ?></span>
       </div>
     </div>
-  </div>
+  </aside>
 <?php endif; ?>
 
 <div class="jinyu-mask jinyu-search-mask" hidden role="dialog" aria-modal="true" aria-label="<?php esc_attr_e('站内搜索', 'jinyu'); ?>">

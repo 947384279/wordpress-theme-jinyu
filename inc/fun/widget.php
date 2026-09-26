@@ -184,11 +184,12 @@ class Jinyu_Posts_Hot_Widget extends WP_Widget {
                 $rcls  = ' jinyu-rank-' . min(3, $rank);
                 echo '<li class="jinyu-hot-item">';
                 if ($show_thumb) {
-                    $cover = jinyu_get_post_cover($p->ID, 'thumbnail', true);
+                    $cover = jinyu_get_post_cover($p->ID, 'jinyu-thumb', true);
                     if ($cover !== '') {
                         echo '<a class="jinyu-hot-thumb" href="' . esc_url(get_permalink($p)) . '" aria-label="' . esc_attr(get_the_title($p)) . '">';
                         echo '<img class="jinyu-hot-thumb-img" src="' . esc_url($cover) . '" width="64" height="44" loading="' . ($rank === 1 ? 'eager' : 'lazy') . '" decoding="async" alt="' . esc_attr(get_the_title($p)) . '">';
-                        echo '<span class="jinyu-hot-rank-badge' . $rcls . '">' . $rank . '</span>';
+                        // ⚠️ aria-hidden：a[aria-label=标题] 内含可见数字会触发 WCAG 2.5.3 标签名不匹配，且排名数字不该进可访问名。
+                        echo '<span class="jinyu-hot-rank-badge' . $rcls . '" aria-hidden="true" data-rank="' . $rank . '"></span>';
                         echo '</a>';
                     } else {
                         echo '<span class="jinyu-hot-rank' . $rcls . '">' . $rank . '</span>';
@@ -330,7 +331,7 @@ class Jinyu_Random_Posts_Widget extends WP_Widget {
             foreach ($posts as $p) {
                 echo '<li class="jinyu-hot-item">';
                 if ($show_thumb) {
-                    $cover = jinyu_get_post_cover($p->ID, 'thumbnail', true);
+                    $cover = jinyu_get_post_cover($p->ID, 'jinyu-thumb', true);
                     if ($cover !== '') {
                         echo '<a class="jinyu-hot-thumb" href="' . esc_url(get_permalink($p->ID)) . '" aria-label="' . esc_attr(get_the_title($p->ID)) . '">';
                         echo '<img class="jinyu-hot-thumb-img" src="' . esc_url($cover) . '" width="64" height="44" loading="lazy" decoding="async" alt="' . esc_attr(get_the_title($p->ID)) . '">';
@@ -507,7 +508,7 @@ class Jinyu_Related_Widget extends WP_Widget {
         foreach ($posts as $p) {
             echo '<li class="jinyu-hot-item">';
             if ($show_thumb) {
-                $cover = jinyu_get_post_cover($p->ID, 'thumbnail', true);
+                $cover = jinyu_get_post_cover($p->ID, 'jinyu-thumb', true);
                 if ($cover !== '') {
                     echo '<a class="jinyu-hot-thumb" href="' . esc_url(get_permalink($p->ID)) . '" aria-label="' . esc_attr(get_the_title($p->ID)) . '">';
                     echo '<img class="jinyu-hot-thumb-img" src="' . esc_url($cover) . '" width="64" height="44" loading="lazy" decoding="async" alt="' . esc_attr(get_the_title($p->ID)) . '">';
@@ -597,11 +598,11 @@ class Jinyu_Hot_Comment_Widget extends WP_Widget {
                 $rcls = ' jinyu-rank-' . min(3, $i);
                 echo '<li class="jinyu-hot-item">';
                 if ($show_thumb) {
-                    $cover = jinyu_get_post_cover($p->ID, 'thumbnail', true);
+                    $cover = jinyu_get_post_cover($p->ID, 'jinyu-thumb', true);
                     if ($cover !== '') {
                         echo '<a class="jinyu-hot-thumb" href="' . esc_url(get_permalink($p->ID)) . '" aria-label="' . esc_attr(get_the_title($p->ID)) . '">';
                         echo '<img class="jinyu-hot-thumb-img" src="' . esc_url($cover) . '" width="64" height="44" loading="lazy" decoding="async" alt="' . esc_attr(get_the_title($p->ID)) . '">';
-                        echo '<span class="jinyu-hot-rank-badge' . $rcls . '">' . $i . '</span>';
+                        echo '<span class="jinyu-hot-rank-badge' . $rcls . '" aria-hidden="true" data-rank="' . $i . '"></span>';
                         echo '</a>';
                     } else {
                         echo '<span class="jinyu-hot-rank' . $rcls . '">' . $i . '</span>';
@@ -793,7 +794,7 @@ class Jinyu_Gallery_Widget extends WP_Widget {
         $items = [];
         foreach ($q->posts as $p) {
             $items[] = [
-                'img'   => jinyu_get_post_cover($p->ID, 'medium'),
+                'img'   => jinyu_get_post_cover($p->ID, 'jinyu-thumb'),
                 'url'   => get_permalink($p),
                 'text'  => get_the_title($p),
                 'blank' => false,

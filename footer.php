@@ -75,7 +75,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
         <?php /* 主题署名：硬编码静态输出，无后台开关、无链接；社交图标内联在署名右侧 */ ?>
         <div class="jinyu-footer-credit">
-          <i class="fa-brands fa-wordpress" aria-hidden="true"></i>
+          <a class="jinyu-wp-official" href="https://cn.wordpress.org/" target="_blank" rel="noopener nofollow" title="<?php esc_attr_e('WordPress 官方网站', 'jinyu'); ?>">
+            <i class="fa-brands fa-wordpress" aria-hidden="true"></i>
+          </a>
           <?php $social = jinyu_footer_social(); ?>
           <?php if ($social) : ?>
           <span class="jinyu-social-row">

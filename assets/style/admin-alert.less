@@ -1,0 +1,215 @@
+/*!
+ * 主题设置页顶栏的「报警图标」样式（.jinyu-alert）。
+ *
+ * 入口位置在 .jinyu-topbar-actions 内，与「保存设置」并列；点击直达本页
+ * 「维护工具」面板（#tools）。相比页顶提醒条：不占纵向空间、不打断阅读，
+ * 只在真正需要维护时才亮起。
+ *
+ * 单独成文件的原因：admin.less 只在主题设置页加载，而这个图标理论上可以
+ * 挂在任意后台页面。配色自包含（不引用 admin.less 的 --ja-* 令牌），并用
+ * prefers-color-scheme 跟随后台深色模式。
+ */
+
+.jinyu-alert {
+    /* 图标与描边：珊瑚橙，与品牌色同家族但不刺眼 */
+    --jn-alert: #f56a2e;
+    --jn-alert-glow: rgba(245, 106, 46, .35);
+    --jn-alert-bg: #fff5ef;
+    --jn-alert-bg-hover: #ffeade;
+    --jn-alert-count: #e5484d;
+    --jn-alert-surface: #ffffff;
+    --jn-alert-text: #3c4148;
+    --jn-alert-border: #f2d9cb;
+
+    position: relative;
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* 与同排的 .jinyu-search / .jinyu-icon-btn 同高（38px），窄屏降到 36px */
+    width: 38px;
+    height: 38px;
+    border: 1px solid var(--jn-alert-border);
+    border-radius: 10px;
+    background: var(--jn-alert-bg);
+    color: var(--jn-alert);
+    line-height: 1;
+    text-decoration: none;
+    box-shadow: 0 1px 2px rgba(245, 106, 46, .08), inset 0 0 0 1px rgba(255, 255, 255, .45);
+    transition: background .18s ease, border-color .18s ease, transform .08s ease, box-shadow .18s ease;
+}
+
+.jinyu-alert:hover,
+.jinyu-alert:focus-visible {
+    background: var(--jn-alert-bg-hover);
+    border-color: var(--jn-alert);
+    box-shadow: 0 4px 14px rgba(245, 106, 46, .18), inset 0 0 0 1px rgba(255, 255, 255, .5);
+    outline: none;
+    transform: translateY(-1px);
+}
+
+.jinyu-alert:active {
+    transform: translateY(0);
+}
+
+/* 图标容器 */
+.jinyu-alert-ico {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.jinyu-alert-ico .jinyu-ico-svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+    animation: jinyu-alert-attention 2.6s ease-in-out infinite;
+}
+
+/* 光晕层：柔和的呼吸扩散，比生硬的「波纹环」更精致 */
+.jinyu-alert-ico::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--jn-alert-glow) 0%, transparent 70%);
+    opacity: .55;
+    pointer-events: none;
+    animation: jinyu-alert-glow 2.2s ease-in-out infinite;
+    z-index: 0;
+}
+
+@keyframes jinyu-alert-attention {
+    0%, 84%, 100% { transform: rotate(0deg) scale(1); }
+    8%  { transform: rotate(-10deg) scale(1.05); }
+    18% { transform: rotate(8deg) scale(1.03); }
+    28% { transform: rotate(-4deg) scale(1.01); }
+    38% { transform: rotate(2deg) scale(1); }
+    48% { transform: rotate(0deg) scale(1); }
+}
+
+@keyframes jinyu-alert-glow {
+    0%, 100% { transform: scale(.85); opacity: .45; }
+    50%      { transform: scale(1.25); opacity: .22; }
+}
+
+/* 角标数字 */
+.jinyu-alert-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    z-index: 2;
+    min-width: 15px;
+    height: 15px;
+    padding: 0 3px;
+    border-radius: 7.5px;
+    background: var(--jn-alert-count);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 15px;
+    text-align: center;
+    letter-spacing: 0;
+    box-shadow: 0 2px 4px rgba(229, 72, 77, .35);
+}
+
+/* 说明浮层：居中对齐图标，避免贴右被视口裁掉；z-index 提到顶层 */
+.jinyu-alert-tip {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    z-index: 9999;
+    width: max-content;
+    max-width: 300px;
+    padding: 8px 12px;
+    border: 1px solid var(--jn-alert-border);
+    border-radius: 10px;
+    background: var(--jn-alert-surface);
+    box-shadow: 0 8px 24px rgba(16, 24, 40, .12), 0 2px 6px rgba(16, 24, 40, .06);
+    color: var(--jn-alert-text);
+    font-size: 12px;
+    line-height: 1.65;
+    text-align: left;
+    visibility: hidden;
+    opacity: 0;
+    transform: translateX(-50%) translateY(-4px);
+    transition: opacity .18s ease, transform .18s ease, visibility .18s;
+}
+
+.jinyu-alert:hover .jinyu-alert-tip,
+.jinyu-alert:focus-visible .jinyu-alert-tip {
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* 三角小箭头 */
+.jinyu-alert-tip::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    margin-left: -5px;
+    width: 10px;
+    height: 10px;
+    background: var(--jn-alert-surface);
+    border-left: 1px solid var(--jn-alert-border);
+    border-top: 1px solid var(--jn-alert-border);
+    transform: rotate(45deg);
+}
+
+@media (max-width: 782px) {
+    /* 与同排的 .jinyu-icon-btn / .jinyu-search 同高，窄屏也保持一条基线 */
+    .jinyu-alert { width: 36px; height: 36px; border-radius: 9px; }
+    .jinyu-alert-ico.dashicons::before { font-size: 17px; width: 17px; height: 17px; }
+    .jinyu-alert-ico::after { width: 26px; height: 26px; }
+    /* 窄屏：浮层左对齐（避开右侧视口边缘），箭头复位 */
+    .jinyu-alert-tip {
+        left: 0;
+        transform: translateX(0) translateY(-4px);
+        max-width: 260px;
+    }
+    .jinyu-alert:hover .jinyu-alert-tip,
+    .jinyu-alert:focus-visible .jinyu-alert-tip {
+        transform: translateX(0) translateY(0);
+    }
+    .jinyu-alert-tip::before {
+        left: 11px;
+        margin-left: 0;
+    }
+}
+
+/* 手机竖屏：浮层直接收掉。
+   它此刻是「左对齐于图标 + 固定 260px」，而手机上手写宽度会顶破视口
+   （320px 实测文档 scrollWidth 337 > clientWidth 320，整页可横滑）。
+   触屏本来就没有 hover，提示永远等不到；同一段文案已作为 .jinyu-alert 的
+   aria-label 存在（读屏可播报），角标显示数量，点击直达「维护工具」看全文。 */
+@media (max-width: 600px) {
+    .jinyu-alert-tip { display: none; }
+}
+
+/* 尊重系统「减弱动态效果」 */
+@media (prefers-reduced-motion: reduce) {
+    .jinyu-alert-ico::after { animation: none; opacity: .35; }
+    .jinyu-alert-ico.dashicons::before { animation: none; }
+    .jinyu-alert-tip { transition: opacity .15s ease, visibility .15s; }
+    .jinyu-alert { transition: background .15s ease, border-color .15s ease; }
+}
+
+@media (prefers-color-scheme: dark) {
+    .jinyu-alert {
+        --jn-alert: #ff9f6e;
+        --jn-alert-glow: rgba(255, 159, 110, .30);
+        --jn-alert-bg: #382719;
+        --jn-alert-bg-hover: #4a321d;
+        --jn-alert-surface: #1a1d22;
+        --jn-alert-text: #d8dce2;
+        --jn-alert-border: #4a3a2a;
+    }
+}

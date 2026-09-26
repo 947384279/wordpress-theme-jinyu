@@ -10,11 +10,16 @@ $pid = get_the_ID();
 $cats = get_the_category();
 $cover = jinyu_get_post_cover($pid);
 $cat_class = $cats ? ' jinyu-cat-' . ($cats[0]->term_id % 12) : '';
-// 首篇（LCP 候选）封面图提前加载并提权，避免 lazy 拖慢首屏最大内容绘制
+// 封面图加载策略：首屏候选统一提前加载，真正的 LCP 元素才提权。
+// 注意：不能只认 current_post === 0 —— 首页首篇常是置顶文章（.is-sticky 卡片），
+// 网格里最大 / 最靠前的图片未必是它，实测 LCP 落在第 2 张上，只提权第 1 张等于打空。
+// 首页两栏网格首屏可见 2 张，故对前 2 张用 eager（第 2 张不给 fetchpriority，
+// 避免多张 high 互相抢带宽），第 3 张起回归 lazy。
 global $wp_query;
-$is_first_cover = (!empty($wp_query) && isset($wp_query->current_post) && $wp_query->current_post === 0);
-$cover_loading  = $is_first_cover ? 'eager' : 'lazy';
-$cover_fetch    = $is_first_cover ? ' fetchpriority="high"' : '';
+$current_post  = (!empty($wp_query) && isset($wp_query->current_post)) ? (int) $wp_query->current_post : -1;
+$in_first_view = ($current_post >= 0 && $current_post <= 1);
+$cover_loading = $in_first_view ? 'eager' : 'lazy';
+$cover_fetch   = ($current_post === 0) ? ' fetchpriority="high"' : '';
 // 统一渲染为纵向网格卡（封面在上），首页两栏网格布局；
 // 无封面时由 .jinyu-post-cover-ph 占位渐变填充封面区
 // 置顶卡片加 .is-sticky：配合 .jinyu-post-card.is-sticky 的描边高亮与丝带角标，

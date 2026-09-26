@@ -25,7 +25,7 @@ if ( ! $jinyu_link_items ) {
 ?>
 <div class="jinyu-flinks">
   <div class="jinyu-flinks-head">
-    <h4><?php esc_html_e( '友情链接', 'jinyu'); ?></h4>
+    <h2><?php esc_html_e( '友情链接', 'jinyu'); ?></h2>
     <?php
     // 入口 URL：后台手填优先；未填时自动指向使用「申请友链」模板的页面（都没有则不显示入口）
     $flink_apply = function_exists( 'jinyu_flink_apply_url' )

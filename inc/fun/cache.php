@@ -434,7 +434,9 @@ if (is_admin()) {
             return; // 只在主题设置页显示
         }
         $url = wp_nonce_url(add_query_arg('jinyu_dismiss_cache_notice', '1'), 'jinyu_dismiss_cache_notice');
-        echo '<div class="notice notice-warning"><p>'
+        // .inline：WP 核心 common.js 会把 .notice 搬到「.wrap 内首个 h1 之后」，
+        // 本页那个 h1 在顶栏品牌区里，会挤成窄条；.inline 是核心排除在搬移之外的写法。
+        echo '<div class="notice notice-warning inline"><p>'
             . __('检测到当前站点未启用持久对象缓存（Memcached / Redis）。金玉主题首页在无对象缓存下约需 70+ 条数据库查询，高并发时响应偏慢。建议安装并启用对象缓存，以获得约 4 条查询 / 60ms 的极致性能。', 'jinyu')
             . ' <a href="' . esc_url($url) . '">' . __('不再提示', 'jinyu') . '</a></p></div>';
     });

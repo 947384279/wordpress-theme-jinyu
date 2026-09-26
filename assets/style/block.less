@@ -6,6 +6,20 @@
    ========================================================================== */
 
 .jinyu-article-content {
+    /* 正文内链接必须可脱离颜色辨识（WCAG 1.4.1）：古登堡默认只给主色，
+       与正文色对比仅 1.6:1，读屏/色觉障碍用户无法识别这是可点元素。
+       按钮类（.jinyu-btn / .wp-block-button）自带实心底和白字，不受影响。 */
+    a {
+        text-decoration: underline;
+        text-decoration-color: rgba(var(--jinyu-c-primary-rgb), .45);
+        text-decoration-thickness: 1px;
+        text-underline-offset: 3px;
+
+        &:hover { text-decoration-color: @primary-text; }
+        &.jinyu-btn,
+        &.wp-block-button__link { text-decoration: none; }
+    }
+
     /* 宽幅 / 全宽对齐 */
     .alignwide  { width: 100%; max-width: calc(@container-max + 200px); margin-left: 50%; transform: translateX(-50%); }
     .alignfull  { width: 100vw; max-width: 100vw; margin-left: 50%; transform: translateX(-50%); }
@@ -90,7 +104,7 @@
             &:hover { background: @primary-dark; }
         }
         &.is-style-outline .wp-block-button__link {
-            background: transparent; color: @primary; border: 1px solid @primary;
+            background: transparent; color: @primary-text; border: 1px solid @primary;
         }
     }
 
@@ -104,7 +118,7 @@
     }
 
     /* 标签云 / 分类列表 */
-    .wp-block-tag-cloud a, .wp-block-categories li a { color: @primary; }
+    .wp-block-tag-cloud a, .wp-block-categories li a { color: @primary-text; }
 
     /* 最新文章 / 评论列表 */
     .wp-block-latest-posts, .wp-block-latest-comments {
@@ -127,7 +141,7 @@
     height: 44px;
     border-radius: @radius-md;
     background: @primary-light;
-    color: @primary;
+    color: @primary-text;
     margin-bottom: @s-3;
 }
 

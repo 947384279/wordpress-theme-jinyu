@@ -1,7 +1,10 @@
 @import "var.less";
 
 /* ==========================================================================
-   首页轮播（Swiper）
+   首页轮播（主题自研，零第三方依赖）
+   - 无 JS 时：track 退化成原生横向滚动列表，触屏可滑、可点，内容完全可读
+   - 有 JS 时：容器被打上 data-jinyu-carousel-ready，交由 transform 接管
+   过渡模式两种：位移（默认）/ 淡入淡出（data-effect="fade"）
    ========================================================================== */
 
 .jinyu-carousel {
@@ -10,56 +13,195 @@
     border-radius: @radius-lg;
     overflow: hidden;
     box-shadow: 0 6px 24px rgba(0, 0, 0, .08);
+    /* 拖拽中禁止选中图片文字，避免拖动时蓝色选区闪烁 */
+    -webkit-user-select: none;
+    user-select: none;
+}
 
-    .swiper-slide { aspect-ratio: 21 / 9; background: @bg-subtle; }
+.jinyu-carousel-track {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
 
-    .jinyu-carousel-slide {
-        display: block;
+    &::-webkit-scrollbar { display: none; }
+}
+
+.jinyu-carousel-slide {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    aspect-ratio: 21 / 9;
+    background: @bg-subtle;
+}
+
+/* ── JS 接管 ─────────────────────────────────────────────────────────────
+   位移模式：track 整体平移，slide 保持横向排列
+   ⚠️ track 自身不能设 overflow:hidden —— 裁剪与 transform 同元素时会被
+   Chromium 提升为自裁剪合成层，位移后新进入视口的区域永不光栅化，
+   表现为第 2 张起整块空白（绘制与命中测试同时被跳过）。
+   裁剪交给外层 .jinyu-carousel 的 overflow:hidden 完成。
+   ──────────────────────────────────────────────────────────────────────── */
+[data-jinyu-carousel-ready] .jinyu-carousel-track {
+    overflow: visible;
+    scroll-snap-type: none;
+    transition: transform .6s @ease-out-expo;
+}
+
+/* 拖拽跟手阶段必须即时响应，不能有过渡 */
+[data-jinyu-carousel-ready].is-dragging .jinyu-carousel-track {
+    transition: none;
+}
+
+[data-jinyu-carousel-ready].is-dragging {
+    cursor: grabbing;
+}
+
+/* 淡入淡出模式：track 不平移，slide 层叠交叉淡入 */
+[data-jinyu-carousel-ready][data-effect="fade"] .jinyu-carousel-track {
+    display: block;
+    aspect-ratio: 21 / 9;
+    transition: none;
+}
+
+[data-jinyu-carousel-ready][data-effect="fade"] .jinyu-carousel-slide {
+    position: absolute;
+    inset: 0;
+    aspect-ratio: auto;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .6s @ease-out-expo, visibility .6s;
+}
+
+[data-jinyu-carousel-ready][data-effect="fade"] .jinyu-carousel-slide.is-current {
+    opacity: 1;
+    visibility: visible;
+}
+
+.jinyu-carousel-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: relative;
+
+    img {
         width: 100%;
         height: 100%;
-        position: relative;
-
-        img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            margin: 0;
-            transition: transform .6s @ease-out-expo;
-        }
-        &:hover img { transform: scale(1.04); }
+        object-fit: cover;
+        margin: 0;
+        transition: transform .6s @ease-out-expo;
     }
 
-    .jinyu-carousel-cap {
-        position: absolute;
-        left: 0; right: 0; bottom: 0;
-        padding: @s-8 @s-6 @s-5;
-        background: linear-gradient(to top, rgba(0,0,0,.72), rgba(0,0,0,0));
-        pointer-events: none;
+    &:hover img { transform: scale(1.04); }
+}
 
-        span {
-            color: #fff;
-            font-size: @fs-lg;
-            font-weight: 700;
-            text-shadow: 0 1px 4px rgba(0,0,0,.4);
-        }
-    }
+.jinyu-carousel-cap {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    padding: @s-8 @s-6 @s-5;
+    background: linear-gradient(to top, rgba(0,0,0,.72), rgba(0,0,0,0));
+    pointer-events: none;
 
-    /* Swiper 控件配色跟随主色 */
-    --swiper-theme-color: @primary;
-    --swiper-navigation-size: 22px;
-
-    .swiper-pagination { bottom: @s-3; }
-    .swiper-button-prev, .swiper-button-next {
-        width: 40px; height: 40px;
-        background: rgba(0,0,0,.35);
-        border-radius: 50%;
+    span {
         color: #fff;
-        &::after { font-size: @fs-lg; font-weight: 700; }
-        &:hover { background: rgba(0,0,0,.55); }
+        font-size: @fs-lg;
+        font-weight: 700;
+        text-shadow: 0 1px 4px rgba(0,0,0,.4);
+    }
+}
+
+/* ── 左右箭头 ───────────────────────────────────────────────────────────── */
+.jinyu-carousel-arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(0,0,0,.35);
+    color: #fff;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity @transition-fast, background @transition-fast;
+
+    svg { width: 20px; height: 20px; display: block; }
+
+    &:hover { background: rgba(0,0,0,.55); }
+    &:focus-visible { outline: 2px solid #fff; outline-offset: 2px; opacity: 1; }
+}
+
+.jinyu-carousel:hover .jinyu-carousel-arrow,
+.jinyu-carousel-arrow:focus-visible { opacity: 1; }
+
+/* 非循环模式走到边界：隐藏而非禁用，避免灰按钮占位 */
+.jinyu-carousel-arrow[hidden] { display: none; }
+
+.jinyu-carousel-arrow-prev { left: @s-3; }
+.jinyu-carousel-arrow-next { right: @s-3; }
+
+/* ── 分页圆点 ───────────────────────────────────────────────────────────── */
+/* 命中区撑到 24×24（WCAG 2.5.8 目标尺寸），视觉圆点由 ::before 绘制，
+   避免命中区重叠。 */
+.jinyu-carousel-dots {
+    position: absolute;
+    left: 0; right: 0;
+    bottom: @s-3;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    gap: 1px;
+}
+
+.jinyu-carousel-dot {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        margin: auto;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #fff;
+        opacity: .5;
+        transition: opacity @transition-fast, transform @transition-fast;
     }
 
-    @media (max-width: 576px) {
-        .swiper-slide { aspect-ratio: 16 / 10; }
-        .jinyu-carousel-cap span { font-size: @fs-md; }
+    &:hover::before { opacity: 1; }
+    &:focus-visible { outline: 2px solid #fff; outline-offset: -6px; border-radius: 50%; }
+
+    &.is-active::before {
+        opacity: 1;
+        transform: scale(1.25);
     }
+}
+
+@media (max-width: 576px) {
+    .jinyu-carousel-slide,
+    [data-jinyu-carousel-ready][data-effect="fade"] .jinyu-carousel-track { aspect-ratio: 16 / 10; }
+
+    .jinyu-carousel-cap span { font-size: @fs-md; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [data-jinyu-carousel-ready] .jinyu-carousel-track,
+    [data-jinyu-carousel-ready][data-effect="fade"] .jinyu-carousel-slide {
+        transition: none;
+    }
+
+    .jinyu-carousel-link:hover img { transform: none; }
 }

@@ -13,6 +13,13 @@ class Jinyu_Setting
         add_action('wp_ajax_jinyu_export_options', [$this, 'ajax_export']);
         add_action('wp_ajax_jinyu_import_options', [$this, 'ajax_import']);
         add_action('wp_ajax_jinyu_reset_section', [$this, 'ajax_reset_section']);
+        add_action('wp_ajax_jinyu_regenerate_thumbs', [$this, 'ajax_regenerate_thumbs']);
+        // 查询是否有未跑完的重建任务（页面刷新 / 重开后恢复进度并接着跑）
+        add_action('wp_ajax_jinyu_regen_status', [$this, 'ajax_regen_status']);
+        // 顶栏报警图标：仍有历史封面缺主题尺寸时在设置页顶栏亮起（见 topbar_thumb_alert）。
+        // 不走 admin_notices —— 那个钩子在 .wrap 之外输出，内容与主题设置框架不是同一个
+        // 视觉层；改挂顶栏操作区内的自定义时机，点击即可直达本页「维护工具」面板。
+        add_action('jinyu_setting_topbar_actions', [$this, 'topbar_thumb_alert']);
     }
 
     public function register_menu(): void
@@ -32,7 +39,7 @@ class Jinyu_Setting
      */
     public static function option_classes(): array
     {
-        return ['Jinyu_OptionBasic','Jinyu_OptionGlobal','Jinyu_OptionStyle','Jinyu_OptionContent','Jinyu_OptionComment','Jinyu_OptionCarousel','Jinyu_OptionExtend','Jinyu_OptionUser','Jinyu_OptionFooter','Jinyu_OptionCode'];
+        return ['Jinyu_OptionBasic','Jinyu_OptionGlobal','Jinyu_OptionStyle','Jinyu_OptionContent','Jinyu_OptionComment','Jinyu_OptionCarousel','Jinyu_OptionExtend','Jinyu_OptionUser','Jinyu_OptionFooter','Jinyu_OptionEmail','Jinyu_OptionCode'];
     }
 
     /**
@@ -147,6 +154,12 @@ class Jinyu_Setting
                 'step'    => $f['step'] ?? null,
                 'options' => (isset($f['options']) && is_array($f['options'])) ? array_column($f['options'], 'value') : [],
                 'sdt'     => $f['sdt'] ?? null,
+                // 契约（防回归）：html=true 的 textarea 输出层必须配合 wp_kses_post 使用（当前为
+                // footer_about / footer_copyright / single_copyright，分别在 footer.php、文末版权渲染）。
+                // 保存侧见 sanitize_fields() 的 textarea 分支——html 字段走 wp_kses_post 而非
+                // sanitize_textarea_field。二者必须同步：任一侧改回「去标签」都会让页脚 HTML 在保存时丢失。
+                // 改动此契约前，先跑 tests/check-html-textarea-contract.js 回归校验。
+                'html'    => !empty($f['html']),
             ];
         }
         return $map;
@@ -191,7 +204,11 @@ class Jinyu_Setting
                     // 自由文本类字段按类型兜底 sanitize（纵深防御：入库前清洗，输出端仍有转义）
                     switch ($f['type']) {
                         case 'textarea':
-                            $out[$key] = sanitize_textarea_field((string) $val);
+                            // html 字段输出层用 wp_kses_post，保存时同样放行安全 HTML（剥离 script/style 等），
+                            // 其余纯文本 textarea 仍用 sanitize_textarea_field 彻底去标签。
+                            $out[$key] = !empty($f['html'])
+                                ? wp_kses_post((string) $val)
+                                : sanitize_textarea_field((string) $val);
                             break;
                         case 'color':
                             $out[$key] = sanitize_hex_color((string) $val) ?? $f['sdt'];
@@ -310,6 +327,245 @@ class Jinyu_Setting
     }
 
     /**
+     * 重建封面缩略图：为缺 jinyu-thumb / jinyu-cover 的附件重新生成派生尺寸。
+     *
+     * 主题在 after_setup_theme 注册了 jinyu-cover(768×512) 与 jinyu-thumb(400×267)，但
+     * 「上传时生成派生尺寸」只对注册之后新上传的图生效；历史上传的图必须补一次，前台才会
+     * 拿到真正的小图。整批重建按「只收集真正缺图的队列 + 按实测耗时自适应批次」进行，
+     * 前端每批拿到进度后自动续跑（more=true），直到队列清空。
+     *
+     * 生命周期说明：任务由浏览器发起的 AJAX 驱动，切走页面时当前批次跑完即止；浏览器关闭
+     * 后请求随 FPM 一起终止，不会有后台常驻进程。若此时闸门残留，靠状态里的心跳时间戳
+     * （ts）判定任务已死，新请求可直接接管续跑，无需等 transient 自行过期。
+     */
+    public function ajax_regenerate_thumbs(): void
+    {
+        // 先能力后 nonce：避免向未授权访客暴露 nonce 有效性
+        if (!current_user_can('edit_theme_options')) {
+            wp_send_json_error(__('权限不足', 'jinyu'));
+        }
+        check_ajax_referer('jinyu_save_options');
+        // 裁剪函数随 wp-admin/includes/image.php 注册，前台请求里并不存在，显式兜底加载
+        if (!function_exists('wp_generate_attachment_metadata')) {
+            require_once ABSPATH . 'wp-admin/includes/image.php';
+        }
+        if (!function_exists('wp_generate_attachment_metadata') || !function_exists('wp_get_registered_image_subsizes')) {
+            wp_send_json_error(__('当前服务器环境不支持缩略图重建（缺少 GD 或 WordPress 版本过旧）', 'jinyu'));
+        }
+
+        $st_key = 'jinyu_thumbs_regen_state';
+        $lk_key = 'jinyu_thumbs_regen_busy';
+
+        // 停止按钮：丢弃队列与闸门，下次点击从零开始
+        if (!empty($_POST['stop'])) {
+            $stopped = get_transient($st_key);
+            delete_transient($st_key);
+            delete_transient($lk_key);
+            $done = is_array($stopped) ? (int) $stopped['gen'] + (int) $stopped['skip'] + (int) $stopped['fail'] : 0;
+            $tot  = is_array($stopped) ? (int) $stopped['total'] : 0;
+            wp_send_json_success([
+                'msg'     => __('已停止，下次点击将重新扫描', 'jinyu'),
+                'more'    => false,
+                'done'    => $done,
+                'total'   => $tot,
+                'percent' => $tot > 0 ? min(100, (int) round($done * 100 / $tot)) : 0,
+            ]);
+        }
+
+        $s = get_transient($st_key);
+        if (!is_array($s) || !isset($s['ids']) || !is_array($s['ids'])) {
+            $s = ['ids' => [], 'idx' => 0, 'gen' => 0, 'skip' => 0, 'fail' => 0, 'total' => 0, 'avg' => 0, 'ts' => 0];
+        }
+
+        // 并发闸门 + 孤儿接管：任务心跳超过 2 分钟没更新，说明发起它的浏览器已关闭/断网，
+        // 原请求随 FPM 一起死了，此时允许新请求接管继续，不必等闸门过期。
+        $busy  = (bool) get_transient($lk_key);
+        $stale = empty($s['ts']) || (time() - (int) $s['ts']) > 120;
+        if ($busy && !$stale) {
+            // 带 code 是为了让前端区分「撞闸门」与真失败：撞闸门时任务其实还在跑，
+            // 自动续跑的调用方只需退避重试，不该把进度区翻成「已停止」
+            wp_send_json_error([
+                'code' => 'busy',
+                'msg'  => __('已有重建任务正在进行，请稍候再试', 'jinyu'),
+            ]);
+        }
+
+        // 队列只在首次构建，之后按游标推进：省掉每批重复全库扫描，也让进度条反映真实工作量
+        if (empty($s['ids'])) {
+            global $wpdb;
+            // 只处理图片附件；DESC 让最近上传的图先补齐（前台最常看到的是最新文章）
+            $ids = $wpdb->get_col("SELECT ID FROM {$wpdb->posts} WHERE post_type = 'attachment' AND post_mime_type LIKE 'image/%' ORDER BY ID DESC");
+            $queue = [];
+            foreach ((array) $ids as $aid) {
+                $meta = wp_get_attachment_metadata((int) $aid);
+                if (is_array($meta) && !empty($meta['sizes']['jinyu-cover']) && !empty($meta['sizes']['jinyu-thumb'])) {
+                    continue;
+                }
+                $queue[] = (int) $aid;
+            }
+            $s = ['ids' => $queue, 'idx' => 0, 'gen' => 0, 'skip' => 0, 'fail' => 0, 'total' => count($queue), 'avg' => 0, 'ts' => time()];
+        }
+        set_transient($lk_key, 1, 900);
+        $s['ts'] = time();
+
+        $total = (int) $s['total'];
+        $left  = count($s['ids']) - (int) $s['idx'];
+
+        if ($left <= 0) {
+            $this->finish_thumbs_regen($s);
+        }
+
+        // 批次大小按上一批实测均耗自适应，始终把单批压在 PHP 执行时限之内
+        // （多数主机 max_execution_time 为 20s，超出会被直接掐断）
+        $max_exec = (int) ini_get('max_execution_time');
+        $budget   = $max_exec > 0 ? min(40, (int) round($max_exec * 1.2)) : 40;
+        $budget   = max(8, $budget);
+        $avg      = (float) $s['avg'];
+        $batch    = ($avg > 0.001) ? (int) max(3, min(40, floor($budget * 0.7 / $avg))) : 10;
+        $batch    = min($batch, $left);
+
+        // 只为补齐主题两档：本站核心尺寸宽度为 0，本就没有派生图，限定后每次重建
+        // 省掉核心中间尺寸的 GD 缩放（实测 registered sizes 仅 4 档，可省一半以上）
+        add_filter('intermediate_image_sizes', [$this, 'limit_regen_sizes'], 10, 2);
+
+        $gen = $skip = $fail = $n = 0;
+        $t0  = microtime(true);
+        while ($n < $batch) {
+            $aid = (int) $s['ids'][(int) $s['idx']];
+            $s['idx']++;
+            $n++;
+            $file = get_attached_file($aid);
+            if (!$file || !is_file($file)) {
+                $skip++;
+                $s['skip']++;
+                continue;
+            }
+            if (wp_generate_attachment_metadata($aid, $file)) {
+                $gen++;
+                $s['gen']++;
+            } else {
+                $fail++;
+                $s['fail']++;
+            }
+            // 到达预算立刻收手：宁可多一轮请求，也不要被 PHP 掐断造成半批丢失
+            if (microtime(true) - $t0 > $budget) {
+                break;
+            }
+        }
+        remove_filter('intermediate_image_sizes', [$this, 'limit_regen_sizes'], 10);
+
+        $elapsed = microtime(true) - $t0;
+        $s['ts']  = time();
+        if ($n > 0) {
+            $s['avg'] = round($elapsed, 3) / $n;
+        }
+
+        $done = (int) $s['gen'] + (int) $s['skip'] + (int) $s['fail'];
+        $percent = $total > 0 ? min(100, (int) round($done * 100 / $total)) : 100;
+        $msg = sprintf(
+            /* translators: 1: 已处理数, 2: 总数, 3: 新生成, 4: 跳过, 5: 失败 */
+            __('已处理 %1$d/%2$d，新生成 %3$d，跳过 %4$d，失败 %5$d', 'jinyu'),
+            number_format_i18n($done),
+            number_format_i18n($total),
+            number_format_i18n((int) $s['gen']),
+            number_format_i18n((int) $s['skip']),
+            number_format_i18n((int) $s['fail'])
+        );
+
+        if ((int) $s['idx'] >= count($s['ids'])) {
+            $this->finish_thumbs_regen($s);
+        }
+
+        set_transient($st_key, $s, 900);
+        delete_transient($lk_key);
+        wp_send_json_success([
+            'msg'     => $msg,
+            'more'    => true,
+            'done'    => $done,
+            'total'   => $total,
+            'percent' => $percent,
+            'gen'     => (int) $s['gen'],
+            'skip'    => (int) $s['skip'],
+            'fail'    => (int) $s['fail'],
+        ]);
+    }
+
+    /**
+     * 只读查询重建任务状态，供前端在页面刷新 / 重新打开后恢复进度并自动续跑。
+     *
+     * 不设闸门、不改状态：判活交给调用方（stale 为真表示心跳已过期，原请求多半已中断）。
+     */
+    public function ajax_regen_status(): void
+    {
+        if (!current_user_can('edit_theme_options')) {
+            wp_send_json_error(__('权限不足', 'jinyu'));
+        }
+        check_ajax_referer('jinyu_save_options');
+
+        $s = get_transient('jinyu_thumbs_regen_state');
+        if (!is_array($s) || empty($s['ids']) || (int) $s['idx'] >= count($s['ids'])) {
+            wp_send_json_success(['running' => false]);
+        }
+
+        $total = (int) $s['total'];
+        $done  = (int) $s['gen'] + (int) $s['skip'] + (int) $s['fail'];
+        wp_send_json_success([
+            'running'   => true,
+            'stale'     => (time() - (int) $s['ts']) > 120,
+            'percent'   => $total > 0 ? min(100, (int) round($done * 100 / $total)) : 0,
+            'done'      => $done,
+            'total'     => $total,
+            'gen'       => (int) $s['gen'],
+            'skip'      => (int) $s['skip'],
+            'fail'      => (int) $s['fail'],
+            'remaining' => count($s['ids']) - (int) $s['idx'],
+        ]);
+    }
+
+    /**
+     * 重建时把中间尺寸限制为主题两档，省掉无关缩放。见 ajax_regenerate_thumbs()。
+     *
+     * @param string[] $sizes
+     * @return string[]
+     */
+    public function limit_regen_sizes($sizes): array
+    {
+        return array_values(array_filter((array) $sizes, function ($sz) {
+            return in_array($sz, ['jinyu-cover', 'jinyu-thumb'], true);
+        }));
+    }
+
+    /**
+     * 队列跑完的统一收尾：清闸门与状态、让提醒用的缺口统计下次重新计算。
+     */
+    private function finish_thumbs_regen(array $s): void
+    {
+        delete_transient('jinyu_thumbs_regen_state');
+        delete_transient('jinyu_thumbs_regen_busy');
+        // 缺口情况已变，清掉提醒用的统计缓存，下次进入后台重新计算
+        delete_transient('jinyu_missing_cover_count');
+
+        $done = (int) ($s['gen'] + $s['skip'] + $s['fail']);
+        $tot  = (int) $s['total'];
+        /* translators: 1: 新生成张数, 2: 跳过张数, 3: 失败张数 */
+        wp_send_json_success([
+            'msg'     => sprintf(
+                __('重建完成：新生成 %1$d 张，已齐全跳过 %2$d 张，失败 %3$d 张', 'jinyu'),
+                number_format_i18n((int) $s['gen']),
+                number_format_i18n((int) $s['skip']),
+                number_format_i18n((int) $s['fail'])
+            ),
+            'more'    => false,
+            'done'    => $done,
+            'total'   => $tot,
+            'percent' => 100,
+            'gen'     => (int) $s['gen'],
+            'skip'    => (int) $s['skip'],
+            'fail'    => (int) $s['fail'],
+        ]);
+    }
+
+    /**
      * 仅重置某一个设置分组（移除该分组所有字段的已存值，回退到 sdt 默认值）。
      */
     public function ajax_reset_section(): void
@@ -332,6 +588,97 @@ class Jinyu_Setting
         foreach ($ids as $id) { unset($opts[$id]); }
         update_option(JINYU_OPT, $opts);
         wp_send_json_success(['msg' => __('已重置本组', 'jinyu')]);
+    }
+
+    /* ── 后台提醒：历史封面缺主题尺寸 ───────────────────────────────── */
+
+    /**
+     * 顶栏报警图标：仍有封面缺 jinyu-cover / jinyu-thumb 时在**主题设置页**顶栏亮起。
+     *
+     * 派生尺寸只对「注册之后新上传的图」生效，历史图必须补跑一次重建，而这一步
+     * 多数站长并不知道要做（表现为卡片莫名加载原图、首页偏慢）。这里给一个常驻的
+     * 报警入口，避免问题被长期忽略。
+     *
+     * 用图标而不是页顶提醒条：图标只占顶栏里一个按钮的位置，不额外吃纵向空间，
+     * 点击即落到本页「维护工具」面板，不需要二次跳转。
+     *
+     * 只在主题设置页出现：这是一条找得到出路的维护引导，全后台常驻只会变成噪音，
+     * 用户也会以为站点处处有问题。
+     */
+    public function topbar_thumb_alert(): void
+    {
+        // 先能力后副作用：非授权访客不触发任何查询
+        if (!current_user_can('edit_theme_options') || wp_doing_ajax() || wp_doing_cron()) {
+            return;
+        }
+        // 屏幕判断要放在统计之前：非本页直接返回，避免每个后台页面都去查一遍附件
+        // （与 inc/fun/cache.php 的提醒同一约定）
+        $screen    = function_exists('get_current_screen') ? get_current_screen() : null;
+        $screen_ok = $screen && strpos($screen->id, 'jinyu-options') !== false;
+        $page_ok   = ! empty($_GET['page']) && $_GET['page'] === 'jinyu-options';
+        if ( ! $screen_ok && ! $page_ok ) {
+            return;
+        }
+        // 没有「暂不提醒」这类抑制开关：报警的意义在于它一直在，直到图片补齐为止。
+        // 重建跑完 missing 归零、图标自然消失，不需要额外的基线状态。
+        $missing = self::count_missing_covers();
+        if ($missing <= 0) {
+            return;
+        }
+        // 直达「维护工具」面板（面板切换用 hash，见 admin.js activate）。
+        // 用 <a> 而非 <button>：不依赖 admin.min.js 的事件绑定，行为在任何加载顺序下都一致。
+        $rebuild_url = add_query_arg('page', 'jinyu-options', admin_url('themes.php')) . '#tools';
+        // 角标只给两位数：三位以上占位会让按钮撑成一个圆饼，99+ 已足够表达"还很多"
+        $badge = $missing > 99 ? 99 : $missing;
+        /* translators: 1: 缺派生尺寸的封面张数 */
+        $summary = sprintf(
+            __('有 %1$d 张历史封面图缺少主题尺寸', 'jinyu'),
+            number_format_i18n($missing)
+        );
+        // 完整说明收进浮层与 aria-label：按钮本身只承担"这里有报警"的入口职责，
+        // 长文案铺在顶栏会把整条操作区顶宽。
+        $tip = $summary .
+            __('：缺 jinyu-cover / jinyu-thumb，卡片会直接加载原图拖慢页面；前往「维护工具」重建一次即可，无需手动裁剪。', 'jinyu');
+        printf(
+            '<a class="jinyu-alert" href="%1$s" aria-label="%2$s">' .
+                '<span class="jinyu-alert-ico" aria-hidden="true">' .
+                    '<svg class="jinyu-ico-svg" viewBox="0 0 24 24"><path d="M12 2a1 1 0 0 1 .9.55l9.5 17A1 1 0 0 1 22 21H2a1 1 0 0 1-.9-1.45l9.5-17A1 1 0 0 1 12 2zm0 4.24L4.62 19h14.76L12 6.24zM11 11v5h2v-5h-2zm0 7v2h2v-2h-2z"/></svg>' .
+                '</span>' .
+                '<span class="jinyu-alert-count" aria-hidden="true">%3$d</span>' .
+                '<span class="jinyu-alert-tip" role="tooltip">%4$s</span>' .
+            '</a>',
+            esc_url($rebuild_url),
+            esc_attr($tip),
+            (int) $badge,
+            esc_html($tip)
+        );
+    }
+
+    /**
+     * 统计最近图片附件中「缺 jinyu-cover」的数量。
+     *
+     * 顶栏报警图标只需大致趋势，全站扫描代价过高，因此只取最近 40 张并缓存 6 小时；
+     * 重建完成时主动清缓存。
+     */
+    public static function count_missing_covers(): int
+    {
+        $cached = get_transient('jinyu_missing_cover_count');
+        if (false !== $cached) {
+            return (int) $cached;
+        }
+        global $wpdb;
+        $ids = $wpdb->get_col(
+            "SELECT ID FROM {$wpdb->posts} WHERE post_type = 'attachment' AND post_mime_type LIKE 'image/%' ORDER BY ID DESC LIMIT 40"
+        );
+        $missing = 0;
+        foreach ((array) $ids as $aid) {
+            $meta = wp_get_attachment_metadata((int) $aid);
+            if (empty($meta['sizes']['jinyu-cover'])) {
+                $missing++;
+            }
+        }
+        set_transient('jinyu_missing_cover_count', $missing, 6 * HOUR_IN_SECONDS);
+        return $missing;
     }
 
 }

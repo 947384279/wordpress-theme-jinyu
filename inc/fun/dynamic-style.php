@@ -101,13 +101,29 @@ if (!function_exists('jinyu_relative_luminance')) {
 
 if (!function_exists('jinyu_dark_variant')) {
     /**
-     * 派生「暗色模式主色」：先按 20% 提亮（与主题内置暗色品牌的提亮幅度一致），
-     * 若仍达不到可读亮度（例如主色被设成纯黑）则逐档继续提亮，避免主色在暗底上糊掉。
+     * 派生「暗色模式主色」：仅轻微提亮 5%。
+     *
+     * 主色在暗色下同时承担两件事：① 填充（按钮/渐变底，上面压 @text-invert 白字）
+     * ② 描边与装饰。填充色若提亮到浅蓝（旧版 20%），白字对比会掉到 2.5:1，
+     * 因此这里刻意只做 5% 微调，保证白字仍 ≥5:1；「主色当文字用」的场景另走
+     * jinyu_dark_text_variant() 的更亮变体。
      */
     function jinyu_dark_variant($hex)
     {
+        return jinyu_color_shade($hex, 0.05);
+    }
+}
+
+if (!function_exists('jinyu_dark_text_variant')) {
+    /**
+     * 派生「暗色模式主色文字」：主色在暗底上作文字时必须提亮到 WCAG AA 4.5:1
+     * （默认按 20% 起步，若原色本身就是浅色则立即达标并直接返回）。
+     * 阈值 0.42 对应最浅的暗色背景 #3a4150 —— 再暗一档即不达标。
+     */
+    function jinyu_dark_text_variant($hex)
+    {
         $out = jinyu_color_shade($hex, 0.2);
-        for ($amount = 0.3; $amount <= 0.8 && jinyu_relative_luminance($out) < 0.35; $amount += 0.1) {
+        for ($amount = 0.3; $amount <= 0.8 && jinyu_relative_luminance($out) < 0.42; $amount += 0.1) {
             $out = jinyu_color_shade($hex, $amount);
         }
         return $out;
@@ -134,11 +150,14 @@ if (!function_exists('jinyu_dark_override_css')) {
         if ($base_rgb) {
             $dark     = jinyu_dark_variant($primary);
             $dark_rgb = (array) jinyu_hex_to_rgb($dark);
+            $text     = jinyu_dark_text_variant($primary);
 
-            $override['--jinyu-c-primary']       = $dark;
-            $override['--jinyu-c-primary-dark']  = strtolower($primary);
-            $override['--jinyu-c-primary-light'] = 'rgba(' . implode(',', $base_rgb) . ',.14)';
-            $override['--jinyu-c-primary-rgb']   = implode(',', $dark_rgb);
+            $override['--jinyu-c-primary']        = $dark;
+            $override['--jinyu-c-primary-dark']   = strtolower($primary);
+            $override['--jinyu-c-primary-light']  = 'rgba(' . implode(',', $base_rgb) . ',.14)';
+            $override['--jinyu-c-primary-rgb']    = implode(',', $dark_rgb);
+            // 文字变体：暗底上主色当文字用（链接/徽章/标题 hover）时须比填充色更亮
+            $override['--jinyu-c-primary-text']   = $text;
         }
 
         if (jinyu_get_option('dark_palette', 'default') === 'pureblack') {

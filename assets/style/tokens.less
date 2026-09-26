@@ -21,8 +21,8 @@
     /* 默认深灰整体提亮：原 #0f1115 仅靠 #000 纯黑档，肉眼几乎无差；
        现 bg #3a4150 ↔ 纯黑 #000 对比度≈2.1，切换明显。卡片/边框/文本同步提亮保持协调。 */
     --jinyu-c-bg: #3a4150;
-    --jinyu-c-bg-card: #434a5a;
-    --jinyu-c-bg-subtle: #4d5568;
+    --jinyu-c-bg-card: #343b49;
+    --jinyu-c-bg-subtle: #3d4452;
     /* 输入底色取比卡片深两档的 #333947：原 #3f4654 与卡片 #434a5a 仅差 4-6，
        暗色下输入框/文本域完全融进卡片。现凹陷感明显，配 border-strong 边界清晰。 */
     --jinyu-c-bg-input: #333947;
@@ -32,11 +32,22 @@
     --jinyu-c-bg-footer: #353b47;
     --jinyu-c-bg-mask: rgba(0, 0, 0, .55);
 
+    /* 暗色下「主色作为文字」专用令牌（--jinyu-c-primary-text）。
+       主色本身只作填充（配 @text-invert 深字），填充色在暗底上提亮到淡蓝后
+       白字会掉到 2.5:1，因此文字用途必须走本令牌：暗色下由
+       inc/fun/dynamic-style.php 的 jinyu_dark_variant() 继续提亮到 ≥4.5:1。 */
+    --jinyu-c-primary-text: #ff8a5c;
+    /* 「主色压在自家同色系淡底上」专用（置顶胶囊/标签计数一类）：
+       这类淡底是 rgba(主色,.12) 合成的浅色块，主色原值只有 4.41:1，差一点点。
+       亮色取更深的 primary-dark，暗色顺延提亮后的 primary-text，两端都能过 AA。 */
+    --jinyu-c-primary-ink: var(--jinyu-c-primary-text);
+
     --jinyu-c-text-1: #eef0f4;
     --jinyu-c-text-2: #d6dae2;
+    /* 次级灰仍偏亮：暗色背景已压暗一档（bg-card #434a5a→#343b49、bg-subtle #4d5568→#3d4452），
+       此二值在卡片/胶囊底上回到 4.6~5.3:1（原 #aab2c0/#9aa3b3 在更浅底上仅 3.5~4.2）。 */
     --jinyu-c-text-3: #aab2c0;
-    /* 暗色元信息灰：默认深灰提亮后原 #8a93a3 对比骤降，#9aa3b3 在 #434a5a 卡上约 4:1 保持可读 */
-    --jinyu-c-text-4: #9aa3b3;
+    --jinyu-c-text-4: #adb6c4;
     --jinyu-c-text-invert: #fff;
     --jinyu-c-text-footer-strong: #fff;
     --jinyu-c-text-footer: #aab2c0;
@@ -59,6 +70,9 @@
     --jinyu-c-primary-dark: #e85a2b;
     --jinyu-c-primary-light: #fff3ec;
     --jinyu-c-primary-rgb: 255, 107, 53;
+    /* 亮色下与主色同值：只有暗色覆写块才需要更亮的文字变体 */
+    --jinyu-c-primary-text: var(--jinyu-c-primary);
+    --jinyu-c-primary-ink: var(--jinyu-c-primary-dark);
 
     /* 语义色 */
     --jinyu-c-success: #00b74a;

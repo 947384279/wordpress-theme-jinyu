@@ -18,7 +18,7 @@ class Jinyu_OptionBasic extends Jinyu_BaseOptionItem
                 ['id'=>'web_logo','title'=>__('站点 Logo（亮色模式）','jinyu'),'type'=>'upload','sdt'=>'','desc'=>__('建议使用透明背景 PNG；暗色模式会自动切换下方「暗色模式」Logo，未填则复用本图','jinyu')],
                 ['id'=>'web_logo_dark','title'=>__('站点 Logo（暗色模式）','jinyu'),'type'=>'upload','sdt'=>'','desc'=>__('留空则暗色模式复用亮色 Logo','jinyu')],
                 ['id'=>'top_notice','title'=>__('顶部公告','jinyu'),'type'=>'string','sdt'=>'','desc'=>__('留空则不显示公告条','jinyu')],
-                ['id'=>'single_copyright','title'=>__('文末版权声明','jinyu'),'type'=>'textarea','sdt'=>"本文链接：{url}\n转载请注明出处：{title}（作者：{author}）",'desc'=>__('留空则使用默认声明。支持占位符：{url} 文章链接、{title} 标题、{author} 作者、{date} 日期','jinyu')],
+                ['id'=>'single_copyright','title'=>__('文末版权声明','jinyu'),'type'=>'textarea','sdt'=>"本文链接：{url}\n转载请注明出处：{title}（作者：{author}）",'desc'=>__('留空则使用默认声明。支持占位符：{url} 文章链接、{title} 标题、{author} 作者、{date} 日期；支持简单 HTML（如链接）','jinyu'),'html'=>true],
                 ['id'=>'reward_title','title'=>__('打赏标题','jinyu'),'type'=>'string','sdt'=>__('赞赏作者','jinyu')],
                 ['id'=>'reward_text','title'=>__('打赏文案','jinyu'),'type'=>'textarea','sdt'=>__('如果觉得文章对你有帮助，欢迎打赏支持～','jinyu')],
                 ['id'=>'reward_wechat','title'=>__('微信收款码','jinyu'),'type'=>'upload','sdt'=>'','desc'=>__('上传微信收款二维码图片；留空则不显示该渠道','jinyu')],

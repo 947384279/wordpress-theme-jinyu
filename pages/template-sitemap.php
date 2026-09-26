@@ -74,4 +74,4 @@ if (!is_array($sitemap_posts_map)) {
   </main>
   <?php get_sidebar(); ?>
 </div>
-<?php get_footer(); ?>
+<?php get_footer(); 

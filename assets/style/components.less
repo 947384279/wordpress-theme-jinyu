@@ -22,7 +22,7 @@
         transition: border-color @transition, transform @transition;
         text-decoration: none;
 
-        &:hover { border-color: @primary; transform: translateY(-2px); }
+        &:hover { border-color: @primary-text; transform: translateY(-2px); }
     }
     &-next { text-align: right; }
     &-label {
@@ -55,7 +55,7 @@
     align-items: flex-start;
     gap: @s-2;
 
-    > i { color: @primary; margin-top: 2px; flex: 0 0 auto; }
+    > i { color: @primary-text; margin-top: 2px; flex: 0 0 auto; }
     &-text { margin: 0; font-size: @fs-sm; color: @text-3; line-height: 1.7; }
 }
 
@@ -97,7 +97,7 @@
     cursor: pointer;
     color: @text-3;
     transition: background @transition, color @transition;
-    &:hover { background: @primary-light; color: @primary; }
+    &:hover { background: @primary-light; color: @primary-text; }
 }
 .jinyu-modal-body { padding: @s-4; }
 .jinyu-modal-loading { text-align: center; color: @text-3; padding: @s-6 0; i { margin-right: @s-2; } }
@@ -346,7 +346,7 @@
         border: 1px solid @border;
         border-radius: @radius-md;
         padding: @s-5;
-        &-title { font-size: @fs-lg; margin: 0 0 @s-3; display: flex; align-items: center; gap: @s-2; i { color: @primary; } }
+        &-title { font-size: @fs-lg; margin: 0 0 @s-3; display: flex; align-items: center; gap: @s-2; i { color: @primary-text; } }
         &-list { list-style: none; margin: 0; padding: 0; }
         &-list li {
             display: flex;
@@ -355,7 +355,7 @@
             border-bottom: 1px solid @border;
             &:last-child { border-bottom: 0; }
             a { flex: 1; color: @text-2; text-decoration: none; transition: color @transition; .text-ellipsis(1); }
-            a:hover { color: @primary; }
+            a:hover { color: @primary-text; }
         }
         &-rank {
             flex-shrink: 0;

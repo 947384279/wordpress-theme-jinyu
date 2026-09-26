@@ -32,7 +32,7 @@
         font-size: @fs-sm;
         transition: all @transition-fast;
 
-        &:hover { border-color: @primary; color: @primary; transform: translateY(-2px); }
+        &:hover { border-color: @primary-text; color: @primary-text; transform: translateY(-2px); }
     }
     .jinyu-tag-count {
         font-size: @fs-xs;
@@ -61,7 +61,7 @@
         transition: all @transition-fast;
         &:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.1); }
     }
-    .jinyu-random-label { font-size: @fs-sm; color: @primary; font-weight: 600; }
+    .jinyu-random-label { font-size: @fs-sm; color: @primary-text; font-weight: 600; }
     .jinyu-random-title { font-size: @fs-lg; color: @text-1; font-weight: 700; }
 }
 .jinyu-random-list-title { margin: @s-6 0 @s-3; font-size: @fs-md; color: @text-1; }
@@ -75,7 +75,7 @@
         align-items: center;
         padding: @s-3 0;
         border-bottom: 1px solid @border;
-        a { color: @text-2; &:hover { color: @primary; } }
+        a { color: @text-2; &:hover { color: @primary-text; } }
     }
     .jinyu-random-date { font-size: @fs-xs; color: @text-4; }
 }
@@ -87,9 +87,9 @@
     margin-bottom: @s-5;
     h3 { font-size: @fs-md; margin: 0 0 @s-2; a { color: @text-1; } span { color: @text-4; font-weight: 400; font-size: @fs-sm; } }
     ul { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: @s-2 @s-5; }
-    li a { color: @text-2; font-size: @fs-sm; &:hover { color: @primary; } }
+    li a { color: @text-2; font-size: @fs-sm; &:hover { color: @primary-text; } }
 }
-.jinyu-sitemap-pages { list-style: none; padding: 0; margin: 0; columns: 2; li { padding: @s-2 0; a { color: @text-2; &:hover { color: @primary; } } } }
+.jinyu-sitemap-pages { list-style: none; padding: 0; margin: 0; columns: 2; li { padding: @s-2 0; a { color: @text-2; &:hover { color: @primary-text; } } } }
 
 @media (max-width: 576px) {
     .jinyu-sitemap-cat ul, .jinyu-sitemap-pages { columns: 1; grid-template-columns: minmax(0, 1fr); }
@@ -114,7 +114,7 @@
     text-decoration: none;
     color: @text-1;
     transition: all @transition-fast;
-    &:hover { transform: translateY(-4px); box-shadow: 0 10px 28px rgba(0,0,0,.12); border-color: @primary; }
+    &:hover { transform: translateY(-4px); box-shadow: 0 10px 28px rgba(0,0,0,.12); border-color: @primary-text; }
     .jinyu-book-cover { aspect-ratio: 3/2; overflow: hidden; background: @bg-subtle;
         img { width: 100%; height: 100%; object-fit: cover; } }
     .jinyu-book-meta { padding: @s-3 @s-4; }
@@ -167,14 +167,14 @@
 .jinyu-moment-thumb { margin: @s-2 0; }
 .jinyu-moment-thumb img { max-width: 100%; border-radius: @radius-sm; }
 .jinyu-moment-meta { font-size: @fs-xs; color: @text-4; margin-top: @s-2; }
-.jinyu-moment-meta a { color: @text-4; &:hover { color: @primary; } }
+.jinyu-moment-meta a { color: @text-4; &:hover { color: @primary-text; } }
 
 /* 页脚公司信息 / 备案 */
 .jinyu-footer-contact {
     list-style: none; padding: 0; margin: 0;
     li { padding: @s-1 0; color: @text-3; font-size: @fs-sm; }
-    a { color: @text-3; &:hover { color: @primary; } }
-    i { width: 18px; color: @primary; }
+    a { color: @text-3; &:hover { color: @primary-text; } }
+    i { width: 18px; color: @primary-text; }
 }
 .jinyu-footer-icp { margin-left: @s-3; }
 
@@ -195,7 +195,7 @@
     border-radius: @radius-pill;
     background: @bg-subtle;
     transition: @transition;
-    &:hover { background: rgba(0, 0, 0, .04); color: @primary; }
+    &:hover { background: rgba(0, 0, 0, .04); color: @primary-text; }
 }
 .jinyu-ua-icon {
     display: inline-flex;
@@ -245,7 +245,7 @@
 .jinyu-tag-group-letter {
     font-size: @fs-xl;
     font-weight: 700;
-    color: @primary;
+    color: @primary-text;
 }
 .jinyu-tag-group-count {
     font-size: @fs-xs;
@@ -348,7 +348,7 @@
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-.jinyu-cms-box-list a:hover { color: @primary; }
+.jinyu-cms-box-list a:hover { color: @primary-text; }
 
 @media (max-width: 768px) {
     .jinyu-cms-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }

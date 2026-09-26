@@ -10,6 +10,10 @@
 @primary:        var(--jinyu-c-primary);
 @primary-dark:   var(--jinyu-c-primary-dark);
 @primary-light:  var(--jinyu-c-primary-light);
+/* 「主色作文字」专用：亮色=主色本身，暗色=更亮的文字变体（见 tokens.less） */
+@primary-text:   var(--jinyu-c-primary-text);
+/* 「主色压在自己调出的淡底上」专用：亮色取深档，暗色取提亮档 */
+@primary-ink:    var(--jinyu-c-primary-ink);
 @success:        var(--jinyu-c-success);
 @warning:        var(--jinyu-c-warning);
 @danger:         var(--jinyu-c-danger);
@@ -106,16 +110,19 @@
 // 分类/标签色：common.less 与 critical.less 共用（critical 需首屏着色，不能只放主样式表）。
 // 改色只改此处，两处调用自动同步，避免双份硬编码漂移。
 .jinyu-cat-palette() {
-    .jinyu-cat-0  { --c: #ff6b35; --c-rgb: 255, 107, 53; }   /* 橙 */
-    .jinyu-cat-1  { --c: #1c60f3; --c-rgb: 28, 96, 243; }    /* 蓝 */
-    .jinyu-cat-2  { --c: #00b074; --c-rgb: 0, 176, 116; }    /* 绿 */
-    .jinyu-cat-3  { --c: #9b59b6; --c-rgb: 155, 89, 182; }   /* 紫 */
-    .jinyu-cat-4  { --c: #16b5c4; --c-rgb: 22, 181, 196; }   /* 青 */
-    .jinyu-cat-5  { --c: #e84393; --c-rgb: 232, 67, 147; }   /* 粉 */
-    .jinyu-cat-6  { --c: #f0a30a; --c-rgb: 240, 163, 10; }   /* 琥珀 */
-    .jinyu-cat-7  { --c: #2d98da; --c-rgb: 45, 152, 218; }   /* 天蓝 */
-    .jinyu-cat-8  { --c: #e74c3c; --c-rgb: 231, 76, 60; }    /* 红 */
-    .jinyu-cat-9  { --c: #27ae60; --c-rgb: 39, 174, 96; }    /* 草绿 */
-    .jinyu-cat-10 { --c: #8e44ad; --c-rgb: 142, 68, 173; }   /* 深紫 */
-    .jinyu-cat-11 { --c: #fd7e14; --c-rgb: 253, 126, 20; }   /* 亮橙 */
+    /* ⚠️ 白字对比度硬约束：12 色全部须 ≥4.5:1（WCAG AA 正文）。
+       下值由原色相压暗到刚好过线（实测 4.6~5.9），视觉色相不变。
+       新增色值请先用对比度公式验算，勿再引入浅色（浅色只能配深字）。 */
+    .jinyu-cat-0  { --c: #d83a00; --c-rgb: 216, 58, 0; }     /* 橙 4.64 */
+    .jinyu-cat-1  { --c: #1c60f3; --c-rgb: 28, 96, 243; }    /* 蓝 5.23 */
+    .jinyu-cat-2  { --c: #008557; --c-rgb: 0, 133, 87; }     /* 绿 4.67 */
+    .jinyu-cat-3  { --c: #9b59b6; --c-rgb: 155, 89, 182; }   /* 紫 4.67 */
+    .jinyu-cat-4  { --c: #10808b; --c-rgb: 16, 128, 139; }   /* 青 4.68 */
+    .jinyu-cat-5  { --c: #dd1b79; --c-rgb: 221, 27, 121; }   /* 粉 4.66 */
+    .jinyu-cat-6  { --c: #9d6a07; --c-rgb: 157, 106, 7; }    /* 琥珀 4.67 */
+    .jinyu-cat-7  { --c: #1f7ab2; --c-rgb: 31, 122, 178; }   /* 天蓝 4.68 */
+    .jinyu-cat-8  { --c: #df2e1b; --c-rgb: 223, 46, 27; }    /* 红 4.62 */
+    .jinyu-cat-9  { --c: #1e864a; --c-rgb: 30, 134, 74; }    /* 草绿 4.60 */
+    .jinyu-cat-10 { --c: #8e44ad; --c-rgb: 142, 68, 173; }   /* 深紫 5.87 */
+    .jinyu-cat-11 { --c: #be5702; --c-rgb: 190, 87, 2; }     /* 亮橙 4.61 */
 }

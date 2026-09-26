@@ -79,7 +79,7 @@ if (!function_exists('jinyu_get_post_cover')) {
                 return '';
             }
 
-            $sizes = ['medium', 'medium_large', 'large'];
+            $sizes = ['jinyu-thumb', 'jinyu-cover', 'large'];
             $parts = [];
             $last  = '';
             foreach ($sizes as $sz) {
@@ -130,7 +130,7 @@ if (!function_exists('jinyu_get_post_cover')) {
             $aid = jinyu_url_to_postid($local);
             if ($aid <= 0) return '';
 
-            $sizes = ['medium', 'medium_large', 'large'];
+            $sizes = ['jinyu-thumb', 'jinyu-cover', 'large'];
             $parts = [];
             $last  = '';
             foreach ($sizes as $sz) {
@@ -369,7 +369,9 @@ if (!function_exists('jinyu_cover_url')) {
     /**
      * 封面 URL 统一出口：
      * - 本站上传目录内的 jpg/png 尝试替换为 WebP（按需生成，见 media.php）；
-     * - 正文提取的原始大图先回溯附件，降级为 large 中间尺寸，避免原图直出。
+     * - 正文提取的原始大图先回溯附件，降级为 jinyu-cover 中间尺寸，避免原图直出。
+     *     （原为 large，但后台若把 large 宽度设成 0 就没有该派生图，会一路回退原图，
+     *       正是首页卡片吃 1280px 原图的根因；jinyu-cover 由本主题注册，不依赖后台设置。）
      *
      * @param string $url           原始封面 URL
      * @param bool   $webp          是否允许 WebP 替换
@@ -380,7 +382,7 @@ if (!function_exists('jinyu_cover_url')) {
     {
         if (empty($url) || !is_string($url)) return $url;
 
-        // 原图降采样：能找到对应附件时改取 large 中间尺寸（1024px）
+        // 原图降采样：能找到对应附件时改取 jinyu-cover 中间尺寸（768×512，不符则回退原图）
         // 仅对「本站上传目录内、且未带尺寸后缀」的图回退降采样；
         // 外链/CDN/主题资源/已带尺寸后缀的图直接跳过 attachment_url_to_postid，
         // 否则每次渲染都多查一次且对站外图必然返回 0（纯浪费）。
@@ -413,7 +415,7 @@ if (!function_exists('jinyu_cover_url')) {
                 $aid = $attachment_id > 0 ? (int) $attachment_id : jinyu_url_to_postid($local_url);
                 $memo[$clean] = '';
                 if ($aid) {
-                    $l = wp_get_attachment_image_src($aid, 'large');
+                    $l = wp_get_attachment_image_src($aid, 'jinyu-cover');
                     if ($l && !empty($l[0]) && basename($l[0]) !== basename($clean)) {
                         $memo[$clean] = $l[0];
                     }

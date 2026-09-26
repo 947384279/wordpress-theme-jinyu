@@ -63,6 +63,7 @@ require_once JINYU_ABS_DIR . '/inc/fun/crypto.php';
 require_once JINYU_ABS_DIR . '/inc/fun/core.php';
 require_once JINYU_ABS_DIR . '/inc/fun/patterns.php';
 require_once JINYU_ABS_DIR . '/inc/fun/maintenance.php';
+require_once JINYU_ABS_DIR . '/inc/fun/smtp.php';
 // 性能优化中心已迁至配套插件 jinyu-theme-companion（perf-center.php）。
 // 主题仅在呈现层按需读取开关值（HTML 压缩 / 评论懒加载），插件缺席时按 $default 降级。
 function jinyu_perf_opt( string $key, bool $default = false ): bool {
@@ -83,6 +84,12 @@ function jinyu_perf_opt( string $key, bool $default = false ): bool {
 if (is_admin()) require_once JINYU_ABS_DIR . '/inc/setting/index.php';
 
 add_action('admin_enqueue_scripts', function ($hook) {
+    // 顶栏报警图标样式：无条件加载（文件很小），保证提醒在任何页面都有样式
+    $alert_css = JINYU_ABS_DIR . '/assets/dist/style/admin-alert.min.css';
+    if (file_exists($alert_css)) {
+        wp_enqueue_style('jinyu-admin-alert', JINYU_ABS_URI . '/assets/dist/style/admin-alert.min.css', [], filemtime($alert_css));
+    }
+
     if (strpos($hook, 'jinyu-options') === false) return;
     wp_enqueue_media(); // 设置页「上传/选择」字段依赖 wp.media，缺则点击无反应
     wp_enqueue_style('jinyu-admin', JINYU_ABS_URI . '/assets/dist/style/admin.min.css', [], filemtime(JINYU_ABS_DIR . '/assets/dist/style/admin.min.css'));
@@ -174,7 +181,9 @@ add_action('wp_enqueue_scripts', function () {
         return file_exists( $p ) ? filemtime( $p ) : JINYU_CUR_VER;
     };
 
-    wp_enqueue_style('jinyu-font-awesome', JINYU_ABS_URI . '/assets/fonts/fa/all.min.css', [], '6.5.1');
+    // 图标样式为按白名单裁剪后的子集版本（tools/fa-subset.py 生成），
+    // 新增图标请先往 assets/fonts/fa/icons.extra.txt 里追加再重新生成，否则会显示豆腐块。
+    wp_enqueue_style('jinyu-font-awesome', JINYU_ABS_URI . '/assets/fonts/fa/subset.min.css', [], '6.5.1');
     wp_enqueue_style('jinyu-style', JINYU_ABS_URI . '/assets/dist/style/style.min.css', ['jinyu-font-awesome'], $css_ver);
 
     $deps = [];
@@ -197,12 +206,7 @@ add_action('wp_enqueue_scripts', function () {
         $deps[] = 'jinyu-viewer';
     }
 
-    // 首页轮播 Swiper
-    if (is_home() && jinyu_is_checked('home_carousel')) {
-        wp_enqueue_style('jinyu-swiper-css', JINYU_ABS_URI . '/assets/css/vendor/swiper-bundle.min.css', [], $ver('css/vendor/swiper-bundle.min.css'));
-        wp_enqueue_script('jinyu-swiper', JINYU_ABS_URI . '/assets/js/vendor/swiper-bundle.min.js', [], $ver('js/vendor/swiper-bundle.min.js'), true);
-        $deps[] = 'jinyu-swiper';
-    }
+    // 首页轮播：主题自研实现（assets/js/jinyu.js 的 JinyuCarousel），无第三方依赖，故无需 enqueue
 
     // AI 对话模板：单独加载交互脚本，依赖 jinyu-main 注入的 JINYU_CONFIG
     if (is_page_template('pages/template-ai.php')) {
@@ -345,7 +349,8 @@ add_action('admin_notices', function () {
     }
     if (!empty($missing)) {
         printf(
-            '<div class="notice notice-warning"><p>%s</p></div>',
+            // .inline：免得被 WP 核心搬进顶栏品牌区那个窄列（详见 inc/fun/cache.php 同类注释）
+            '<div class="notice notice-warning inline"><p>%s</p></div>',
             /* translators: %s: 缺失的 PHP 扩展名列表 */
             sprintf(esc_html__('金玉主题缺少 PHP 扩展：%s', 'jinyu'), implode(', ', $missing))
         );

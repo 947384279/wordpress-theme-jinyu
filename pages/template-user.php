@@ -85,4 +85,4 @@ $stats = is_user_logged_in() ? jinyu_user_stats($uid) : [];
   </main>
   <?php if (!is_user_logged_in()) get_sidebar(); ?>
 </div>
-<?php get_footer(); ?>
+<?php get_footer(); 

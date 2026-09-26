@@ -21,13 +21,10 @@ class Jinyu_OptionCarousel extends Jinyu_BaseOptionItem
                 ['id'=>'home_carousel_loop','title'=>(__('循环播放','jinyu')),'type'=>'switch','sdt'=>true,'showRefId'=>'home_carousel'],
                 ['id'=>'home_carousel_delay','title'=>(__('自动播放间隔 (ms)','jinyu')),'type'=>'number','sdt'=>3000,'min'=>0,'desc'=>__('0 为不自动播放','jinyu'),'showRefId'=>'home_carousel'],
                 ['id'=>'home_carousel_count','title'=>(__('自动轮播数量','jinyu')),'type'=>'number','sdt'=>5,'min'=>1,'max'=>20,'desc'=>__('未手动指定轮播时，自动取最新且含封面的文章数量','jinyu'),'showRefId'=>'home_carousel'],
+                // 主题自研轮播只支持位移 / 淡入淡出两种过渡，其余 swiper 3D 效果已随依赖移除
                 ['id'=>'home_carousel_effect','title'=>(__('切换效果','jinyu')),'type'=>'select','sdt'=>'','options'=>[
-                    ['label'=>__('默认','jinyu'),'value'=>''],
+                    ['label'=>__('位移（默认）','jinyu'),'value'=>''],
                     ['label'=>(__('淡入淡出','jinyu')),'value'=>'fade'],
-                    ['label'=>(__('立方体','jinyu')),'value'=>'cube'],
-                    ['label'=>(__('快速翻转','jinyu')),'value'=>'flip'],
-                    ['label'=>(__('覆盖流','jinyu')),'value'=>'coverflow'],
-                    ['label'=>(__('卡片','jinyu')),'value'=>'cards'],
                 ],'showRefId'=>'home_carousel'],
                 ['id'=>'home_carousel_manual','title'=>(__('手动指定轮播（可选）','jinyu')),'type'=>'textarea','sdt'=>'','desc'=>(__('每行一条，格式：标题|图片URL|链接。留空则自动取最新文章。','jinyu')),'showRefId'=>'home_carousel'],
 

@@ -166,7 +166,7 @@ function jinyu_ajax_search()
     ob_start();
     if ($query->have_posts()) {
         while ($query->have_posts()): $query->the_post();
-            $cover = jinyu_get_post_cover(get_the_ID(), 'thumbnail');
+            $cover = jinyu_get_post_cover(get_the_ID(), 'jinyu-thumb');
             ?>
             <a class="jinyu-search-sg" href="<?php the_permalink(); ?>">
                 <span class="jinyu-search-sg-cover">
@@ -254,7 +254,7 @@ function jinyu_ajax_link_preview()
         'ok'      => true,
         'title'   => get_the_title($pid),
         'excerpt' => $excerpt,
-        'thumb'   => jinyu_get_post_cover($pid, 'medium'),
+        'thumb'   => jinyu_get_post_cover($pid, 'jinyu-thumb'),
         'url'     => get_permalink($pid),
         'date'    => get_the_date('Y-m-d', $pid),
     ]);
@@ -348,7 +348,7 @@ function jinyu_coview_item($id)
         'id'    => $id,
         'title' => get_the_title($id),
         'url'   => get_permalink($id),
-        'thumb' => jinyu_get_post_cover($id, 'thumbnail'),
+        'thumb' => jinyu_get_post_cover($id, 'jinyu-thumb'),
     ];
 }
 

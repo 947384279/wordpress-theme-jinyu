@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "gulp dev",
     "build": "gulp build",
-    "zip": "gulp zip"
+    "zip": "gulp zip",
+    "test": "node tests/check-html-textarea-contract.js"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",

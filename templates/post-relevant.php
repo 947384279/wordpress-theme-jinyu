@@ -23,4 +23,4 @@ if (jinyu_is_checked('related_enable')) {
         <?php endwhile; wp_reset_postdata(); ?>
     </div>
 </section>
-<?php } } } ?>
+<?php } } } 

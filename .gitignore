@@ -56,3 +56,12 @@ jinyu-plugin-preview.html
 
 # 本地设计审计产物（截图/预览/测试脚本，非主题源）
 _design_audit/
+
+# 顶栏设置页视觉预览原型（非主题源，无引用）
+/topbar-preview.html
+
+# FontAwesome 图标子集化中间产物（fa-collect.py 可重新生成，非主题源）
+# 注意：icons.extra.txt 是手工维护的白名单，必须保留在版本库中
+/assets/fonts/fa/icons.all.raw.txt
+/assets/fonts/fa/icons.raw.txt
+/assets/fonts/fa/icons.map.json

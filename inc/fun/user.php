@@ -241,12 +241,39 @@ add_filter('get_avatar_url', function ($url) {
 }, 20, 1);
 
 /**
- * 国内头像源：按后台「头像来源」把 Gravatar 主机改写为 Cravatar / WeAvatar。
- * 二者兼容 Gravatar 同一套 /avatar/{md5(email)} 协议（同样支持 s/d/r/f 参数）。
- * 仅改写真正的 Gravatar 默认地址；自定义头像（data: 或第三方 URL）不动。
+ * 头像裂图兜底：第三方头像源（后台可设 Cravatar 等）一旦不可达，<img> 会变成破图。
+ * 这里给头像注入 data-jinyu-fallback，指向本地生成的首字母 SVG（data URI，零请求），
+ * 由 jinyu.js 的 imgFallback 模块接管 —— 与 onerror 不同，它不依赖内联脚本、可过 CSP。
  */
-add_filter('get_avatar_url', function ($url, $id_or_email, $args) {
-    static $map = [
+add_filter('get_avatar', function ($avatar, $id_or_email, $args) {
+    if (strpos($avatar, '<img') === false) {
+        return $avatar;
+    }
+
+    $label = '';
+    if (is_numeric($id_or_email)) {
+        $u = get_userdata((int) $id_or_email);
+        $label = $u ? (string) $u->display_name : '';
+    } elseif (is_object($id_or_email) && isset($id_or_email->user_id)) {
+        $u = get_userdata((int) $id_or_email->user_id);
+        $label = $u ? (string) $u->display_name : '';
+    } elseif (is_string($id_or_email)) {
+        $label = $id_or_email;
+    }
+
+    $size  = (int) ($args['size'] ?? 96);
+    $fallback = jinyu_letter_avatar($label, $size > 0 ? $size : 96);
+
+    return preg_replace('/<img\b/i', '<img data-jinyu-fallback="' . esc_url($fallback) . '"', $avatar, 1);
+}, 20, 3);
+
+/**
+ * 国内头像镜像表：均兼容 Gravatar 同一套 /avatar/{md5(email)} 协议（同样支持 s/d/r/f）。
+ * 顺序即回退顺序，jinyu_avatar_mirror_probe() 的探测结论决定本轮实际使用哪一个。
+ */
+function jinyu_avatar_mirror_map(): array
+{
+    return [
         'cravatar' => 'https://cn.cravatar.com/avatar/',
         'weavatar' => 'https://weavatar.com/avatar/',
         'v2ex'     => 'https://cdn.v2ex.com/gravatar/',
@@ -254,14 +281,205 @@ add_filter('get_avatar_url', function ($url, $id_or_email, $args) {
         'qiniu'    => 'https://dn-qiniu-avatar.qbox.me/avatar/',
         'webpse'   => 'https://gravatar.webp.se/avatar/',
     ];
-    $src = jinyu_get_option('comment_avatar_src', 'gravatar');
-    if (!isset($map[$src])) {
+}
+
+/**
+ * 决定本轮对外输出的镜像 id。
+ *
+ * 后台「头像来源」选的源未必活着（cn.cravatar.com 2026 年已停止服务，请求一律 404），
+ * 若照单输出，每个头像都要先失败一次再回退：控制台刷一排 404，Lighthouse 最佳实践扣分。
+ *
+ * 策略：以 transient 里的探测结论为准；尚未探测过时直接把已确认下线的 cravatar 视为失效
+ * （探测由 shutdown 钩子补齐，最多 6 小时重跑一次）。这样首屏就输出可确定的活源，
+ * 而不是「先发一次 404 再回退」。
+ */
+function jinyu_avatar_mirror_pick(): string
+{
+    static $pick = null;
+
+    if (null !== $pick) {
+        return $pick;
+    }
+
+    $pick = '';
+    $chosen = jinyu_get_option('comment_avatar_src', 'gravatar');
+    $map    = jinyu_avatar_mirror_map();
+    if (!isset($map[$chosen])) {
+        return $pick;
+    }
+
+    $dead = get_transient('jinyu_avatar_mirror_dead');
+    if (!is_array($dead)) {
+        // 探测还没跑过：先用已知下线的源把结论兜住，等 shutdown 补齐后再按真值走。
+        $dead = ['cravatar'];
+    }
+    if (!in_array($chosen, $dead, true)) {
+        return $pick = $chosen;
+    }
+
+    // 后台选中的源已被判定失效：改用探测确认存活、且与所选不同的源。
+    $alive = get_transient('jinyu_avatar_mirror_alive');
+    if (is_string($alive) && isset($map[$alive]) && $alive !== $chosen) {
+        $pick = $alive;
+    }
+
+    return $pick;
+}
+
+/**
+ * 取某个镜像 id 的 URL 前缀；后台选择失效时自动换成存活源（返回 null 表示走官方 Gravatar）。
+ */
+function jinyu_avatar_mirror_prefix(string $id): ?string
+{
+    $map = jinyu_avatar_mirror_map();
+    if (!isset($map[$id])) {
+        return null;
+    }
+    return $map[$id];
+}
+
+/**
+ * 由已确定的头像 URL 反查「同协议的其它镜像」回退链，逐项交给前端依次重试。
+ * 直接从 URL 切前缀，md5 与查询串原样继承，无需再算一次哈希。
+ *
+ * @return string[] 备用镜像的完整 URL；空数组表示无需回退（官方 Gravatar 或已用尽）。
+ */
+function jinyu_avatar_mirror_chain(string $url): array
+{
+    $map = jinyu_avatar_mirror_map();
+    foreach ($map as $prefix) {
+        if (stripos($url, $prefix) === 0) {
+            $rest = substr($url, strlen($prefix));
+            $chain = [];
+            foreach ($map as $id => $other) {
+                if ($other !== $prefix) {
+                    $chain[] = $other . $rest;
+                }
+            }
+            return $chain;
+        }
+    }
+    return [];
+}
+
+/**
+ * 把上述回退链挂到 <img> 上（data-jinyu-mirror，| 分隔）。
+ * 前端 imgFallback 模块按顺序消耗，最后才落到 data-jinyu-fallback 的首字母占位图。
+ */
+add_filter('get_avatar', function ($avatar, $id_or_email = null, $args = array()) {
+    if (preg_match('/<img\b/i', $avatar) !== 1 || strpos($avatar, 'data-jinyu-mirror') !== false) {
+        return $avatar;
+    }
+    // 直接取 <img> 上的 src：不能依赖 $args['url']（旧版 WP 不入参），
+    // 且这里的 src 已被 esc_url 转义过，解码回原样再反查镜像。
+    if (preg_match("/\bsrc=['\"]([^'\"]+)['\"]/i", $avatar, $m) !== 1) {
+        return $avatar;
+    }
+    $url    = html_entity_decode(trim($m[1]), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    $chain  = jinyu_avatar_mirror_chain($url);
+    if (!$chain) {
+        return $avatar;
+    }
+    return preg_replace('/<img\b/i', '<img data-jinyu-mirror="' . esc_attr(implode('|', $chain)) . '"', $avatar, 1);
+}, 20, 3);
+
+/**
+ * 请求收尾时对镜像做一次存活探测（每 6 小时一次），结果写进 transient 供 jinyu_avatar_mirror_pick() 使用。
+ * 刻意挂在 shutdown：探测要走 6 个 HEAD，绝不能卡在前台首屏。
+ * 判定标准用 200（源站对未知 md5 配 d=404 时也会回 200 + 空图，正好代表「服务还在」），
+ * 非 200 / 超时的一律记入失效名单。
+ */
+add_action('shutdown', function () {
+    if (wp_doing_cron() || (function_exists('wp_doing_ajax') && wp_doing_ajax())) {
+        return;
+    }
+    if (is_array(get_transient('jinyu_avatar_mirror_dead'))) {
+        return;
+    }
+
+    $probe  = '00000000000000000000000000000000?d=404&s=1';
+    $dead   = [];
+    $alive  = '';
+    // 只探最常被选中的三个：全量六个要 6~12 秒，卡在收尾阶段不值得。
+    foreach (['cravatar', 'weavatar', 'loli'] as $id) {
+        $prefix = jinyu_avatar_mirror_prefix($id);
+        if (null === $prefix) {
+            continue;
+        }
+        $resp = wp_remote_head($prefix . $probe, [
+            'timeout'      => 1.5,
+            'redirection'  => 0,
+            'httpversion'  => '1.1',
+        ]);
+        $ok = !is_wp_error($resp) && 200 === (int)wp_remote_retrieve_response_code($resp);
+        if (!$ok) {
+            $dead[] = $id;
+        } elseif ('' === $alive) {
+            $alive = $id;
+        }
+    }
+
+    set_transient('jinyu_avatar_mirror_dead', $dead, 6 * HOUR_IN_SECONDS);
+    set_transient('jinyu_avatar_mirror_alive', $alive, 6 * HOUR_IN_SECONDS);
+}, 5);
+
+/**
+ * 取头像主体（评论者名 / 用户名 / 邮箱前缀），供首字母占位图取字用。
+ */
+function jinyu_avatar_label($id_or_email): string
+{
+    if (is_object($id_or_email)) {
+        if (isset($id_or_email->comment_author)) {
+            return (string)$id_or_email->comment_author;
+        }
+        if (isset($id_or_email->display_name)) {
+            return (string)$id_or_email->display_name;
+        }
+        if (!empty($id_or_email->user_id)) {
+            $u = get_userdata((int)$id_or_email->user_id);
+            return $u ? (string)$u->display_name : '';
+        }
+        return '';
+    }
+
+    if (is_numeric($id_or_email)) {
+        $u = get_userdata((int)$id_or_email);
+        return $u ? (string)$u->display_name : '';
+    }
+
+    if (is_string($id_or_email) && false !== strpos($id_or_email, '@')) {
+        return (string)substr($id_or_email, 0, strpos($id_or_email, '@'));
+    }
+
+    return '';
+}
+
+/**
+ * 国内头像源：按后台「头像来源」（失效时自动改投存活源）把 Gravatar 主机改写成国内镜像。
+ * 仅改写真正的 Gravatar 默认地址；自定义头像（data: 或第三方 URL）不动。
+ *
+ * 顺带把 d=404 换成「首字母占位图的 data URI」：Gravatar 协议下 d=404 意味着
+ * 「这人没头像就返回 404」，于是每位无头像评论者都会在控制台留一条 404，
+ * Lighthouse 最佳实践直接扣 4 分。换成 data URI 后源站原样吐回这张首字母图：
+ * 依然显示彩色首字母，且一次请求都不失败（前端 data-jinyu-fallback 仍留作最后防线）。
+ */
+add_filter('get_avatar_url', function ($url, $id_or_email, $args) {
+    $prefix = jinyu_avatar_mirror_prefix(jinyu_avatar_mirror_pick());
+    if (null !== $prefix && preg_match('#^https?://[^/]+/(avatar|gravatar)/#i', $url)) {
+        $url = preg_replace('#^https?://[^/]+/(avatar|gravatar)/#i', $prefix, $url);
+    }
+
+    if (empty($args['default']) || '404' !== (string)$args['default']) {
         return $url;
     }
-    if (preg_match('#^https?://[^/]+/avatar/#i', $url)) {
-        return preg_replace('#^https?://[^/]+/avatar/#i', $map[$src], $url);
+    if (preg_match('/([?&])d=404(&|$)/i', $url) !== 1) {
+        return $url;
     }
-    return $url;
+
+    $size   = (int)($args['size'] ?? 48);
+    $letter = jinyu_letter_avatar(jinyu_avatar_label($id_or_email), $size > 0 ? $size : 48);
+
+    return preg_replace('/([?&])d=404(&|$)/i', '$1d=' . rawurlencode($letter) . '$2', $url);
 }, 20, 3);
 
 /* ==========================================================================

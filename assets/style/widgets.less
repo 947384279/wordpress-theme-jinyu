@@ -68,7 +68,7 @@
     min-width: 0;
     font-size: @fs-sm;
     font-weight: 600;
-    color: @primary;
+    color: @primary-text;
     .text-ellipsis(1);
 }
 
@@ -146,7 +146,7 @@
 }
 
 /* 友情链接 */
-.jinyu-links-list a { color: @text-2; &:hover { color: @primary; } }
+.jinyu-links-list a { color: @text-2; &:hover { color: @primary-text; } }
 
 /* 站点统计 */
 .jinyu-stats-list {
@@ -160,7 +160,7 @@
 .jinyu-menu-widget {
     list-style: none; padding: 0; margin: 0;
     li { padding: @s-2 0; border-bottom: 1px solid @border; &:last-child { border-bottom: 0; } }
-    a { color: @text-2; text-decoration: none; &:hover { color: @primary; } }
+    a { color: @text-2; text-decoration: none; &:hover { color: @primary-text; } }
 }
 
 /* 图文推荐位 / 广告位 */
@@ -311,7 +311,7 @@
 
         i { transition: transform .45s @ease-out-expo; }
         &:hover {
-            color: @primary;
+            color: @primary-text;
             background: rgba(var(--jinyu-c-primary-rgb), .1);
             i { transform: rotate(180deg); }
         }
@@ -382,7 +382,7 @@
                 color: @text-2;
                 .text-ellipsis(1);
 
-                &:hover { color: @primary; }
+                &:hover { color: @primary-text; }
             }
         }
     }
@@ -416,7 +416,7 @@
         outline: none;
         transition: border-color @transition-fast, background @transition-fast;
 
-        &:focus { border-color: @primary; background: @bg-card; }
+        &:focus { border-color: @primary-text; background: @bg-card; }
     }
 
     .wp-block-search__button,
@@ -472,7 +472,7 @@
     .wp-block-latest-comments__comment-excerpt {
         font-size: @fs-sm;
         color: @text-2;
-        a { color: @text-2; &:hover { color: @primary; } }
+        a { color: @text-2; &:hover { color: @primary-text; } }
     }
 
     /* 标签云（默认 wp_tag_cloud） */
@@ -506,21 +506,21 @@
         border-collapse: collapse;
         th, td { padding: @s-1; border: 1px solid @border; }
         caption { color: @text-1; font-weight: 600; margin-bottom: @s-2; }
-        a { color: @primary; font-weight: 600; }
+        a { color: @primary-text; font-weight: 600; }
     }
     .wp-calendar-nav {
         display: flex;
         justify-content: space-between;
         margin-top: @s-2;
         font-size: @fs-xs;
-        a { color: @text-3; &:hover { color: @primary; } }
+        a { color: @text-3; &:hover { color: @primary-text; } }
     }
 
     /* RSS / 元数据 */
     &.widget_meta ul,
     &.widget_pages ul,
     &.widget_nav_menu ul {
-        li a { color: @text-2; &:hover { color: @primary; } }
+        li a { color: @text-2; &:hover { color: @primary-text; } }
     }
 
     &.widget_rss {
@@ -602,7 +602,7 @@
         max-width: 100%;
         padding: 2px @s-2;
         font-size: @fs-xs;
-        color: @primary;
+        color: @primary-text;
         background: rgba(var(--jinyu-c-primary-rgb), .09);
         border-radius: @radius-pill;
         min-width: 0;
@@ -722,7 +722,7 @@
     &-num {
         font-size: @fs-lg;
         font-weight: 800;
-        color: @primary;
+        color: @primary-text;
         font-variant-numeric: tabular-nums;
         line-height: 1.1;
     }
@@ -854,7 +854,7 @@
     }
     /* 渐变停靠点颜色只能走 CSS：SVG 表现属性里写不了 var()。
        fill 本身由 PHP 内联 url(#唯一id)——同一页可有两份实例，重名 id 会让后一份填充失效。 */
-    &-stop { stop-color: @primary; }
+    &-stop { stop-color: @primary-text; }
     &-avgline,
     &-peak { position: absolute; pointer-events: none; }
     &-avgline {
@@ -925,7 +925,7 @@
         width: 22px;
         height: 22px;
         font-size: @fs-xxs;
-        color: @primary;
+        color: @primary-text;
         background: rgba(var(--jinyu-c-primary-rgb), .12);
         border-radius: 7px;
     }
@@ -1154,7 +1154,7 @@
             .jinyu-clock-glow { opacity: .26; transform: scale(1.08); }
             .jinyu-clock-face { transform: translateY(-2px); }
             .jinyu-clock-mouth { width: 27px; height: 14px; }
-            .jinyu-clock-sec { color: @primary; }
+            .jinyu-clock-sec { color: @primary-text; }
         }
     }
 }
@@ -1201,7 +1201,7 @@
         li { margin-bottom: @s-2; }
         p { margin: 0 0 @s-2; }
         img { max-width: 100%; height: auto; }
-        a { color: @text-footer; transition: color @transition-fast; &:hover { color: @primary; } }
+        a { color: @text-footer; transition: color @transition-fast; &:hover { color: @primary-text; } }
     }
 
     .jinyu-footer-title {
@@ -1260,7 +1260,7 @@
         outline: none;
 
         &::placeholder { color: @text-footer; }
-        &:focus { border-color: @primary; }
+        &:focus { border-color: @primary-text; }
     }
 
     .search-submit,
@@ -1290,7 +1290,7 @@
     .jinyu-rc-item:hover { background: rgba(255, 255, 255, .06); }
     .jinyu-rc-avatar img { box-shadow: 0 0 0 2px @bg-footer, 0 0 0 3px @border-footer; }
     .jinyu-rc-item:hover .jinyu-rc-avatar img { box-shadow: 0 0 0 2px @bg-footer, 0 0 0 3px @primary; }
-    .jinyu-rc-author { color: @primary; }
+    .jinyu-rc-author { color: @primary-text; }
     .jinyu-rc-text { color: rgba(255, 255, 255, .85); }
     .jinyu-rc-text .jinyu-rc-reply,
     .jinyu-rc-time { color: @text-footer; }
@@ -1301,7 +1301,7 @@
     .jinyu-visitor-avatar { background: rgba(255, 255, 255, .06); box-shadow: inset 0 0 0 1px @border-footer; }
     .jinyu-visitor-illus { stroke: @primary; }
     .jinyu-visitor-hello { color: @text-invert; }
-    .jinyu-visitor-loc { color: @primary; background: rgba(255, 255, 255, .08); }
+    .jinyu-visitor-loc { color: @primary-text; background: rgba(255, 255, 255, .08); }
     .jinyu-visitor-row {
         border-top-color: @border-footer;
         &:hover { background: rgba(255, 255, 255, .04); }
@@ -1316,7 +1316,7 @@
     .jinyu-newcomers-text { color: @text-footer; }
 
     .jinyu-uptime-cell { background: rgba(255, 255, 255, .06); }
-    .jinyu-uptime-num { color: @primary; }
+    .jinyu-uptime-num { color: @primary-text; }
     .jinyu-uptime-label,
     .jinyu-uptime-foot { color: @text-footer; }
 
@@ -1363,7 +1363,7 @@
         border-collapse: collapse;
 
         th, td { padding: @s-1; border: 1px solid @border-footer; }
-        a { color: @primary; font-weight: 600; }
+        a { color: @primary-text; font-weight: 600; }
     }
 }
 

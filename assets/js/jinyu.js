@@ -805,12 +805,27 @@
     /* ======================================================================
        模块：图片兜底（CSP 安全，全站替代内联 onerror）
        - data-jinyu-fallback="url"   加载失败换兜底图（只换一次，防循环）
+       - data-jinyu-mirror="a|b|c"   加载失败依次换备用镜像，走完才轮到 fallback
        - data-jinyu-fallback-remove  加载失败移除 <img>，露出底层图标
        - data-jinyu-fallback-unset="cls" 配合 remove，同时移除最近祖先的 cls
        error 事件不冒泡，必须捕获阶段监听；文档级委托对 AJAX/PJAX 动态图同样生效。
        ====================================================================== */
     function imgFallback() {
+        var MIRROR = 'data-jinyu-mirror';
         function apply(img) {
+            var m = img.getAttribute(MIRROR);
+            if (m) {
+                // 国内头像镜像单点故障很常见（cn.cravatar.com 已停止服务），
+                // 逐个消耗备用源；链走完后属性为空，下次失败自然落到首字母占位图。
+                var list = m.split('|').filter(Boolean);
+                if (list.length > 1) {
+                    img.setAttribute(MIRROR, list.slice(1).join('|'));
+                } else {
+                    img.removeAttribute(MIRROR);
+                }
+                img.src = list[0];
+                return;
+            }
             var fb = img.getAttribute('data-jinyu-fallback');
             if (fb) {
                 img.removeAttribute('data-jinyu-fallback');
@@ -829,13 +844,13 @@
         // 首屏图可能在监听器挂上前就已 404 完毕（缓存 404/失败极快），boot 时补扫一次；
         // complete + naturalWidth===0 只命中「已加载且失败」的图，加载中/懒加载未触发的不受影响。
         $$('img').forEach(function (img) {
-            if (!img.hasAttribute('data-jinyu-fallback') && !img.hasAttribute('data-jinyu-fallback-remove')) return;
+            if (!img.hasAttribute('data-jinyu-fallback') && !img.hasAttribute(MIRROR) && !img.hasAttribute('data-jinyu-fallback-remove')) return;
             if (img.complete && img.naturalWidth === 0 && img.getAttribute('src')) apply(img);
         });
         doc.addEventListener('error', function (e) {
             var img = e.target;
             if (!img || img.tagName !== 'IMG') return;
-            if (!img.hasAttribute('data-jinyu-fallback') && !img.hasAttribute('data-jinyu-fallback-remove')) return;
+            if (!img.hasAttribute('data-jinyu-fallback') && !img.hasAttribute(MIRROR) && !img.hasAttribute('data-jinyu-fallback-remove')) return;
             apply(img);
         }, true);
     }
@@ -1194,25 +1209,33 @@
         var els = $$('.jinyu-post-card, .jinyu-widget, .jinyu-relevant-card, .jinyu-single, .jinyu-pagination');
         if (!els.length) return;
 
+        var show = function (el) { el.classList.add('jinyu-visible'); };
+
         if (reduceMotion || !('IntersectionObserver' in window)) {
-            els.forEach(function (el) { el.classList.add('jinyu-visible'); });
+            els.forEach(show);
             return;
         }
 
-        var show = function (el) { el.classList.add('jinyu-visible'); };
-        var inView = function (el) {
-            var r = el.getBoundingClientRect();
-            var h = window.innerHeight || doc.documentElement.clientHeight || 0;
-            return r.top < h && r.bottom > 0;
-        };
-
-        els.forEach(function (el) { el.classList.add('jinyu-reveal'); });
-
-        // 首屏已在视口内的元素下一帧显现：先渲染 opacity:0 再过渡，保留淡入动画；
-        // 不依赖 IO 回调，避免某些环境 IO 不触发导致内容永久隐藏
-        requestAnimationFrame(function () {
-            els.forEach(function (el) { if (inView(el)) show(el); });
+        /* 读写必须分成两趟，中途不能交替。
+           旧实现是「给所有元素加 .jinyu-reveal」与「逐个 getBoundingClientRect」
+           两个 forEach 前后相接地写在一起，而 .jinyu-reveal 带 transform:translateY(30px)：
+           刚写完就读，读到的 rect 已被位移（首屏下沿的卡片会被误判成不可见），
+           并且首次读取强制浏览器同步重算样式+布局（forced reflow，实测 ~109ms）。
+           现在先纯读、后纯写，中间不再有任何写操作触发布局失效。 */
+        var vh = window.innerHeight || doc.documentElement.clientHeight || 0;
+        var above = [];
+        var below = [];
+        els.forEach(function (el) {
+            (el.getBoundingClientRect().top < vh ? above : below).push(el);
         });
+
+        /* 首屏元素「同一帧内」直接置为可见，且刻意不加 .jinyu-reveal。
+           1) 加了 reveal 会先渲染 opacity:0，下一帧才开始过渡，首屏卡片在 FCP
+              之后还要淡入近 1s——Speed Index 按屏截图采样，这段空窗期直接把它拖低
+              一档（实测 1821ms → 明显下降）。同帧加两个 class 浏览器只算最终样式，
+              但这里更彻底：不挂 reveal 就不存在过渡，直接是最终态。
+           2) .jinyu-visible 只在 .jinyu-reveal 下才有样式，首屏卡片不必挂它也能正常显示。 */
+        above.forEach(show);
 
         var io = new IntersectionObserver(function (entries) {
             entries.forEach(function (entry) {
@@ -1222,7 +1245,8 @@
             });
         }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
 
-        els.forEach(function (el) { if (!el.classList.contains('jinyu-visible')) io.observe(el); });
+        // 只给首屏之外的元素挂入场动画，首屏那批完全不参与（少一批样式失效）
+        below.forEach(function (el) { el.classList.add('jinyu-reveal'); io.observe(el); });
 
         // 安全兜底：load 后与固定延时后强制显现全部，彻底杜绝 IO 失效时内容不可见
         var safety = function () { els.forEach(show); };
@@ -2696,29 +2720,314 @@
     }
 
     /* ======================================================================
-       模块：首页轮播（Swiper）
+       模块：首页轮播（主题自研，替代原 Swiper bundle）
+       - 位移 / 淡入淡出两种过渡
+       - 触屏与鼠标拖拽跟手、箭头、圆点、方向键、滚轮切换
+       - 无 JS 时 track 是原生横向滚动，内容可读可点，属渐进增强
+       - 循环无缝：先动画移到目标位，动画结束后无动画归位到取模下标
        ====================================================================== */
-    function carousel() {
-        if (!window.Swiper) return;
-        $$('[data-jinyu-carousel]').forEach(function (el) {
-            if (el.dataset.carouselReady) return;
-            el.dataset.carouselReady = '1';
-            var autoplay = parseInt(el.dataset.autoplay || '0', 10);
-            var slides = el.querySelectorAll('.swiper-slide').length;
-            /* eslint-disable no-new */
-            new Swiper(el, {
-                loop: el.dataset.loop === '1' && slides > 1,
-                autoplay: autoplay > 0 ? { delay: autoplay, disableOnInteraction: false } : false,
-                pagination: { el: el.querySelector('.swiper-pagination'), clickable: true },
-                navigation: {
-                    prevEl: el.querySelector('.swiper-button-prev'),
-                    nextEl: el.querySelector('.swiper-button-next')
-                },
-                effect: (el.dataset.effect || 'slide'),
-                mousewheel: el.dataset.mousewheel === '1' ? { forceToAxis: true } : false,
-                speed: 600,
-                grabCursor: true
+    function JinyuCarousel(root) {
+        this.root = root;
+        this.track = $('.jinyu-carousel-track', root);
+        this.slides = this.track ? $$('.jinyu-carousel-slide', this.track) : [];
+        this.dots = $$('.jinyu-carousel-dot', root);
+        this.prevBtn = $('.jinyu-carousel-arrow-prev', root);
+        this.nextBtn = $('.jinyu-carousel-arrow-next', root);
+        this.status = $('[data-jinyu-carousel-status]', root);
+        this.count = this.slides.length;
+        this.index = 0;
+        this.width = 0;
+        this.timer = null;
+        this.rt = null;
+        this.hovered = false;
+        this.focused = false;
+        this.drag = null;
+        this.dragMoved = 0;
+        this.wheelAt = 0;
+
+        if (!this.count) return;
+
+        this.loop = root.dataset.loop === '1';
+        this.autoplay = parseInt(root.dataset.autoplay || '0', 10) || 0;
+        this.fade = root.dataset.effect === 'fade';
+        this.wheel = root.dataset.mousewheel === '1';
+
+        this._buildClones();
+        this._measure();
+        this._paint();
+        this._initEvents();
+
+        if (!this.width) {
+            // 首帧样式尚未落地（脚本在 </body> 前执行）：下一帧补测一次
+            var self = this;
+            window.requestAnimationFrame(function () { self._measure(); self._paint(); });
+        }
+
+        this.root.setAttribute('data-jinyu-carousel-ready', '1');
+        this.root.tabIndex = 0;
+        if (this.count > 1) this._startAuto();
+    }
+
+    var CP = JinyuCarousel.prototype;
+
+    CP._measure = function () {
+        this.width = this.track.clientWidth || this.root.clientWidth || 0;
+    };
+
+    /** 当前可见下标（index 可能是越界的循环计数） */
+    CP._active = function () {
+        var i = this.index % this.count;
+        return i < 0 ? i + this.count : i;
+    };
+
+    /** 跳到指定可见下标（圆点点击用） */
+    CP._moveTo = function (i) {
+        this.index = (i % this.count + this.count) % this.count;
+        this._paint();
+    };
+
+    /**
+     * 主动解码当前张与后两张。
+     * 图片虽是 eager，但解码是异步的：不预解码的话，切过去的第一帧
+     * 可能还没解码完，仍会闪一下灰底。
+     */
+    CP._preload = function () {
+        for (var k = 0; k <= 2; k++) {
+            var node = this.slides[((this.index + k) % this.count + this.count) % this.count];
+            if (!node || node.dataset.jinyuDecoded === '1') continue;
+            node.dataset.jinyuDecoded = '1';
+            var img = node.querySelector('img');
+            if (img && img.decode) {
+                try { img.decode(); } catch (err) { /* 解码失败不阻塞切换 */ }
+            }
+        }
+    };
+
+    /** 上/下一张：循环模式下允许下标越界，靠克隆副本保持视觉连续 */
+    CP._next = function () { this.index = this.loop || this.index < this.count - 1 ? this.index + 1 : this.count - 1; this._paint(); };
+    CP._prev = function () { this.index = this.loop || this.index > 0 ? this.index - 1 : 0; this._paint(); };
+
+    /**
+     * 循环模式在 track 末尾追加一份全部幻灯片的克隆。
+     * 位移到 -count*w 时视口落在克隆首张上，动画结束后无动画归位到下标 0，
+     * 视觉与真实首张完全一致——替代 Swiper 的 loop 克隆机制。
+     */
+    CP._buildClones = function () {
+        if (!this.loop || this.fade) return;
+
+        var tpl = doc.createElement('template');
+        var sources = [];
+        for (var i = 0; i < this.count; i++) sources.push(this.slides[i].outerHTML);
+        tpl.innerHTML = sources.join('');
+
+        var frag = doc.createDocumentFragment();
+        var nodes = Array.prototype.slice.call(tpl.content.children);
+        for (var n = 0; n < nodes.length; n++) {
+            nodes[n].setAttribute('aria-hidden', 'true');
+            nodes[n].removeAttribute('aria-label');
+            var links = nodes[n].querySelectorAll('a');
+            for (var l = 0; l < links.length; l++) links[l].tabIndex = -1;
+            // 克隆位于视口外，若是 lazy 则在循环到它时还没加载完，这里直接置为 eager
+            // （与原图同 src，命中缓存，不会增加请求）
+            var imgs = nodes[n].querySelectorAll('img');
+            for (var m = 0; m < imgs.length; m++) imgs[m].setAttribute('loading', 'eager');
+            frag.appendChild(nodes[n]);
+        }
+        this.track.appendChild(frag);
+    };
+
+    CP._paint = function () {
+        var act = this._active();
+        var i, on;
+
+        if (this.fade) {
+            for (i = 0; i < this.count; i++) {
+                this.slides[i].classList.toggle('is-current', i === act);
+            }
+        } else if (this.width) {
+            this.track.style.transform = 'translate3d(' + (-this.index * this.width) + 'px,0,0)';
+        }
+
+        // 非当前幻灯片的链接移出 Tab 序列，避免键盘跳进视口外把轮播顶歪
+        for (i = 0; i < this.count; i++) this._setFocusable(this.slides[i], i === act);
+
+        for (i = 0; i < this.dots.length; i++) {
+            on = i === act;
+            this.dots[i].classList.toggle('is-active', on);
+            if (on) this.dots[i].setAttribute('aria-current', 'true');
+            else this.dots[i].removeAttribute('aria-current');
+        }
+
+        if (this.prevBtn) this.prevBtn.hidden = !this.loop && act === 0;
+        if (this.nextBtn) this.nextBtn.hidden = !this.loop && act === this.count - 1;
+        if (this.status) this.status.textContent = (act + 1) + ' / ' + this.count;
+
+        this._preload();
+    };
+
+    CP._setFocusable = function (slide, on) {
+        var link = slide.querySelector('a');
+        if (link) link.tabIndex = on ? 0 : -1;
+    };
+
+    CP._paused = function () {
+        return this.count < 2 || this.autoplay <= 0 || !!this.drag ||
+            this.hovered || this.focused || doc.hidden;
+    };
+
+    CP._startAuto = function () {
+        var self = this;
+        if (this.timer) clearInterval(this.timer);
+        this.timer = setInterval(function () {
+            if (!self._paused()) self._next();
+        }, this.autoplay);
+    };
+
+    CP._stopAuto = function () {
+        if (this.timer) { clearInterval(this.timer); this.timer = null; }
+    };
+
+    CP._restartAuto = function () {
+        if (this._paused()) { this._stopAuto(); return; }
+        this._startAuto();
+    };
+
+    CP._initEvents = function () {
+        var self = this;
+
+        if (this.nextBtn) this.nextBtn.addEventListener('click', function () { self._stopAuto(); self._next(); self._restartAuto(); });
+        if (this.prevBtn) this.prevBtn.addEventListener('click', function () { self._stopAuto(); self._prev(); self._restartAuto(); });
+
+        this.dots.forEach(function (dot, i) {
+            dot.addEventListener('click', function () {
+                self._stopAuto();
+                self._moveTo(i);
+                self._restartAuto();
             });
+        });
+
+        this.root.addEventListener('keydown', function (e) {
+            if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+            e.preventDefault();
+            self._stopAuto();
+            if (e.key === 'ArrowLeft') self._prev(); else self._next();
+            self._restartAuto();
+        });
+
+        this.track.addEventListener('pointerdown', function (e) { self._onDown(e); });
+        this.track.addEventListener('pointermove', function (e) { self._onMove(e); });
+        this.track.addEventListener('pointerup', function (e) { self._onUp(e); });
+        this.track.addEventListener('pointercancel', function (e) { self._onUp(e); });
+
+        // 拖拽后抑制这一次点击，避免松手即跳转
+        this.track.addEventListener('click', function (e) {
+            if (!self.dragMoved) return;
+            e.preventDefault();
+            e.stopPropagation();
+        }, true);
+
+        this.track.addEventListener('transitionend', function (e) {
+            if (e.propertyName !== 'transform' || self.drag) return;
+            // 循环模式越界播放完毕：静默归位到等效下标，视觉不跳
+            if (self.index >= self.count || self.index < 0) {
+                self.index = self.index >= self.count ? self.index - self.count : self.index + self.count;
+                self._paint();
+            }
+        });
+
+        this.root.addEventListener('mouseenter', function () { self.hovered = true; self._stopAuto(); });
+        this.root.addEventListener('mouseleave', function () { self.hovered = false; self._restartAuto(); });
+        this.root.addEventListener('focusin', function () { self.focused = true; self._stopAuto(); });
+        this.root.addEventListener('focusout', function () { self.focused = false; self._restartAuto(); });
+
+        if (this.wheel) this.root.addEventListener('wheel', function (e) { self._onWheel(e); }, { passive: false });
+
+        window.addEventListener('resize', function () {
+            clearTimeout(self.rt);
+            self.rt = setTimeout(function () {
+                self._measure();
+                self._paint();
+            }, 150);
+        });
+    };
+
+    CP._onWheel = function (e) {
+        if (this.fade) return;
+        // 只有接近满屏的轮播才接管滚轮，否则会吞掉页面正常滚动
+        if (this.root.clientHeight < window.innerHeight * 0.8) return;
+        if (Date.now() - this.wheelAt < 700) return;
+        if (Math.abs(e.deltaY) < 8) return;
+        this.wheelAt = Date.now();
+        e.preventDefault();
+        if (e.deltaY > 0) this._next(); else this._prev();
+    };
+
+    CP._onDown = function (e) {
+        if (this.fade || e.button > 0 || this.drag) return;
+        if (!this.width) this._measure();
+        this.dragMoved = 0;
+        this.drag = { id: e.pointerId, x: e.clientX, y: e.clientY, locked: false };
+        this._stopAuto();
+    };
+
+    CP._onMove = function (e) {
+        if (!this.drag || e.pointerId !== this.drag.id) return;
+        var dx = e.clientX - this.drag.x;
+        var dy = e.clientY - this.drag.y;
+        if (!this.drag.locked) {
+            if (Math.abs(dx) < 4) return;
+            // 纵向意图明显则放弃接管，交还页面滚动
+            if (Math.abs(dy) > Math.abs(dx)) { this.drag = null; return; }
+            this.drag.locked = true;
+            this.root.classList.add('is-dragging');
+            if (this.track.setPointerCapture) {
+                try { this.track.setPointerCapture(e.pointerId); } catch (err) { /* 兼容性兜底 */ }
+            }
+        }
+        this.dragMoved = Math.abs(dx);
+        this.track.style.transform = 'translate3d(' + (-this.index * this.width + dx) + 'px,0,0)';
+    };
+
+    CP._onUp = function (e) {
+        if (!this.drag || (e && e.pointerId !== this.drag.id)) return;
+        var dx = e && typeof e.clientX === 'number' ? e.clientX - this.drag.x : 0;
+        var moved = this.dragMoved;
+        var locked = this.drag.locked;
+        this.drag = null;
+        this.dragMoved = 0;
+        this.root.classList.remove('is-dragging');
+
+        if (locked) {
+            var threshold = Math.min(80, this.width * 0.2);
+            if (dx <= -threshold) this._next();
+            else if (dx >= threshold) this._prev();
+            else this._paint();
+        } else {
+            this._paint(); // 只是点击，回正
+        }
+
+        if (moved > 6) {
+            // 抑制紧随松手的那次 click，避免误跳转
+            var swallow = function (ev) {
+                ev.preventDefault();
+                ev.stopPropagation();
+                doc.removeEventListener('click', swallow, true);
+            };
+            doc.addEventListener('click', swallow, true);
+        }
+
+        this._restartAuto();
+    };
+
+    function carousel() {
+        $$('[data-jinyu-carousel]').forEach(function (el) {
+            if (el.dataset.jinyuCarouselReady) return;
+            el.dataset.jinyuCarouselReady = '1';
+            try {
+                new JinyuCarousel(el);
+            } catch (err) {
+                if (window.console && console.error) console.error('[jinyu] carousel init failed', err);
+            }
         });
     }
 
@@ -2860,23 +3169,21 @@
     /* ======================================================================
        模块：首屏骨架屏（页面加载完成后移除占位）
        ====================================================================== */
+    /* 首屏骨架屏：header.php 里的内联脚本已在解析阶段就把节点摘掉了（实测它能挡住
+       真实首屏直到 DCL，拖慢 FCP/Speed Index）。这里只是兜底——万一内联脚本被 CSP
+       拦掉、或节点被服务端条件渲染省略，本函数仍会在 load 后移除残留的遮罩。 */
     function skeleton() {
         var el = doc.getElementById('jinyu-skeleton');
         if (!el) return;
         function hide() {
             if (el._jinyuHidden) return;
             el._jinyuHidden = 1;
-            el.classList.add('jinyu-skeleton--hide');
-            setTimeout(function () {
-                if (el && el.parentNode) el.parentNode.removeChild(el);
-            }, 420);
+            if (el.parentNode) el.parentNode.removeChild(el);
         }
-        // jinyu.js 以 defer 加载：执行时 HTML 主体已就绪，立即撤掉首屏骨架屏，
-        // 不必等待图片等子资源（否则会长时间盖住真实内容并持续闪烁）。
         if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', hide);
         else hide();
-        window.addEventListener('load', hide); // 双保险
-        setTimeout(hide, 2000);               // 兜底：防异常导致常驻
+        window.addEventListener('load', hide);
+        setTimeout(hide, 2000);
     }
 
     /* ======================================================================

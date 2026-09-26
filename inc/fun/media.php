@@ -4,6 +4,31 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // ─────────────────────────────────────────────────────────────
+// 主题自建图片尺寸
+// 背景：WP 默认尺寸（thumbnail/medium/large）由后台「设置 → 媒体」的宽度决定，
+//   宽度填 0 即不生成该派生尺寸，模板拿到的就只有原图 → 卡片用 1280px 原图填 332px 坑位。
+//   主题无权也绝不去改那三个核心 option（跨主题副作用，且审核不通过）。
+// 正解：主题注册自己的尺寸，只影响本站、只服务本主题模板，新图上传时自动裁剪。
+// 尺寸名一律 jinyu_ 前缀（.org 前缀规范）；crop=true 与模板的 object-fit:cover + aspect-ratio
+// 配套，硬裁后的图正好贴合卡片比例，不会浪费像素。
+// ─────────────────────────────────────────────────────────────
+
+if (!function_exists('jinyu_register_image_sizes')) {
+    /**
+     * 注册主题自建图片尺寸。挂 after_setup_theme 是 .org 要求的注册时机；
+     * 已存在的旧图不会自动生成，需后台「维护工具 → 重建封面缩略图」补一次。
+     */
+    function jinyu_register_image_sizes(): void
+    {
+        // 卡片 / 封面主图（首页、归档、相关阅读、轮播之外的常规展示位）
+        add_image_size('jinyu-cover', 768, 512, true);
+        // 列表小缩略图（侧栏小工具、无限加载返回的缩略图位）
+        add_image_size('jinyu-thumb', 400, 267, true);
+    }
+}
+add_action('after_setup_theme', 'jinyu_register_image_sizes');
+
+// ─────────────────────────────────────────────────────────────
 // 图片优化：WebP 交付（存储无关 · 双通道）
 // 通道 A（首选）：云端即时转码。后端支持时在 CDN 原图 URL 后追加转码指令
 //   （又拍云 !/format/webp、阿里云 ?x-oss-process=image/format,webp、
@@ -500,5 +525,51 @@ if (!function_exists('jinyu_webp_replace_html_imgs')) {
             return $out;
         }
         return $html;
+    }
+}
+
+if (!function_exists('jinyu_logo_image_size')) {
+    /**
+     * 取 Logo 图的原始宽高，供 <img> 输出 width/height。
+     *
+     * 不写尺寸时，图片加载完成前占位宽度为 0，加载后突然撑开头部，产生 CLS；
+     * 补上原始宽高后浏览器按 aspect-ratio 预留空间，加载期间不再跳动
+     * （显示尺寸仍由 CSS 的 height:32px;width:auto 决定，这里只补"原始比例"信息）。
+     * 结果按 URL 缓存 12 小时，避免每个请求都查一次库。
+     *
+     * @param string $url Logo 图 URL（本地上传或 CDN 地址均可）
+     * @return array{0:int,1:int} 宽高；取不到时 [0, 0]，调用方据此省略属性、保持原行为
+     */
+    function jinyu_logo_image_size($url)
+    {
+        $url = (string) $url;
+        $size = array(0, 0);
+        if ($url === '') {
+            return $size;
+        }
+
+        $cache_key = 'logo_img_size_' . md5($url);
+        $cached = jinyu_cache_get($cache_key);
+        if (is_array($cached) && isset($cached[0], $cached[1])) {
+            return array((int) $cached[0], (int) $cached[1]);
+        }
+
+        // 优先读附件元数据（零额外 IO）；未命中再退化为直读图片头（外链 / CDN 场景）
+        $attach_id = function_exists('attachment_url_to_postid') ? attachment_url_to_postid($url) : 0;
+        if ($attach_id) {
+            $meta = wp_get_attachment_image_src($attach_id, 'full');
+            if (!empty($meta[1]) && !empty($meta[2])) {
+                $size = array((int) $meta[1], (int) $meta[2]);
+            }
+        }
+        if (!$size[0]) {
+            $info = @getimagesize($url);
+            if (!empty($info[0]) && !empty($info[1])) {
+                $size = array((int) $info[0], (int) $info[1]);
+            }
+        }
+
+        jinyu_cache_set($cache_key, $size, 12 * HOUR_IN_SECONDS);
+        return $size;
     }
 }

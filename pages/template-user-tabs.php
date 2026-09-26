@@ -429,4 +429,4 @@ $nonce = wp_create_nonce( 'jinyu_front' );
     </ul>
     <p class="jinyu-field-hint"><?php esc_html_e( '绑定后可使用该平台一键登录，并关联到当前账号。', 'jinyu' ); ?></p>
   <?php endif; ?>
-<?php endif; ?>
+<?php endif; 

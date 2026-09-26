@@ -22,6 +22,15 @@ function buildAdminStyle() {
         .pipe(gulp.dest('assets/dist/style'));
 }
 
+// 设置页顶栏报警图标：不能并进只在设置页加载的 admin.min.css
+function buildAlertStyle() {
+    return gulp.src('assets/style/admin-alert.less')
+        .pipe(less())
+        .pipe(cleanCSS({ compatibility: 'ie8' }))
+        .pipe(rename({ basename: 'admin-alert.min' }))
+        .pipe(gulp.dest('assets/dist/style'));
+}
+
 function buildJs() {
     return gulp.src(['assets/js/*.js', '!assets/js/admin.js'])
         .pipe(babel({ presets: ['@babel/preset-env'] }))
@@ -48,7 +57,7 @@ function buildCritical() {
 
 function watch() {
     // critical.less 是首屏关键 CSS 的镜像，改它必须同步重建，否则线上与源码不一致
-    gulp.watch('assets/style/*.less', gulp.series(buildStyle, buildAdminStyle, buildCritical));
+    gulp.watch('assets/style/*.less', gulp.series(buildStyle, buildAdminStyle, buildNoticeStyle, buildCritical));
     gulp.watch('assets/js/*.js', gulp.series(buildJs, buildAdminJs));
 }
 
@@ -61,8 +70,8 @@ function buildZip() {
     ]).pipe(zip('jinyu.zip')).pipe(gulp.dest('..'));
 }
 
-const dev = gulp.series(gulp.parallel(buildStyle, buildAdminStyle, buildJs, buildAdminJs, buildCritical), watch);
-const build = gulp.parallel(buildStyle, buildAdminStyle, buildJs, buildAdminJs, buildCritical);
+const dev = gulp.series(gulp.parallel(buildStyle, buildAdminStyle, buildAlertStyle, buildJs, buildAdminJs, buildCritical), watch);
+const build = gulp.parallel(buildStyle, buildAdminStyle, buildAlertStyle, buildJs, buildAdminJs, buildCritical);
 
 exports.default = build;
 exports.dev = dev;

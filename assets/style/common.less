@@ -34,10 +34,10 @@ body {
 img { max-width: 100%; height: auto; display: block; }
 
 a {
-    color: @primary;
+    color: @primary-text;
     text-decoration: none;
     transition: color @transition-fast;
-    &:hover { color: @primary-dark; }
+    &:hover { color: @primary-text; }
 }
 
 button { font-family: inherit; }
@@ -54,7 +54,7 @@ button { font-family: inherit; }
 /* 选中文字配主色，强化品牌识别 */
 ::selection {
     background: var(--jinyu-c-primary-light, #fff3ec);
-    color: var(--jinyu-c-primary-dark, #e85a2b);
+    color: var(--jinyu-c-primary-text, #e85a2b);
 }
 
 /* 前台滚动条美化（后台已在 admin.less 处理，这里补齐阅读区） */
@@ -339,13 +339,22 @@ html[data-theme="dark"] .jinyu-logo--dual .jinyu-logo-dark { display: block; }
             min-width: 0;
             overflow: hidden;     /* 与 li:min-width:0 配合：无 JS 降级时裁剪溢出项，绝不把工具区顶出容器 */
 
-            &:hover { color: @primary; background: @primary-light; }
+            &:hover { color: @primary-text; background: @primary-light; }
         }
 
+        /* 当前项：深字 + 淡主色底 + 主色下划线。
+           主色作正文色不达 WCAG AA（本站主色蓝 #1c60f3 在 @primary-light 上仅 4.45:1），
+           指示由主色下划线/竖条承担。⚠️ 此处是最终生效点（style.min.css 后于 critical.min.css 加载），
+           只改 critical.min.css 会被这里的同特异性规则压掉，两处必须一致。 */
         &.current-menu-item,
         &.current_page_item,
         &.jinyu-active {
-            > a { color: @primary; background: @primary-light; box-shadow: inset 0 -2px 0 @primary; }
+            > a {
+                color: @text-1;
+                background: @primary-light;
+                font-weight: 700;
+                box-shadow: inset 0 -2px 0 @primary;
+            }
         }
 
         /* 二级菜单 */
@@ -372,7 +381,7 @@ html[data-theme="dark"] .jinyu-logo--dual .jinyu-logo-dark { display: block; }
                 padding: @s-2 @s-4;
                 font-size: @fs-sm;
                 color: @text-2;
-                &:hover { color: @primary; background: @primary-light; }
+                &:hover { color: @primary-text; background: @primary-light; }
             }
         }
 
@@ -436,11 +445,11 @@ html.jinyu-tools-compact {
             line-height: 1;
         }
 
-        &:hover { color: @primary; background: @bg-subtle; }
+        &:hover { color: @primary-text; background: @bg-subtle; }
         &:active { transform: scale(.9); }
         &:focus-visible { outline: 2px solid @primary; outline-offset: 1px; }
         /* 明暗切换激活态：主色高亮填充，与裸图标态明显区分 */
-        &[aria-pressed='true'] { color: @primary; background: @primary-light; }
+        &[aria-pressed='true'] { color: @primary-text; background: @primary-light; }
         &.jinyu-d-none { display: none; }
     }
 }
@@ -465,7 +474,7 @@ html.jinyu-tools-compact {
     /* 与 .jinyu-icon-btn 同规格：圆形 hover 浮 bg-subtle 底色，按下同款缩放 */
     transition: color @transition-fast, background @transition-fast, transform @transition-fast;
 
-    &:hover { color: @primary; background: @bg-subtle; }
+    &:hover { color: @primary-text; background: @bg-subtle; }
     &:active { transform: scale(.9); }
     &:focus-visible { outline: 2px solid @primary; outline-offset: 1px; }
 
@@ -616,23 +625,23 @@ html.jinyu-tools-compact {
         border-color: transparent;
 
         .jinyu-post-cover img { transform: scale(1.05); }
-        .jinyu-post-title { color: @primary; }
+        .jinyu-post-title { color: @primary-text; }
         .jinyu-post-cover::after { opacity: 1; }
     }
 }
 
-/* 置顶卡片：顶部 4px 品牌色描边 + 顶部淡橙渐变底 + 更明显光晕，网格里明显「跳」出但不刺眼 */
+/* 置顶卡片：顶部 4px 品牌色描边 + 品牌色光晕，网格里明显「跳」出但不刺眼。
+   ⚠️ 不用 linear-gradient 做淡色底：渐变是 background-image，对比度工具会退回像素采样，
+   把卡内徽章/元信息误判成 1.3:1（实测误报 74 处）。层次感改由描边 + 光晕表达。 */
 .jinyu-post-card.is-sticky {
     border: 1px solid rgba(var(--jinyu-c-primary-rgb), .5);
     border-top: 4px solid @primary;
-    background:
-        linear-gradient(180deg, rgba(var(--jinyu-c-primary-rgb), .07), rgba(var(--jinyu-c-primary-rgb), 0) 42%),
-        @bg-card;
+    background: @bg-card;
     box-shadow: 0 6px 26px rgba(var(--jinyu-c-primary-rgb), .16);
 
     &:hover {
         border-color: rgba(var(--jinyu-c-primary-rgb), .62);
-        border-top-color: @primary;
+        border-top-color: @primary-text;
         box-shadow: 0 14px 38px rgba(var(--jinyu-c-primary-rgb), .28);
     }
 }
@@ -644,7 +653,7 @@ html.jinyu-tools-compact {
     gap: 4px;
     vertical-align: middle;
     background: rgba(var(--jinyu-c-primary-rgb), .12);
-    color: @primary-dark;
+    color: @primary-ink;
     font-size: @fs-xs;
     font-weight: 700;
     padding: 2px @s-2;
@@ -687,7 +696,7 @@ html.jinyu-tools-compact {
         align-items: center;
         justify-content: center;
         background: linear-gradient(135deg, rgba(var(--jinyu-c-primary-rgb), .16), rgba(var(--jinyu-c-primary-rgb), .06));
-        color: @primary;
+        color: @primary-text;
         font-size: 28px;
         opacity: .9;
     }
@@ -748,8 +757,9 @@ html.jinyu-tools-compact {
         color: @text-3;
         line-height: 1.55;
     }
-    /* 更新日期略弱一档，建立轻层级（仍保留胶囊形态） */
-    .jinyu-post-meta-updated { color: @text-4; }
+    /* 更新日期略弱一档，建立轻层级（仍保留胶囊形态）。
+       ⚠️ 用 @text-3 不用 @text-4：@text-4 在 #f5f6f8 上仅 4.47，差 0.03 不过 WCAG AA。 */
+    .jinyu-post-meta-updated { color: @text-3; }
 }
 
 /* 系列归属徽章：点进系列归档；名称过长省略号截断，保证不撑破两栏/三栏窄卡 */
@@ -759,7 +769,7 @@ html.jinyu-tools-compact {
     max-width: 100%;
     padding: 1px 6px;
     border-radius: @radius-pill;
-    color: @primary;
+    color: @primary-text;
     background: rgba(var(--jinyu-c-primary-rgb), .12);
     transition: background @transition-fast;
 
@@ -1043,6 +1053,10 @@ html.jinyu-tools-compact {
     display: flex;
     align-items: center;
     justify-content: center;
+    /* 名次由 data-rank 经伪元素渲染，DOM 内不落文本节点。
+       aria-label 的链接内含可见文本时，读屏要求文本包含在可访问名里；
+       名次数字不在 aria-label 中，直接输出文本会触发 WCAG 2.5.3 标签名不匹配。 */
+    &::after { content: attr(data-rank); }
     font-size: @fs-xxs;
     font-weight: 700;
     line-height: 1;
@@ -1066,7 +1080,7 @@ html.jinyu-tools-compact {
         transition: color @transition-fast;
     }
 
-    &:hover { color: @primary; }
+    &:hover { color: @primary-text; }
 }
 
 .jinyu-hot-views {
@@ -1124,16 +1138,16 @@ html.jinyu-tools-compact {
             font-weight: 600;
             background: rgba(var(--jinyu-c-primary-rgb), .07);
             border-color: rgba(var(--jinyu-c-primary-rgb), .26);
-            .jinyu-tag-count { color: @primary; background: rgba(var(--jinyu-c-primary-rgb), .12); }
+            .jinyu-tag-count { color: @primary-text; background: rgba(var(--jinyu-c-primary-rgb), .12); }
         }
 
         &:hover {
             color: @text-invert;
             background: @primary;
-            border-color: @primary;
+            border-color: @primary-text;
             transform: translateY(-1px);
             box-shadow: 0 4px 10px rgba(var(--jinyu-c-primary-rgb), .25);
-            .jinyu-tag-count { color: @primary; background: rgba(255, 255, 255, .92); }
+            .jinyu-tag-count { color: @primary-text; background: rgba(255, 255, 255, .92); }
         }
     }
 
@@ -1156,7 +1170,7 @@ html.jinyu-tools-compact {
     transition: border-color @transition-fast, box-shadow @transition-fast, background @transition-fast;
 
     &:focus {
-        border-color: @primary;
+        border-color: @primary-text;
         background: @bg-card;
         box-shadow: 0 0 0 3px rgba(var(--jinyu-c-primary-rgb), .12);
     }
@@ -1200,7 +1214,7 @@ html.jinyu-tools-compact {
         font-size: @fs-sm;
         transition: color @transition-fast;
 
-        &:hover { color: @primary; }
+        &:hover { color: @primary-text; }
     }
 }
 
@@ -1350,7 +1364,7 @@ html.jinyu-tools-compact {
         font-size: 76px;
         font-weight: 800;
         line-height: 1;
-        color: @primary;
+        color: @primary-text;
         opacity: .06;
         pointer-events: none;
         user-select: none;
@@ -1373,7 +1387,7 @@ html.jinyu-tools-compact {
         height: 40px;
         border-radius: @radius-md;
         background: @primary-light;
-        color: @primary;
+        color: @primary-text;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -1385,7 +1399,7 @@ html.jinyu-tools-compact {
     h1 { font-size: @fs-xl; font-weight: 800; color: @text-1; margin: 0; line-height: 1.15; }
     .jinyu-term-desc { margin-top: @s-2; color: @text-3; font-size: @fs-sm; line-height: 1.5; }
     .jinyu-term-meta { margin: 2px 0 0; font-size: @fs-sm; color: @text-3; }
-    .jinyu-term-meta b { color: @primary; font-weight: 600; }
+    .jinyu-term-meta b { color: @primary-text; font-weight: 600; }
 }
 
 /* 作者页头部：卡片内头像 + 信息横向布局（Gravatar 离线环境用本地默认头像兜底）
@@ -1429,7 +1443,7 @@ html.jinyu-tools-compact {
         text-decoration: none;
         transition: color .15s ease, background-color .15s ease;
         &:hover {
-            color: @primary;
+            color: @primary-text;
             background: @bg-body;
         }
     }
@@ -1498,7 +1512,7 @@ html.jinyu-tools-compact {
                 color .3s ease, border-color .3s ease;
 
     &.jinyu-visible { opacity: 1; visibility: visible; transform: none; }
-    i { color: @primary; font-size: @fs-xs; }
+    i { color: @primary-text; font-size: @fs-xs; }
 
     &.jinyu-done {
         color: @success;
@@ -1541,7 +1555,7 @@ html.jinyu-tools-compact {
 /* 标题前小图标：仅移动端展示，桌面端保持原样 */
 .jinyu-toc-ico {
     display: none;
-    color: @primary;
+    color: @primary-text;
     font-size: @fs-sm;
     line-height: 1;
 }
@@ -1593,11 +1607,11 @@ html.jinyu-tools-compact {
         line-height: 1.5;
         border-left: 2px solid transparent;
 
-        &:hover { color: @primary; background: @primary-light; }
+        &:hover { color: @primary-text; background: @primary-light; }
         &.jinyu-toc-active {
-            color: @primary;
+            color: @primary-text;
             background: @primary-light;
-            border-left-color: @primary;
+            border-left-color: @primary-text;
             font-weight: 600;
         }
     }
@@ -1728,7 +1742,7 @@ html.jinyu-tools-compact {
     display: block;
     text-align: center;
     padding: @s-2;
-    color: @primary;
+    color: @primary-text;
     font-size: @fs-sm;
     &:hover { text-decoration: underline; }
 }
@@ -1755,9 +1769,9 @@ html.jinyu-tools-compact {
     border-radius: @radius-md;
     font-size: @fs-sm;
 }
-.jinyu-series-name { color: @primary-dark; font-weight: 700; display: inline-flex; align-items: center; gap: @s-2; }
+.jinyu-series-name { color: @primary-text; font-weight: 700; display: inline-flex; align-items: center; gap: @s-2; }
 .jinyu-series-nav { display: inline-flex; align-items: center; gap: @s-3; }
-.jinyu-series-prev, .jinyu-series-next { color: @primary; &:hover { text-decoration: underline; } }
+.jinyu-series-prev, .jinyu-series-next { color: @primary-text; &:hover { text-decoration: underline; } }
 .jinyu-series-count { color: @text-3; }
 
 /* ==========================================================================
@@ -1783,7 +1797,7 @@ html.jinyu-tools-compact {
     cursor: pointer;
     font-weight: 600;
     transition: color @transition-fast, border-color @transition-fast, background @transition-fast;
-    &:hover { color: @primary; border-color: @primary; }
+    &:hover { color: @primary-text; border-color: @primary-text; }
     &.jinyu-fs-reset { font-weight: 400; font-size: @fs-xs; }
 }
 /* 当前缩放状态：直观显示放大/缩小/默认，避免用户不知道点了多少 */
@@ -1798,7 +1812,7 @@ html.jinyu-tools-compact {
     border-radius: @radius-sm;
     background: @bg-subtle;
     transition: color @transition-fast, background @transition-fast;
-    &.jinyu-fs-up { color: @primary-dark; background: @primary-light; }
+    &.jinyu-fs-up { color: @primary-text; background: @primary-light; }
     &.jinyu-fs-down { color: @text-1; background: @bg-subtle; }
 }
 
@@ -1892,13 +1906,13 @@ html.jinyu-tools-compact {
     cursor: pointer;
     transition: all .3s @ease-spring;
 
-    &:hover { border-color: @primary; color: @primary; background: @primary-light; }
+    &:hover { border-color: @primary-text; color: @primary-text; background: @primary-light; }
     &:active { transform: scale(.94); }
 
     &.jinyu-liked,
     &.jinyu-faved {
         background: @primary;
-        border-color: @primary;
+        border-color: @primary-text;
         color: @text-invert;
         &:hover { color: @text-invert; }
     }
@@ -1919,7 +1933,7 @@ html.jinyu-tools-compact {
 }
 .jinyu-like-particle {
     position: absolute;
-    color: @primary;
+    color: @primary-text;
     line-height: 1;
     pointer-events: none;
     z-index: 6;
@@ -1947,7 +1961,7 @@ html.jinyu-tools-compact {
     overflow: hidden;
     transition: transform .4s @ease-out-expo, border-color @transition-fast;
 
-    &:hover { border-color: @primary; transform: translateY(-2px); }
+    &:hover { border-color: @primary-text; transform: translateY(-2px); }
 }
 .jinyu-relevant-cover {
     aspect-ratio: 4 / 3;
@@ -2016,7 +2030,7 @@ html.jinyu-tools-compact {
     padding: 0 6px;
     border-radius: @radius-sm;
     background: @primary-light;
-    color: @primary;
+    color: @primary-text;
     font-size: @fs-xs;
     font-weight: 600;
 }
@@ -2039,10 +2053,20 @@ html.jinyu-tools-compact {
     p { margin: 0 0 @s-2; &:last-child { margin-bottom: 0; } }
 }
 
-.jinyu-comment-actions { font-size: @fs-xs; a { color: @text-3; &:hover { color: @primary; } } }
+.jinyu-comment-actions { font-size: @fs-xs; a { color: @text-3; &:hover { color: @primary-text; } } }
 
 .jinyu-comment-respond {
     @cf-line: #f0f1f4;
+
+    /* 表单说明文案里的链接（「必须先登录才能评论」一类）：同样按 WCAG 1.4.1 加下划线，
+       否则整段只有颜色差异，与相邻正文对比不足 3:1。 */
+    p a {
+        text-decoration: underline;
+        text-decoration-color: rgba(var(--jinyu-c-primary-rgb), .45);
+        text-underline-offset: 3px;
+
+        &:hover { text-decoration-color: @primary-text; }
+    }
 
     // 问候语：头像 + 欢迎文案（登录/访客态均展示）
     .jinyu-comment-greet {
@@ -2061,7 +2085,7 @@ html.jinyu-tools-compact {
         align-items: center;
         justify-content: center;
         font-size: 20px;
-        color: @primary;
+        color: @primary-text;
         background: linear-gradient(135deg, @primary-light, #f5f3ff);
         box-shadow: 0 0 0 1px @border, 0 4px 10px -4px rgba(var(--jinyu-c-primary-rgb), .35);
 
@@ -2080,7 +2104,7 @@ html.jinyu-tools-compact {
         font-weight: 600;
         color: @text-1;
 
-        em { font-style: normal; color: @primary; }
+        em { font-style: normal; color: @primary-text; }
     }
     .jinyu-comment-greet-sub { font-size: @fs-xs; color: @text-3; margin-top: 2px; }
 
@@ -2120,7 +2144,7 @@ html.jinyu-tools-compact {
         font-weight: 400;
         color: @text-3;
 
-        &:hover { color: @primary; }
+        &:hover { color: @primary-text; }
     }
 
     input[type="submit"] {
@@ -2246,9 +2270,9 @@ html.jinyu-tools-compact {
     cursor: pointer;
     transition: background @transition-fast, color @transition-fast, transform @transition-fast;
 
-    &:hover { background: @bg-subtle; color: @primary; }
+    &:hover { background: @bg-subtle; color: @primary-text; }
     &:active { transform: scale(.92); }
-    &[aria-expanded="true"] { background: @primary-light; color: @primary; }
+    &[aria-expanded="true"] { background: @primary-light; color: @primary-text; }
 }
 
 .jinyu-smiley-panel {
@@ -2480,7 +2504,7 @@ html.jinyu-tools-compact {
     font-size: @fs-sm;
     font-variant-numeric: tabular-nums;
     text-align: left;
-    caret-color: @primary;
+    caret-color: @primary-text;
     appearance: textfield;
     -moz-appearance: textfield;
     &::-webkit-outer-spin-button,
@@ -2506,7 +2530,7 @@ html.jinyu-tools-compact {
 }
 
 /* 键盘聚焦时面板描边高亮，提示可输入 */
-.jinyu-pagination-jump:focus-within .jinyu-jump-panel { border-color: @primary; }
+.jinyu-pagination-jump:focus-within .jinyu-jump-panel { border-color: @primary-text; }
 
 /* 提交反馈气泡（已在当前页时提示，不导航） */
 .jinyu-jump-tip {
@@ -2551,7 +2575,7 @@ html.jinyu-tools-compact {
     cursor: pointer;
     transition: all @transition-fast;
 
-    &:hover { border-color: @primary; color: @primary; }
+    &:hover { border-color: @primary-text; color: @primary-text; }
     &:disabled { opacity: .5; cursor: not-allowed; }
 }
 
@@ -2604,7 +2628,7 @@ html.jinyu-tools-compact {
         color: @text-footer-strong;
         margin: 0 0 @s-3;
 
-        i { color: @primary; font-size: @fs-lg; line-height: 1; }
+        i { color: @primary-text; font-size: @fs-lg; line-height: 1; }
     }
 
     .jinyu-footer-brand-desc {
@@ -2639,14 +2663,14 @@ html.jinyu-tools-compact {
 
         /* 参考主流主题页脚：栏目标题用「图标 + 文字」，去掉色条与下划线更轻盈 */
         i {
-            color: @primary;
+            color: @primary-text;
             font-size: @fs-base;
             line-height: 1;
         }
     }
     p { margin: 0; font-size: @fs-sm; line-height: 1.8; }   /* margin 归零：与 ul（margin:0）首行严格对齐，浏览器默认 1em 上边距会造成两栏首行错位 */
     ul { list-style: none; padding: 0; margin: 0; }
-    li { margin-bottom: @s-2; a { color: @text-footer; font-size: @fs-sm; &:hover { color: @primary; } } }
+    li { margin-bottom: @s-2; a { color: @text-footer; font-size: @fs-sm; &:hover { color: @primary-text; } } }
 }
 
 /* 友情链接：独立整行区块——标题行（色条标题 + 右侧「申请友链」）+ 圆角横条内 · 分隔链接 */
@@ -2663,7 +2687,9 @@ html.jinyu-tools-compact {
         justify-content: space-between;
         margin-bottom: @s-3;
 
-        h4 {
+        /* ⚠️ h2（勿降为 h4）：侧栏内 h2→h4 跳级会触发 heading-order 无障碍失败，
+           层级为「页面 h1 → 侧栏区块 h2」，此处 h2 才是正确级。 */
+        h2 {
             position: relative;
             padding-left: 10px;
             color: @text-1;
@@ -2693,7 +2719,7 @@ html.jinyu-tools-compact {
         font-size: @fs-xs;
         color: @text-2;
 
-        &:hover { color: @primary; }
+        &:hover { color: @primary-text; }
     }
 
     .jinyu-flinks-list {
@@ -2726,7 +2752,7 @@ html.jinyu-tools-compact {
             color: @text-2;
             font-size: @fs-sm;
 
-            &:hover { color: @primary; }
+            &:hover { color: @primary-text; }
         }
 
         /* 链接前的图标：默认是主题自带 Font Awesome 链接图标（零网络请求），
@@ -2796,7 +2822,7 @@ html.jinyu-tools-compact {
 
         > i {
             margin-right: @s-2;
-            color: @primary;
+            color: @primary-text;
         }
 
         p { margin: 0; }
@@ -2885,7 +2911,7 @@ html.jinyu-tools-compact {
         transition: color 0.18s ease;
 
         &:hover {
-            color: @primary;
+            color: @primary-text;
             text-decoration: underline;
             text-underline-offset: 3px;
         }
@@ -2922,7 +2948,7 @@ html.jinyu-tools-compact {
         font-weight: 700;
         color: @text-1;
 
-        i { color: @primary; font-size: @fs-sm; }
+        i { color: @primary-text; font-size: @fs-sm; }
     }
 
     .jinyu-fa-hint {
@@ -2931,7 +2957,7 @@ html.jinyu-tools-compact {
         line-height: 1.8;
         color: @text-3;
 
-        a { color: @primary; }
+        a { color: @primary-text; }
     }
 
     /* 本站信息：标签 / 值 / 复制按钮 */
@@ -2992,7 +3018,7 @@ html.jinyu-tools-compact {
         white-space: nowrap;
         transition: color @transition-fast, border-color @transition-fast;
 
-        &:hover { border-color: @primary; color: @primary; }
+        &:hover { border-color: @primary-text; color: @primary-text; }
         &.is-done { border-color: @success; color: @success; }
     }
 
@@ -3021,7 +3047,7 @@ html.jinyu-tools-compact {
                 height: 18px;
                 border-radius: 50%;
                 background: rgba(var(--jinyu-c-primary-rgb), .12);
-                color: @primary;
+                color: @primary-text;
                 font-size: @fs-xs;
                 font-weight: 700;
                 line-height: 18px;
@@ -3064,7 +3090,7 @@ html.jinyu-tools-compact {
             outline: none;
             transition: border-color @transition-fast;
 
-            &:focus { border-color: @primary; background: @bg-card; }
+            &:focus { border-color: @primary-text; background: @bg-card; }
             &.is-error { border-color: @danger; }
         }
     }
@@ -3144,7 +3170,7 @@ html.jinyu-tools-compact {
 
     a {
         color: @text-footer;
-        &:hover { color: @primary; }
+        &:hover { color: @primary-text; }
         img {
             display: inline;
             vertical-align: -4px;      /* 字号变大后同步下沉，贴合中文基线 */
@@ -3183,6 +3209,30 @@ html.jinyu-tools-compact {
     i {
         font-size: @fs-sm;
         line-height: 1;
+    }
+
+    /* WordPress 官方站点链接：样式对齐边上社交账号圆形按钮 */
+    .jinyu-wp-official {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: @bg-subtle;
+        color: @text-footer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: all @transition-fast;
+
+        i { font-size: @fs-xs; }
+
+        &:hover,
+        &:focus {
+            background: linear-gradient(135deg, @primary, @primary-light);
+            color: @text-invert;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(var(--jinyu-c-primary-rgb), .35);
+        }
     }
 
     /* 内联社交图标：覆盖独立行样式（缩小、去下边距），与署名文字同行 */
@@ -3332,7 +3382,7 @@ html.jinyu-tools-compact {
     transition: transform .25s @ease-spring, background .25s ease, color .25s ease, border-color .25s ease, box-shadow .25s ease, opacity .3s ease, visibility .3s ease;
 
     &:hover {
-        color: @primary;
+        color: @primary-text;
         border-color: rgba(var(--jinyu-c-primary-rgb), .4);
         background: rgba(var(--jinyu-c-primary-rgb), .08);
         box-shadow: @shadow-hover;
@@ -3342,7 +3392,7 @@ html.jinyu-tools-compact {
 }
 
 /* 回到顶部：图标用主色点缀 */
-.jinyu-back-top { color: @primary; }
+.jinyu-back-top { color: @primary-text; }
 
 /* 已贴近底部时隐去「去底部」，避免无效操作 */
 .jinyu-go-bottom.jinyu-hidden {
@@ -3406,7 +3456,7 @@ html.jinyu-tools-compact {
         transition: border-color .2s, box-shadow .2s;
 
         &:focus {
-            border-color: @primary;
+            border-color: @primary-text;
             background: @bg-card;
             box-shadow: 0 0 0 3px rgba(var(--jinyu-c-primary-rgb), .15);
         }
@@ -3492,8 +3542,8 @@ html.jinyu-tools-compact {
         cursor: pointer;
         transition: all @transition-fast;
 
-        i { font-size: @fs-lg; color: @primary; }
-        &:hover { border-color: @primary; color: @primary; background: @primary-light; }
+        i { font-size: @fs-lg; color: @primary-text; }
+        &:hover { border-color: @primary-text; color: @primary-text; background: @primary-light; }
     }
 }
 
@@ -3505,18 +3555,21 @@ html.jinyu-tools-compact {
     to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+/* 入场动画只服务于"滚动到视口"的场景：首屏元素的 .jinyu-visible 由 jinyu.js
+   在同一帧内加上，不产生过渡，因此这里的时长只影响滚动时的淡入。
+   刻意保持较短(≤.45s)并去掉 will-change——每张卡片都提升合成层会让主线程在
+   首屏绘制时多花几十毫秒，反而拖慢 FCP/LCP。 */
 .jinyu-reveal {
     opacity: 0;
     transform: translateY(30px);
-    transition: opacity .7s @ease-out-expo, transform .7s @ease-out-expo;
-    will-change: opacity, transform;
+    transition: opacity .45s @ease-out-expo, transform .45s @ease-out-expo;
 
     &.jinyu-visible { opacity: 1; transform: translateY(0); }
 }
 
-.jinyu-post-grid .jinyu-post-card:nth-child(2) { transition-delay: .08s; }
-.jinyu-post-grid .jinyu-post-card:nth-child(3) { transition-delay: .16s; }
-.jinyu-post-grid .jinyu-post-card:nth-child(4) { transition-delay: .24s; }
+.jinyu-post-grid .jinyu-post-card:nth-child(2) { transition-delay: .05s; }
+.jinyu-post-grid .jinyu-post-card:nth-child(3) { transition-delay: .1s; }
+.jinyu-post-grid .jinyu-post-card:nth-child(4) { transition-delay: .15s; }
 
 .jinyu-post-title a {
     position: relative;
@@ -3667,15 +3720,20 @@ html.jinyu-tools-compact {
             transition: background @transition-fast, color @transition-fast;
 
             &:hover,
-            &:focus-visible { color: @primary; background: @primary-light; }
+            &:focus-visible { color: @primary-text; background: @primary-light; }
         }
 
-        /* 当前项：左侧主色条 + 淡主色底 */
+        /* 当前项：左侧主色条 + 淡主色底 + 深字。
+           主色作为文字色不达 WCAG AA（本站主色蓝 #1c60f3 在 @primary-light 上仅 4.45:1），
+           故文字改 @text-1，当前页指示仍由主色底 + 主色竖条承担。
+           ⚠️ 本块编译进 style.min.css，在 critical.min.css 之后加载；
+              只改 critical 会被这里同特异性的规则压掉，必须两处一致。 */
         > li.current-menu-item > a,
         > li.current_page_item > a,
         > li.jinyu-active > a {
-            color: @primary;
+            color: @text-1;
             background: @primary-light;
+            font-weight: 700;
             box-shadow: inset 3px 0 0 @primary;
         }
 
@@ -3754,8 +3812,8 @@ html.jinyu-tools-compact {
         transition: color @transition-fast, background @transition-fast;
 
         i { font-size: @fs-sm; pointer-events: none; transition: transform .3s @ease-out-expo; }
-        &:hover { color: @primary; background: @primary-light; }
-        &[aria-expanded="true"] i { transform: rotate(180deg); color: @primary; }
+        &:hover { color: @primary-text; background: @primary-light; }
+        &[aria-expanded="true"] i { transform: rotate(180deg); color: @primary-text; }
     }
     .jinyu-nav ul .jinyu-sub-toggle { height: 46px; }
     .jinyu-nav ul ul .jinyu-sub-toggle { height: 42px; }
@@ -4002,7 +4060,7 @@ html.jinyu-tools-compact {
     outline: none;
     transition: @transition-fast;
 }
-.jinyu-password-read-input:focus { border-color: @primary; }
+.jinyu-password-read-input:focus { border-color: @primary-text; }
 .jinyu-password-read-btn {
     flex: 0 0 auto;
     padding: @s-2 @s-5;
@@ -4138,7 +4196,7 @@ html.jinyu-tools-compact {
         gap: 6px;
         font-size: @fs-sm;
         font-weight: 600;
-        color: @primary;
+        color: @primary-text;
         padding: 5px 13px;
         border-radius: @radius-pill;
         background: rgba(var(--jinyu-c-primary-rgb), .1);
@@ -4148,7 +4206,7 @@ html.jinyu-tools-compact {
         i { font-size: @fs-xxs; transition: transform .25s ease; }
         &:hover {
             background: @primary;
-            border-color: @primary;
+            border-color: @primary-text;
             color: @text-invert;
             i { transform: translateX(3px); }
         }
@@ -4182,7 +4240,7 @@ html.jinyu-tools-compact {
     transition: opacity .2s ease, color .2s ease, border-color .2s ease, background .2s ease;
 }
 .jinyu-para:hover > .jinyu-para-copy { opacity: 1; }
-.jinyu-para-copy:hover { color: @primary; border-color: @primary; background: rgba(var(--jinyu-c-primary-rgb), .08); }
+.jinyu-para-copy:hover { color: @primary-text; border-color: @primary-text; background: rgba(var(--jinyu-c-primary-rgb), .08); }
 .jinyu-para-copy.jinyu-copied { color: @success; border-color: @success; }
 
 /* Cookie 合规提示条 */
@@ -4265,7 +4323,7 @@ html.jinyu-tools-compact {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    &:hover { color: @primary; }
+    &:hover { color: @primary-text; }
 }
 .jinyu-hc-excerpt {
     margin: @s-2 0 0;
@@ -4314,7 +4372,7 @@ html.jinyu-tools-compact {
     font-size: @fs-base;
     cursor: pointer;
     transition: @transition-fast;
-    &:hover { border-color: @primary; color: @primary; }
+    &:hover { border-color: @primary-text; color: @primary-text; }
     &:active { transform: scale(.97); }
     &:disabled { cursor: default; }
     i { font-size: @fs-md; }
@@ -4358,7 +4416,7 @@ html.jinyu-tools-compact {
     overflow: hidden;
     background: @bg-card;
     transition: @transition-fast;
-    &:hover { border-color: @primary; transform: translateY(-3px); box-shadow: @shadow-card; }
+    &:hover { border-color: @primary-text; transform: translateY(-3px); box-shadow: @shadow-card; }
 }
 .jinyu-coview-cover {
     aspect-ratio: 16 / 10;
@@ -4375,7 +4433,7 @@ html.jinyu-tools-compact {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    .jinyu-coview-card:hover & { color: @primary; }
+    .jinyu-coview-card:hover & { color: @primary-text; }
 }
 
 /* ==========================================================================
@@ -4437,6 +4495,8 @@ a,button,input,label,summary{ -webkit-tap-highlight-color: transparent; }
     .jinyu-nav-panel .jinyu-nav > li.current-menu-item > a,
     .jinyu-nav-panel .jinyu-nav > li.current_page_item > a,
     .jinyu-nav-panel .jinyu-nav > li.jinyu-active > a {
+        color: @text-1;               /* 主色在浅底不达 AA，当前页改用深字 + 竖条 */
+        background: @primary-light;
         box-shadow: inset 3px 0 0 @primary;
         font-weight: 600;
     }

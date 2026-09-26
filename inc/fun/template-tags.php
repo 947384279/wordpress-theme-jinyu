@@ -65,8 +65,9 @@ if (!function_exists('jinyu_pagination')) {
             'type'      => 'list',
             'mid_size'  => $mid_size,
             'end_size'  => $end_size,
-            'prev_text' => '<i class="fa-solid fa-angle-left"></i>',
-            'next_text' => '<i class="fa-solid fa-angle-right"></i>',
+            // ⚠️ 纯图标链接读屏读不出名称（link-name 失败）：图标 aria-hidden，另加 screen-reader-text 文本兜底。
+            'prev_text' => '<i class="fa-solid fa-angle-left" aria-hidden="true"></i><span class="screen-reader-text">' . esc_html__( '上一页', 'jinyu' ) . '</span>',
+            'next_text' => '<i class="fa-solid fa-angle-right" aria-hidden="true"></i><span class="screen-reader-text">' . esc_html__( '下一页', 'jinyu' ) . '</span>',
         ]);
 
         if (!$links) return;

@@ -12,6 +12,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 get_header();
 
 // 置顶文章统一进网格（见 templates/module-post.php 的 .jinyu-post-card.is-sticky 卡片高亮），不再独占首屏大图 Banner。
+
+// 轮播实例自增序号，用于生成 DOM id 供 aria-controls 引用
+$jinyu_car_seq = 0;
 ?>
 <div class="jinyu-container jinyu-main-wrap">
   <main id="jinyu-content" class="jinyu-content">
@@ -24,7 +27,7 @@ get_header();
     <h1 class="jinyu-sr-only"><?php echo esc_html(get_bloginfo('name')); ?></h1>
 
     <?php
-    // 首页轮播（Swiper）
+    // 首页轮播（主题自研 JinyuCarousel，零第三方依赖）
     if (jinyu_is_checked('home_carousel')) :
         $slides = jinyu_get_carousel_slides();
         if (!empty($slides)) :
@@ -35,29 +38,48 @@ get_header();
             $effect   = (string) jinyu_get_option('home_carousel_effect', '');
             $mouse    = jinyu_is_checked('home_carousel_mousewheel') ? 1 : 0;
             $hideCap  = jinyu_is_checked('home_carousel_hide_title');
+            $car_id   = 'jinyu-carousel-' . (isset($jinyu_car_seq) ? $jinyu_car_seq++ : 0);
     ?>
-      <div class="jinyu-carousel swiper" data-jinyu-carousel
+      <div class="jinyu-carousel" id="<?php echo esc_attr($car_id); ?>" data-jinyu-carousel
+           role="region" aria-roledescription="轮播" aria-label="<?php echo esc_attr__('精选文章轮播', 'jinyu'); ?>"
            data-autoplay="<?php echo esc_attr($autoplay); ?>"
            data-loop="<?php echo esc_attr($loop); ?>"
            data-effect="<?php echo esc_attr($effect); ?>"
            data-mousewheel="<?php echo esc_attr($mouse); ?>">
-        <div class="swiper-wrapper">
+        <div class="jinyu-carousel-track">
           <?php foreach ($slides as $si => $s) :
-              // 仅首屏第一张 eager 提权，其余懒加载，避免多图并发抢占带宽
-              $slide_loading = ($si === 0) ? 'eager' : 'lazy';
-              $slide_prio    = ($si === 0) ? ' fetchpriority="high"' : '';
+              /*
+               * 全部 eager，不用 loading="lazy"。
+               * track 接管后是 overflow:hidden 的位移容器，浏览器对内部懒加载图片的
+               * "接近视口"判定永远不成立——切到第 2 张起就会是一块灰底。
+               * 只有首张给 fetchpriority 抢带宽，其余按文档顺序排队，不影响 LCP。
+               */
+              $slide_prio = ($si === 0) ? ' fetchpriority="high"' : '';
           ?>
-            <div class="swiper-slide">
-              <a class="jinyu-carousel-slide" href="<?php echo esc_url($s['url'] ?: '#'); ?>">
-                <img class="jinyu-blur-img" src="<?php echo esc_url($s['image']); ?>" alt="<?php echo esc_attr($s['title']); ?>"<?php if (!empty($s['srcset'])) : ?> srcset="<?php echo esc_attr($s['srcset']); ?>" sizes="100vw"<?php endif; ?> loading="<?php echo esc_attr($slide_loading); ?>" decoding="async"<?php echo $slide_prio; ?>>
+            <div class="jinyu-carousel-slide" role="group" aria-roledescription="幻灯片" aria-label="<?php echo esc_attr(sprintf(__('第 %d 张，共 %d 张', 'jinyu'), $si + 1, count($slides))); ?>">
+              <a class="jinyu-carousel-link" href="<?php echo esc_url($s['url'] ?: '#'); ?>">
+                <img class="jinyu-blur-img" src="<?php echo esc_url($s['image']); ?>" alt=""<?php if (!empty($s['srcset'])) : ?> srcset="<?php echo esc_attr($s['srcset']); ?>" sizes="100vw"<?php endif; ?> loading="eager" decoding="async"<?php echo $slide_prio; ?>>
                 <?php if (!$hideCap) : ?><div class="jinyu-carousel-cap"><span><?php echo esc_html($s['title']); ?></span></div><?php endif; ?>
               </a>
             </div>
           <?php endforeach; ?>
         </div>
-        <div class="swiper-pagination"></div>
-        <div class="swiper-button-prev"></div>
-        <div class="swiper-button-next"></div>
+
+        <button type="button" class="jinyu-carousel-arrow jinyu-carousel-arrow-prev" aria-controls="<?php echo esc_attr($car_id); ?>" aria-label="<?php echo esc_attr__('上一张', 'jinyu'); ?>">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5.5 8.5 12 15 18.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button type="button" class="jinyu-carousel-arrow jinyu-carousel-arrow-next" aria-controls="<?php echo esc_attr($car_id); ?>" aria-label="<?php echo esc_attr__('下一张', 'jinyu'); ?>">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 5.5 15.5 12 9 18.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+
+        <?php if (count($slides) > 1) : ?>
+          <div class="jinyu-carousel-dots">
+            <?php foreach ($slides as $di => $ds) : ?>
+              <button type="button" class="jinyu-carousel-dot<?php echo $di === 0 ? ' is-active' : ''; ?>" aria-label="<?php echo esc_attr(sprintf(__('跳转到第 %d 张', 'jinyu'), $di + 1)); ?>"<?php echo $di === 0 ? ' aria-current="true"' : ''; ?>></button>
+            <?php endforeach; ?>
+          </div>
+          <p class="jinyu-sr-only" aria-live="polite" data-jinyu-carousel-status></p>
+        <?php endif; ?>
       </div>
     <?php
         endif;
@@ -79,7 +101,7 @@ get_header();
         <?php foreach ($jinyu_grid as $jinyu_g) : ?>
           <a class="jinyu-cms-grid-item" href="<?php echo esc_url($jinyu_g['link'] ?: '#'); ?>"<?php echo $jinyu_g['blank'] ? ' target="_blank" rel="noopener noreferrer"' : ''; ?>>
             <?php $ph_g = ''; $aid_g = jinyu_url_to_postid($jinyu_g['img']); if ($aid_g) { $tg = wp_get_attachment_image_src($aid_g, 'thumbnail'); if ($tg && !empty($tg[0])) $ph_g = jinyu_lqip_url($tg[0]); } ?>
-            <img class="jinyu-blur-img" src="<?php echo esc_url(jinyu_img_to_webp_url($jinyu_g['img'])); ?>" alt="<?php echo esc_attr($jinyu_g['title']); ?>" loading="lazy" decoding="async"<?php echo $ph_g ? ' data-ph="' . esc_url($ph_g) . '"' : ''; ?>>
+            <img class="jinyu-blur-img" src="<?php echo esc_url(jinyu_img_to_webp_url($jinyu_g['img'])); ?>" alt="" loading="lazy" decoding="async"<?php echo $ph_g ? ' data-ph="' . esc_url($ph_g) . '"' : ''; ?>>
             <span class="jinyu-cms-grid-cap"><?php echo esc_html($jinyu_g['title']); ?></span>
           </a>
         <?php endforeach; ?>
@@ -158,4 +180,4 @@ get_header();
 
   <?php get_sidebar(); ?>
 </div>
-<?php get_footer(); ?>
+<?php get_footer(); 

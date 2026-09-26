@@ -29,7 +29,7 @@ License URI: https://www.gnu.org/licenses/gpl-3.0.html
 * Font Awesome Free 6：图标采用 CC BY 4.0 许可（https://creativecommons.org/licenses/by/4.0/）；
   字体采用 SIL OFL 1.1 许可（https://opensource.org/licenses/OFL-1.1）；代码采用 MIT 许可。
   商标声明：Font Awesome 为 Dave Gandy 的商标，本主题仅按其开源许可使用，与商标持有人无隶属关系。
-* Swiper 11（assets/css/vendor/swiper-bundle.min.css 及其字体）：MIT 许可（https://opensource.org/licenses/MIT）。
+* 首页轮播为主题自研实现（零第三方依赖、零外部请求），无第三方代码与许可义务。
 
 高颜值自适应 WordPress 主题，自研架构全新编写。支持后台可视化配置、暗色模式、多种布局、短代码、评论邮件通知、点赞与无限加载。
 

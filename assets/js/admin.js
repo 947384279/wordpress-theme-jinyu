@@ -80,17 +80,17 @@
     function qs(sel, ctx) { return (ctx || document).querySelector(sel); }
     function qsa(sel, ctx) { return Array.prototype.slice.call((ctx || document).querySelectorAll(sel)); }
 
-    // 记忆当前选中的设置分组（刷新 / 重开页面后保持），优先 localStorage，其次 URL hash
+    // 初始分组：URL hash 优先（后台提醒「前往重建」会带 #tools），其次 localStorage 记忆，最后默认首组
     function getInitialKey() {
         if (!GROUPS.length) return '';
         var valid = {};
         GROUPS.forEach(function (g) { valid[g.key] = true; });
+        var h = (location.hash || '').replace(/^#/, '');
+        if (h && valid[h]) return h;
         try {
             var stored = localStorage.getItem('jinyu_set_tab_' + location.pathname);
             if (stored && valid[stored]) return stored;
         } catch (e) {}
-        var h = (location.hash || '').replace(/^#/, '');
-        if (h && valid[h]) return h;
         return GROUPS[0].key;
     }
 
@@ -696,6 +696,30 @@
             '<span id="' + tipId + '" class="jinyu-tools-tip"></span>';
     }
 
+    /**
+     * 重建封面缩略图那一行 + 其下方的进度区。
+     * 进度区常驻 DOM（只是默认隐藏），这样切换设置分组再切回来仍能看见进度，
+     * 不必依赖「必须正在点按钮」这个前提。
+     */
+    function thumbsToolRow() {
+        // dashicons 没有 "images" 这个类（只有 images-alt / images-alt2 / format-gallery），
+        // 写错会渲染出一个空白图标框
+        return toolRow('format-gallery', '重建封面缩略图', '为历史上传的封面图补出主题自建尺寸 jinyu-cover（768×512）与 jinyu-thumb（400×267），卡片就用小图、不再加载原图。仅处理缺这两个尺寸的图，分批进行直至完成。', toolAction('jinyu-regenerate-thumbs', '开始重建', 'jinyu-regenerate-thumbs-tip')) +
+            '<div class="jinyu-thumbs-progress" id="jinyu-thumbs-progress" hidden>' +
+            '<div class="jinyu-thumbs-progress-head">' +
+            '<span class="jinyu-thumbs-progress-label" id="jinyu-thumbs-progress-label">准备中…</span>' +
+            '<span class="jinyu-thumbs-progress-pct" id="jinyu-thumbs-progress-pct">0%</span>' +
+            '</div>' +
+            '<div class="jinyu-thumbs-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="jinyu-thumbs-progress-bar">' +
+            '<span class="jinyu-thumbs-progress-fill" id="jinyu-thumbs-progress-fill"></span>' +
+            '</div>' +
+            '<div class="jinyu-thumbs-progress-foot">' +
+            '<span class="jinyu-thumbs-progress-detail" id="jinyu-thumbs-progress-detail"></span>' +
+            '<button type="button" class="jinyu-tool-btn jinyu-tool-btn--sm" id="jinyu-thumbs-stop">停止</button>' +
+            '</div>' +
+            '</div>';
+    }
+
     function toolsHtml() {
         var runOn = !!SAVED.footer_runinfo;
         var runSwitch = '<span class="jinyu-tool-state' + (runOn ? ' on' : '') + '" id="jinyu-runinfo-state">' + (runOn ? '已开启' : '已关闭') + '</span>' +
@@ -703,15 +727,17 @@
             '<input type="checkbox" id="jinyu-runinfo-toggle"' + (runOn ? ' checked' : '') + '>' +
             '<span class="jinyu-switch-track"></span>' +
             '</label>' +
-            '<span id="jinyu-runinfo-tip" class="jinyu-tools-tip"></span>';
-        return '<div class="jinyu-tools-list">' +
+                    '<span id="jinyu-runinfo-tip" class="jinyu-tools-tip"></span>';
+        return '<div class="jinyu-tools-list" id="jinyu-tools">' +
             toolRow('admin-settings', 'SMTP 发信', '配置发信通道（主机 / 端口 / 账号 / 授权码 / 加密 / 发件人）。测试邮件优先使用表单当前值，未保存也可直接测试。', toolAction('jinyu-test-smtp', '发送测试邮件', 'jinyu-test-smtp-tip') + toolAction('jinyu-config-smtp', '展开配置', 'jinyu-config-smtp-tip')) +
+            // 紧跟触发按钮所在的那一行就地展开，避免窄屏下卡片落在列表最底部看不见
+            '<div id="jinyu-smtp-card" class="jinyu-smtp-card" hidden>' + smtpCardHtml() + '</div>' +
             toolRow('performance', '清理主题缓存', '立即清空全部主题缓存（页面缓存与静态化资源），改版后建议执行一次。', toolAction('jinyu-clear-cache', '清理缓存', 'jinyu-clear-cache-tip')) +
             toolRow('database', '数据库优化', '清理文章修订版、自动草稿、垃圾/回收站评论、孤立 meta 与过期 transient，并对数据表执行 OPTIMIZE。仅删冗余，不动正常内容。', toolAction('jinyu-db-optimize', '一键优化', 'jinyu-db-optimize-tip')) +
+            thumbsToolRow() +
             toolRow('download', '导出配置', '将当前所有主题设置导出为 JSON 文件，便于备份与多站迁移。', toolAction('jinyu-export', '导出 JSON', 'jinyu-export-tip')) +
             toolRow('upload', '导入配置', '从 JSON 文件恢复主题设置，将覆盖当前全部配置，请先导出备份。', toolAction('jinyu-import', '选择文件并导入', 'jinyu-import-tip') + '<input type="file" id="jinyu-import-file" accept="application/json,.json" hidden>') +
             toolRow('chart-bar', '页脚运行信息', '在前台页脚输出实时运行信息（查询数 / 内存 / 渲染耗时）。开启后建议清理一次缓存使其生效。', runSwitch) +
-            '<div id="jinyu-smtp-card" class="jinyu-smtp-card" hidden>' + smtpCardHtml() + '</div>' +
             '</div>';
     }
 
@@ -786,10 +812,29 @@
     }
 
     /* ---------- 脏检查 / 提示 ---------- */
+    /* 与快照逐键比对，返回改动项数量（用于提示条上的计数徽标） */
+    function dirtyCount(cur) {
+        var base = {};
+        try { base = JSON.parse(snapshot) || {}; } catch (e) { base = {}; }
+        var n = 0;
+        Object.keys(cur).forEach(function (k) {
+            if (!(k in base) || String(base[k]) !== String(cur[k])) n++;
+        });
+        Object.keys(base).forEach(function (k) { if (!(k in cur)) n++; });
+        return n;
+    }
+
     function markDirty() {
         if (!dirtybar) return;
-        var dirty = JSON.stringify(collect()) !== snapshot;
+        var cur = collect();
+        var dirty = JSON.stringify(cur) !== snapshot;
         dirtybar.hidden = !dirty;
+        var badge = qs('.jinyu-dirty-count', dirtybar);
+        if (badge) {
+            var n = dirty ? dirtyCount(cur) : 0;
+            badge.textContent = n + ' ' + ((n === 1) ? '项' : '项');
+            badge.hidden = n < 1;
+        }
         refreshNavModified();
     }
 
@@ -804,6 +849,26 @@
     }
 
     /* ---------- 渲染 ---------- */
+
+    /**
+     * 把模板里的顶栏搬进 .jinyu-panels 首位，与内容卡共享同一个 padding 盒。
+     * 幂等：已是内容列子节点则不动（「放弃更改」会清空 root 重跑 build）。
+     */
+    function dockTopbar() {
+        var bar = document.querySelector('.jinyu-topbar');
+        var panels = root && qs('.jinyu-panels', root);
+        if (!bar || !panels || bar.parentNode === panels) return;
+        panels.insertBefore(bar, panels.firstChild);
+    }
+
+    /** 面包屑末级跟随当前分组名（分组名不再在内容卡卡头重复出现，由面包屑承载） */
+    function syncCrumb(key) {
+        var crumbCur = document.getElementById('jinyu-crumb-cur');
+        if (!crumbCur) return;
+        var cg = GROUPS.filter(function (x) { return x.key === key; })[0];
+        if (cg) crumbCur.textContent = cg.title;
+    }
+
     function build() {
         root.innerHTML = '<div class="jinyu-layout">' + sidebarHtml() +
             '<div class="jinyu-main"><div class="jinyu-panels">' +
@@ -811,7 +876,14 @@
             '<div class="jinyu-search-empty" hidden>没有匹配的设置项，换个关键词试试</div>' +
             '</div></div></div>';
 
-        // 恢复侧栏折叠态（localStorage 持久化，刷新不丢）。
+        // 顶栏归位到内容列：它必须与内容卡共享同一个 padding 盒（.jinyu-panels），
+        // 左右缘才能严格共线。此前它是 .jinyu-setting-wrap 的直接子级，右缘比内容卡多出 42px
+        // （漏掉内容列 32px 侧沟 + .jinyu-main 的 10px 滚动条槽），正是「顶栏右边超出内容区」的根因。
+        // 放进滚动容器后 position:sticky 依然生效（相对 .jinyu-main 的滚动口吸顶）。
+        dockTopbar();
+        syncCrumb(currentKey);
+
+        // 还原侧栏折叠态（localStorage 持久化，刷新不丢）。
         // 仅桌面恢复：移动端标签条没有折叠交互，带着折叠类会把胶囊压成细条（文字被 width:0 隐藏）
         try {
             if ((!window.matchMedia || matchMedia('(min-width: 901px)').matches)
@@ -835,12 +907,19 @@
         buildGroupSnapshots();
         refreshNavModified();
 
+        // 带 hash 直达（后台提醒「前往重建」→ #tools）时滚到「维护工具」面板，
+        // 首次渲染时元素才就位，滚动只能放在这里
+        var anchor = qs('.jinyu-panel.is-active #jinyu-tools', root);
+        if (anchor && anchor.scrollIntoView) {
+            try { anchor.scrollIntoView({ block: 'start' }); } catch (e) {}
+        }
     }
 
     function activate(key) {
         currentKey = key;
         try { localStorage.setItem('jinyu_set_tab_' + location.pathname, key); } catch (e) {}
         if (history.replaceState) { try { history.replaceState(null, '', '#' + key); } catch (e) {} }
+        syncCrumb(key);
         qsa('.jinyu-nav-item', root).forEach(function (n) {
             n.classList.toggle('is-active', n.getAttribute('data-nav') === key);
         });
@@ -848,12 +927,31 @@
             p.classList.toggle('is-active', p.getAttribute('data-panel') === key);
         });
         layoutMultiAll();   // 新面板可见后重算多选框折叠，避免 width=0 误裁切
+        // 带 hash 直达时（后台提醒的「前往重建」→ #tools）滚到对应面板，
+        // 否则一律回到顶部：页面级滚动（window）才是实际滚动容器，
+        // 切换分组须归零，不然新面板从上个分组的滚动位置开始（看不到面板头）
+        var anchor = qs('.jinyu-panel.is-active #jinyu-tools', root);
         var main = qs('.jinyu-main', root);
         if (main) main.scrollTop = 0;
-        // 页面级滚动（window）才是实际滚动容器，切换分组须归零，
-        // 否则新面板从上个分组的滚动位置开始（看不到面板头）
-        try { window.scrollTo(0, 0); } catch (e) {}
+        if (anchor && anchor.scrollIntoView) {
+            try { anchor.scrollIntoView({ block: 'start' }); } catch (e) {}
+        } else {
+            try { window.scrollTo(0, 0); } catch (e) {}
+        }
+        // 面板可能刚重绘（切分组 / 首次进入），进度区要跟着恢复，
+        // 否则正在跑的重建任务在用户切走再切回后就「消失」了
+        restoreThumbsProgress();
 
+    }
+
+    /**
+     * 重绘后恢复进度区：只在仍有任务在跑时显示，收尾后不打扰。
+     * 服务端状态是唯一事实来源，这里只负责把已有的最后一帧数据画出来。
+     */
+    var thumbsLastFrame = null;
+    function restoreThumbsProgress() {
+        if (!thumbsLastFrame) return;
+        renderThumbsProgress(thumbsLastFrame.data, thumbsLastFrame.running);
     }
 
     /* ---------- 自定义下拉（select） ---------- */
@@ -888,6 +986,14 @@
             if (card) {
                 card.hidden = !card.hidden;
                 cfgBtn.textContent = card.hidden ? '展开配置' : '收起配置';
+                if (!card.hidden) {
+                    // 展开后短促高亮一圈，并把卡片滚进视口——窄屏上按钮常贴在首屏底部，
+                    // 只把卡片塞进列表中间，用户仍可能以为「点了没反应」
+                    card.classList.remove('is-flash');
+                    void card.offsetWidth; // 强制回流，保证连续点击也能重放动画
+                    card.classList.add('is-flash');
+                    card.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                }
             }
             return;
         }
@@ -961,6 +1067,22 @@
         if (e.target.closest('#jinyu-test-smtp')) { postTool('jinyu_test_smtp', qs('#jinyu-test-smtp-tip')); return; }
         if (e.target.closest('#jinyu-clear-cache')) { postTool('jinyu_clear_cache', qs('#jinyu-clear-cache-tip')); return; }
         if (e.target.closest('#jinyu-db-optimize')) { postTool('jinyu_db_optimize', qs('#jinyu-db-optimize-tip')); return; }
+        // 重建缩略图：服务端分批返回进度，最多自动续跑 40 轮（够把几千张图跑完）
+        if (e.target.closest('#jinyu-regenerate-thumbs')) {
+            openThumbsProgress();
+            postTool('jinyu_regenerate_thumbs', qs('#jinyu-regenerate-thumbs-tip'), {
+                moreRounds: 60,
+                onProgress: function (d, done) { renderThumbsProgress(d, !done); }
+            });
+            return;
+        }
+        if (e.target.closest('#jinyu-thumbs-stop')) {
+            // 停止同样走一次请求：服务端清掉队列与闸门，下次点击重新扫描
+            postTool('jinyu_regenerate_thumbs', qs('#jinyu-regenerate-thumbs-tip'), {
+                onProgress: function (d) { renderThumbsProgress(d, false); }
+            });
+            return;
+        }
 
         // 对象存储操作面板（事件委托，面板重建后仍有效）
         if (e.target.closest('#jinyu-storage-test')) { postStorage('jinyu_storage_test', qs('#jinyu-storage-test-tip')); return; }
@@ -1382,10 +1504,18 @@
         return fallback;
     }
 
-    function postTool(action, tipEl) {
+    /**
+     * 维护工具请求。opts.moreRounds > 1 时，服务端返回 more=true 会自动续跑下一批，
+     * 用于「重建缩略图」这类分批处理、单次请求装不下的任务。
+     * opts.onProgress 用于在批次之间刷新进度（进度条、剩余时间提示）。
+     */
+    var thumbsRunning = false;
+
+    function postTool(action, tipEl, opts) {
         if (!tipEl) return;
-        tipEl.textContent = '处理中…';
-        tipEl.className = 'jinyu-tools-tip';
+        opts = opts || {};
+        var maxRounds = opts.moreRounds || 1;
+        var round = 0;
         var body = '_ajax_nonce=' + encodeURIComponent(S.nonce);
         // SMTP 测试：附带表单当前（可能未保存）的 SMTP 配置，便于不保存直接测
         if (action === 'jinyu_test_smtp') {
@@ -1396,22 +1526,140 @@
                 }
             });
         }
-        fetch(S.ajax_url + '?action=' + action, {
+        var onProgress = opts.onProgress || null;
+        function run(isStop) {
+            tipEl.textContent = isStop ? '正在停止…' : '处理中…';
+            tipEl.className = 'jinyu-tools-tip';
+            if (isStop) body += '&stop=1';
+            fetch(S.ajax_url + '?action=' + action, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: body
+            })
+                .then(function (r) { return r.json(); })
+                .then(function (res) {
+                    var d = (res && res.data) || {};
+                    // 交给调用方自行收拾（例如自动续跑撞到并发闸门时要退避重试）：
+                    // 返回 true 表示已接管，这里就不再改动进度区与提示文案
+                    if (!res.success && typeof opts.onFail === 'function' && opts.onFail(d, res) === true) {
+                        return;
+                    }
+                    // 批次任务：服务端说还有活，且本轮未到上限 → 直接续跑，用户不用反复点
+                    if (res.success && d.more && round < maxRounds) {
+                        round++;
+                        if (onProgress) onProgress(d, false);
+                        return run(false);
+                    }
+                    if (onProgress) onProgress(d, true);
+                    tipEl.textContent = apiMsg(res, res.success ? '成功' : '失败');
+                    tipEl.className = 'jinyu-tools-tip ' + (res.success && !d.more ? 'ok' : 'err');
+                })
+                .catch(function (err) {
+                    if (onProgress) onProgress({}, false, true);
+                    var m = (err && err.message) ? ('请求失败：' + err.message) : '网络错误';
+                    if (window.console && console.error) console.error('[jinyu-tool]', action, err);
+                    tipEl.textContent = m;
+                    tipEl.className = 'jinyu-tools-tip err';
+                });
+        }
+        run(false);
+    }
+
+    /* ---------- 重建封面缩略图：进度区 ---------- */
+
+    /**
+     * 刷新进度区。running=false 表示收尾（完成 / 停止 / 出错）。
+     */
+    function renderThumbsProgress(data, running) {
+        var box = qs('#jinyu-thumbs-progress', root);
+        if (!box) return;
+        thumbsLastFrame = { data: data || {}, running: !!running };
+        thumbsRunning = !!running;   // 供 resumeThumbsIfPending() 判断是否在跑，避免并发发起
+        var pct   = Math.max(0, Math.min(100, Math.round((data && data.percent) || 0)));
+        var done  = (data && (data.done || 0)) || 0;
+        var total = (data && (data.total || 0)) || 0;
+        var fill  = qs('#jinyu-thumbs-progress-fill', box);
+        var label = qs('#jinyu-thumbs-progress-label', box);
+        var pctEl = qs('#jinyu-thumbs-progress-pct', box);
+        var detail = qs('#jinyu-thumbs-progress-detail', box);
+        var bar   = qs('#jinyu-thumbs-progress-bar', box);
+        var stopBtn = qs('#jinyu-thumbs-stop', box);
+
+        box.hidden = false;
+        box.classList.toggle('is-done', !running);
+        box.setAttribute('aria-live', 'polite');
+        if (fill) fill.style.width = pct + '%';
+        if (bar) bar.setAttribute('aria-valuenow', String(pct));
+        if (pctEl) pctEl.textContent = pct + '%';
+        if (label) {
+            label.textContent = running
+                ? '正在重建封面缩略图…'
+                : ((data && data.percent === 100) ? '重建完成' : '已停止');
+        }
+        if (detail) {
+            var bits = [];
+            if (total > 0) bits.push('已处理 ' + fmtNum(done) + ' / ' + fmtNum(total) + ' 张');
+            if (data && data.gen) bits.push('新生成 ' + fmtNum(data.gen) + ' 张');
+            if (data && data.skip) bits.push('跳过 ' + fmtNum(data.skip) + ' 张');
+            if (data && data.fail) bits.push('失败 ' + fmtNum(data.fail) + ' 张');
+            detail.textContent = bits.join(' · ');
+        }
+        if (stopBtn) stopBtn.hidden = !running;
+    }
+
+    function fmtNum(n) {
+        n = Number(n) || 0;
+        return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    /** 首次点击「开始重建」时把进度区清零打开，避免沿用上一次的残留数据。 */
+    function openThumbsProgress() {
+        renderThumbsProgress({ percent: 0, done: 0, total: 0, gen: 0, skip: 0, fail: 0 }, true);
+    }
+
+    /**
+     * 页面重新打开 / 刷新后，先问服务端有没有上次没跑完的重建任务。
+     * 任务没有常驻进程（关页面就随 FPM 一起死），所以中断只可能来自关页面、断网或 PHP 超时；
+     * 服务端按状态里的时间戳把这类孤儿任务判为可接管，这里补发一次请求即可接着跑，用户不用重新点。
+     */
+    var thumbsResumeChecked = false;
+    function resumeThumbsIfPending() {
+        // 用户当前在别的分组、面板还没渲染出来时不打扰；同一次会话只查一次
+        if (thumbsResumeChecked || !root || !qs('#jinyu-regenerate-thumbs', root) || thumbsRunning) return;
+        thumbsResumeChecked = true;
+        fetch(S.ajax_url + '?action=jinyu_regen_status', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: body
+            body: '_ajax_nonce=' + encodeURIComponent(S.nonce)
         })
             .then(function (r) { return r.json(); })
             .then(function (res) {
-                tipEl.textContent = apiMsg(res, res.success ? '成功' : '失败');
-                tipEl.className = 'jinyu-tools-tip ' + (res.success ? 'ok' : 'err');
+                var d = (res && res.data) || {};
+                if (!res.success || !d.running || Number(d.percent) >= 100) return;
+                openThumbsProgress();
+                renderThumbsProgress(d, true);
+                var tip = qs('#jinyu-regenerate-thumbs-tip');
+                var tries = 0;
+                (function go() {
+                    postTool('jinyu_regenerate_thumbs', tip, {
+                        moreRounds: 60,
+                        onProgress: function (dd, done) { renderThumbsProgress(dd, !done); },
+                        // 撞到并发闸门（上一次请求还没收尾 / 另一个标签页正在跑）时退避重试：
+                        // 任务并没有停，不能把进度区翻成「已停止」让用户以为白跑了
+                        onFail: function (dd) {
+                            if (!dd || dd.code !== 'busy' || tries >= 3) return false;
+                            tries++;
+                            if (tip) {
+                                tip.className = 'jinyu-tools-tip';
+                                tip.textContent = '任务正在进行，稍候自动接管…';
+                            }
+                            window.setTimeout(go, 4000);
+                            return true;
+                        }
+                    });
+                })();
             })
-            .catch(function (err) {
-                var m = (err && err.message) ? ('请求失败：' + err.message) : '网络错误';
-                if (window.console && console.error) console.error('[jinyu-tool]', action, err);
-                tipEl.textContent = m;
-                tipEl.className = 'jinyu-tools-tip err';
-            });
+            .catch(function () { /* 探不到就当没有待办任务，用户手动点开始即可 */ });
     }
 
     /* ---------- 对象存储：携带当前表单配置的工具请求 ---------- */
@@ -1573,7 +1821,9 @@
         doFetch(S.ajax_url + '?action=jinyu_check_update&nonce=' + encodeURIComponent(S.nonce), {})
             .then(function (json) {
                 if (!json || !json.success) {
-                    if (status) { status.textContent = (json && json.data && json.data.msg) || '检查失败'; status.className = 'jinyu-update-status err'; }
+                    var emsg = (json && json.data && json.data.msg) || '检查失败';
+                    if (status) { status.textContent = emsg; status.className = 'jinyu-update-status err'; }
+                    else toast(emsg, false);   // 顶栏按钮没有状态区容器，用 toast 反馈
                     return;
                 }
                 var d = json.data || {};
@@ -1585,6 +1835,11 @@
                         status.textContent = '已是最新版本 v' + d.current;
                         status.className = 'jinyu-update-status';
                     }
+                }
+                if (!box) {
+                    // 顶栏「检查更新」：没有 .jinyu-update-box 容器，结果弹卡无处渲染，
+                    // 必须用全局 toast 给出结果——否则点击后毫无反馈，看起来像按钮坏了
+                    toast(d.has_update ? ('发现新版本 v' + d.latest + '，到「关于」面板下载') : ('已是最新版本 v' + d.current), true);
                 }
                 if (detail) {
                     // 仅在确有新版本时才浮出更新卡片（更新日志 + 操作按钮）；已是最新时不渲染任何详情，不撑爆顶栏
@@ -1607,7 +1862,7 @@
                     if (d.has_update) attachUpdatePopClose(); else detachUpdatePopClose();
                 }
             })
-            .catch(function (err) { if (status) { status.textContent = '网络错误：' + err.message; status.className = 'jinyu-update-status err'; } })
+            .catch(function (err) { if (status) { status.textContent = '网络错误：' + err.message; status.className = 'jinyu-update-status err'; } else toast('网络错误：' + err.message, false); })
             .then(function () { btn.disabled = false; });
     }
 
@@ -1674,32 +1929,25 @@
         });
     }
 
-    /* ---------- 顶栏高度实测：吸顶线跟随真实顶栏高度（顶栏换行/加高时不再遮挡面板头） ---------- */
-    function syncTopbarH() {
-        var wrap = document.querySelector('.jinyu-setting-wrap');
-        var bar = document.querySelector('.jinyu-topbar');
-        if (!wrap || !bar) return;
-        var h = Math.round(bar.getBoundingClientRect().height);
-        if (h > 0) wrap.style.setProperty('--jh-topbar-h', h + 'px');
-    }
-    function watchTopbarH() {
-        syncTopbarH();
-        var bar = document.querySelector('.jinyu-topbar');
-        if (!bar) return;
-        if ('ResizeObserver' in window) {
-            new ResizeObserver(syncTopbarH).observe(bar);
-        } else {
-            window.addEventListener('resize', syncTopbarH);
-        }
-    }
-
     /* ---------- 入口 ---------- */
     function init() {
         root = document.getElementById('jinyu-setting-app');
         if (!root) return;
         build();
         resumeStorageIfActive();
+        resumeThumbsIfPending();   // 上次没跑完的重建任务在这里自动接上
         wireTopbar();
+
+        // 顶栏报警图标（.jinyu-alert）是 <a href="…#tools">：浏览器只改 hash、不触发任何
+        // JS 面板切换，而 activate() 写回 hash 用的是 replaceState（不产生 hashchange 事件），
+        // 二者不会成环。必须自己监听 hashchange，页内锚点跳转才会真正切到「维护工具」面板，
+        // 否则图标「点了没反应」。
+        window.addEventListener('hashchange', function () {
+            var k = (location.hash || '').replace(/^#/, '');
+            var valid = {};
+            GROUPS.forEach(function (g) { valid[g.key] = true; });
+            if (k && valid[k] && k !== currentKey) activate(k);
+        });
         // 窗口缩放时重算多选框折叠，保持触发框恒定一行
         window.addEventListener('resize', function () {
             if (root) layoutMultiAll();
