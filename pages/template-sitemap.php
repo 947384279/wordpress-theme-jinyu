@@ -89,7 +89,7 @@ endif;
 			<?php endif; ?>
 		</div>
 		<?php else : ?>
-		<p class="jinyu-notice"><?php esc_html_e( '站点地图功能已关闭。', 'jinyu' ); ?></p>
+		<p class="jinyu-sitemap-off"><?php esc_html_e( '站点地图功能已关闭。', 'jinyu' ); ?></p>
 		<?php endif; ?>
 		</div>
 	</article>

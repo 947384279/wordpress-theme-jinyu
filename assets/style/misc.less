@@ -90,6 +90,17 @@
     li a { color: @text-2; font-size: @fs-sm; &:hover { color: @primary-text; } }
 }
 .jinyu-sitemap-pages { list-style: none; padding: 0; margin: 0; columns: 2; li { padding: @s-2 0; a { color: @text-2; &:hover { color: @primary-text; } } } }
+/* 功能关闭提示。原先这里用的是后台提醒条的 .jinyu-notice，但那个样式只存在于已移除的
+   admin-notice.min.css（前台不加载），等于永远没有样式；改挂本地并补上，提示才有边框。 */
+.jinyu-sitemap-off {
+    margin: @s-4 0 0;
+    padding: @s-3 @s-4;
+    font-size: @fs-sm;
+    color: @text-2;
+    background: @bg-subtle;
+    border: 1px dashed @border;
+    border-radius: @radius-sm;
+}
 
 @media (max-width: 576px) {
     .jinyu-sitemap-cat ul, .jinyu-sitemap-pages { columns: 1; grid-template-columns: minmax(0, 1fr); }

@@ -6,6 +6,7 @@ const uglify = require('gulp-uglify');
 const rename = require('gulp-rename');
 const zip = require('gulp-zip');
 const { spawnSync } = require('child_process');
+const path = require('path');
 
 /**
  * 版本一致性闸门：style.css 的 Version / readme.txt 的 Stable tag 必须由 package.json 派生。
@@ -61,15 +62,6 @@ function buildAdminJs() {
         .pipe(gulp.dest('assets/dist/js'));
 }
 
-// 后台提醒条：同样要出现在所有后台页，不能并进只在设置页加载的 admin.min.css
-function buildNoticeStyle() {
-    return gulp.src('assets/style/admin-notice.less')
-        .pipe(less())
-        .pipe(cleanCSS({ compatibility: 'ie8' }))
-        .pipe(rename({ basename: 'admin-notice.min' }))
-        .pipe(gulp.dest('assets/dist/style'));
-}
-
 function buildCritical() {
     return gulp.src('assets/style/critical.less')
         .pipe(less())
@@ -80,25 +72,33 @@ function buildCritical() {
 
 function watch() {
     // critical.less 是首屏关键 CSS 的镜像，改它必须同步重建，否则线上与源码不一致
-    gulp.watch('assets/style/*.less', gulp.series(buildStyle, buildAdminStyle, buildAlertStyle, buildNoticeStyle, buildCritical));
+    gulp.watch('assets/style/*.less', gulp.series(buildStyle, buildAdminStyle, buildAlertStyle, buildCritical));
     gulp.watch('assets/js/*.js', gulp.series(buildJs, buildAdminJs));
 }
 
+/**
+ * 「上传主题」只认顶层单一 <主题目录>/ 的 zip；扁平结构会被判为无效主题包。
+ * 文件名同样带版本，与 releases 附件的命名对齐（jinyu-theme-1.2.2.zip）。
+ * 版本取自 package.json，与 versionCheck 同一真源，避免附件名与包内版本漂移。
+ */
 function buildZip() {
+    const version = require('./package.json').version;
     return gulp.src([
         '**/*', '!node_modules/**', '!package-lock.json',
         '!gulpfile.js', '!package.json', '!.git/**',
         '!cache/**', '!*.log',
         '!.workbuddy/**', '!.trae/**'
-    ]).pipe(zip('jinyu.zip')).pipe(gulp.dest('..'));
+    ], { base: '.' })
+        .pipe(rename((p) => { p.dirname = path.posix.join('jinyu', p.dirname || ''); }))
+        .pipe(zip(`jinyu-theme-${version}.zip`))
+        .pipe(gulp.dest('..'));
 }
 
-// 三个后台样式都必须进这条链，否则 gulp build 不会产出它们（watch 重建后与线上不一致）
+// 两个后台样式都必须进这条链，否则 gulp build 不会产出它们（watch 重建后与线上不一致）
 const buildTasks = gulp.parallel(
     buildStyle,
     buildAdminStyle,
     buildAlertStyle,
-    buildNoticeStyle,
     buildJs,
     buildAdminJs,
     buildCritical

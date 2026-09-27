@@ -563,7 +563,7 @@
                 pill.classList.remove('jinyu-done');
                 var remain = totalMin * (1 - frac);
                 var remainTxt = remain < 1 ? _t('lessThanMinute', '不到 1 分钟') : (_t('aboutMinutes', '约 %d 分钟').replace('%d', Math.ceil(remain)));
-                label.textContent = _t('readProgress', '已读 %d% · 还需 %s').replace('%d', pct).replace('%s', remainTxt);
+                label.textContent = _t('readProgress', '已读 %1$d% · 还需 %2$s').replace('%1$d', pct).replace('%2$s', remainTxt);
             }
         }
 

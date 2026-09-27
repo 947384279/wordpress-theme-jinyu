@@ -1379,9 +1379,9 @@ msgstr ""
 msgid "已设置则留空"
 msgstr ""
 
-# functions.php:295
-msgid "已读 %d% · 还需 %s"
-msgstr "Read %d% · %s left"
+# functions.php:622
+msgid "已读 %1$d% · 还需 %2$s"
+msgstr "Read %1$d% · %2$s left"
 
 # functions.php:294
 msgid "已读完 ✓"
