@@ -4,7 +4,7 @@ Tags: blog, cms, responsive, dark-mode, custom-colors, custom-logo, custom-menu,
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.2.0
+Stable tag: 1.2.2
 License: GPL v3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -67,6 +67,11 @@ License URI: https://www.gnu.org/licenses/gpl-3.0.html
 每个设置分组面板头部都有「重置本组」按钮，仅清空该分组、回退默认值，不影响其它设置。
 
 == Changelog ==
+
+= 1.2.2 =
+* 后台「主题设置」页双垂直滚动条修复：设置外壳高度改为扣除 WP 固定顶栏（calc(100vh - var(--wp-admin--admin-bar--height))），文档高度与视口等高，页面级滚动条消失，仅主区域内部滚动。
+* 移除锁 overflow 的 `html:has(...)` 兜底：含 `:has()` 的选择器列表在 Chromium 105 以下会被整条丢弃，导致修复在旧版浏览器（Edge 100 等）上静默失效。当前方案只使用 calc() / 100vh / var() 回退值，兼容各主流浏览器。
+* 正文任务列表（Gutenberg `li.task-list-item`）样式改为不依赖 `:has()` 的两层写法，旧版浏览器下 checkbox 仍正确对齐；`:has()` 仅作增强层单独成条，用于清除第三方插件输出任务列表的项目符号。
 
 = 1.2.0 =
 * 新增 6 个 Gutenberg 区块图案（patterns/ 目录，WordPress 6.0+ 自动注册）：图文横排、三栏特性卡、常见问答、行动号召、精选文章三栏（动态取最新文章）、作者介绍卡。编辑器插入面板新增「金玉」图案分类。

@@ -45,6 +45,8 @@ jinyu-theme-intro.html
 jinyu-theme-post.html
 jinyu-intro-assets/
 .shot-tools/
+lighthouse-report/
+brand-design/
 _tmp_mem.py
 _tmp_*.py
 sshrun*.py

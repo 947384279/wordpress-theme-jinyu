@@ -1,13 +1,16 @@
 {
   "name": "jinyu-theme",
-  "version": "1.2.0",
+  "version": "1.2.2",
   "description": "金玉 WordPress 主题",
   "private": true,
   "scripts": {
     "dev": "gulp dev",
     "build": "gulp build",
     "zip": "gulp zip",
-    "test": "node tests/check-html-textarea-contract.js"
+    "test": "node tests/check-html-textarea-contract.js",
+    "version:sync": "node tools/sync-version.js",
+    "version:check": "node tools/sync-version.js --check",
+    "release": "node tools/release.js"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",

@@ -103,6 +103,12 @@
 .jinyu-modal-loading { text-align: center; color: @text-3; padding: @s-6 0; i { margin-right: @s-2; } }
 
 /* ---------- 海报 ---------- */
+/* 遮罩禁用 backdrop-filter：模态内含大图/Canvas，关闭时 backdrop-filter 合成层的
+   拆除在部分 GPU 环境会触发渲染进程崩溃（STATUS_BREAKPOINT），视觉效果损失极小 */
+.jinyu-mask.jinyu-poster-modal {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
 /* 弹窗改为纵向 flex：图片区域自适应收缩，按钮固定在底部，整屏随视口自适应、不再滚动 */
 .jinyu-poster-modal .jinyu-modal-card {
     display: flex;

@@ -178,10 +178,6 @@
         refreshDynUI(wrapper);
     }
 
-    function resyncAllDyn() {
-        qsa('[data-dynlist]', root).forEach(syncDyn);
-    }
-
     function dynAtMax(wrapper) {
         var max = parseInt(wrapper.getAttribute('data-max') || '0', 10);
         if (!max) return false;
@@ -470,6 +466,22 @@
         });
     }
 
+    /**
+     * 多选面板定位：默认在触发框下方展开；当下方可视空间放不下整块面板、且上方更宽敞时，
+     * 翻到触发框上方（is-up），避免面板越过内容区底边被裁掉、或压住下一行字段。
+     */
+    function placeMsPanel(box) {
+        var panel = qs('.jinyu-ms-panel', box);
+        if (!panel) return;
+        box.classList.remove('is-up');
+        var rect = box.getBoundingClientRect();
+        var scroller = qs('.jinyu-main', root);
+        var area = scroller ? scroller.getBoundingClientRect() : { top: 0, bottom: window.innerHeight };
+        var below = area.bottom - rect.bottom;
+        var above = rect.top - area.top;
+        if (panel.offsetHeight + 16 > below && above > below) box.classList.add('is-up');
+    }
+
     /* ---------- 字段渲染 ---------- */
     function fieldHtml(f) {
         var id = f.id || '';
@@ -526,11 +538,6 @@
         if (type === 'info') {
             return '<div class="jinyu-field jinyu-info" data-field="' + esc(id) + '">' +
                 '<div class="jinyu-info-box">' + esc(f.desc || '') + '</div></div>';
-        }
-
-        // 对象存储操作卡片（配置页底部 storage_ops 字段，不进入保存数据）
-        if (type === 'storage_ops') {
-            return storageHtml();
         }
 
         // 检查更新（按钮 + 状态区，不进入保存数据）
@@ -729,54 +736,20 @@
             '</label>' +
                     '<span id="jinyu-runinfo-tip" class="jinyu-tools-tip"></span>';
         return '<div class="jinyu-tools-list" id="jinyu-tools">' +
-            toolRow('admin-settings', 'SMTP 发信', '配置发信通道（主机 / 端口 / 账号 / 授权码 / 加密 / 发件人）。测试邮件优先使用表单当前值，未保存也可直接测试。', toolAction('jinyu-test-smtp', '发送测试邮件', 'jinyu-test-smtp-tip') + toolAction('jinyu-config-smtp', '展开配置', 'jinyu-config-smtp-tip')) +
-            // 紧跟触发按钮所在的那一行就地展开，避免窄屏下卡片落在列表最底部看不见
-            '<div id="jinyu-smtp-card" class="jinyu-smtp-card" hidden>' + smtpCardHtml() + '</div>' +
-            toolRow('performance', '清理主题缓存', '立即清空全部主题缓存（页面缓存与静态化资源），改版后建议执行一次。', toolAction('jinyu-clear-cache', '清理缓存', 'jinyu-clear-cache-tip')) +
-            toolRow('database', '数据库优化', '清理文章修订版、自动草稿、垃圾/回收站评论、孤立 meta 与过期 transient，并对数据表执行 OPTIMIZE。仅删冗余，不动正常内容。', toolAction('jinyu-db-optimize', '一键优化', 'jinyu-db-optimize-tip')) +
             thumbsToolRow() +
             toolRow('download', '导出配置', '将当前所有主题设置导出为 JSON 文件，便于备份与多站迁移。', toolAction('jinyu-export', '导出 JSON', 'jinyu-export-tip')) +
             toolRow('upload', '导入配置', '从 JSON 文件恢复主题设置，将覆盖当前全部配置，请先导出备份。', toolAction('jinyu-import', '选择文件并导入', 'jinyu-import-tip') + '<input type="file" id="jinyu-import-file" accept="application/json,.json" hidden>') +
-            toolRow('chart-bar', '页脚运行信息', '在前台页脚输出实时运行信息（查询数 / 内存 / 渲染耗时）。开启后建议清理一次缓存使其生效。', runSwitch) +
-            '</div>';
-    }
-
-    function smtpCardHtml() {
-        var g = null;
-        for (var i = 0; i < GROUPS.length; i++) { if (GROUPS[i].key === 'email') { g = GROUPS[i]; break; } }
-        if (!g || !g.fields) return '';
-        var grid = g.fields.map(function (f) {
-            return '<div class="jinyu-smtp-cell">' + fieldHtml(f) + '</div>';
-        }).join('');
-        return '<div class="jinyu-smtp-card-head">' +
-            '<i class="dashicons dashicons-email" aria-hidden="true"></i>' +
-            '<span class="jinyu-smtp-card-title">发信通道</span>' +
-            '<span class="jinyu-smtp-card-note">填完记得点右上角「保存设置」</span>' +
+            toolRow('chart-bar', '页脚运行信息', '在前台页脚输出实时运行信息（查询数 / 内存 / 渲染耗时）。开启后到「金玉增强」清理一次缓存即可生效。', runSwitch) +
             '</div>' +
-            '<div class="jinyu-smtp-grid">' + grid + '</div>';
-    }
-
-    /* ---------- 对象存储面板（推送 / 拉回 / 加速域名） ---------- */
-    // 不使用 WP-Cron：由用户打开后台面板触发拉取，服务端以 ETag 判定内容是否变化（304 直接沿用本地缓存）
-    function storageHtml() {
-        return '<div class="jinyu-tools-list">' +
-            toolRow('admin-network', '测试连接', '使用本页上方已填写并保存的配置，向存储上传并回读一个临时文件，验证服务商、桶、密钥是否正确。', toolAction('jinyu-storage-test', '测试连接', 'jinyu-storage-test-tip')) +
-            toolRow('upload', '一键推送到存储', '将本地 wp-content/uploads 全部文件上传到对象存储（分批进行，可在下方查看进度）。', toolAction('jinyu-storage-push', '开始推送', 'jinyu-storage-push-tip')) +
-            toolRow('download', '一键从存储拉回', '将对象存储中「远端路径前缀」下的全部文件下载回本地，用于迁移回源或备份。', toolAction('jinyu-storage-pull', '开始拉回', 'jinyu-storage-pull-tip')) +
-            toolRow('admin-links', '应用加速域名', '开启加速重写：附件链接切换到上方域名并刷新全站缓存。请先完成「一键推送」，否则图片会 404。', toolAction('jinyu-storage-apply-domain', '应用域名', 'jinyu-storage-apply-domain-tip')) +
-            toolRow('undo', '停用加速域名', '关闭加速重写，附件链接立即回退本地 uploads 并刷新缓存。图片异常时用它快速止血。', toolAction('jinyu-storage-unapply-domain', '停用加速', 'jinyu-storage-unapply-domain-tip')) +
-            '</div>' +
-            '<div class="jinyu-storage-progress" id="jinyu-storage-progress" hidden>' +
-            '<div class="jinyu-storage-bar"><span id="jinyu-storage-bar-fill"></span></div>' +
-            '<p class="jinyu-storage-progress-text" id="jinyu-storage-progress-text"></p>' +
-            '</div>' +
-            '<p class="jinyu-storage-note">提示：推送 / 拉回为服务端批处理，进度存于数据库；即使刷新本页也不会中断已在运行的任务。</p>';
+            // 邮件 SMTP / 缓存清理 / 数据库优化 / 对象存储等运维能力归属配套插件（jinyu-theme-companion），
+            // 主题侧不再重复提供入口：两套实现会各持一套 nonce，跨插件调用必然被 check_ajax_referer 打回。
+            '<p class="jinyu-tools-note">「金玉增强」插件提供：邮件 SMTP、缓存清理、数据库优化、OPcache / Memcached 看板、对象存储推送与加速。请到后台左侧菜单「金玉增强」中操作。</p>';
     }
 
     function sidebarHtml() {
         var head = '<div class="jinyu-nav-head">' +
             '<span class="jinyu-nav-brand"><span class="jinyu-nav-logo" aria-hidden="true"></span>' +
-            '<span class="jinyu-nav-title">金玉设置</span></span>' +
+            '<span class="jinyu-nav-title">金玉主题配置</span></span>' +
             '<button type="button" class="jinyu-nav-toggle" data-nav-toggle aria-label="折叠 / 展开侧栏" title="折叠 / 展开侧栏">' +
             '<span class="dashicons dashicons-arrow-left-alt2"></span></button>' +
             '</div>';
@@ -903,6 +876,7 @@
 
         snapshot = JSON.stringify(collect());
         applyShowRef();
+        qsa('[data-dynlist]', root).forEach(refreshDynUI);   // 初始同步「N/M」计数与「添加一项」可用态
         layoutMultiAll();   // 初始可见面板的多选框按宽度自适应折叠
         buildGroupSnapshots();
         refreshNavModified();
@@ -915,7 +889,11 @@
         }
     }
 
-    function activate(key) {
+    /**
+     * 切换面板。viaHash=true 表示由 #tools 锚点直达（应停在该面板的维护工具区），
+     * 否则是用户点侧栏导航（一律回到页面顶部）。
+     */
+    function activate(key, viaHash) {
         currentKey = key;
         try { localStorage.setItem('jinyu_set_tab_' + location.pathname, key); } catch (e) {}
         if (history.replaceState) { try { history.replaceState(null, '', '#' + key); } catch (e) {} }
@@ -927,21 +905,34 @@
             p.classList.toggle('is-active', p.getAttribute('data-panel') === key);
         });
         layoutMultiAll();   // 新面板可见后重算多选框折叠，避免 width=0 误裁切
-        // 带 hash 直达时（后台提醒的「前往重建」→ #tools）滚到对应面板，
-        // 否则一律回到顶部：页面级滚动（window）才是实际滚动容器，
-        // 切换分组须归零，不然新面板从上个分组的滚动位置开始（看不到面板头）
-        var anchor = qs('.jinyu-panel.is-active #jinyu-tools', root);
         var main = qs('.jinyu-main', root);
-        if (main) main.scrollTop = 0;
-        if (anchor && anchor.scrollIntoView) {
-            try { anchor.scrollIntoView({ block: 'start' }); } catch (e) {}
-        } else {
-            try { window.scrollTo(0, 0); } catch (e) {}
+        if (main) main.scrollTop = 0;   // 横向滚动槽归零
+
+        // 先让面板高度定型，再决定滚到哪：面板切换会大幅改变文档高度，
+        // 浏览器随即把 scrollTop 钳制回上限，这一步不动，后面读到的就是被钳制后的值。
+        if (viaHash) {
+            // 锚点直达（后台提醒「前往重建」→ #tools）：落到维护工具区
+            var anchor = qs('.jinyu-panel.is-active #jinyu-tools', root);
+            if (anchor && anchor.scrollIntoView) {
+                try { anchor.scrollIntoView({ block: 'start' }); } catch (e) {}
+                restoreThumbsProgress();
+                return;
+            }
         }
+        // 点侧栏导航：一律回到页面顶部。此刻不能沿用旧滚动位置——新面板比旧面板矮时
+        // 浏览器会把它钳制到新高度（表现为「切到维护工具后整页往上窜」），
+        // 而 #jinyu-tools 只存在于维护工具面板，旧代码据此误判「这里要锚点跳转」。
+        scrollTopNow();
         // 面板可能刚重绘（切分组 / 首次进入），进度区要跟着恢复，
         // 否则正在跑的重建任务在用户切走再切回后就「消失」了
         restoreThumbsProgress();
+    }
 
+    /** 立即（非平滑）把页面滚动归零。CSS 有 scroll-behavior:smooth 时 scrollTo(0,0)
+     *  也会被拉成动画，与「切面板应即时回顶」冲突，故显式传 behavior:'instant'。 */
+    function scrollTopNow() {
+        try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); }
+        catch (e) { try { window.scrollTo(0, 0); } catch (err) {} }
     }
 
     /**
@@ -977,26 +968,8 @@
         }
 
         var nav = e.target.closest('.jinyu-nav-item');
-        if (nav) { activate(nav.getAttribute('data-nav')); return; }
+        if (nav) { activate(nav.getAttribute('data-nav'), false); return; }
 
-        // 维护工具：展开 / 收起 SMTP 配置卡片
-        var cfgBtn = e.target.closest('#jinyu-config-smtp');
-        if (cfgBtn) {
-            var card = qs('#jinyu-smtp-card', root);
-            if (card) {
-                card.hidden = !card.hidden;
-                cfgBtn.textContent = card.hidden ? '展开配置' : '收起配置';
-                if (!card.hidden) {
-                    // 展开后短促高亮一圈，并把卡片滚进视口——窄屏上按钮常贴在首屏底部，
-                    // 只把卡片塞进列表中间，用户仍可能以为「点了没反应」
-                    card.classList.remove('is-flash');
-                    void card.offsetWidth; // 强制回流，保证连续点击也能重放动画
-                    card.classList.add('is-flash');
-                    card.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-                }
-            }
-            return;
-        }
 
         // 自定义下拉：展开 / 收起
         var sTg = e.target.closest('[data-select-toggle]');
@@ -1064,9 +1037,21 @@
             return;
         }
 
-        if (e.target.closest('#jinyu-test-smtp')) { postTool('jinyu_test_smtp', qs('#jinyu-test-smtp-tip')); return; }
-        if (e.target.closest('#jinyu-clear-cache')) { postTool('jinyu_clear_cache', qs('#jinyu-clear-cache-tip')); return; }
-        if (e.target.closest('#jinyu-db-optimize')) { postTool('jinyu_db_optimize', qs('#jinyu-db-optimize-tip')); return; }
+        // 动态列表：新增一项
+        var dynAdd = e.target.closest('[data-dyn-add]');
+        if (dynAdd) {
+            addDynItem(dynAdd.getAttribute('data-dyn-add'));
+            return;
+        }
+
+        // 动态列表：子字段选择图片（媒体库）
+        var dynUpload = e.target.closest('[data-dyn-upload]');
+        if (dynUpload) {
+            var upItem = dynUpload.closest('.jinyu-dyn-item');
+            if (upItem) openMediaDyn(upItem);
+            return;
+        }
+
         // 重建缩略图：服务端分批返回进度，最多自动续跑 40 轮（够把几千张图跑完）
         if (e.target.closest('#jinyu-regenerate-thumbs')) {
             openThumbsProgress();
@@ -1083,18 +1068,6 @@
             });
             return;
         }
-
-        // 对象存储操作面板（事件委托，面板重建后仍有效）
-        if (e.target.closest('#jinyu-storage-test')) { postStorage('jinyu_storage_test', qs('#jinyu-storage-test-tip')); return; }
-        if (e.target.closest('#jinyu-storage-apply-domain')) {
-            var domEl = qs('[data-key="storage_domain"]', root);
-            postStorage('jinyu_storage_apply_domain', qs('#jinyu-storage-apply-domain-tip'), domEl ? { storage_domain: domEl.value } : {});
-            return;
-        }
-        if (e.target.closest('#jinyu-storage-unapply-domain')) { postStorage('jinyu_storage_unapply_domain', qs('#jinyu-storage-unapply-domain-tip')); return; }
-        if (e.target.closest('#jinyu-storage-push')) { runStorageJob('jinyu_storage_push', qs('#jinyu-storage-push'), qs('#jinyu-storage-push-tip')); return; }
-        if (e.target.closest('#jinyu-storage-pull')) { runStorageJob('jinyu_storage_pull', qs('#jinyu-storage-pull'), qs('#jinyu-storage-pull-tip')); return; }
-
 
         // 关于：检查主题更新
         if (e.target.closest('[data-check-update]')) { checkUpdate(e.target.closest('[data-check-update]')); return; }
@@ -1169,6 +1142,7 @@
             if (tBox) {
                 var willOpen = !tBox.classList.contains('is-open');
                 closeAllMsPop();
+                if (willOpen) placeMsPanel(tBox);
                 tBox.classList.toggle('is-open', willOpen);
                 if (willOpen) {
                     var tQ = qs('.jinyu-ms-q', tBox);
@@ -1517,15 +1491,6 @@
         var maxRounds = opts.moreRounds || 1;
         var round = 0;
         var body = '_ajax_nonce=' + encodeURIComponent(S.nonce);
-        // SMTP 测试：附带表单当前（可能未保存）的 SMTP 配置，便于不保存直接测
-        if (action === 'jinyu_test_smtp') {
-            ['smtp_host', 'smtp_port', 'smtp_secure', 'smtp_user', 'smtp_pwd', 'smtp_from'].forEach(function (k) {
-                var el = qs('[data-key="' + k + '"]', root);
-                if (el && el.value !== '') {
-                    body += '&' + encodeURIComponent(k) + '=' + encodeURIComponent(el.value);
-                }
-            });
-        }
         var onProgress = opts.onProgress || null;
         function run(isStop) {
             tipEl.textContent = isStop ? '正在停止…' : '处理中…';
@@ -1660,127 +1625,6 @@
                 })();
             })
             .catch(function () { /* 探不到就当没有待办任务，用户手动点开始即可 */ });
-    }
-
-    /* ---------- 对象存储：携带当前表单配置的工具请求 ---------- */
-    // 发送本页上方「对象存储」配置（storage_* 字段），便于未保存直接测试 / 推送。
-    // 密钥类字段（access_key / secret）留空时不发送，服务端自动回退已保存值。
-    // quiet=true 时不弹全局 toast（由调用方 runStorageJob 在结束时统一报结果）
-    function postStorage(action, tipEl, extra, quiet) {
-        var fields = [
-            'storage_provider', 'storage_bucket', 'storage_region', 'storage_endpoint',
-            'storage_access_key', 'storage_secret', 'storage_prefix', 'storage_domain'
-        ];
-        var body = '_ajax_nonce=' + encodeURIComponent(S.nonce);
-        fields.forEach(function (k) {
-            var el = qs('[data-key="' + k + '"]', root);
-            if (el && el.value !== '') {
-                body += '&' + encodeURIComponent(k) + '=' + encodeURIComponent(el.value);
-            }
-        });
-        if (extra) {
-            Object.keys(extra).forEach(function (k) {
-                body += '&' + encodeURIComponent(k) + '=' + encodeURIComponent(extra[k]);
-            });
-        }
-        return fetch(S.ajax_url + '?action=' + action, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: body
-        })
-            .then(function (r) { return r.json(); })
-            .then(function (res) {
-                var msg = apiMsg(res, res.success ? '操作已完成' : '操作失败');
-                if (tipEl) {
-                    tipEl.textContent = msg;
-                    tipEl.className = 'jinyu-tools-tip ' + (res.success ? 'ok' : 'err');
-                }
-                if (!quiet) toast(msg, res.success);
-                return res;
-            })
-            .catch(function (err) {
-                // 不要吞掉真实错误：JS 异常/非 JSON 响应都从这里暴露，便于定位
-                var m = (err && err.message) ? ('请求失败：' + err.message) : '网络错误，请重试';
-                if (window.console && console.error) console.error('[jinyu-storage]', action, err);
-                if (tipEl) { tipEl.textContent = m; tipEl.className = 'jinyu-tools-tip err'; }
-                if (!quiet) toast(m, false);
-                return null;
-            });
-    }
-
-    /* 推送 / 拉回：反复请求直至任务完成，进度实时回显；结束时用全局 toast 明确告知结果 */
-    var storageTimer = null;
-    var STORAGE_JOB_LABEL = { jinyu_storage_push: '推送', jinyu_storage_pull: '拉回' };
-    var storageJobActive = false;
-
-    function runStorageJob(action, btn, tipEl) {
-        if (storageJobActive) { return; }
-        storageJobActive = true;
-        var label = STORAGE_JOB_LABEL[action] || '任务';
-        var btnText = btn ? btn.textContent : '';
-        if (btn) { btn.disabled = true; btn.textContent = '处理中…'; }
-        var progress = qs('#jinyu-storage-progress', root);
-        var fill = qs('#jinyu-storage-bar-fill', root);
-        var ptext = qs('#jinyu-storage-progress-text', root);
-        if (progress) progress.hidden = false;
-        if (fill) fill.style.width = '0%';
-        if (ptext) ptext.textContent = '正在准备任务…';
-
-        function finish(ok, text) {
-            storageJobActive = false;
-            if (storageTimer) { window.clearTimeout(storageTimer); storageTimer = null; }
-            if (btn) { btn.disabled = false; btn.textContent = btnText; }
-            if (progress) {
-                window.setTimeout(function () {
-                    if (progress) progress.hidden = true;
-                    if (fill) fill.style.width = '0%';
-                }, 2200);
-            }
-            if (tipEl) {
-                tipEl.textContent = text;
-                tipEl.className = 'jinyu-tools-tip ' + (ok ? 'ok' : 'err');
-            }
-            toast(text, ok);
-        }
-
-        function step() {
-            postStorage(action, null, null, true)
-                .then(function (res) {
-                    if (!res || !res.success) {
-                        finish(false, label + '失败：' + apiMsg(res, '请求被拒绝，请检查配置后重试'));
-                        return;
-                    }
-                    var d = res.data || {};
-                    var total = d.total || 0;
-                    var done = d.done || 0;
-                    var errors = d.errors || 0;
-                    var pct = total ? Math.round((done / total) * 100) : 0;
-                    if (fill) fill.style.width = pct + '%';
-                    if (ptext) ptext.textContent = (d.message || '处理中…') + '（' + pct + '%）';
-                    if (d.status === 'done' || done >= total) {
-                        finish(errors === 0, label + '完成 · ' + (d.message || ('共 ' + done + ' 个文件')));
-                        return;
-                    }
-                    storageTimer = window.setTimeout(step, 900);
-                })
-                .catch(function (err) { finish(false, label + '失败：' + ((err && err.message) || '网络中断')); });
-        }
-        step();
-    }
-
-    /* 面板加载时若存储任务仍在运行/排队，自动恢复进度条并续跑轮询。
-       修复：刷新浏览器或关掉标签页后进度消失、且推送被掐停的问题（任务由浏览器轮询驱动）。 */
-    function resumeStorageIfActive() {
-        postStorage('jinyu_storage_status', null, null, true)
-            .then(function (res) {
-                if (!res || !res.success) { return; }
-                var d = res.data || {};
-                if (!d.active || (d.status !== 'running' && d.status !== 'pending')) { return; }
-                var btn = qs('#jinyu-storage-' + d.type, root);
-                var tip = qs('#jinyu-storage-' + d.type + '-tip', root);
-                runStorageJob('jinyu_storage_' + d.type, btn, tip);
-            })
-            .catch(function () { /* 忽略：不影响面板正常使用 */ });
     }
 
     /* ---------- 关于：检查主题更新 ---------- */
@@ -1934,7 +1778,6 @@
         root = document.getElementById('jinyu-setting-app');
         if (!root) return;
         build();
-        resumeStorageIfActive();
         resumeThumbsIfPending();   // 上次没跑完的重建任务在这里自动接上
         wireTopbar();
 
@@ -1946,11 +1789,13 @@
             var k = (location.hash || '').replace(/^#/, '');
             var valid = {};
             GROUPS.forEach(function (g) { valid[g.key] = true; });
-            if (k && valid[k] && k !== currentKey) activate(k);
+            if (k && valid[k] && k !== currentKey) activate(k, true);
         });
-        // 窗口缩放时重算多选框折叠，保持触发框恒定一行
+        // 窗口缩放时重算多选框折叠（触发框保持一行）与已展开面板的上下方向
         window.addEventListener('resize', function () {
-            if (root) layoutMultiAll();
+            if (!root) return;
+            layoutMultiAll();
+            qsa('.jinyu-ms.is-open', root).forEach(placeMsPanel);
         });
     }
 

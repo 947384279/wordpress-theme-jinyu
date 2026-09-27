@@ -2330,9 +2330,43 @@
         return m;
     }
     function escClose(e) { if (e.key === 'Escape') closeModal(); }
+    /* 关闭必须分两帧拆除（硬规则）：
+       实测 devicePixelRatio>1（125%/150% 缩放屏）时，把「大图解码位图」和「节点 remove」
+       放在同一 tick，Chromium 渲染进程必崩 STATUS_BREAKPOINT；先摘 src 让合成器先释放
+       raster、隔两帧再删节点则不崩。任何内含大图/Canvas 的浮层都按此模式拆。 */
     function closeModal() {
         var m = $('#jinyu-generic-modal');
-        if (m) m.remove();
+        if (m) {
+            // 立即失联：去 id（防止延迟窗口内重开模态出现重复 id）+ 淡出 + 恢复页面滚动
+            m.removeAttribute('id');
+            m.style.opacity = '0';
+            m.style.pointerEvents = 'none';
+            doc.removeEventListener('keydown', escClose);
+
+            // 阶段一：摘掉 canvas 纹理与 img 解码位图（此刻不删节点、不 revoke blob）
+            try {
+                m.querySelectorAll('canvas').forEach(function (c) { c.width = 1; c.height = 1; });
+                m.querySelectorAll('img').forEach(function (im) { im.removeAttribute('src'); });
+            } catch (e) { /* 释放失败不阻断关闭 */ }
+
+            // 阶段二：隔两帧 + 一个宏任务，等 raster 真正释放后再删节点并回收 blob
+            requestAnimationFrame(function () {
+                requestAnimationFrame(function () {
+                    setTimeout(function () {
+                        try {
+                            (m._jinyuBlobUrls || []).forEach(function (u) { URL.revokeObjectURL(u); });
+                            m.querySelectorAll('a[href]').forEach(function (a) { a.removeAttribute('href'); });
+                            m.innerHTML = '';
+                        } catch (e2) { /* 忽略 */ }
+                        m.remove();
+                        // 滚动锁最后恢复：实测「remove 节点 + 恢复 body 滚动」同 tick 会在
+                        // 分数级 DPR 下触发整页重绘崩溃，错开到节点拆完之后
+                        doc.body.style.overflow = '';
+                    }, 80);
+                });
+            });
+            return;
+        }
         doc.body.style.overflow = '';
         doc.removeEventListener('keydown', escClose);
     }
@@ -2351,10 +2385,6 @@
 
                 var tEl = doc.querySelector('.jinyu-article-title') || doc.querySelector('h1');
                 var coverSrc = btn.getAttribute('data-cover') || '';
-                if (!coverSrc) {
-                    var og = doc.querySelector('meta[property="og:image"]');
-                    coverSrc = og ? og.getAttribute('content') : '';
-                }
 
                 loadImg(coverSrc, 8000).then(function (cover) {
                     var canvas;
@@ -2366,15 +2396,10 @@
                     }
                     body.innerHTML = '';
 
-                    // 导出为 dataURL（同源封面不会污染画布；跨域无 CORS 时封面已降级为 null）
-                    var dataUrl = '';
-                    try { dataUrl = canvas.toDataURL('image/png'); } catch (e) { dataUrl = ''; }
-
                     // 用真实 <img> 展示：避开 iOS/微信 在 backdrop-filter 祖先里渲染 <canvas> 空白的坑，且支持长按保存
                     var img = doc.createElement('img');
                     img.className = 'jinyu-poster-img';
                     img.alt = '文章海报';
-                    if (dataUrl) { img.src = dataUrl; } else { canvas.className = 'jinyu-poster-img'; body.appendChild(canvas); }
 
                     var actions = doc.createElement('div');
                     actions.className = 'jinyu-poster-actions';
@@ -2383,47 +2408,76 @@
                     var isMobile = /Mobi|Android|iPhone|iPad|iPod|HarmonyOS|Windows Phone/i.test(ua) ||
                                   (('ontouchstart' in window) && Math.min(screen.width, screen.height) < 820);
 
-                    if (dataUrl && !isMobile) {
-                        // 桌面端：原生下载
-                        var dl = doc.createElement('a');
-                        dl.className = 'jinyu-btn jinyu-btn-primary';
-                        dl.innerHTML = '<i class="fa-solid fa-download" aria-hidden="true"></i> 下载海报';
-                        dl.setAttribute('download', 'poster-' + pid + '.png');
-                        dl.href = dataUrl;
-                        actions.appendChild(dl);
-                    } else if (dataUrl) {
-                        // 移动端（含华为 QQ 浏览器等忽略 <a download> 的环境）：
-                        // 全屏放大图片，用户长按即可保存到相册，所有手机浏览器通用
-                        var save = doc.createElement('button');
-                        save.type = 'button';
-                        save.className = 'jinyu-btn jinyu-btn-primary';
-                        save.innerHTML = '<i class="fa-solid fa-download" aria-hidden="true"></i> 保存图片';
-                        save.addEventListener('click', function () { showFullscreenPoster(dataUrl); });
-                        actions.appendChild(save);
+                    // 画布用完立即缩成 1x1 释放 GPU 纹理（必须在导出之后）
+                    var shrink = function () { try { canvas.width = 1; canvas.height = 1; } catch (e2) {} };
+
+                    // 导出地址登记到模态：closeModal 等 raster 释放后才 revoke，避免提前回收
+                    var track = function (u) {
+                        if (/^blob:/i.test(u)) { m._jinyuBlobUrls = (m._jinyuBlobUrls || []).concat([u]); }
+                        return u;
+                    };
+
+                    /* 组装 UI。src 可能为：blob URL（桌面优先，全程不产生数 MB base64）、
+                       dataURL（移动端长按保存兼容优先）、空串（画布被污染时直接展示 canvas）。*/
+                    var startUI = function (src) {
+                        if (src) { img.src = src; } else { canvas.className = 'jinyu-poster-img'; body.appendChild(canvas); }
+
+                        if (src && !isMobile) {
+                            // 桌面端：原生下载
+                            var dl = doc.createElement('a');
+                            dl.className = 'jinyu-btn jinyu-btn-primary';
+                            dl.innerHTML = '<i class="fa-solid fa-download" aria-hidden="true"></i> 下载海报';
+                            dl.setAttribute('download', 'poster-' + pid + '.png');
+                            dl.href = src;
+                            actions.appendChild(dl);
+                        } else if (src) {
+                            // 移动端（含华为 QQ 浏览器等忽略 <a download> 的环境）：
+                            // 全屏放大图片，用户长按即可保存到相册，所有手机浏览器通用
+                            var save = doc.createElement('button');
+                            save.type = 'button';
+                            save.className = 'jinyu-btn jinyu-btn-primary';
+                            save.innerHTML = '<i class="fa-solid fa-download" aria-hidden="true"></i> 保存图片';
+                            save.addEventListener('click', function () { showFullscreenPoster(src); });
+                            actions.appendChild(save);
+                        } else {
+                            // 画布被污染无法导出：禁用下载并说明
+                            var noDl = doc.createElement('span');
+                            noDl.className = 'jinyu-btn jinyu-btn-disabled';
+                            noDl.innerHTML = '<i class="fa-solid fa-ban" aria-hidden="true"></i> 暂不支持下载';
+                            actions.appendChild(noDl);
+                        }
+
+                        var close = doc.createElement('button');
+                        close.type = 'button';
+                        close.className = 'jinyu-btn';
+                        close.setAttribute('data-jinyu-modal-close', '');
+                        close.innerHTML = '<i class="fa-solid fa-xmark" aria-hidden="true"></i> 关闭';
+                        actions.appendChild(close);
+
+                        if (src && isMobile) {
+                            var tip = doc.createElement('p');
+                            tip.className = 'jinyu-poster-tip';
+                            tip.textContent = _t('saveHint', '点「保存图片」放大后长按图片，即可保存到相册');
+                            actions.appendChild(tip);
+                        }
+
+                        if (src) body.appendChild(img);
+                        body.appendChild(actions);
+                    };
+
+                    if (!isMobile && typeof canvas.toBlob === 'function') {
+                        // 桌面端：直接 toBlob → object URL，全程不生成巨型 base64 字符串
+                        canvas.toBlob(function (b) {
+                            shrink();
+                            startUI(b ? track(URL.createObjectURL(b)) : '');
+                        }, 'image/png');
                     } else {
-                        // 画布被污染无法导出：禁用下载并说明
-                        var noDl = doc.createElement('span');
-                        noDl.className = 'jinyu-btn jinyu-btn-disabled';
-                        noDl.innerHTML = '<i class="fa-solid fa-ban" aria-hidden="true"></i> 暂不支持下载';
-                        actions.appendChild(noDl);
+                        // 移动端 / 老浏览器：dataURL（长按保存兼容）
+                        var dataUrl = '';
+                        try { dataUrl = canvas.toDataURL('image/png'); } catch (e) { dataUrl = ''; }
+                        shrink();
+                        startUI(dataUrl);
                     }
-
-                    var close = doc.createElement('button');
-                    close.type = 'button';
-                    close.className = 'jinyu-btn';
-                    close.setAttribute('data-jinyu-modal-close', '');
-                    close.innerHTML = '<i class="fa-solid fa-xmark" aria-hidden="true"></i> 关闭';
-                    actions.appendChild(close);
-
-                    if (dataUrl && isMobile) {
-                        var tip = doc.createElement('p');
-                        tip.className = 'jinyu-poster-tip';
-                        tip.textContent = _t('saveHint', '点「保存图片」放大后长按图片，即可保存到相册');
-                        actions.appendChild(tip);
-                    }
-
-                    if (dataUrl) body.appendChild(img);
-                    body.appendChild(actions);
                 }).catch(function () {
                     body.innerHTML = '<p class="jinyu-empty">海报生成失败，请刷新后重试</p>';
                 });
@@ -2477,7 +2531,24 @@
                     '<p class="jinyu-poster-fs-tip">长按图片选择「保存图片 / 保存到相册」</p>' +
                 '</div>';
             ov.addEventListener('click', function (e) {
-                if (e.target === ov || (e.target.classList && e.target.classList.contains('jinyu-poster-fs-tip'))) ov.remove();
+                if (e.target === ov || (e.target.classList && e.target.classList.contains('jinyu-poster-fs-tip'))) {
+                    // 两阶段拆除（同 closeModal）：先摘 src 释放解码位图，隔两帧再删节点，
+                    // 避免 DPR>1 时「释放 raster + remove 节点」同帧触发渲染进程崩溃
+                    ov.style.opacity = '0';
+                    ov.style.pointerEvents = 'none';
+                    try {
+                        var fim = ov.querySelector('img');
+                        if (fim) fim.removeAttribute('src');
+                    } catch (err) { /* 忽略 */ }
+                    requestAnimationFrame(function () {
+                        requestAnimationFrame(function () {
+                            setTimeout(function () {
+                                try { ov.innerHTML = ''; } catch (err2) {}
+                                ov.remove();
+                            }, 80);
+                        });
+                    });
+                }
             });
             doc.body.appendChild(ov);
         }
@@ -4149,7 +4220,7 @@
     }
 
     /* ======================================================================
-       销售与变现触点（CTA 条 / 悬浮客服 / 广告追踪 / 订阅）
+       销售与变现触点（CTA 条 / 悬浮客服 / 订阅）
        ====================================================================== */
     function sales() {
         // 全站悬浮 CTA 条：延迟出现 + 关闭
@@ -4188,26 +4259,6 @@
                 }
             });
         }
-
-        // 广告位曝光 / 点击追踪
-        $$('.jinyu-ad[data-ad-slot]').forEach(function (ad) {
-            var slot = ad.getAttribute('data-ad-slot') || '';
-            if ('IntersectionObserver' in window) {
-                var io = new IntersectionObserver(function (entries) {
-                    entries.forEach(function (en) {
-                        if (en.isIntersecting) {
-                            trackEvent('ad_imp', slot);
-                            io.unobserve(en.target);
-                        }
-                    });
-                }, { threshold: 0.5 });
-                io.observe(ad);
-            }
-            ad.addEventListener('click', function (e) {
-                var a = e.target && e.target.closest ? e.target.closest('a') : null;
-                if (a) trackEvent('ad_clk', slot);
-            });
-        });
 
         // 邮件订阅表单（短代码 / 小工具 / 文末自动）
         $$('[data-jinyu-subscribe]').forEach(function (box) {

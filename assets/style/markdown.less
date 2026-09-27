@@ -99,22 +99,36 @@
         ul, ol { margin: @s-2 0 0; }
     }
 
-    /* 任务列表 */
+    /* ---- 任务列表 ----
+       不能用 ul:has(> li > input[type="checkbox"])：:has() 要 Chromium 105+，
+       Edge 100 之类旧引擎会把「整条选择器列表」判无效后整条丢弃 → 样式静默失效，
+       页面上看不出报错。改用 li 自身承载 flex（Gutenberg 任务列表必带 .task-list-item），
+       并给 checkbox 留足以让纯 markdown 任务列表（无该 class）也能正常排版。 */
     li.task-list-item,
     input[type="checkbox"] { list-style: none; }
 
+    ul > li > input[type="checkbox"] {
+        accent-color: @primary-text;
+        width: 16px;
+        height: 16px;
+        margin-right: @s-2;     /* flex 容器内与 inline 排版下都要留出与文字的间距 */
+        flex-shrink: 0;
+        vertical-align: middle; /* 无 flex 时（无 .task-list-item）居中于首行 */
+    }
+
+    ul > li.task-list-item {
+        display: flex;
+        align-items: flex-start;
+
+        > input[type="checkbox"] { margin-top: .5em; }
+    }
+
+    /* 增强层：无 .task-list-item class 的任务列表（第三方 markdown 插件产物）去项目符号、
+       贴齐正文左边界。这里必须单独成条（不能与别的选择器共用逗号列表）：
+       旧引擎会因 :has() 把整条丢弃，独立成条时丢的只有这条增强，上面的兜底层照常生效。 */
     ul:has(> li > input[type="checkbox"]) {
         list-style: none;
         padding-left: 0;
-
-        li { display: flex; align-items: flex-start; gap: @s-2; }
-        input[type="checkbox"] {
-            margin-top: .5em;
-            accent-color: @primary-text;
-            width: 16px;
-            height: 16px;
-            flex-shrink: 0;
-        }
     }
 
     /* 定义列表 */

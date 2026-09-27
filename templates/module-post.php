@@ -1,4 +1,12 @@
 <?php
+/**
+ * 文章卡片模块模板片段
+ *
+ * @package         WordPress
+ * @subpackage      Jinyu
+ */
+
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -6,81 +14,90 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * 文章卡片（首页 / 归档 / 加载更多 共用）
  */
-$pid = get_the_ID();
-$cats = get_the_category();
-$cover = jinyu_get_post_cover($pid);
-$cat_class = $cats ? ' jinyu-cat-' . ($cats[0]->term_id % 12) : '';
-// 封面图加载策略：首屏候选统一提前加载，真正的 LCP 元素才提权。
-// 注意：不能只认 current_post === 0 —— 首页首篇常是置顶文章（.is-sticky 卡片），
-// 网格里最大 / 最靠前的图片未必是它，实测 LCP 落在第 2 张上，只提权第 1 张等于打空。
-// 首页两栏网格首屏可见 2 张，故对前 2 张用 eager（第 2 张不给 fetchpriority，
-// 避免多张 high 互相抢带宽），第 3 张起回归 lazy。
+$pid       = get_the_ID();
+$cats      = get_the_category();
+$cover     = jinyu_get_post_cover( $pid );
+$cat_class = $cats ? ' jinyu-cat-' . ( $cats[0]->term_id % 12 ) : '';
+// 封面图加载策略：首屏候选统一提前加载，真正的 LCP 元素才提权.
+// 注意：不能只认 current_post === 0 —— 首页首篇常是置顶文章（.is-sticky 卡片），.
+// 网格里最大 / 最靠前的图片未必是它，实测 LCP 落在第 2 张上，只提权第 1 张等于打空.
+// 首页两栏网格首屏可见 2 张，故对前 2 张用 eager（第 2 张不给 fetchpriority，.
+// 避免多张 high 互相抢带宽），第 3 张起回归 lazy.
 global $wp_query;
-$current_post  = (!empty($wp_query) && isset($wp_query->current_post)) ? (int) $wp_query->current_post : -1;
-$in_first_view = ($current_post >= 0 && $current_post <= 1);
+$current_post  = ( ! empty( $wp_query ) && isset( $wp_query->current_post ) ) ? (int) $wp_query->current_post : -1;
+$in_first_view = ( $current_post >= 0 && $current_post <= 1 );
 $cover_loading = $in_first_view ? 'eager' : 'lazy';
-$cover_fetch   = ($current_post === 0) ? ' fetchpriority="high"' : '';
-// 统一渲染为纵向网格卡（封面在上），首页两栏网格布局；
-// 无封面时由 .jinyu-post-cover-ph 占位渐变填充封面区
-// 置顶卡片加 .is-sticky：配合 .jinyu-post-card.is-sticky 的描边高亮与丝带角标，
-// 让置顶文章在网格里一眼可辨（原仅封面右上角一个小角标，过于隐蔽）
+$cover_fetch   = ( 0 === $current_post ) ? ' fetchpriority="high"' : '';
+// 统一渲染为纵向网格卡（封面在上），首页两栏网格布局；.
+// 无封面时由 .jinyu-post-cover-ph 占位渐变填充封面区.
+// 置顶卡片加 .is-sticky：配合 .jinyu-post-card.is-sticky 的描边高亮与丝带角标，.
+// 让置顶文章在网格里一眼可辨（原仅封面右上角一个小角标，过于隐蔽）.
 $card_class = is_sticky() ? ' is-sticky' : '';
 ?>
-<article id="post-<?php the_ID(); ?>" <?php post_class('jinyu-post-card' . $card_class); ?>>
+<article id="post-<?php the_ID(); ?>" <?php post_class( 'jinyu-post-card' . $card_class ); ?>>
 
-    <div class="jinyu-post-cover">
-        <a class="jinyu-post-cover-link" href="<?php the_permalink(); ?>" tabindex="-1" aria-hidden="true">
-            <?php if ($cover) : ?>
-                <?php $ph_card = jinyu_lqip_url( jinyu_get_post_cover($pid, 'thumbnail', false) ); ?>
-                <?php $cover_srcset = jinyu_get_post_cover_srcset($pid); ?>
-                <img class="jinyu-post-cover-img jinyu-blur-img" src="<?php echo esc_url($cover); ?>" alt="" width="640" height="360"<?php if ($cover_srcset) : ?> srcset="<?php echo esc_attr($cover_srcset); ?>" sizes="(max-width: 768px) 92vw, 420px"<?php endif; ?> loading="<?php echo $cover_loading; ?>" decoding="async"<?php echo $cover_fetch; ?><?php echo $ph_card ? ' data-ph="' . esc_url($ph_card) . '"' : ''; ?>>
-            <?php else : ?>
-                <div class="jinyu-post-cover-ph"><i class="fa-solid fa-fire" aria-hidden="true"></i></div>
-            <?php endif; ?>
-        </a>
-    </div>
+	<div class="jinyu-post-cover">
+		<a class="jinyu-post-cover-link" href="<?php the_permalink(); ?>" tabindex="-1" aria-hidden="true">
+			<?php if ( $cover ) : ?>
+				<?php $ph_card = jinyu_lqip_url( jinyu_get_post_cover( $pid, 'thumbnail', false ) ); ?>
+				<?php $cover_srcset = jinyu_get_post_cover_srcset( $pid ); ?>
+				<img class="jinyu-post-cover-img jinyu-blur-img" src="<?php echo esc_url( $cover ); ?>" alt="" width="640" height="360"
+				<?php
+				if ( $cover_srcset ) :
+					?>
+					srcset="<?php echo esc_attr( $cover_srcset ); ?>" sizes="(max-width: 768px) 92vw, 420px"<?php endif; ?> loading="<?php echo $cover_loading; ?>" decoding="async"<?php echo $cover_fetch; ?><?php echo $ph_card ? ' data-ph="' . esc_url( $ph_card ) . '"' : ''; ?>>
+			<?php else : ?>
+				<div class="jinyu-post-cover-ph"><i class="fa-solid fa-fire" aria-hidden="true"></i></div>
+			<?php endif; ?>
+		</a>
+	</div>
 
-    <div class="jinyu-post-info">
-        <?php if ($cats) : ?>
-            <a class="jinyu-post-cat<?php echo esc_attr($cat_class); ?>" href="<?php echo esc_url(get_category_link($cats[0]->term_id)); ?>">
-                <i class="fa-regular fa-folder-open" aria-hidden="true"></i><?php echo esc_html($cats[0]->name); ?>
-            </a>
-        <?php endif; ?>
-        <h2 class="jinyu-post-title"><?php if (is_sticky()) : ?><span class="jinyu-post-pintag"><i class="fa-solid fa-thumbtack" aria-hidden="true"></i><?php esc_html_e('置顶', 'jinyu'); ?></span><?php endif; ?><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
+	<div class="jinyu-post-info">
+		<?php if ( $cats ) : ?>
+			<a class="jinyu-post-cat<?php echo esc_attr( $cat_class ); ?>" href="<?php echo esc_url( get_category_link( $cats[0]->term_id ) ); ?>">
+				<i class="fa-regular fa-folder-open" aria-hidden="true"></i><?php echo esc_html( $cats[0]->name ); ?>
+			</a>
+		<?php endif; ?>
+		<h2 class="jinyu-post-title">
+		<?php
+		if ( is_sticky() ) :
+			?>
+			<span class="jinyu-post-pintag"><i class="fa-solid fa-thumbtack" aria-hidden="true"></i><?php esc_html_e( '置顶', 'jinyu' ); ?></span><?php endif; ?><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
 
-        <?php
-        // 摘要统一占位：无论有无摘要都输出 <p>，由 CSS 固定 2 行高度，避免卡片高度参差
-        $jinyu_excerpt = wp_trim_words(get_the_excerpt(), 40, '…');
-        ?>
-            <p class="jinyu-post-excerpt"<?php echo $jinyu_excerpt ? '' : ' aria-hidden="true"'; ?>><?php echo esc_html($jinyu_excerpt); ?></p>
+		<?php
+		// 摘要统一占位：无论有无摘要都输出 <p>，由 CSS 固定 2 行高度，避免卡片高度参差.
+		$jinyu_excerpt = wp_trim_words( get_the_excerpt(), 40, '…' );
+		?>
+			<p class="jinyu-post-excerpt"<?php echo $jinyu_excerpt ? '' : ' aria-hidden="true"'; ?>><?php echo esc_html( $jinyu_excerpt ); ?></p>
 
-        <div class="jinyu-post-meta">
-            <?php if (jinyu_show_views()) : ?>
-            <span><i class="fa-regular fa-eye" aria-hidden="true"></i><?php echo esc_html(jinyu_get_post_views($pid)); ?></span>
-            <?php endif; ?>
-            <?php if (jinyu_is_checked('like_enable')) : ?>
-            <span><i class="fa-regular fa-heart" aria-hidden="true"></i><span class="jinyu-like-count" data-post-id="<?php echo esc_attr($pid); ?>"><?php echo esc_html(jinyu_get_post_likes($pid)); ?></span></span>
-            <?php endif; ?>
-            <?php if (comments_open() || get_comments_number()) : ?>
-                <span><i class="fa-regular fa-comment" aria-hidden="true"></i><?php echo esc_html(get_comments_number()); ?></span>
-            <?php endif; ?>
-            <?php
-            // 系列归属：未归入系列的文章不输出。列表页同系列共用 term 级缓存，不会逐篇重复查库
-            $jinyu_series     = jinyu_is_checked('card_series_enable') ? (function_exists('jinyu_series_badge') ? jinyu_series_badge((int) $pid) : false) : false;
-            $jinyu_series_url = $jinyu_series ? get_term_link($jinyu_series['term']) : '';
-            if ($jinyu_series && !is_wp_error($jinyu_series_url)) :
-            ?>
-            <a class="jinyu-post-meta-series" href="<?php echo esc_url($jinyu_series_url); ?>"><i class="fa-solid fa-layer-group" aria-hidden="true"></i><span class="jinyu-post-meta-series-name"><?php echo esc_html($jinyu_series['term']->name); ?></span><span class="jinyu-post-meta-series-index"><?php printf(esc_html__('第 %1$d/%2$d 篇', 'jinyu'), $jinyu_series['index'] + 1, $jinyu_series['total']); ?></span></a>
-            <?php endif; ?>
-            <span><i class="fa-regular fa-calendar" aria-hidden="true"></i><?php echo esc_html(get_the_date('Y-m-d')); ?></span>
-            <?php
-            // 最近更新：仅修改明显晚于发布时才提示（阈值见 jinyu_post_updated）
-            $jinyu_updated = jinyu_is_checked('card_updated_enable') ? jinyu_post_updated((int) $pid) : '';
-            if ($jinyu_updated) :
-            ?>
-            <span class="jinyu-post-meta-updated"><i class="fa-regular fa-pen-to-square" aria-hidden="true"></i><?php echo esc_html($jinyu_updated); ?></span>
-            <?php endif; ?>
-        </div>
-    </div>
+		<div class="jinyu-post-meta">
+			<?php if ( jinyu_show_views() ) : ?>
+			<span><i class="fa-regular fa-eye" aria-hidden="true"></i><?php echo esc_html( jinyu_get_post_views( $pid ) ); ?></span>
+			<?php endif; ?>
+			<?php if ( jinyu_is_checked( 'like_enable' ) ) : ?>
+			<span><i class="fa-regular fa-heart" aria-hidden="true"></i><span class="jinyu-like-count" data-post-id="<?php echo esc_attr( $pid ); ?>"><?php echo esc_html( jinyu_get_post_likes( $pid ) ); ?></span></span>
+			<?php endif; ?>
+			<?php if ( comments_open() || get_comments_number() ) : ?>
+				<span><i class="fa-regular fa-comment" aria-hidden="true"></i><?php echo esc_html( get_comments_number() ); ?></span>
+			<?php endif; ?>
+			<?php
+			// 系列归属：未归入系列的文章不输出。列表页同系列共用 term 级缓存，不会逐篇重复查库.
+			$jinyu_series     = jinyu_is_checked( 'card_series_enable' ) ? ( function_exists( 'jinyu_series_badge' ) ? jinyu_series_badge( (int) $pid ) : false ) : false;
+			$jinyu_series_url = $jinyu_series ? get_term_link( $jinyu_series['term'] ) : '';
+			if ( $jinyu_series && ! is_wp_error( $jinyu_series_url ) ) :
+				?>
+			<a class="jinyu-post-meta-series" href="<?php echo esc_url( $jinyu_series_url ); ?>"><i class="fa-solid fa-layer-group" aria-hidden="true"></i><span class="jinyu-post-meta-series-name"><?php echo esc_html( $jinyu_series['term']->name ); ?></span><span class="jinyu-post-meta-series-index"><?php printf( esc_html__( '第 %1$d/%2$d 篇', 'jinyu' ), $jinyu_series['index'] + 1, $jinyu_series['total'] ); ?></span></a>
+			<?php endif; ?>
+			<span><i class="fa-regular fa-calendar" aria-hidden="true"></i><?php echo esc_html( get_the_date( 'Y-m-d' ) ); ?></span>
+			<?php
+			// 最近更新：仅修改明显晚于发布时才提示（阈值见 jinyu_post_updated）.
+			$jinyu_updated = jinyu_is_checked( 'card_updated_enable' ) ? jinyu_post_updated( (int) $pid ) : '';
+			if ( $jinyu_updated ) :
+				?>
+			<span class="jinyu-post-meta-updated"><i class="fa-regular fa-pen-to-square" aria-hidden="true"></i><?php echo esc_html( $jinyu_updated ); ?></span>
+			<?php endif; ?>
+		</div>
+	</div>
 
 </article>
+

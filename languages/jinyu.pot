@@ -48,10 +48,6 @@ msgstr ""
 msgid "0 为不自动播放"
 msgstr ""
 
-# inc/setting/options/Jinyu_OptionSeo.php:39
-msgid "404 自定义内容"
-msgstr ""
-
 # inc/fun/widget.php:256; inc/fun/widget.php:266
 msgid "<i class=\"fa-regular fa-calendar-days\"></i> 归档"
 msgstr ""
@@ -220,10 +216,6 @@ msgstr ""
 msgid "Loli（国内）"
 msgstr ""
 
-# inc/setting/options/Jinyu_OptionSeo.php:23
-msgid "Open Graph 站点名称"
-msgstr ""
-
 # inc/setting/template.php:15
 msgid "PHP 8.0+ · WordPress 6.0+"
 msgstr ""
@@ -260,10 +252,6 @@ msgstr ""
 msgid "SEO 描述"
 msgstr ""
 
-# inc/setting/options/Jinyu_OptionSeo.php:13
-msgid "SEO 搜索优化"
-msgstr ""
-
 # inc/setting/options/Jinyu_OptionEmail.php:18
 msgid "SMTP 主机"
 msgstr ""
@@ -290,10 +278,6 @@ msgstr ""
 
 # inc/setting/template.php:13
 msgid "全功能可视化设置中心"
-msgstr ""
-
-# inc/setting/options/Jinyu_OptionSeo.php:20
-msgid "WordPress,博客,技术分享,教程"
 msgstr ""
 
 # inc/fun/flink.php:265
@@ -419,20 +403,12 @@ msgstr ""
 msgid "中英文自动加空格"
 msgstr ""
 
-# inc/setting/options/Jinyu_OptionSeo.php:26
-msgid "为 AI 助理（ChatGPT/Claude/Perplexity/元宝 等）提供结构化站点内容地图，利于被 AI 搜索引用；关闭后访问 /llms.txt 返回 404"
-msgstr ""
-
 # pages/template-random.php:45
 msgid "为你随机推荐"
 msgstr ""
 
 # pages/template-link-apply.php:78
 msgid "为保障友链质量，本站每 7 天自动巡检一次已发布的友链。"
-msgstr ""
-
-# inc/setting/options/Jinyu_OptionSeo.php:25
-msgid "为单篇文章补充 twitter:card / twitter:title / twitter:image 等标签"
 msgstr ""
 
 # inc/fun/sidebar.php:10
@@ -453,10 +429,6 @@ msgstr ""
 
 # inc/setting/options/Jinyu_OptionStyle.php:14
 msgid "主题色、明暗模式、圆角与字体等视觉风格。"
-msgstr ""
-
-# inc/setting/options/Jinyu_OptionSeo.php:18
-msgid "主题默认输出 Article/Breadcrumb/FAQ 等结构化数据；已用 SEO 插件接管时开启"
 msgstr ""
 
 # inc/fun/widget.php:134; inc/fun/widget.php:87
@@ -530,13 +502,6 @@ msgstr ""
 # inc/ajax/user.php:265
 msgid "你正在申请将账号邮箱修改为：%s
 
-请点击以下链接完成验证（24 小时内有效）：
-%s
-
-如果这不是你本人的操作，请忽略本邮件，原邮箱不受影响。
-"
-msgstr ""
-
 # inc/fun/comment-notify.php:42
 msgid "你的文章《%s》有新评论"
 msgstr ""
@@ -593,20 +558,12 @@ msgstr ""
 msgid "全局设置"
 msgstr ""
 
-# inc/setting/options/Jinyu_OptionSales.php:25
-msgid "全站底部广告代码"
-msgstr ""
-
 # inc/setting/options/Jinyu_OptionSales.php:30
 msgid "全站悬浮 CTA 条"
 msgstr ""
 
 # inc/setting/options/Jinyu_OptionGlobal.php:45
 msgid "全站灰度 (哀悼模式)"
-msgstr ""
-
-# inc/setting/options/Jinyu_OptionSales.php:24
-msgid "全站顶部广告代码"
 msgstr ""
 
 # inc/fun/hitokoto-data.php:87
@@ -661,10 +618,6 @@ msgstr ""
 msgid "关闭"
 msgstr ""
 
-# inc/setting/options/Jinyu_OptionSeo.php:18
-msgid "关闭 JSON-LD 结构化数据"
-msgstr ""
-
 # inc/setting/options/Jinyu_OptionExtend.php:17
 msgid "关闭 REST API"
 msgstr ""
@@ -706,13 +659,6 @@ msgid "内容"
 msgstr ""
 
 msgid "内容不能为空"
-msgstr ""
-
-# inc/setting/options/Jinyu_OptionFooter.php:23
-msgid "内容健康、原创为主，无违法违规与灰色内容
-网站能正常访问，非采集站、非纯导航站
-已添加本站友链，且友链位置在首页可见
-站点有一定内容积累，不做空壳站"
 msgstr ""
 
 # inc/setting/options/Jinyu_OptionContent.php:13
@@ -858,10 +804,6 @@ msgstr ""
 msgid "去投稿"
 msgstr ""
 
-# inc/setting/options/Jinyu_OptionSeo.php:21
-msgid "去除分类链接中的 category 前缀"
-msgstr ""
-
 # inc/ajax/index.php:367
 msgid "参数无效"
 msgstr ""
@@ -904,10 +846,6 @@ msgstr ""
 
 # inc/setting/options/Jinyu_OptionStorage.php:82
 msgid "发布/上传新媒体时自动推送到对象存储。"
-msgstr ""
-
-# inc/setting/options/Jinyu_OptionSeo.php:34
-msgid "发布/更新文章时主动推送 URL 到百度站长平台（需填写下方接口调用地址）"
 msgstr ""
 
 # inc/ext/moments.php:19; inc/ext/moments.php:20
@@ -987,16 +925,8 @@ msgstr ""
 msgid "含回链"
 msgstr ""
 
-# inc/setting/options/Jinyu_OptionSeo.php:33
-msgid "启用 IndexNow 主动推送"
-msgstr ""
-
 # inc/setting/options/Jinyu_OptionExtend.php:18
 msgid "启用 PJAX 无刷新导航"
-msgstr ""
-
-# inc/setting/options/Jinyu_OptionSeo.php:17
-msgid "启用主题内置 SEO"
 msgstr ""
 
 # inc/setting/options/Jinyu_OptionUser.php:17
@@ -1005,10 +935,6 @@ msgstr ""
 
 # inc/setting/options/Jinyu_OptionExtend.php:19
 msgid "启用短链跳转 go"
-msgstr ""
-
-# inc/setting/options/Jinyu_OptionSeo.php:38
-msgid "启用站点地图页"
 msgstr ""
 
 # inc/setting/options/Jinyu_OptionUser.php:44
@@ -1060,7 +986,7 @@ msgid "图片不能超过 2MB"
 msgstr ""
 
 # inc/fun/widget.php:713
-msgid "图片推荐 / 广告位；手动填图或自动取分类缩略图"
+msgid "图文推荐；手动填图或自动取分类缩略图"
 msgstr ""
 
 # inc/fun/widget.php:788
@@ -1172,7 +1098,7 @@ msgid "头像来源"
 msgstr ""
 
 # inc/setting/options/Jinyu_OptionCode.php:15
-msgid "头部 / 底部注入的自定义 CSS、JS 代码。广告位已迁入「销售与变现」面板统一管理。"
+msgid "头部 / 底部注入的自定义 CSS、JS 代码。"
 msgstr ""
 
 # inc/setting/options/Jinyu_OptionStyle.php:34
@@ -1253,10 +1179,6 @@ msgstr ""
 
 # inc/setting/options/Jinyu_OptionEmail.php:23
 msgid "完整邮箱地址，如 123456@qq.com。"
-msgstr ""
-
-# inc/setting/options/Jinyu_OptionSeo.php:30
-msgid "实体关联档案 (sameAs)"
 msgstr ""
 
 # inc/fun/widget.php:903
@@ -1401,10 +1323,6 @@ msgstr ""
 msgid "已复制"
 msgstr ""
 
-# inc/setting/options/Jinyu_OptionSeo.php:17
-msgid "已安装 Yoast/RankMath 时请关闭"
-msgstr ""
-
 # inc/ajax/index.php:378
 msgid "已投票"
 msgstr ""
@@ -1466,14 +1384,6 @@ msgstr ""
 msgid "平台"
 msgstr ""
 
-# inc/fun/sales-front.php:142; inc/setting/options/Jinyu_OptionSales.php:23
-msgid "广告"
-msgstr ""
-
-# inc/setting/options/Jinyu_OptionSales.php:22
-msgid "广告位显示「广告」标识"
-msgstr ""
-
 # inc/fun/sidebar.php:20
 msgid "底部小工具"
 msgstr ""
@@ -1490,10 +1400,6 @@ msgstr ""
 msgid "建站日期（留空自动取最早文章）"
 msgstr ""
 
-# inc/setting/options/Jinyu_OptionSeo.php:24
-msgid "建议 1200×630 像素 JPG/PNG。社交分享卡片主图，首页与无封面文章优先使用；留空则回退站点 Logo / 站点图标。"
-msgstr ""
-
 # inc/setting/options/Jinyu_OptionBasic.php:18
 msgid "建议使用透明背景 PNG；暗色模式会自动切换下方「暗色模式」Logo，未填则复用本图"
 msgstr ""
@@ -1502,16 +1408,8 @@ msgstr ""
 msgid "建议四张图片尺寸比例一致"
 msgstr ""
 
-# inc/setting/options/Jinyu_OptionSeo.php:21
-msgid "开启后分类URL变为 /分类名/，首次开启后会自动刷新重写规则（或到「设置→固定链接」保存一次）"
-msgstr ""
-
 # inc/setting/options/Jinyu_OptionUser.php:44
 msgid "开启后前台登录弹窗显示第三方登录入口；具体平台在下方「第三方登录账号」中添加"
-msgstr ""
-
-# inc/setting/options/Jinyu_OptionSeo.php:38
-msgid "开启后可通过 /sitemap 或「页面模板=站点地图」查看站点地图"
 msgstr ""
 
 # inc/setting/options/Jinyu_OptionSales.php:52
@@ -1709,10 +1607,6 @@ msgstr ""
 msgid "按 Esc 关闭"
 msgstr ""
 
-# inc/setting/options/Jinyu_OptionSales.php:22
-msgid "按《广告法》第十四条，广告应可识别。开启后各广告位左上角显示标识角标（文案见下）"
-msgstr ""
-
 # inc/fun/widget.php:253
 msgid "按月归档"
 msgstr ""
@@ -1873,10 +1767,6 @@ msgstr ""
 msgid "支付宝收款码"
 msgstr ""
 
-# inc/setting/options/Jinyu_OptionSeo.php:39
-msgid "支持 HTML，将显示在 404 标题下方；留空则只显示默认提示"
-msgstr ""
-
 # pages/template-user.php:319
 msgid "支持 JPG / PNG / WebP / GIF，≤2MB，或在下栏填写图片 URL"
 msgstr ""
@@ -1949,10 +1839,6 @@ msgstr ""
 msgid "文章不存在"
 msgstr ""
 
-# inc/setting/options/Jinyu_OptionSales.php:26
-msgid "文章中部广告"
-msgstr ""
-
 # inc/setting/options/Jinyu_OptionContent.php:34
 msgid "文章修改晚于发布 3 天以上才提示「更新于 X」，避免小改动造成噪音"
 msgstr ""
@@ -1975,10 +1861,6 @@ msgstr ""
 
 # inc/fun/meta-fields.php:30
 msgid "文章副标题"
-msgstr ""
-
-# inc/setting/options/Jinyu_OptionSeo.php:33
-msgid "文章发布/更新时主动通知 Bing/Yandex 等秒级重新抓取，利于被 AI 搜索（如 Copilot）快速收录；密钥与验证文件由主题自动生成与管理"
 msgstr ""
 
 # inc/setting/options/Jinyu_OptionContent.php:28
@@ -2257,18 +2139,6 @@ msgstr ""
 msgid "有人提交友链申请时发一封邮件到站长邮箱（依赖站点发信配置）"
 msgstr ""
 
-# inc/ajax/user.php:168
-msgid "有人请求重置以下账号的密码：
-
-用户名：%s
-
-如果不是你本人操作，请忽略本邮件。
-
-点击链接重置密码：
-%s
-"
-msgstr ""
-
 # inc/fun/comment-notify.php:22
 msgid "有新的评论回复"
 msgstr ""
@@ -2383,10 +2253,6 @@ msgstr ""
 msgid "标题"
 msgstr ""
 
-# inc/setting/options/Jinyu_OptionSeo.php:14
-msgid "标题关键词描述、sitemap 与搜索引擎收录设置。"
-msgstr ""
-
 # inc/ajax/user.php:446
 msgid "标题长度需为 4-100 个字符"
 msgstr ""
@@ -2397,10 +2263,6 @@ msgstr ""
 
 # inc/fun/widget.php:1320
 msgid "标题（留空用后台设置）"
-msgstr ""
-
-# inc/setting/options/Jinyu_OptionSeo.php:35
-msgid "格式：http://data.zz.baidu.com/urls?site=你的域名&token=你的token"
 msgstr ""
 
 # inc/setting/options/Jinyu_OptionAbout.php:18; inc/setting/template.php:18
@@ -2431,10 +2293,6 @@ msgstr ""
 msgid "欢迎访问本站！这里分享 ……（用一两句话介绍你的站点定位、特色与更新方向）"
 msgstr ""
 
-# inc/setting/options/Jinyu_OptionSeo.php:19
-msgid "欢迎访问本站，这里专注于分享 ……（用一句话概括站点主题，将作为搜索引擎结果中的描述摘要）"
-msgstr ""
-
 # pages/template-user.php:231
 msgid "正文内容（至少 20 字）"
 msgstr ""
@@ -2453,10 +2311,6 @@ msgstr ""
 
 # inc/ajax/user.php:449
 msgid "正文至少 20 个字符"
-msgstr ""
-
-# inc/setting/options/Jinyu_OptionSeo.php:27
-msgid "正文里出现的其它文章标题自动转为站内链接，打通站内权重、利于收录；单篇最多链 5 处、每词仅首次出现时链、跳过标题/代码块；发文章后自动重建索引"
 msgstr ""
 
 # inc/fun/widget.php:872
@@ -2481,10 +2335,6 @@ msgstr ""
 
 # inc/setting/options/Jinyu_OptionSales.php:41
 msgid "每篇文末展示一张统一引导卡（行动号召）"
-msgstr ""
-
-# inc/setting/options/Jinyu_OptionSeo.php:30
-msgid "每行一个 URL，指向本站/作者在其它平台的官方档案（知乎、GitHub、微博、官网等）。将写入 Article 的 JSON-LD sameAs，帮助搜索引擎与 AI 将本站归并为同一真实实体，提升信任度与引用率。仅填你真实拥有且公开的，留空则不出 sameAs"
 msgstr ""
 
 # inc/setting/options/Jinyu_OptionFooter.php:27
@@ -2727,10 +2577,6 @@ msgstr ""
 msgid "留空则使用站点副标题"
 msgstr ""
 
-# inc/setting/options/Jinyu_OptionSeo.php:23
-msgid "留空则使用站点标题"
-msgstr ""
-
 # inc/setting/options/Jinyu_OptionBasic.php:21
 msgid "留空则使用默认声明。支持占位符：{url} 文章链接、{title} 标题、{author} 作者、{date} 日期"
 msgstr ""
@@ -2741,10 +2587,6 @@ msgstr ""
 
 # inc/setting/options/Jinyu_OptionBasic.php:19
 msgid "留空则暗色模式复用亮色 Logo"
-msgstr ""
-
-# inc/setting/options/Jinyu_OptionSales.php:23
-msgid "留空则用「广告」"
 msgstr ""
 
 # inc/fun/widget.php:138
@@ -2797,14 +2639,6 @@ msgstr ""
 
 # inc/setting/options/Jinyu_OptionUser.php:21
 msgid "登录页背景图"
-msgstr ""
-
-# inc/setting/options/Jinyu_OptionSeo.php:34
-msgid "百度主动推送"
-msgstr ""
-
-# inc/setting/options/Jinyu_OptionSeo.php:35
-msgid "百度推送接口地址"
 msgstr ""
 
 # inc/setting/options/Jinyu_OptionExtend.php:21
@@ -3094,16 +2928,8 @@ msgstr ""
 msgid "置顶"
 msgstr ""
 
-# inc/setting/options/Jinyu_OptionSales.php:19
-msgid "联盟点击 / 广告点击 / CTA 点击 / 订阅 / 流量来源，统一在后台「金玉主题配置 → 变现数据」查看。"
-msgstr ""
-
 # inc/setting/options/Jinyu_OptionSales.php:18
 msgid "联盟点击追踪"
-msgstr ""
-
-# inc/setting/options/Jinyu_OptionSales.php:15
-msgid "联盟点击追踪、广告位管理、全站转化触点与邮件订阅。所有数据在「变现数据」页面查看。"
 msgstr ""
 
 # inc/fun/sales-front.php:93; inc/setting/options/Jinyu_OptionSales.php:38
@@ -3123,10 +2949,6 @@ msgstr ""
 
 # inc/fun/widget.php:1094
 msgid "自 %s 已稳定运行"
-msgstr ""
-
-# inc/setting/options/Jinyu_OptionSeo.php:27
-msgid "自动内链"
 msgstr ""
 
 # inc/fun/widget.php:790
@@ -3254,10 +3076,6 @@ msgstr ""
 
 # inc/setting/options/Jinyu_OptionComment.php:18
 msgid "评论分页"
-msgstr ""
-
-# inc/setting/options/Jinyu_OptionSales.php:27
-msgid "评论区上方广告"
 msgstr ""
 
 # inc/fun/short-code.php:63
@@ -3458,14 +3276,6 @@ msgstr ""
 
 # inc/fun/template-tags.php:80
 msgid "输入页码后跳转"
-msgstr ""
-
-# inc/setting/options/Jinyu_OptionSeo.php:26
-msgid "输出 /llms.txt (GEO)"
-msgstr ""
-
-# inc/setting/options/Jinyu_OptionSeo.php:25
-msgid "输出 Twitter Card"
 msgstr ""
 
 # functions.php:281
@@ -3924,20 +3734,8 @@ msgstr ""
 msgid "默认主题模式"
 msgstr ""
 
-# inc/setting/options/Jinyu_OptionSeo.php:20
-msgid "默认关键词 (逗号分隔)"
-msgstr ""
-
-# inc/setting/options/Jinyu_OptionSeo.php:24
-msgid "默认分享大图 (Open Graph)"
-msgstr ""
-
 # inc/setting/options/Jinyu_OptionStyle.php:21
 msgid "默认深灰"
-msgstr ""
-
-# inc/setting/options/Jinyu_OptionSeo.php:19
-msgid "默认站点描述"
 msgstr ""
 
 # inc/setting/options/Jinyu_OptionContent.php:29

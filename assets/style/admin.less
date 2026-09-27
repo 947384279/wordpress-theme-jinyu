@@ -16,8 +16,15 @@
    一切 position:sticky 都「跟着页面滚走」）；Chrome 会把 body 的 overflow 传播给
    视口所以不受影响——这就是「桌面正常、iPhone 失效」的根因。改用 clip：
    同样裁掉横向溢出，但不创建滚动容器，sticky 继续相对视口生效。
-   （不支持 clip 的老浏览器会忽略本条回落 WP 原样，不劣化。） */
+   （不支持 clip 的老浏览器会忽略本条回落 WP 原样，不劣化。）
+
+   纵向不在这里锁：曾用 `html:has(body.toplevel_page_jinyu-options)` 锁 overflow:hidden，
+   ⚠ :has() 需 Chromium 105+；Edge 100 之类老浏览器会把「整条选择器列表」判为无效而整条丢弃，
+   规则静默失效——页面级滚动条照旧，看起来像「改了没用」。页面级溢出的真正来源是外壳高度
+   （见下方 html.wp-toolbar 那条），已从源头消除，不再需要任何 overflow 兜底。 */
 body.toplevel_page_jinyu-options { overflow-x: clip; }
+/* 后台给普通后台页预留的底部留白对本页无用（页脚已隐藏），清掉避免外壳底部空出一条 */
+body.toplevel_page_jinyu-options #wpbody-content { padding-bottom: 0; }
 /* 固定 App 外壳锁定整屏高度，WP 默认页脚（绝对定位）会浮在内容底部，隐藏之 */
 body.toplevel_page_jinyu-options #wpfooter { display: none; }
 
@@ -41,6 +48,13 @@ body.toplevel_page_jinyu-options #wpfooter { display: none; }
     /* 外壳与 App 范式一致：直角铺满整屏，不保留任何圆角。
        （侧栏 .jinyu-nav / 主区 .jinyu-main 同样是 border-radius:0） */
     border-radius: 0;
+}
+/* WP 顶栏是 position:fixed，占位靠 html.wp-toolbar 的 padding-top；外壳若仍锁满 100vh，
+   文档高度 = 顶栏 + 100vh，比视口高出一条顶栏 32px → 页面级（第二条）垂直滚动条，
+   同时外壳最底部 32px 永远滚不到（保存按钮那行贴着底边时最明显）。
+   扣除顶栏高度后文档高度正好等于视口：任何浏览器（含不支持 :has() 的）都只剩 .jinyu-main 一条滚动条。 */
+html.wp-toolbar .wrap.jinyu-setting-wrap {
+    height: calc(100vh - var(--wp-admin--admin-bar--height, 32px));
 }
 /* App 主体填满剩余高度，作为内部滚动区的父级 */
 #jinyu-setting-app { flex: 1 1 auto; min-height: 0; display: flex; }
@@ -990,6 +1004,13 @@ input.jinyu-search { min-height: 38px; }
     .jinyu-ms-caret { transform: translateY(-40%) rotate(-135deg); }
     .jinyu-ms-panel { opacity: 1; transform: translateY(0); pointer-events: auto; }
 }
+/* 下方空间不够时面板翻到触发框上方（JS 加 is-up）：面板从下往上滑入，不越过内容区底边 */
+.jinyu-ms.is-up .jinyu-ms-panel {
+    top: auto;
+    bottom: calc(100% + 6px);
+    transform: translateY(6px);
+}
+.jinyu-ms.is-open.is-up .jinyu-ms-panel { transform: translateY(0); }
 .jinyu-ms-placeholder {
     font-size: 13px;
     color: var(--ja-text-3);
@@ -1580,87 +1601,6 @@ input.jinyu-search { min-height: 38px; }
     border-radius: 0;
     box-shadow: none;
 }
-@keyframes jinyu-smtp-flash {
-    0%   { border-color: var(--ja-primary); box-shadow: 0 0 0 3px var(--ja-primary-soft-2); }
-    60%  { border-color: var(--ja-primary); box-shadow: 0 0 0 3px var(--ja-primary-soft-2); }
-    100% { border-color: var(--ja-border-strong); box-shadow: 0 0 0 0 transparent; }
-}
-/* SMTP 配置卡片：维护工具内嵌，点击「展开配置」显示；复用标准字段渲染，仅做容器与间距 */
-.jinyu-smtp-card {
-    margin: 0 0 20px;
-    padding: 16px 20px 20px;
-    border: 1px solid var(--ja-border);
-    border-radius: 0;
-    background: var(--ja-surface-2);
-
-    &[hidden] { display: none; }
-
-    /* 展开瞬间闪一圈主色描边，给用户「已经展开了」的即时反馈 */
-    &.is-flash { animation: jinyu-smtp-flash 1.4s var(--ja-ease); }
-
-    .jinyu-smtp-card-head {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding-bottom: 12px;
-        margin-bottom: 14px;
-        border-bottom: 1px dashed var(--ja-border-strong);
-
-        .dashicons {
-            font-size: 17px;
-            width: 17px;
-            height: 17px;
-            color: var(--ja-primary);
-        }
-    }
-    .jinyu-smtp-card-title {
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--ja-text-1, inherit);
-    }
-    .jinyu-smtp-card-note {
-        margin-left: auto;
-        font-size: 12px;
-        color: var(--ja-text-3);
-    }
-
-    /* 两列字段网格：主机/端口、账号/授权码、加密/发件人 两两成行 */
-    .jinyu-smtp-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 16px 28px;
-        align-items: start;
-    }
-
-    /* 卡片内字段改为纵向紧凑布局：标题在上、控件满宽、描述收窄置底 */
-    .jinyu-field {
-        display: block;
-        margin: 0;
-        padding: 0;
-        border-radius: 0;
-        transition: none;
-    }
-    .jinyu-field:hover { background: transparent; }
-    .jinyu-field-label {
-        display: block;
-        padding-top: 0;
-        margin-bottom: 6px;
-        font-size: 13px;
-        line-height: 1.4;
-    }
-    .jinyu-field-body { min-width: 0; }
-    .jinyu-field-desc {
-        margin: 6px 0 0;
-        font-size: 12px;
-        line-height: 1.6;
-    }
-    .jinyu-input { max-width: 100%; }
-    .jinyu-password { max-width: 100%; }
-
-    @media (max-width: 782px) {
-        .jinyu-smtp-grid { grid-template-columns: minmax(0, 1fr); }
-    }
-}
 .jinyu-tool-row {
     display: flex;
     align-items: center;
@@ -1873,35 +1813,19 @@ input.jinyu-search { min-height: 38px; }
     }
 }
 
-/* 对象存储：推送 / 拉回 进度 */
-.jinyu-storage-progress {
-    margin-top: var(--ja-r);
-    padding: 16px 18px;
-    background: var(--ja-surface);
-    border: 1px solid var(--ja-border-strong);
-    border-radius: var(--ja-r-lg);
+/* 维护工具面板底部的归属说明：缓存清理 / 数据库优化等运维能力已迁至配套插件 */
+.jinyu-tools-note {
+    margin: 18px 0 0;
+    padding-top: 14px;
+    border-top: 1px dashed var(--ja-border);
+    font-size: 12.5px;
+    line-height: 1.8;
+    color: var(--ja-text-3);
 }
-.jinyu-storage-bar {
-    height: 10px;
-    border-radius: 999px;
-    background: var(--ja-border);
-    overflow: hidden;
-}
-.jinyu-storage-bar > span {
-    display: block;
-    height: 100%;
-    width: 0;
-    border-radius: 999px;
-    background: linear-gradient(90deg, var(--ja-primary), #ff8a5c);
-    transition: width var(--ja-dur) var(--ja-ease);
-}
-.jinyu-storage-progress-text { margin: 10px 0 0; font-size: 13px; color: var(--ja-text-2); }
-.jinyu-storage-note { margin: 16px 0 0; font-size: 12.5px; line-height: 1.7; color: var(--ja-text-3); }
 
 /* 暗色模式 */
 .is-dark {
     .jinyu-tool-row:hover { background: rgba(255, 255, 255, .04); }
-    .jinyu-storage-progress { background: var(--ja-surface-2); }
 }
 
 /* ---------------- 我要反馈（提交 / 作者回复） ---------------- */
@@ -2296,8 +2220,11 @@ input.jinyu-search { min-height: 38px; }
 /* ---------------- 响应式 ---------------- */
 @media (max-width: 900px) {
     /* 移动端放弃 App 外壳锁定，恢复整页文档流滚动（横向标签条仍 sticky 吸顶）。
-       选择器须与桌面基类同为 .wrap.jinyu-setting-wrap（0,2,0）才能压过其 height/overflow/display。 */
+       桌面那条 html.wp-toolbar .wrap.jinyu-setting-wrap（0,3,1）比这里原来的
+        .wrap.jinyu-setting-wrap（0,2,0）特异性更高，必须同权重覆盖，否则 height:auto 压不过。 */
+    /* 侧沟令牌单独成条保持 (0,1,0)：并入下面 (0,3,1) 那条会压过 ≤600px 的 12px */
     .jinyu-setting-wrap { --ja-gutter: 18px; }
+    html.wp-toolbar .wrap.jinyu-setting-wrap,
     .wrap.jinyu-setting-wrap {
         display: block;
         height: auto;
