@@ -501,13 +501,7 @@ msgid "你好，朋友"
 msgstr ""
 
 # inc/ajax/user.php:265
-msgid "你正在申请将账号邮箱修改为：%s
-
-请点击以下链接完成验证（24 小时内有效）：
-%s
-
-如果这不是你本人的操作，请忽略本邮件，原邮箱不受影响。
-"
+msgid "你正在申请将账号邮箱修改为：%1$s\n\n请点击以下链接完成验证（24 小时内有效）：\n%2$s\n\n如果这不是你本人的操作，请忽略本邮件，原邮箱不受影响。\n"
 msgstr ""
 
 # inc/fun/comment-notify.php:42
@@ -670,10 +664,7 @@ msgid "内容不能为空"
 msgstr ""
 
 # inc/setting/options/Jinyu_OptionFooter.php:23
-msgid "内容健康、原创为主，无违法违规与灰色内容
-网站能正常访问，非采集站、非纯导航站
-已添加本站友链，且友链位置在首页可见
-站点有一定内容积累，不做空壳站"
+msgid "内容健康、原创为主，无违法违规与灰色内容\n网站能正常访问，非采集站、非纯导航站\n已添加本站友链，且友链位置在首页可见\n站点有一定内容积累，不做空壳站"
 msgstr ""
 
 # inc/setting/options/Jinyu_OptionContent.php:13
@@ -2155,15 +2146,7 @@ msgid "有人提交友链申请时发一封邮件到站长邮箱（依赖站点�
 msgstr ""
 
 # inc/ajax/user.php:168
-msgid "有人请求重置以下账号的密码：
-
-用户名：%s
-
-如果不是你本人操作，请忽略本邮件。
-
-点击链接重置密码：
-%s
-"
+msgid "有人请求重置以下账号的密码：\n\n用户名：%1$s\n\n如果不是你本人操作，请忽略本邮件。\n\n点击链接重置密码：\n%2$s\n"
 msgstr ""
 
 # inc/fun/comment-notify.php:22

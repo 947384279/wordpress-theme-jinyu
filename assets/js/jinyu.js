@@ -21,6 +21,19 @@
     var JINYU_I18N = window.JINYU_I18N || {};
     function _t(key, fallback) { return JINYU_I18N[key] || fallback; }
 
+    /**
+     * 把 sprintf 风格占位符填进可翻译文案。
+     * PHP 侧用编号占位符（%1$d / %2$s），.po / JS 翻译 JSON 里可能被替换成裸 %d / %s，
+     * 所以两种写法都兼容，避免改了 PHP 忘记改前端，又出现「把 %1$d 原样显示出来」。
+     */
+    function _tFill(str, map) {
+        if (!str) { return ''; }
+        Object.keys(map || {}).forEach(function (key) {
+            str = str.split(key).join(map[key]);
+        });
+        return str;
+    }
+
     var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var finePointer = window.matchMedia('(pointer: fine)').matches;
 
@@ -562,8 +575,13 @@
             } else {
                 pill.classList.remove('jinyu-done');
                 var remain = totalMin * (1 - frac);
-                var remainTxt = remain < 1 ? _t('lessThanMinute', '不到 1 分钟') : (_t('aboutMinutes', '约 %d 分钟').replace('%d', Math.ceil(remain)));
-                label.textContent = _t('readProgress', '已读 %1$d% · 还需 %2$s').replace('%1$d', pct).replace('%2$s', remainTxt);
+                var remainTxt = remain < 1 ? _t('lessThanMinute', '不到 1 分钟') : _tFill(_t('aboutMinutes', '约 %d 分钟'), { '%d': Math.ceil(remain) });
+                label.textContent = _tFill(_t('readProgress', '已读 %1$d% · 还需 %2$s'), {
+                    '%1$d': pct,
+                    '%2$s': remainTxt,
+                    '%d': pct,
+                    '%s': remainTxt
+                });
             }
         }
 
@@ -3934,7 +3952,7 @@
             if (dot) dot.className = 'jinyu-perf-dot';
             var samples = el.querySelector('[data-perf="samples"]');
             if (samples && perf.samples) {
-                samples.textContent = _t('nearSamples', '近 %d 次采样').replace('%d', perf.samples);
+                samples.textContent = _tFill(_t('nearSamples', '近 %d 次采样'), { '%d': perf.samples });
                 samples.hidden = false;
             }
 
