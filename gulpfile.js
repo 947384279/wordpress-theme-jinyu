@@ -84,8 +84,9 @@ function watch() {
 function buildZip() {
     const version = require('./package.json').version;
     return gulp.src([
+        // package.json 必须随包发布：tools/ 里的 release.js / sync-version.js 依赖它读取 version。
         '**/*', '!node_modules/**', '!package-lock.json',
-        '!gulpfile.js', '!package.json', '!.git/**',
+        '!gulpfile.js', '!.git/**',
         '!cache/**', '!*.log',
         '!.workbuddy/**', '!.trae/**'
     ], { base: '.' })
