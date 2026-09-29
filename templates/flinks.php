@@ -10,18 +10,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// 友情链接数据：优先站点自定义友链 CPT（jy_link），回退 WP 原生链接管理器（bookmarks）.
-$jinyu_link_items = [];
-foreach ( array_slice( function_exists( 'jinyu_get_links' ) ? jinyu_get_links() : [], 0, 6 ) as $jl ) {
-	$jl_url = get_post_meta( $jl->ID, 'jy_link_url', true );
-	if ( ! $jl_url ) {
-		continue;
-	}
-	$jinyu_link_items[] = [
-		'title' => $jl->post_title,
-		'url'   => $jl_url,
-	];
-}
+// 友情链接数据：由任意插件经 jinyu_flink_items 提供（格式 [['title'=>,'url'=>], ...]），
+// 无提供方时回退 WP 原生链接管理器（bookmarks）。主题不感知数据来源。
+$jinyu_link_items = array_slice( (array) apply_filters( 'jinyu_flink_items', [] ), 0, 6 );
 if ( ! $jinyu_link_items && function_exists( 'get_bookmarks' ) ) {
 	foreach ( get_bookmarks(
 		[
@@ -46,9 +37,7 @@ if ( ! $jinyu_link_items ) {
 	<h2><?php esc_html_e( '友情链接', 'jinyu' ); ?></h2>
 	<?php
 	// 入口 URL：后台手填优先；未填时自动指向使用「申请友链」模板的页面（都没有则不显示入口）.
-	$flink_apply = function_exists( 'jinyu_flink_apply_url' )
-		? jinyu_flink_apply_url()
-		: trim( (string) jinyu_get_option( 'flink_apply_url', '' ) );
+	$flink_apply = trim( (string) apply_filters( 'jinyu_flink_apply_url', (string) jinyu_get_option( 'flink_apply_url', '' ) ) );
 	if ( '' !== $flink_apply ) :
 		?>
 	<a class="jinyu-flinks-apply" href="<?php echo esc_url( $flink_apply ); ?>">

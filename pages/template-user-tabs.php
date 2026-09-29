@@ -508,7 +508,15 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 	<p class="jinyu-auth-tip" data-jinyu-password-tip></p>
 	</form>
 
-	<?php if ( function_exists( 'jinyu_oauth_enabled' ) && jinyu_oauth_enabled() ) : ?>
+	<?php
+	// 第三方绑定整块由插件提供，四个接口须同时可用才渲染（缺任一则本块静默跳过）.
+	$jinyu_oauth_ready = function_exists( 'jinyu_oauth_enabled' )
+		&& function_exists( 'jinyu_oauth_bindings' )
+		&& function_exists( 'jinyu_oauth_platforms' )
+		&& function_exists( 'jinyu_oauth_bind_url' )
+		&& jinyu_oauth_enabled();
+	?>
+	<?php if ( $jinyu_oauth_ready ) : ?>
 		<?php $bindings = jinyu_oauth_bindings( $uid ); ?>
 		<?php $uc_url = function_exists( 'jinyu_user_page_url' ) ? jinyu_user_page_url( 'profile' ) : home_url(); ?>
 	<h3 class="jinyu-user-subtitle"><?php esc_html_e( '第三方账号绑定', 'jinyu' ); ?></h3>

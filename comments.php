@@ -69,7 +69,7 @@ if ( jinyu_is_checked( 'comment_smiley' ) ) {
 			if ( $jinyu_cur_user->exists() ) {
 				$jinyu_greet_avatar = get_avatar( $jinyu_cur_user->ID, 88, '', $jinyu_cur_user->display_name, [ 'class' => 'jinyu-greet-ava' ] );
 				$jinyu_greet_name   = $jinyu_cur_user->display_name;
-			} elseif ( $jinyu_commenter['comment_author_email'] ) {
+			} elseif ( ! empty( $jinyu_commenter['comment_author_email'] ) ) {
 				$jinyu_greet_avatar = get_avatar( $jinyu_commenter['comment_author_email'], 88, '', $jinyu_commenter['comment_author'], [ 'class' => 'jinyu-greet-ava' ] );
 				$jinyu_greet_name   = $jinyu_commenter['comment_author'];
 			} else {
@@ -102,13 +102,16 @@ if ( jinyu_is_checked( 'comment_smiley' ) ) {
 			$req       = get_option( 'require_name_email' );
 			$aria_req  = $req ? ' aria-required="true"' : '';
 			// hairline 分栏字段：称呼 | 邮箱 | 网址，聚焦时主色下划线动效（无可见方框）.
+			// 键名必须严格用 WP 核心的 comment_author / comment_author_email / comment_author_url
+			// （wp_get_current_commenter() 的返回值）；写成 comment_email / comment_url 会
+			// 「键不存在」告警刷爆日志，且回访者的邮箱与网址永远无法预填。
 			$fields = [
 				'author' => '<div class="jinyu-cf-row"><div class="jinyu-cf-field">'
-					. '<input id="author" name="author" type="text" value="' . esc_attr( $commenter['comment_author'] ) . '" placeholder="' . esc_attr__( '称呼', 'jinyu' ) . '" aria-label="' . esc_attr__( '称呼', 'jinyu' ) . '"' . $aria_req . '></div>',
+					. '<input id="author" name="author" type="text" value="' . esc_attr( $commenter['comment_author'] ?? '' ) . '" placeholder="' . esc_attr__( '称呼', 'jinyu' ) . '" aria-label="' . esc_attr__( '称呼', 'jinyu' ) . '"' . $aria_req . '></div>',
 				'email'  => '<div class="jinyu-cf-field">'
-					. '<input id="email" name="email" type="email" value="' . esc_attr( $commenter['comment_email'] ) . '" placeholder="' . esc_attr__( '邮箱（仅站长可见）', 'jinyu' ) . '" aria-label="' . esc_attr__( '邮箱', 'jinyu' ) . '"' . $aria_req . '></div>',
+					. '<input id="email" name="email" type="email" value="' . esc_attr( $commenter['comment_author_email'] ?? '' ) . '" placeholder="' . esc_attr__( '邮箱（仅站长可见）', 'jinyu' ) . '" aria-label="' . esc_attr__( '邮箱', 'jinyu' ) . '"' . $aria_req . '></div>',
 				'url'    => '<div class="jinyu-cf-field">'
-					. '<input id="url" name="url" type="url" value="' . esc_attr( $commenter['comment_url'] ) . '" placeholder="' . esc_attr__( '网址（可选）', 'jinyu' ) . '" aria-label="' . esc_attr__( '网址', 'jinyu' ) . '"></div></div>',
+					. '<input id="url" name="url" type="url" value="' . esc_attr( $commenter['comment_author_url'] ?? '' ) . '" placeholder="' . esc_attr__( '网址（可选）', 'jinyu' ) . '" aria-label="' . esc_attr__( '网址', 'jinyu' ) . '"></div></div>',
 			];
 			comment_form(
 				[

@@ -16,13 +16,39 @@ Template Name: 申请友链
 */
 get_header();
 
-$jinyu_site       = function_exists( 'jinyu_flink_site_profile' ) ? jinyu_flink_site_profile() : [
-	'name' => '',
-	'url'  => '',
-	'desc' => '',
-	'icon' => '',
-];
-$jinyu_rules      = function_exists( 'jinyu_flink_multi_to_list' ) ? jinyu_flink_multi_to_list( (string) jinyu_get_option( 'flink_apply_rules', '' ) ) : [];
+// 站点档案：主题自持实现（名称/地址/描述/图标），任意插件可经 jinyu_flink_site_profile 覆盖.
+$jinyu_site_icon = (string) get_site_icon_url( 192 );
+if ( '' === $jinyu_site_icon ) {
+	$jinyu_logo_id = (int) get_theme_mod( 'custom_logo' );
+	if ( $jinyu_logo_id ) {
+		$jinyu_site_icon = (string) wp_get_attachment_image_url( $jinyu_logo_id, 'full' );
+	}
+}
+if ( '' === $jinyu_site_icon ) {
+	$jinyu_site_icon = home_url( '/favicon.ico' );
+}
+$jinyu_site = wp_parse_args(
+	(array) apply_filters(
+		'jinyu_flink_site_profile',
+		[
+			'name' => (string) get_bloginfo( 'name' ),
+			'url'  => home_url( '/' ),
+			'desc' => (string) get_bloginfo( 'description' ),
+			'icon' => $jinyu_site_icon,
+		]
+	),
+	[
+		'name' => '',
+		'url'  => '',
+		'desc' => '',
+		'icon' => '',
+	]
+);
+// 申请规则：后台多行文本按行切分，插件可经 jinyu_flink_apply_rules 整体接管.
+$jinyu_rules = (array) apply_filters(
+	'jinyu_flink_apply_rules',
+	preg_split( '/\R+/u', trim( (string) jinyu_get_option( 'flink_apply_rules', '' ) ), -1, PREG_SPLIT_NO_EMPTY ) ?: []
+);
 $jinyu_form_on    = jinyu_is_checked( 'flink_apply_form' );
 $jinyu_my_mail    = is_user_logged_in() ? (string) wp_get_current_user()->user_email : '';
 $jinyu_admin_mail = (string) get_option( 'admin_email' );

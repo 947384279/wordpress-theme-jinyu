@@ -1318,7 +1318,21 @@
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
-        }).then(function (r) { return r.json(); });
+        }).then(function (r) {
+            // 先取文本再解析：接口未注册 / PHP 报错 / 登录态失效时 WP 会返回 HTML 页面，
+            // 直接 r.json() 只会抛出「Unexpected token <」这类无法定位的报错。
+            return r.text().then(function (t) {
+                var head = t.charAt(0);
+                if ('<' === head || '{' !== head) {
+                    throw new Error('接口返回异常（HTTP ' + r.status + '），请检查「金玉主题配套插件」是否已启用');
+                }
+                try {
+                    return JSON.parse(t);
+                } catch (e) {
+                    throw new Error('接口返回内容无法解析（HTTP ' + r.status + '）');
+                }
+            });
+        });
     }
 
     function save(btn) {

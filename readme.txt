@@ -4,7 +4,7 @@ Tags: blog, custom-colors, custom-logo, custom-menu, editor-style, featured-imag
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.2.2
+Stable tag: 1.2.3
 License: GPL v3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -67,6 +67,15 @@ License URI: https://www.gnu.org/licenses/gpl-3.0.html
 每个设置分组面板头部都有「重置本组」按钮，仅清空该分组、回退默认值，不影响其它设置。
 
 == Changelog ==
+
+= 1.2.3 =
+* 缓存失效机制重构：保存设置或切换主题后前台立即生效，无需等待缓存过期（缓存 key 统一拼入版本号盐值，版本号 bump 后旧 key 立即失效，并由每日任务回收孤儿 transient）。
+* 评论列表加载提速：最新评论的父级评论改为循环前批量预取，消除 N+1 查询。
+* 全部页面模板已在编辑器「模板」选择器中可见（theme.json 注册 customTemplates，与 pages/ 目录一一对应）。
+* 界面文案全面接入翻译体系：补齐硬编码中文，阅读进度占位符改用 %1$d / %2$s 并同步语言包。
+* 修复语录组件占位符显示异常。
+* 官方标签规范化（新增 accessibility-ready、custom-background、theme-options），移除与实际不符的标签。
+* 全项目代码格式规范化：换行统一为 LF，空白与缩进统一。
 
 = 1.2.2 =
 * 后台「主题设置」页双垂直滚动条修复：设置外壳高度改为扣除 WP 固定顶栏（calc(100vh - var(--wp-admin--admin-bar--height))），文档高度与视口等高，页面级滚动条消失，仅主区域内部滚动。

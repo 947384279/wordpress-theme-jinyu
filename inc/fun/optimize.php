@@ -147,8 +147,12 @@ function jinyu_content_filter( $content ) {
 			}
 			$host = wp_parse_url( $href, PHP_URL_HOST );
 			if ( $host && $host !== $home ) {
-				if ( $go && function_exists( 'jinyu_go_sign' ) ) {
-					$a->setAttribute( 'href', home_url( '/go/?url=' . urlencode( $href ) . '&sig=' . jinyu_go_sign( $href ) ) );
+				if ( $go ) {
+					// 外链跳转目标由任意插件经 jinyu_external_redirect_url 改写；默认返回原 URL（即不跳转）.
+					$redirect = (string) apply_filters( 'jinyu_external_redirect_url', $href );
+					if ( '' !== $redirect && $redirect !== $href ) {
+						$a->setAttribute( 'href', $redirect );
+					}
 				}
 				if ( $ext_blank && $a->getAttribute( 'target' ) !== '_blank' ) {
 					$a->setAttribute( 'target', '_blank' );

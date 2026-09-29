@@ -112,6 +112,11 @@ exports.default = build;
 exports.dev = dev;
 exports.build = build;
 exports.zip = buildZipSafe;
+// 单任务出口：只改了后台 JS 一类局部改动时不必走 build 全量（也不会被 versionCheck 拦下）
+exports.js = buildJs;
+exports.adminJs = buildAdminJs;
+exports.style = gulp.parallel(buildStyle, buildAdminStyle, buildAlertStyle);
+exports.critical = buildCritical;
 
 
 

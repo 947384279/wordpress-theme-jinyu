@@ -519,15 +519,15 @@ class Jinyu_Links_Widget extends WP_Widget {
 		$num   = (int) ( $instance['num'] ?? 10 );
 		echo $args['before_widget'];
 		echo $args['before_title'] . jinyu_widget_title( $title ) . $args['after_title'];
-		$links = function_exists( 'jinyu_get_links' ) ? jinyu_get_links() : [];
+		$links = (array) apply_filters( 'jinyu_flink_items', [] );
 		if ( $links ) {
 			echo '<ul class="jinyu-widget-list jinyu-links-list">';
 			foreach ( array_slice( $links, 0, $num ) as $l ) {
-				$url = get_post_meta( $l->ID, 'jy_link_url', true );
+				$url = $l['url'] ?? '';
 				if ( ! $url ) {
 					continue;
 				}
-				echo '<li><a href="' . esc_url( $url ) . '" target="_blank" rel="noopener nofollow">' . esc_html( $l->post_title ) . '</a></li>';
+				echo '<li><a href="' . esc_url( $url ) . '" target="_blank" rel="noopener nofollow">' . esc_html( $l['title'] ?? $url ) . '</a></li>';
 			}
 			echo '</ul>';
 		} else {
@@ -1564,7 +1564,7 @@ if ( ! class_exists( 'Jinyu_Subscribe_Widget' ) ) {
 
 		public function widget( $args, $instance ) {
 			$title = $instance['title'] ?? '';
-			$html  = function_exists( 'jinyu_subscribe_form_html' ) ? jinyu_subscribe_form_html( 'widget' ) : '';
+			$html  = (string) apply_filters( 'jinyu_subscribe_form_html', '', 'widget' );
 			if ( ! $html ) {
 				return;
 			}
