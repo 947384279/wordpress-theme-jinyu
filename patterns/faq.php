@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Title: 金玉 · 常见问答
  * Slug: jinyu/faq
@@ -40,4 +44,3 @@
 <p>可在主题支持论坛发帖，或通过站点联系方式联系我们。</p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
-

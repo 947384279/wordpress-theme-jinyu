@@ -497,7 +497,7 @@ class Jinyu_Categories_Widget extends WP_Widget {
 		$title = $instance['title'] ?? __( '<i class="fa-regular fa-folder-open"></i> 分类', 'jinyu' );
 		$hide  = $instance['hide_empty'] ?? 1;
 		echo '<p>' . esc_html__( '标题', 'jinyu' ) . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr( $title ) . "' class='widefat'></p>";
-		echo "<p><label><input type='checkbox' name='{$this->get_field_name('hide_empty')}' value='1'" . checked( $hide, 1, false ) . '> 隐藏空分类</label></p>';
+		echo "<p><label><input type='checkbox' name='{$this->get_field_name('hide_empty')}' value='1'" . checked( $hide, 1, false ) . '> ' . esc_html_e( '隐藏空分类', 'jinyu' ) . '</label></p>';
 	}
 	public function update( $new, $old ) {
 		return $new; }
@@ -1123,7 +1123,7 @@ class Jinyu_Hitokoto_Widget extends WP_Widget {
 		}
 		echo '</select></p>';
 		echo '<p>' . esc_html__( '语录（每行：内容|出处；出处可省。留空用内置语料库）', 'jinyu' ) . ':<br>';
-		echo "<textarea name='{$this->get_field_name('quotes')}' rows='6' class='widefat' placeholder='静水流深。|佚名'>" . esc_textarea( $quotes ) . '</textarea></p>';
+		echo '<textarea name="' . esc_attr( $this->get_field_name( 'quotes' ) ) . '" rows="6" class="widefat" placeholder="' . esc_attr__( '静水流深。|佚名', 'jinyu' ) . '">' . esc_textarea( $quotes ) . '</textarea></p>';
 	}
 
 	public function update( $new, $old ) {
@@ -1215,7 +1215,7 @@ if ( ! class_exists( 'Jinyu_Newcomers_Widget' ) ) {
 			$title  = $instance['title'] ?? __( '<i class="fa-solid fa-user-plus"></i> 最近加入', 'jinyu' );
 			$source = $instance['source'] ?? 'commenters';
 			$num    = max( 1, min( 20, (int) ( $instance['num'] ?? 5 ) ) );
-			$tpl    = $instance['tpl'] ?? '{name} 加入了网站';
+			$tpl    = $instance['tpl'] ?? esc_html__( '{name} 加入了网站', 'jinyu' );
 			echo $args['before_widget'];
 			echo $args['before_title'] . jinyu_widget_title( $title ) . $args['after_title'];
 
@@ -1291,7 +1291,7 @@ if ( ! class_exists( 'Jinyu_Newcomers_Widget' ) ) {
 			$title  = $instance['title'] ?? '';
 			$source = $instance['source'] ?? 'commenters';
 			$num    = (int) ( $instance['num'] ?? 5 );
-			$tpl    = $instance['tpl'] ?? '{name} 加入了网站';
+			$tpl    = $instance['tpl'] ?? esc_html__( '{name} 加入了网站', 'jinyu' );
 			?>
 			<p>
 				<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php esc_html_e( '标题', 'jinyu' ); ?></label>
@@ -1321,7 +1321,7 @@ if ( ! class_exists( 'Jinyu_Newcomers_Widget' ) ) {
 				'title'  => jinyu_widget_title( $new['title'] ?? '' ),
 				'source' => ( $new['source'] ?? 'commenters' ) === 'users' ? 'users' : 'commenters',
 				'num'    => max( 1, min( 20, (int) ( $new['num'] ?? 5 ) ) ),
-				'tpl'    => sanitize_text_field( $new['tpl'] ?? '{name} 加入了网站' ),
+				'tpl'    => sanitize_text_field( $new['tpl'] ?? esc_html__( '{name} 加入了网站', 'jinyu' ) ),
 			];
 		}
 	}
@@ -1621,4 +1621,4 @@ add_action(
 		register_widget( 'Jinyu_Subscribe_Widget' );
 	}
 );
-
+

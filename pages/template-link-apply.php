@@ -157,4 +157,3 @@ $jinyu_profile_rows = [
 </div>
 <?php
 get_footer();
-

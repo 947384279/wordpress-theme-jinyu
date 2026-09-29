@@ -538,4 +538,3 @@ if ( ! function_exists( 'jinyu_cms_four_grid_items' ) ) {
 		return count( $ava ) > 0 ? $ava : false;
 	}
 }
-

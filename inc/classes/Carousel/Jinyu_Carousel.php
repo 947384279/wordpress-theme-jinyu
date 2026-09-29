@@ -82,4 +82,3 @@ class Jinyu_Carousel {
 		return $slides;
 	}
 }
-

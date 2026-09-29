@@ -6,16 +6,60 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * 缓存层：对象缓存（同请求内）+ transient（跨请求）双层。
  *
- * 约定：所有 key 统一加 jinyu_ 前缀，便于按前缀批量清理。
+ * 约定：所有 key 统一加 jinyu_ 前缀（内部再拼版本号盐值，见 jinyu_cache_key），便于按前缀批量清理。
  */
 
 if ( ! defined( 'JINYU_CACHE_PREFIX' ) ) {
 	define( 'JINYU_CACHE_PREFIX', 'jinyu_' );
 }
 
+if ( ! defined( 'JINYU_CACHE_VERSION_KEY' ) ) {
+	define( 'JINYU_CACHE_VERSION_KEY', 'jinyu_cache_version' );
+}
+
+if ( ! function_exists( 'jinyu_cache_version' ) ) {
+	/**
+	 * 缓存版本号（盐值）。所有 jinyu_ 缓存 key 都拼它，bump 后旧 key 立即失效（读不到）。
+	 *
+	 * 存储于独立 WP option（不属于 'jinyu' 缓存组，故不受 jinyu_cache_flush 的 flush_group 影响）。
+	 * 这是绕开「Memcached 多数 drop-in 不实现 group 粒度 flush_group」缺陷的关键：无论外部缓存
+	 * 后端是否支持组清空，bump 版本号都能让前台瞬间切到新 key，使「设置保存 / 切换主题」这类全组
+	 * 失效即时生效，无需等待 TTL（旧方案下要等最长 12h 才显现新内容）。
+	 *
+	 * 默认返回 '1' 且不写库；仅在首次 jinyu_cache_flush（设置保存 / 切换主题）时才真正 bump。
+	 *
+	 * @return string
+	 */
+	function jinyu_cache_version(): string {
+		if ( isset( $GLOBALS['jinyu_cache_version'] ) ) {
+			return (string) $GLOBALS['jinyu_cache_version'];
+		}
+		$v = get_option( JINYU_CACHE_VERSION_KEY );
+		if ( false === $v || ! is_string( $v ) || '' === $v ) {
+			$v = '1';
+		}
+		$GLOBALS['jinyu_cache_version'] = $v;
+		return $v;
+	}
+}
+
+if ( ! function_exists( 'jinyu_cache_bump_version' ) ) {
+	/**
+	 * 升一级缓存版本号并持久化，使所有旧版本 key 立即失效（前台读不到了，待 TTL 自然过期）。
+	 *
+	 * @return string
+	 */
+	function jinyu_cache_bump_version(): string {
+		$v = (string) ( time() . '_' . wp_rand( 1, 999999 ) );
+		update_option( JINYU_CACHE_VERSION_KEY, $v );
+		$GLOBALS['jinyu_cache_version'] = $v;
+		return $v;
+	}
+}
+
 if ( ! function_exists( 'jinyu_cache_key' ) ) {
 	function jinyu_cache_key( string $key ): string {
-		return JINYU_CACHE_PREFIX . $key;
+		return JINYU_CACHE_PREFIX . jinyu_cache_version() . '_' . $key;
 	}
 }
 
@@ -111,14 +155,69 @@ if ( ! function_exists( 'jinyu_cache_flush' ) ) {
 			);
 		}
 
-		// 有外部对象缓存：transient 已不落库，必须直接刷 jinyu_ 缓存组，否则新内容要等 TTL 才显现（缓存陈旧穿透）。
+		// 有外部对象缓存：transient 已不落库，先尽力按组清（部分 drop-in 会退化为全清或不生效，无害）。
 		if ( function_exists( 'wp_cache_flush_group' ) ) {
 			wp_cache_flush_group( 'jinyu' );
 		}
 
+		// 关键修复：bump 缓存版本号。多数 Memcached / 部分 Redis drop-in 不实现 group 粒度清空，
+		// flush_group 会退化为全清或不生效，导致「设置保存 / 切换主题」后前台仍读旧数据直到 TTL。
+		// bump 后所有 key 带新版本号，旧 key 立即读不到（变孤儿、待 TTL 过期），使全组失效即时生效，
+		// 彻底绕开后端的 group flush 缺陷，且对 Redis / 无外部缓存两态同样正确。
+		jinyu_cache_bump_version();
+
 		return $count;
 	}
 }
+
+if ( ! function_exists( 'jinyu_cache_gc_orphans' ) ) {
+	/**
+	 * 清理缓存版本 bump 后遗留的孤儿 transient（旧版本 key）。
+	 *
+	 * bump 使旧版本 key 立即读不到（见 jinyu_cache_bump_version），但其行仍留在
+	 * options 表等待 TTL 自然过期；无外部对象缓存的站点（常见于虚拟主机）里，
+	 * TTL 最长 12h，期间白白占表。本函数一次 DELETE 回收所有非当前版本的
+	 * transient 及其 timeout 行。
+	 *
+	 * 有外部对象缓存时 transient 不落库，旧 key 由后端按 TTL 自行回收，无需处理。
+	 *
+	 * @return int 删除的行数（0 = 无孤儿或无需处理）
+	 */
+	function jinyu_cache_gc_orphans(): int {
+		if ( wp_using_ext_object_cache() ) {
+			return 0;
+		}
+		global $wpdb;
+		$v      = jinyu_cache_version();
+		$all_t  = $wpdb->esc_like( '_transient_' . JINYU_CACHE_PREFIX ) . '%';
+		$all_to = $wpdb->esc_like( '_transient_timeout_' . JINYU_CACHE_PREFIX ) . '%';
+		$cur_t  = $wpdb->esc_like( '_transient_' . JINYU_CACHE_PREFIX . $v . '_' ) . '%';
+		$cur_to = $wpdb->esc_like( '_transient_timeout_' . JINYU_CACHE_PREFIX . $v . '_' ) . '%';
+		return (int) $wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM {$wpdb->options}
+				 WHERE ( option_name LIKE %s OR option_name LIKE %s )
+				   AND option_name NOT LIKE %s
+				   AND option_name NOT LIKE %s",
+				$all_t,
+				$all_to,
+				$cur_t,
+				$cur_to
+			)
+		);
+	}
+}
+
+// 每日调度一次孤儿 transient 清理（幂等注册，重复调用不会重复排队）
+add_action(
+	'init',
+	function () {
+		if ( ! wp_next_scheduled( 'jinyu_cache_gc' ) ) {
+			wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', 'jinyu_cache_gc' );
+		}
+	}
+);
+add_action( 'jinyu_cache_gc', 'jinyu_cache_gc_orphans' );
 
 /*
 ==========================================================================
@@ -501,4 +600,3 @@ if ( is_admin() ) {
 		}
 	);
 }
-

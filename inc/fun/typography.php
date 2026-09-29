@@ -59,4 +59,3 @@ if ( ! function_exists( 'jinyu_cn_autospace' ) ) {
 
 add_filter( 'the_content', 'jinyu_cn_autospace', 20 );
 add_filter( 'comment_text', 'jinyu_cn_autospace', 20 );
-

@@ -60,4 +60,3 @@ if ( ! function_exists( 'jinyu_maintenance_mode' ) ) {
 		exit;
 	}
 }
-

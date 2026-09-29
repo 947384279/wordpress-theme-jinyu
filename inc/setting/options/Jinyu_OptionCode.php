@@ -61,4 +61,3 @@ class Jinyu_OptionCode extends Jinyu_BaseOptionItem {
 		];
 	}
 }
-

@@ -535,4 +535,3 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 	<?php endif; ?>
 	<?php
 endif;
-

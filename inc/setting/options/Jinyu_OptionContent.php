@@ -104,7 +104,7 @@ class Jinyu_OptionContent extends Jinyu_BaseOptionItem {
 					'sdt'   => 120,
 					'min'   => 20,
 					'max'   => 300,
-					'unit'  => '字',
+					'unit'  => __( '字', 'jinyu' ),
 					'desc'  => __( '列表/归档页自动摘要长度', 'jinyu' ),
 				],
 
@@ -183,7 +183,7 @@ class Jinyu_OptionContent extends Jinyu_BaseOptionItem {
 					'id'    => 'like_enable',
 					'title' => __( '点赞', 'jinyu' ),
 					'type'  => 'switch',
-					'sdt'   => false,
+					'sdt'   => true,
 				],
 				[
 					'id'    => 'fav_enable',
@@ -242,4 +242,4 @@ class Jinyu_OptionContent extends Jinyu_BaseOptionItem {
 		];
 	}
 }
-
+

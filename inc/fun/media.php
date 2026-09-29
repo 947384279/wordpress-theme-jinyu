@@ -660,4 +660,3 @@ if ( ! function_exists( 'jinyu_logo_image_size' ) ) {
 		return $size;
 	}
 }
-

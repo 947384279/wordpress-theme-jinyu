@@ -106,4 +106,3 @@ $stats = is_user_logged_in() ? jinyu_user_stats( $uid ) : [];
 </div>
 <?php
 get_footer();
-

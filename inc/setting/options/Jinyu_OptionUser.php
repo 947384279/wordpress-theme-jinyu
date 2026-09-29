@@ -120,19 +120,15 @@ class Jinyu_OptionUser extends Jinyu_BaseOptionItem {
 							'value' => 'loli',
 						],
 						[
-							'label' => __( '七牛云（国内）', 'jinyu' ),
-							'value' => 'qiniu',
-						],
-						[
 							'label' => __( 'WebP.se（国内）', 'jinyu' ),
 							'value' => 'webpse',
-						],
+					],
 						[
 							'label' => __( '首字母占位图', 'jinyu' ),
 							'value' => 'letter',
 						],
 					],
-					'desc'    => __( '国内源（Cravatar / WeAvatar / 七牛云 / WebP.se 等）兼容 Gravatar 协议、国内访问更快，评论与作者头像均生效；letter 模式不依赖任何头像服务器，离线也能显示', 'jinyu' ),
+					'desc'    => __( '国内源（Cravatar / WeAvatar / V2EX / Loli / WebP.se 等）兼容 Gravatar 协议、国内访问更快，评论与作者头像均生效；letter 模式不依赖任何头像服务器，离线也能显示', 'jinyu' ),
 				],
 
 				[
@@ -149,4 +145,4 @@ class Jinyu_OptionUser extends Jinyu_BaseOptionItem {
 		];
 	}
 }
-
+

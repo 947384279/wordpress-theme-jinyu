@@ -48,4 +48,3 @@ abstract class Jinyu_BaseOptionItem {
 		return $list;
 	}
 }
-

@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Title: 金玉 · 图文横排
  * Slug: jinyu/image-text
@@ -26,4 +30,3 @@
 <!-- /wp:button --></div>
 <!-- /wp:buttons --></div></div>
 <!-- /wp:media-text -->
-

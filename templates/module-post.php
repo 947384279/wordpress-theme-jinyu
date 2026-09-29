@@ -100,4 +100,3 @@ $card_class = is_sticky() ? ' is-sticky' : '';
 	</div>
 
 </article>
-

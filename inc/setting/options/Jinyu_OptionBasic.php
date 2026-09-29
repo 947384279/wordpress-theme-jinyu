@@ -60,7 +60,7 @@ class Jinyu_OptionBasic extends Jinyu_BaseOptionItem {
 					'id'    => 'single_copyright',
 					'title' => __( '文末版权声明', 'jinyu' ),
 					'type'  => 'textarea',
-					'sdt'   => "本文链接：{url}\n转载请注明出处：{title}（作者：{author}）",
+					'sdt'   => __( "本文链接：{url}\n转载请注明出处：{title}（作者：{author}）", 'jinyu' ),
 					'desc'  => __( '留空则使用默认声明。支持占位符：{url} 文章链接、{title} 标题、{author} 作者、{date} 日期；支持简单 HTML（如链接）', 'jinyu' ),
 					'html'  => true,
 				],
@@ -94,4 +94,4 @@ class Jinyu_OptionBasic extends Jinyu_BaseOptionItem {
 		];
 	}
 }
-
+

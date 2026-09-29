@@ -319,7 +319,6 @@ function jinyu_avatar_mirror_map(): array {
 		'weavatar' => 'https://weavatar.com/avatar/',
 		'v2ex'     => 'https://cdn.v2ex.com/gravatar/',
 		'loli'     => 'https://gravatar.loli.net/avatar/',
-		'qiniu'    => 'https://dn-qiniu-avatar.qbox.me/avatar/',
 		'webpse'   => 'https://gravatar.webp.se/avatar/',
 	];
 }
@@ -807,4 +806,3 @@ if ( ! function_exists( 'jinyu_post_status_label' ) ) {
 function jinyu_submit_rate_limited( int $uid ): bool {
 	return (bool) get_transient( 'jy_submit_' . $uid );
 }
-

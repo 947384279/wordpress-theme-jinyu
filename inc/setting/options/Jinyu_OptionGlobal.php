@@ -142,15 +142,15 @@ class Jinyu_OptionGlobal extends Jinyu_BaseOptionItem {
 					'desc'    => __( '作用于全站文章列表网格，有侧边栏时建议 2 列', 'jinyu' ),
 					'options' => [
 						[
-							'label' => '2 列',
+							'label' => __( '2 列', 'jinyu' ),
 							'value' => '2',
 						],
 						[
-							'label' => '3 列',
+							'label' => __( '3 列', 'jinyu' ),
 							'value' => '3',
 						],
 						[
-							'label' => '4 列',
+							'label' => __( '4 列', 'jinyu' ),
 							'value' => '4',
 						],
 					],
@@ -198,4 +198,4 @@ class Jinyu_OptionGlobal extends Jinyu_BaseOptionItem {
 		];
 	}
 }
-
+

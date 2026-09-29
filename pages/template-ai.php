@@ -28,8 +28,8 @@ get_header();
 			</div>
 		</div>
 		<div class="jinyu-ai-input-area">
-			<textarea id="jyAiInput" rows="3" placeholder="输入问题，Enter 发送，Shift+Enter 换行..."></textarea>
-			<button id="jyAiSend" class="jinyu-ai-send">发送</button>
+			<textarea id="jyAiInput" rows="3" placeholder="<?php echo esc_attr__( '输入问题，Enter 发送，Shift+Enter 换行...', 'jinyu' ); ?>"></textarea>
+			<button id="jyAiSend" class="jinyu-ai-send"><?php esc_html_e( '发送', 'jinyu' ); ?></button>
 		</div>
 	</main>
 </div>

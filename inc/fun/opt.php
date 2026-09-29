@@ -178,4 +178,3 @@ function jinyu_save_options( array $data ): bool {
 	$data = array_merge( $current, $data );
 	return update_option( JINYU_OPT, $data );
 }
-

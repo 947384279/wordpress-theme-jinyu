@@ -55,4 +55,3 @@ if ( '' === $cc ) {
 	<i class="fa-regular fa-copyright" aria-hidden="true"></i>
 	<p class="jinyu-copyright-text"><?php echo wp_kses_post( $cc ); ?></p>
 </div>
-

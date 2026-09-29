@@ -232,4 +232,3 @@ add_filter(
 		return $show;
 	}
 );
-

@@ -18,4 +18,3 @@ if ( ! jinyu_is_checked( 'author_box_enable' ) ) {
 	return;
 }
 echo jinyu_author_box();
-

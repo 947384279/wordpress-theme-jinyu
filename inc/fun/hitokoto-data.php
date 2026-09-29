@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * 金玉·每日一句 语料库加载与供给层。
  *
@@ -126,4 +130,3 @@ if ( ! function_exists( 'jinyu_hitokoto_cat_label' ) ) {
 		return $labels[ $key ] ?? $key;
 	}
 }
-

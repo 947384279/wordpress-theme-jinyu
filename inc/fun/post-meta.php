@@ -563,4 +563,3 @@ function jinyu_auto_increment_views() {
 		}
 	}
 }
-

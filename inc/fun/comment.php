@@ -107,19 +107,41 @@ if ( ! function_exists( 'jinyu_recent_comments_list' ) ) {
 			);
 			jinyu_cache_set( $cache_key, $comments, 3 * MINUTE_IN_SECONDS );
 		}
-		if ( ! $comments ) {
-			return '';
-		}
+	if ( ! $comments ) {
+		return '';
+	}
 
-		$out = '<ul class="jinyu-rc-list">';
+	// 批量预取父评论，避免循环内逐条 get_comment 触发的 N+1：把 N 条回复型评论的父查询合并为 1 次 comment__in。
+	$jc_parent_ids = [];
+	foreach ( $comments as $jc_c ) {
+		$pid = (int) $jc_c->comment_parent;
+		if ( $pid > 0 ) {
+			$jc_parent_ids[] = $pid;
+		}
+	}
+	$jc_parents = [];
+	if ( ! empty( $jc_parent_ids ) ) {
+		$jc_pc = get_comments(
+			[
+				'comment__in'   => array_unique( $jc_parent_ids ),
+				'status'        => 'all', // 与原 get_comment() 一致：不过滤状态，按 ID 直取
+				'no_found_rows' => true,
+			]
+		);
+		foreach ( $jc_pc as $jc_p ) {
+			$jc_parents[ (int) $jc_p->comment_ID ] = $jc_p;
+		}
+	}
+
+	$out = '<ul class="jinyu-rc-list">';
 		foreach ( $comments as $jc_com ) {
 			$link = get_comment_link( $jc_com );
 
-			// 回复型评论标出「回复了谁」，让上下文一眼可读.
-			$reply = '';
-			if ( (int) $jc_com->comment_parent ) {
-				$jc_parent = get_comment( $jc_com->comment_parent );
-				if ( $jc_parent && $jc_parent->comment_author !== '' ) {
+		// 回复型评论标出「回复了谁」，让上下文一眼可读.
+		$reply = '';
+		if ( (int) $jc_com->comment_parent ) {
+			$jc_parent = $jc_parents[ (int) $jc_com->comment_parent ] ?? null;
+			if ( $jc_parent && $jc_parent->comment_author !== '' ) {
 					$reply = '<span class="jinyu-rc-reply">'
 						. sprintf( esc_html__( '回复了 %s：', 'jinyu' ), esc_html( $jc_parent->comment_author ) )
 						. '</span>';

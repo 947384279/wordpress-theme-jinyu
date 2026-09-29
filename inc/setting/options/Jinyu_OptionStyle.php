@@ -80,7 +80,7 @@ class Jinyu_OptionStyle extends Jinyu_BaseOptionItem {
 					'id'    => 'hide_admin_bar',
 					'title' => __( '屏蔽前台 Admin Bar', 'jinyu' ),
 					'type'  => 'switch',
-					'sdt'   => true,
+					'sdt'   => false,
 				],
 				[
 					'id'    => 'cn_autospace',
@@ -165,4 +165,3 @@ class Jinyu_OptionStyle extends Jinyu_BaseOptionItem {
 		];
 	}
 }
-

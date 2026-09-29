@@ -104,4 +104,3 @@ class Jinyu_OptionEmail extends Jinyu_BaseOptionItem {
 		];
 	}
 }
-

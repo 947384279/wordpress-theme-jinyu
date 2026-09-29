@@ -60,7 +60,22 @@
             "core/button": { "border": { "radius": true } },
             "core/quote": { "border": { "color": true, "style": true, "width": true } },
             "core/post-title": { "typography": { "lineHeight": true } }
-        }
+        },
+        "customTemplates": [
+            { "name": "pages/template-about", "title": "关于", "postTypes": [ "page" ] },
+            { "name": "pages/template-ai", "title": "AI 对话", "postTypes": [ "page" ] },
+            { "name": "pages/template-archives", "title": "文章归档", "postTypes": [ "page" ] },
+            { "name": "pages/template-book", "title": "书单/推荐阅读", "postTypes": [ "page" ] },
+            { "name": "pages/template-fullwidth", "title": "全宽页面", "postTypes": [ "page" ] },
+            { "name": "pages/template-link-apply", "title": "申请友链", "postTypes": [ "page" ] },
+            { "name": "pages/template-links", "title": "友情链接", "postTypes": [ "page" ] },
+            { "name": "pages/template-luck", "title": "手气不错", "postTypes": [ "page" ] },
+            { "name": "pages/template-moments", "title": "说说/动态", "postTypes": [ "page" ] },
+            { "name": "pages/template-random", "title": "随机文章", "postTypes": [ "page" ] },
+            { "name": "pages/template-sitemap", "title": "站点地图", "postTypes": [ "page" ] },
+            { "name": "pages/template-tags", "title": "标签大全", "postTypes": [ "page" ] },
+            { "name": "pages/template-user", "title": "用户中心", "postTypes": [ "page" ] }
+        ]
     },
     "styles": {}
 }

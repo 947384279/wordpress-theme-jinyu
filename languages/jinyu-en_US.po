@@ -3763,3 +3763,15 @@ msgstr ""
 # inc/setting/Jinyu_Setting.php:294
 msgid "；%d 个加密字段（API Key / 密码等）无法跨站解密，已跳过，请重新填写"
 msgstr ""
+
+# footer.php:103
+msgid "次"
+msgstr "times"
+
+# footer.php:107
+msgid "渲染"
+msgstr "Render"
+
+# pages/template-ai.php:32
+msgid "发送"
+msgstr "Send"

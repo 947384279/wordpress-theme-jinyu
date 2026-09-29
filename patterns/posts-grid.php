@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Title: 金玉 · 精选文章三栏
  * Slug: jinyu/posts-grid
@@ -26,4 +30,3 @@
 <!-- /wp:paragraph -->
 <!-- /wp:query-no-results --></div>
 <!-- /wp:query -->
-

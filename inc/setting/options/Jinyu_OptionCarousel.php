@@ -186,4 +186,3 @@ class Jinyu_OptionCarousel extends Jinyu_BaseOptionItem {
 		];
 	}
 }
-

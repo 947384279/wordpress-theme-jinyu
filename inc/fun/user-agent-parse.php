@@ -171,4 +171,3 @@ if ( ! function_exists( 'jinyu_ua_icon' ) ) {
 		return $cache;
 	}
 }
-

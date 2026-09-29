@@ -12,6 +12,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/*
+Template Name: 全宽页面
+*/
 get_header();
 ?>
 <div class="jinyu-container jinyu-main-wrap">
@@ -36,4 +39,3 @@ endif;
 </div>
 <?php
 get_footer();
-

@@ -70,7 +70,7 @@ class Jinyu_OptionFooter extends Jinyu_BaseOptionItem {
 					'id'    => 'flink_apply_notify',
 					'title' => __( '新申请邮件通知', 'jinyu' ),
 					'type'  => 'switch',
-					'sdt'   => 1,
+					'sdt'   => 0,
 					'desc'  => __( '有人提交友链申请时发一封邮件到站长邮箱（依赖站点发信配置）', 'jinyu' ),
 				],
 				[
@@ -124,4 +124,3 @@ class Jinyu_OptionFooter extends Jinyu_BaseOptionItem {
 		];
 	}
 }
-

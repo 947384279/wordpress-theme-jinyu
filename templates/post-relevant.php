@@ -42,4 +42,3 @@ if ( jinyu_is_checked( 'related_enable' ) ) {
 		}
 	}
 }
-

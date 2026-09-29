@@ -70,4 +70,3 @@ function jinyu_ajax_comment() {
 		]
 	);
 }
-

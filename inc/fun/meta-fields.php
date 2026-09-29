@@ -86,4 +86,3 @@ add_action(
 		update_post_meta( $post_id, '_jinyu_hide_cover', isset( $_POST['jinyu_hide_cover'] ) ? 1 : 0 );
 	}
 );
-

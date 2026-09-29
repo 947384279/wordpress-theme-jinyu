@@ -37,7 +37,7 @@ class Jinyu_OptionComment extends Jinyu_BaseOptionItem {
 					'id'    => 'comment_pages_enable',
 					'title' => __( '评论分页', 'jinyu' ),
 					'type'  => 'switch',
-					'sdt'   => false,
+					'sdt'   => true,
 					'desc'  => __( '评论较多时分页展示，避免单页过长', 'jinyu' ),
 				],
 				[
@@ -52,7 +52,7 @@ class Jinyu_OptionComment extends Jinyu_BaseOptionItem {
 					'id'    => 'close_comments_old',
 					'title' => __( '旧文章自动关评', 'jinyu' ),
 					'type'  => 'switch',
-					'sdt'   => true,
+					'sdt'   => false,
 					'desc'  => __( '超过指定天数的文章自动关闭评论', 'jinyu' ),
 				],
 				[
@@ -88,4 +88,3 @@ class Jinyu_OptionComment extends Jinyu_BaseOptionItem {
 		];
 	}
 }
-

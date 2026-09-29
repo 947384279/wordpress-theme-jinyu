@@ -1,6 +1,6 @@
 === Jinyu ===
 Contributors: huanxiang88
-Tags: blog, cms, responsive, dark-mode, custom-colors, custom-logo, custom-menu, editor-style, featured-images, microformats, post-formats, rtl-language-support, sticky-post, threaded-comments, translation-ready, two-columns, three-columns, block-styles, wide-blocks, full-width-template
+Tags: blog, custom-colors, custom-logo, custom-menu, editor-style, featured-images, microformats, post-formats, rtl-language-support, sticky-post, threaded-comments, translation-ready, two-columns, three-columns, block-styles, wide-blocks, full-width-template, custom-background, theme-options
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0

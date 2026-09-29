@@ -78,4 +78,3 @@ $faved = in_array( $pid, jinyu_get_user_favs(), true );
 		<?php endif; ?>
 
 </div>
-

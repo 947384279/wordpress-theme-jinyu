@@ -774,4 +774,3 @@ class Jinyu_Setting {
 		return $missing;
 	}
 }
-

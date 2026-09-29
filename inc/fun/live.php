@@ -391,7 +391,15 @@ if ( ! function_exists( 'jinyu_live_time' ) ) {
 	 */
 	function jinyu_live_time(): array {
 		$local = current_time( 'timestamp' );           // 站点本地「伪 UTC」纪元.
-		$week  = [ '星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六' ];
+		$week  = [
+			__( '星期日', 'jinyu' ),
+			__( '星期一', 'jinyu' ),
+			__( '星期二', 'jinyu' ),
+			__( '星期三', 'jinyu' ),
+			__( '星期四', 'jinyu' ),
+			__( '星期五', 'jinyu' ),
+			__( '星期六', 'jinyu' ),
+		];
 
 		return [
 			'ts'   => time(),

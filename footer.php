@@ -100,11 +100,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 		<?php if ( jinyu_get_option( 'footer_runinfo', 0 ) ) : ?>
 		<div class="jinyu-footer-runinfo" data-jinyu-live="runinfo" hidden>
-		<span class="jinyu-runinfo-item">查询 <b data-ri="q">—</b> 次</span>
+		<span class="jinyu-runinfo-item"><?php esc_html_e( '查询', 'jinyu' ); ?> <b data-ri="q">—</b> <?php esc_html_e( '次', 'jinyu' ); ?></span>
 		<span class="jinyu-runinfo-sep">·</span>
-		<span class="jinyu-runinfo-item">内存 <b data-ri="mem">—</b> MB</span>
+		<span class="jinyu-runinfo-item"><?php esc_html_e( '内存', 'jinyu' ); ?> <b data-ri="mem">—</b> <?php esc_html_e( 'MB', 'jinyu' ); ?></span>
 		<span class="jinyu-runinfo-sep">·</span>
-		<span class="jinyu-runinfo-item">渲染 <b data-ri="ms">—</b> 秒</span>
+		<span class="jinyu-runinfo-item"><?php esc_html_e( '渲染', 'jinyu' ); ?> <b data-ri="ms">—</b> <?php esc_html_e( '秒', 'jinyu' ); ?></span>
 		</div>
 		<?php endif; ?>
 	</div>

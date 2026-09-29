@@ -112,4 +112,3 @@ echo wp_json_encode( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEs
 ?>
 ;
 </script>
-

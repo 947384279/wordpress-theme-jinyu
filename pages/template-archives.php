@@ -64,4 +64,3 @@ endforeach;
 </div>
 <?php
 get_footer();
-
