@@ -64,9 +64,10 @@ $stats = is_user_logged_in() ? jinyu_user_stats( $uid ) : [];
 			<nav class="jinyu-user-nav">
 			<?php
 			foreach ( $tabs as $slug => $t ) :
-				$jinyu_notif_extra = 'notifications' === $slug ? ' jinyu-user-notif-link' : '';
-				?>
-				<a class="jinyu-user-nav-item<?php echo $tab === $slug ? ' is-active' : ''; ?><?php echo esc_attr( $jinyu_notif_extra ); ?>"
+			$jinyu_notif_extra = 'notifications' === $slug ? ' jinyu-user-notif-link' : '';
+			$jinyu_nav_cls     = 'jinyu-user-nav-item' . ( $tab === $slug ? ' is-active' : '' ) . $jinyu_notif_extra;
+			?>
+			<a class="<?php echo esc_attr( $jinyu_nav_cls ); ?>"
 				href="<?php echo esc_url( add_query_arg( 'tab', $slug ) ); ?>">
 				<i class="<?php echo esc_attr( $t['icon'] ); ?>" aria-hidden="true"></i>
 				<span><?php echo esc_html( $t['label'] ); ?></span>

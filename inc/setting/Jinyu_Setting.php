@@ -48,7 +48,11 @@ class Jinyu_Setting {
 	 * 所有设置分组类名（顺序即后台导航顺序）。collect_groups / sdt_defaults / field_schema 共用同一份清单。
 	 */
 	public static function option_classes(): array {
-		return [ 'Jinyu_OptionBasic', 'Jinyu_OptionGlobal', 'Jinyu_OptionStyle', 'Jinyu_OptionContent', 'Jinyu_OptionComment', 'Jinyu_OptionCarousel', 'Jinyu_OptionExtend', 'Jinyu_OptionUser', 'Jinyu_OptionFooter', 'Jinyu_OptionCode' ];
+		// 清单抽到 option-classes.php（与 Customizer 适配层共用；w.org 变体不加载本类）。
+		if ( ! function_exists( 'jinyu_option_classes' ) ) {
+			require_once __DIR__ . '/option-classes.php';
+		}
+		return jinyu_option_classes();
 	}
 
 	/**

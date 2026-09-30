@@ -452,10 +452,7 @@ class Jinyu_Search_Widget extends WP_Widget {
 		$title = $instance['title'] ?? __( '<i class="fa-solid fa-magnifying-glass"></i> 搜索', 'jinyu' );
 		echo $args['before_widget'];
 		echo $args['before_title'] . jinyu_widget_title( $title ) . $args['after_title'];
-		echo '<form class="jinyu-search-widget" role="search" method="get" action="' . esc_url( home_url( '/' ) ) . '">';
-		echo '<input type="search" name="s" placeholder="' . esc_attr__( '搜索…', 'jinyu' ) . '" aria-label="' . esc_attr__( '搜索', 'jinyu' ) . '">';
-		echo '<button type="submit" aria-label="' . esc_attr__( '搜索', 'jinyu' ) . '"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>';
-		echo '</form>';
+		get_search_form();
 		echo $args['after_widget'];
 	}
 	public function form( $instance ) {
@@ -685,14 +682,16 @@ class Jinyu_Menu_Widget extends WP_Widget {
 		if ( $title ) {
 			echo $args['before_title'] . jinyu_widget_title( $title ) . $args['after_title'];
 		}
-		$jinyu_menu_args         = [
-			'container'   => false,
-			'menu_class'  => 'jinyu-menu-widget',
-			'depth'       => 1,
-			'fallback_cb' => false,
-		];
-		$jinyu_menu_args['menu'] = $menu;
-		wp_nav_menu( $jinyu_menu_args );
+		wp_nav_menu(
+			[
+				'theme_location' => 'primary',
+				'container'      => false,
+				'menu_class'     => 'jinyu-menu-widget',
+				'depth'          => 1,
+				'fallback_cb'    => false,
+				'menu'           => $menu,
+			]
+		);
 		echo $args['after_widget'];
 	}
 	public function form( $instance ) {

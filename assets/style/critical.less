@@ -113,6 +113,8 @@ body.jinyu-no-nav-blur .jinyu-header {
 }
 body.admin-bar .jinyu-header { top: 32px; }
 @media (max-width: 782px) { body.admin-bar .jinyu-header { top: 46px; } }
+/* ≤600px 管理栏随页滚走：头部贴顶即可（核心的 html{margin-top} 已为未滚动态让位，勿再补 padding） */
+@media (max-width: 600px) { body.admin-bar .jinyu-header { top: 0; } }
 
 .jinyu-header-inner { display: flex; align-items: center; flex-wrap: nowrap; min-height: 64px; gap: @s-6; min-width: 0; }
 
@@ -341,6 +343,9 @@ html[data-theme="dark"] .jinyu-logo--dual .jinyu-logo-dark { display: block; }
     body.admin-bar { --jinyu-ab-h: 32px; }
     @media (max-width: 782px) {
         body.admin-bar { --jinyu-ab-h: 46px; }
+    }
+    @media (max-width: 600px) {
+        body.admin-bar { --jinyu-ab-h: 0px; }
     }
     @media (max-width: 768px) {
         :root { --jinyu-head-h: 59px; }

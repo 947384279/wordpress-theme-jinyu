@@ -218,6 +218,15 @@ body.admin-bar .jinyu-header { top: 32px; }
     body.admin-bar .jinyu-header { top: 46px; }
 }
 
+/* ≤600px：WP 核心把 #wpadminbar 从 fixed 降级为 absolute（随页面滚走），头部若照旧按 46px 吸顶，
+   管理栏离开后就会悬空一条 46px 的缝。改为「头部贴顶」即可：核心本身会为显示中的管理栏输出
+   `html { margin-top: 46px }`（_admin_bar_bump_cb），未滚动时头部自然落在管理栏正下方；
+   滚过 46px 后管理栏随页离开、头部正好贴顶——全程无缝也不重叠，无需再给 body 补 padding（会双重偏移）。
+   刻意不写 #wpadminbar 选择器——主题不应干预管理栏自身的显示（Theme Check 亦会就此告警）。 */
+@media (max-width: 600px) {
+    body.admin-bar .jinyu-header { top: 0; }
+}
+
 .jinyu-header-inner {
     display: flex;
     align-items: center;
@@ -3867,6 +3876,10 @@ html.jinyu-tools-compact {
     body.admin-bar { --jinyu-ab-h: 32px; }
     @media (max-width: 782px) {
         body.admin-bar { --jinyu-ab-h: 46px; }
+    }
+    /* ≤600px 管理栏是 absolute、会随页滚走，所有「头部高度 + 管理栏高度」的定位都按 0 算 */
+    @media (max-width: 600px) {
+        body.admin-bar { --jinyu-ab-h: 0px; }
     }
     @media (max-width: 768px) {
         :root { --jinyu-head-h: 59px; }

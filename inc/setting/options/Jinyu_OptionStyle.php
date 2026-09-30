@@ -77,12 +77,6 @@ class Jinyu_OptionStyle extends Jinyu_BaseOptionItem {
 					],
 				],
 				[
-					'id'    => 'hide_admin_bar',
-					'title' => __( '屏蔽前台 Admin Bar', 'jinyu' ),
-					'type'  => 'switch',
-					'sdt'   => false,
-				],
-				[
 					'id'    => 'cn_autospace',
 					'title' => __( '中英文自动加空格', 'jinyu' ),
 					'type'  => 'switch',

@@ -17,6 +17,24 @@ if ( ! defined( 'JINYU_CUR_VER' ) ) {
 }
 const JINYU_OPT = 'jinyu_options';
 
+// w.org 专用发行变体标志。仅由 `gulp build:wporg` 生成的发行包内存在此文件；
+// 日常源码与自托管/GitHub/Gitee 版无此文件，故恒为 false（保留独立设置页与代码注入）。
+if ( file_exists( JINYU_ABS_DIR . '/inc/jinyu-wporg.php' ) ) {
+	require_once JINYU_ABS_DIR . '/inc/jinyu-wporg.php';
+}
+
+if ( ! function_exists( 'jinyu_is_wporg' ) ) {
+	/**
+	 * 是否为 w.org 专用发行变体。
+	 * 自托管版恒为 false；仅 gulp build:wporg 产物置 true（剔除独立设置页与任意代码注入）。
+	 *
+	 * @return bool
+	 */
+	function jinyu_is_wporg(): bool {
+		return defined( 'JINYU_WPORG' ) && JINYU_WPORG;
+	}
+}
+
 /**
  * 垃圾评论关键词内置库（出厂默认，英文逗号分隔）。
  * 作为后台「垃圾评论关键词」文本框的默认值与运行期回退值的单一事实来源。
@@ -345,7 +363,11 @@ function jinyu_perf_opt( string $key, bool $default = false ): bool {
 	}
 	return ! empty( $opts[ $key ] );
 }
-if ( is_admin() ) {
+// Customizer 注册必须在「后台」与「前台实时预览」两侧同时进行。
+// Customizer 打开时，前台预览页会回传 activePanels/activeSections/activeControls，
+// 后台 JS 据此激活对应构造；预览页未注册的构造会被判定为「已移除」并自动隐藏
+// （表现为：点击「金玉主题设置」面板后整块消失）。故这里必须带上 is_customize_preview()。
+if ( is_admin() || is_customize_preview() ) {
 	require_once JINYU_ABS_DIR . '/inc/setting/index.php';
 }
 
@@ -770,6 +792,9 @@ add_action(
 add_action(
 	'wp_head',
 	function () {
+		if ( \jinyu_is_wporg() ) {
+			return;
+		}
 		$css = trim( (string) jinyu_get_option( 'css_code_head', '' ) );
 		$js  = trim( (string) jinyu_get_option( 'js_code_head', '' ) );
 		if ( $css ) {
@@ -785,6 +810,9 @@ add_action(
 add_action(
 	'wp_footer',
 	function () {
+		if ( \jinyu_is_wporg() ) {
+			return;
+		}
 		$css = trim( (string) jinyu_get_option( 'css_code_foot', '' ) );
 		$js  = trim( (string) jinyu_get_option( 'js_code_foot', '' ) );
 		if ( $css ) {

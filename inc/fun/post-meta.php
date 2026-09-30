@@ -539,27 +539,8 @@ if ( ! function_exists( 'jinyu_show_views' ) ) {
 	}
 }
 
-add_action( 'wp_head', 'jinyu_auto_increment_views' );
-function jinyu_auto_increment_views() {
-	if ( is_single() && ! is_admin() ) {
-		global $post;
-		if ( ! $post ) {
-			return;
-		}
-		$pid = $post->ID;
-		// 冷却秒数：后台「全局设置 › 同一 IP 浏览量冷却秒数」
-		// 按 IP + 文章做瞬时冷却，同一 IP 在冷却期内重复刷新不重复计数（防狂刷）
-		$wait = max( 1, (int) jinyu_get_option( 'views_wait_seconds', 10 ) );
-		$key  = 'jinyu_vw_' . md5( jinyu_client_ip() . '|' . $pid );
-		if ( ! get_transient( $key ) ) {
-			set_transient( $key, 1, $wait );
-			add_action(
-				'shutdown',
-				function () use ( $pid ) {
-					$count = (int) get_post_meta( $pid, 'jinyu_views', true );
-					update_post_meta( $pid, 'jinyu_views', $count + 1 );
-				}
-			);
-		}
-	}
-}
+/**
+ * 浏览量自增（写入 post meta）已迁至配套插件 jinyu-theme-companion
+ * （inc/fun/theme-compat.php 的 jinyu_companion_auto_increment_views，挂在 wp_head）。
+ * 主题仅保留读取壳 jinyu_get_post_views()，不再承担数据采集写入。
+ */

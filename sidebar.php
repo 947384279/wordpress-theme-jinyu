@@ -114,12 +114,7 @@ if ( jinyu_get_option( 'sidebar_pos', 'right' ) === 'none' ) {
 		<!-- 搜索 -->
 		<section class="jinyu-widget">
 			<h3 class="jinyu-widget-title"><i class="fa-solid fa-magnifying-glass"></i> <?php esc_html_e( '搜索', 'jinyu' ); ?></h3>
-			<form class="jinyu-search-box" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>" role="search">
-				<input type="search" name="s" placeholder="<?php esc_attr_e( '输入关键词', 'jinyu' ); ?>" aria-label="<?php esc_attr_e( '搜索', 'jinyu' ); ?>">
-				<button type="submit" aria-label="<?php esc_attr_e( '搜索', 'jinyu' ); ?>">
-					<i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-				</button>
-			</form>
+			<?php get_search_form(); ?>
 		</section>
 
 	<?php endif; ?>

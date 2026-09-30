@@ -110,7 +110,7 @@ if ( ! function_exists( 'jinyu_hitokoto_categories' ) ) {
 		$packs = jinyu_hitokoto_load_packs();
 		$map   = [ 'all' => __( '全部', 'jinyu' ) ];
 		foreach ( $packs as $key => $rows ) {
-			$map[ $key ] = __( jinyu_hitokoto_cat_label( $key ), 'jinyu' );
+			$map[ $key ] = jinyu_hitokoto_cat_label( $key );
 		}
 		return $map;
 	}

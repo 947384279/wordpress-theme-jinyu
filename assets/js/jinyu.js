@@ -251,6 +251,22 @@
         var headerPadRight = '';
         var header = document.querySelector('.jinyu-header');
 
+        /* 开菜单时头部会被强制 fixed（见 common.less ≤1240 段），其 top 取 --jinyu-ab-h。
+           窄屏下 WP 把管理栏降级为 absolute：页面滚过它之后就随页离开（此时该按 0 让位），
+           但在页面顶部开菜单时它仍压在最上面（此时又必须让出 46px）。静态 CSS 表达不了这种
+           「随滚动变化」的让位，故在开菜单这一刻按管理栏的真实底边校正，滚过它时自然归零。
+           仅窄屏且确实有管理栏时才写，避免污染宽屏的 sticky 偏移。 */
+        function syncNavAdminBarOffset() {
+            if (!header || mqDesktop.matches || !doc.body.classList.contains('admin-bar')) return;
+            var bar = doc.getElementById('wpadminbar');
+            if (!bar) return;
+            var bottom = Math.max(0, Math.round(bar.getBoundingClientRect().bottom));
+            header.style.setProperty('--jinyu-ab-h', bottom + 'px');
+        }
+        function resetNavAdminBarOffset() {
+            if (header) header.style.removeProperty('--jinyu-ab-h');
+        }
+
         /* ---------- 子菜单：注入展开按钮 + 手风琴 ---------- */
         $$('li', panel).forEach(function (li) {
             var sub = li.querySelector(':scope > ul');
@@ -316,6 +332,7 @@
             toggle.setAttribute('aria-label', labelClose);
             lockScroll();
             doc.body.classList.add('jinyu-nav-opened');
+            syncNavAdminBarOffset();
             // 焦点交给面板本身：读屏能进入对话框，也不会像聚焦首个链接那样画出一圈描边
             panel.focus({ preventScroll: true });
         }
@@ -331,6 +348,7 @@
             toggle.setAttribute('aria-label', labelOpen);
             unlockScroll();
             doc.body.classList.remove('jinyu-nav-opened');
+            resetNavAdminBarOffset();
             if (returnFocus !== false) toggle.focus({ preventScroll: true });
         }
 

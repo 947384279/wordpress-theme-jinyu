@@ -41,6 +41,9 @@ Thumbs.db
 config.local.php
 
 # 发布与调试过程中间产物（非项目源）
+# w.org 发行变体构建产物（单真源策略：源码始终保留设置页，此目录为生成物）
+/dist-wporg/
+/release/
 jinyu-theme-intro.html
 jinyu-theme-post.html
 jinyu-intro-assets/

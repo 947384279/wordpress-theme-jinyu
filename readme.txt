@@ -1,5 +1,5 @@
 === Jinyu ===
-Contributors: huanxiang88
+Contributors: jinyu888
 Tags: blog, custom-colors, custom-logo, custom-menu, editor-style, featured-images, microformats, post-formats, rtl-language-support, sticky-post, threaded-comments, translation-ready, two-columns, three-columns, block-styles, wide-blocks, full-width-template, custom-background, theme-options
 Requires at least: 6.0
 Tested up to: 7.1
@@ -29,9 +29,16 @@ License URI: https://www.gnu.org/licenses/gpl-3.0.html
 * Font Awesome Free 6：图标采用 CC BY 4.0 许可（https://creativecommons.org/licenses/by/4.0/）；
   字体采用 SIL OFL 1.1 许可（https://opensource.org/licenses/OFL-1.1）；代码采用 MIT 许可。
   商标声明：Font Awesome 为 Dave Gandy 的商标，本主题仅按其开源许可使用，与商标持有人无隶属关系。
-* 首页轮播为主题自研实现（零第三方依赖、零外部请求），无第三方代码与许可义务。
+* Highlight.js 11.9.0（`assets/js/vendor/highlight.js`，代码高亮）——BSD-3-Clause 许可，
+  https://github.com/highlightjs/highlight.js/blob/main/LICENSE ，版权归 Highlight.js 贡献者所有；
+  随附的 GitHub 配色（`assets/css/vendor/highlight.css`）属同一项目、同一许可。
+* Viewer.js 1.11.7（`assets/js/vendor/viewer.js`，正文图片查看器）——MIT 许可，
+  https://github.com/fengyuanchen/viewerjs/blob/main/LICENSE ，版权归 Chen Fengyuan 所有。
+* QRCode.js（`assets/js/vendor/qrcode.js`，分享二维码）——MIT 许可，
+  https://github.com/davidshimjs/qrcodejs ，版权归 Kazuhiko Arase / davidshimjs 所有。
 
-高颜值自适应 WordPress 主题，自研架构全新编写。支持后台可视化配置、暗色模式、多种布局、短代码、评论邮件通知、点赞与无限加载。
+以上资源均以未压缩源码 + 压缩版成对提供，可直接阅读与核对；许可均为 GPL 兼容（MIT / BSD-3-Clause / CC BY 4.0 / SIL OFL 1.1）。
+其余脚本与样式（首页轮播、目录、点赞、阅读进度等）均为本主题自研实现，无第三方代码与许可义务。
 
 == Description ==
 

@@ -220,15 +220,3 @@ function jinyu_dynamic_style() {
 	echo '<style id="jinyu-dynamic-style"' . jinyu_csp_nonce_attr() . '>' . wp_strip_all_tags( $css ) . '</style>';
 }
 
-/**
- * 屏蔽前台 Admin Bar
- */
-add_filter(
-	'show_admin_bar',
-	function ( $show ) {
-		if ( jinyu_is_checked( 'hide_admin_bar' ) && ! is_admin() ) {
-			return false;
-		}
-		return $show;
-	}
-);
