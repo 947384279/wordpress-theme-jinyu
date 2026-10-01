@@ -26,7 +26,7 @@ function jinyu_random_post() {
 	jinyu_ajax_guard();
 	// 随机偏移替代 orderby=rand：避免全表 filesort（单篇随机也要给整张表排序）.
 	$published = (int) wp_count_posts( 'post' )->publish;
-	$offset    = $published > 1 ? mt_rand( 0, $published - 1 ) : 0;
+	$offset    = $published > 1 ? mt_rand( 0, $published - 1 ) : 0; /* phpcs:ignore WordPress.WP.AlternativeFunctions.rand_mt_rand -- 随机数用于非安全展示场景（随机文章），mt_rand 足够 */
 	$q         = new WP_Query(
 		[
 			'post_type'      => 'post',

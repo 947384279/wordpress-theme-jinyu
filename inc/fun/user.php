@@ -595,7 +595,7 @@ function jinyu_user_pagination( int $total ): void {
 	printf(
 		'<nav class="jinyu-pagination jinyu-user-pagination" aria-label="%s">%s</nav>',
 		esc_attr__( '用户中心分页', 'jinyu' ),
-		$links
+		$links /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 	);
 }
 

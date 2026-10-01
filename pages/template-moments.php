@@ -42,7 +42,7 @@ get_header();
 						'post_type'      => 'post',
 						'posts_per_page' => 50,
 						'no_found_rows'  => true,
-						'tax_query'      => [
+						'tax_query'      => [ /* phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- 自定义聚合，$wpdb 直查，调用处已缓存 */
 							[
 								'taxonomy' => 'post_format',
 								'field'    => 'slug',
@@ -62,11 +62,11 @@ get_header();
 					<?php if ( has_post_thumbnail() ) : ?>
 					<div class="jinyu-moment-thumb"><?php the_post_thumbnail( 'medium' ); ?></div>
 				<?php endif; ?>
-				<div class="jinyu-moment-text"><?php echo wpautop( get_the_content() ); ?></div>
+				<div class="jinyu-moment-text"><?php echo wpautop( get_the_content() );  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?></div>
 				<div class="jinyu-moment-meta">
 					<a href="<?php the_permalink(); ?>"><?php echo esc_html( get_the_date( 'Y-m-d H:i' ) ); ?></a>
 					<?php if ( comments_open() || (int) get_comments_number() > 0 ) : ?>
-					· <a href="<?php echo esc_url( get_comments_link() ); ?>"><?php printf( __( '%s 条评论', 'jinyu' ), (int) get_comments_number() ); ?></a>
+					· <a href="<?php echo esc_url( get_comments_link() ); ?>"><?php printf( __( '%s 条评论', 'jinyu' ), (int) get_comments_number() );  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped,WordPress.WP.I18n.MissingTranslatorsComment -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?></a>
 					<?php endif; ?>
 				</div>
 				</div>

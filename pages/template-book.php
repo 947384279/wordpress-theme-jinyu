@@ -28,7 +28,7 @@ get_header();
 				[
 					'post_type'      => 'post',
 					'posts_per_page' => 12,
-					'meta_key'       => '_thumbnail_id',
+					'meta_key'       => '_thumbnail_id', /* phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- 自定义聚合，$wpdb 直查，调用处已缓存 */
 					'orderby'        => 'date',
 					'order'          => 'DESC',
 					'no_found_rows'  => true,

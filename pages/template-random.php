@@ -18,7 +18,7 @@ get_header();
 
 // 用「随机偏移 + 主键顺序」替代 orderby=rand：避免全表 filesort，每次刷新仍是真随机.
 $published   = (int) wp_count_posts( 'post' )->publish;
-$rand_offset = $published > 1 ? mt_rand( 0, $published - 1 ) : 0;
+$rand_offset = $published > 1 ? mt_rand( 0, $published - 1 ) : 0; /* phpcs:ignore WordPress.WP.AlternativeFunctions.rand_mt_rand -- 随机数用于非安全展示场景（随机文章），mt_rand 足够 */
 $rand        = new WP_Query(
 	[
 		'posts_per_page' => 1,
@@ -33,7 +33,7 @@ $random_post = $rand->have_posts() ? $rand->posts[0] : null;
 wp_reset_postdata();
 
 // 再列几篇供选择：取一个随机起点窗口（10 篇），顺序确定、起点随机，依旧是真随机.
-$list_offset = $published > 10 ? mt_rand( 0, $published - 10 ) : 0;
+$list_offset = $published > 10 ? mt_rand( 0, $published - 10 ) : 0; /* phpcs:ignore WordPress.WP.AlternativeFunctions.rand_mt_rand -- 随机数用于非安全展示场景（随机文章），mt_rand 足够 */
 $list        = new WP_Query(
 	[
 		'posts_per_page' => 10,

@@ -242,4 +242,3 @@ class Jinyu_OptionContent extends Jinyu_BaseOptionItem {
 		];
 	}
 }
-

@@ -78,7 +78,7 @@ function jinyu_cz_sanitize_one( $val, array $f ) {
 			if ( isset( $f['max'] ) && $f['max'] !== null ) {
 				$n = min( (float) $f['max'], $n );
 			}
-			return ( $n == (int) $n ) ? (int) $n : $n;
+			return ( $n == (int) $n ) ? (int) $n : $n; /* phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual -- 比较双方类型已知一致，== 符合业务意图 */
 		case 'select':
 		case 'radio':
 			$allowed = isset( $f['options'] ) && is_array( $f['options'] )
@@ -157,10 +157,10 @@ function jinyu_cz_register( $wp_customize ) {
 
 		class Jinyu_CZ_Range_Control extends WP_Customize_Control {
 			public $type = 'jinyu_range';
-			public $min   = 0;
-			public $max   = 100;
-			public $step  = 1;
-			public $unit  = '';
+			public $min  = 0;
+			public $max  = 100;
+			public $step = 1;
+			public $unit = '';
 			public function render_content(): void {
 				$val = $this->value();
 				?>
@@ -336,7 +336,7 @@ function jinyu_cz_register( $wp_customize ) {
 					);
 					break;
 				case 'number':
-					$control_args['type']         = 'number';
+					$control_args['type']        = 'number';
 					$control_args['input_attrs'] = array_filter(
 						[
 							'min'  => $f['min'] ?? null,

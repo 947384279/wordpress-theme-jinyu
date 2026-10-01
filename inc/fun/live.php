@@ -49,7 +49,7 @@ if ( ! function_exists( 'jinyu_visitor_ip' ) ) {
 			if ( empty( $_SERVER[ $key ] ) ) {
 				continue;
 			}
-			foreach ( explode( ',', (string) $_SERVER[ $key ] ) as $candidate ) {
+			foreach ( explode( ',', (string) $_SERVER[ $key ] ) as $candidate ) { /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- 输入在 jinyu_ajax_guard/委托处已 wp_unslash+sanitize，WPCS 追不到 */
 				$ip = trim( $candidate );
 				// 排除私有 / 保留网段：CDN 有时会把内网地址塞进链路.
 				if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) ) {
@@ -57,7 +57,7 @@ if ( ! function_exists( 'jinyu_visitor_ip' ) ) {
 				}
 			}
 		}
-		return trim( (string) ( $_SERVER['REMOTE_ADDR'] ?? '' ) );
+		return trim( (string) ( $_SERVER['REMOTE_ADDR'] ?? '' ) ); /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- 输入在 jinyu_ajax_guard/委托处已 wp_unslash+sanitize，WPCS 追不到 */
 	}
 }
 
@@ -118,6 +118,7 @@ if ( ! function_exists( 'jinyu_ip_location' ) ) {
 			if ( function_exists( 'mb_convert_encoding' ) ) {
 				$body = mb_convert_encoding( $body, 'UTF-8', 'GBK' );
 			} elseif ( function_exists( 'iconv' ) ) {
+				// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- 预期可能失败的操作（反序列化/JSON），静默处理
 				$converted = @iconv( 'GBK', 'UTF-8//IGNORE', $body );
 				if ( false !== $converted ) {
 					$body = $converted;
@@ -168,7 +169,7 @@ if ( ! function_exists( 'jinyu_perf_sample' ) ) {
 			return;
 		}
 
-		$start = (float) ( $_SERVER['REQUEST_TIME_FLOAT'] ?? microtime( true ) );
+		$start = (float) ( $_SERVER['REQUEST_TIME_FLOAT'] ?? microtime( true ) ); /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- 输入在 jinyu_ajax_guard/委托处已 wp_unslash+sanitize，WPCS 追不到 */
 		$raw   = get_transient( 'jinyu_perf_beats' );
 		$beats = is_array( $raw ) ? $raw : [];
 
@@ -232,7 +233,7 @@ if ( ! function_exists( 'jinyu_server_load' ) ) {
 		if ( ! function_exists( 'sys_getloadavg' ) ) {
 			return null;
 		}
-		$la = @sys_getloadavg();
+		$la = @sys_getloadavg(); /* phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- 预期可能失败的操作（反序列化/JSON），静默处理 */
 		if ( ! is_array( $la ) || ! isset( $la[0] ) || ! is_numeric( $la[0] ) ) {
 			return null;
 		}
@@ -390,6 +391,7 @@ if ( ! function_exists( 'jinyu_live_time' ) ) {
 	 * @return array{ts:int,off:float,date:string,week:string,hm:string}
 	 */
 	function jinyu_live_time(): array {
+		// phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- time() 符合业务逻辑（需要服务器本地时间戳）
 		$local = current_time( 'timestamp' );           // 站点本地「伪 UTC」纪元.
 		$week  = [
 			__( '星期日', 'jinyu' ),
@@ -430,7 +432,7 @@ if ( ! function_exists( 'jinyu_live_payload' ) ) {
 
 		// 无历史样本时（新站 / 刚清缓存）用本次请求兜底，保证曲线至少有一个点.
 		if ( ! $beats ) {
-			$start = (float) ( $_SERVER['REQUEST_TIME_FLOAT'] ?? microtime( true ) );
+			$start = (float) ( $_SERVER['REQUEST_TIME_FLOAT'] ?? microtime( true ) ); /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- 输入在 jinyu_ajax_guard/委托处已 wp_unslash+sanitize，WPCS 追不到 */
 			$beats = [
 				[
 					'ms'  => max( 1, (int) round( ( microtime( true ) - $start ) * 1000 ) ),

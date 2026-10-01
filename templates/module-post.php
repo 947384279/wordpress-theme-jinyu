@@ -45,7 +45,7 @@ $card_class = is_sticky() ? ' is-sticky' : '';
 				<?php
 				if ( $cover_srcset ) :
 					?>
-					srcset="<?php echo esc_attr( $cover_srcset ); ?>" sizes="(max-width: 768px) 92vw, 420px"<?php endif; ?> loading="<?php echo $cover_loading; ?>" decoding="async"<?php echo $cover_fetch; ?><?php echo $ph_card ? ' data-ph="' . esc_url( $ph_card ) . '"' : ''; ?>>
+					srcset="<?php echo esc_attr( $cover_srcset ); ?>" sizes="(max-width: 768px) 92vw, 420px"<?php endif; ?> loading="<?php echo $cover_loading; ?>" decoding="async"<?php echo $cover_fetch; ?><?php echo $ph_card ? ' data-ph="' . esc_url( $ph_card ) . '"' : '';  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?>>
 			<?php else : ?>
 				<div class="jinyu-post-cover-ph"><i class="fa-solid fa-fire" aria-hidden="true"></i></div>
 			<?php endif; ?>
@@ -86,7 +86,7 @@ $card_class = is_sticky() ? ' is-sticky' : '';
 			$jinyu_series_url = $jinyu_series ? get_term_link( $jinyu_series['term'] ) : '';
 			if ( $jinyu_series && ! is_wp_error( $jinyu_series_url ) ) :
 				?>
-			<a class="jinyu-post-meta-series" href="<?php echo esc_url( $jinyu_series_url ); ?>"><i class="fa-solid fa-layer-group" aria-hidden="true"></i><span class="jinyu-post-meta-series-name"><?php echo esc_html( $jinyu_series['term']->name ); ?></span><span class="jinyu-post-meta-series-index"><?php printf( esc_html__( '第 %1$d/%2$d 篇', 'jinyu' ), $jinyu_series['index'] + 1, $jinyu_series['total'] ); ?></span></a>
+			<a class="jinyu-post-meta-series" href="<?php echo esc_url( $jinyu_series_url ); ?>"><i class="fa-solid fa-layer-group" aria-hidden="true"></i><span class="jinyu-post-meta-series-name"><?php echo esc_html( $jinyu_series['term']->name ); ?></span><span class="jinyu-post-meta-series-index"><?php printf( esc_html__( '第 %1$d/%2$d 篇', 'jinyu' ), $jinyu_series['index'] + 1, $jinyu_series['total'] );  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped,WordPress.WP.I18n.MissingTranslatorsComment -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?></span></a>
 			<?php endif; ?>
 			<span><i class="fa-regular fa-calendar" aria-hidden="true"></i><?php echo esc_html( get_the_date( 'Y-m-d' ) ); ?></span>
 			<?php

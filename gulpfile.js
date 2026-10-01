@@ -112,21 +112,29 @@ function buildZip() {
  * 单真源策略——主仓库始终保留豪华设置页（自托管/GitHub/Gitee 版），
  * 此任务仅生成剔除后的发行包，源码不重复维护。
  *
- * slug 必须与自托管版区分（jinyu vs jinyu-theme-lite）：
+ * slug 必须与自托管版区分（jinyu vs jinyu-lite）：
  * WordPress 主题自动更新按 slug 匹配，两版同名会让装了自托管版的站点
  * 被 w.org 版覆盖（独立设置页/代码注入随之消失）。
- * 产物：release/jinyu-theme-lite-<version>.zip（顶层单 jinyu-theme-lite/ 目录）。
+ * 产物：release/jinyu-lite-<version>.zip（顶层单 jinyu-lite/ 目录）。
+ *
+ * 命名硬约束（上传器 + Theme Check 双重校验，均实测踩过）：
+ *  1. 主题名 / slug 不得含 "WordPress" 或 "Theme"——w.org 上传器直接拒收
+ *     （曾用 "Jinyu Theme Lite" 被拒：「您不能在主题名称中使用 WordPress 或 Theme」）。
+ *  2. 显示名必须能 sanitize 成同一个 slug（sanitize_title('Jinyu Lite') === 'jinyu-lite'），
+ *     否则 Theme Check 报 "wrong directory"（它用 Theme Name 反推 slug 与目录名比对）。
  */
-const WPORG_SLUG = 'jinyu-theme-lite';
-// 显示名必须能 sanitize 成同一个 slug（sanitize_title('Jinyu Theme Lite') === 'jinyu-theme-lite'），
-// 否则 Theme Check 会报 "wrong directory"（它用 Theme Name 反推 slug 与目录名比对）。
-const WPORG_NAME = 'Jinyu Theme Lite';
+const WPORG_SLUG = 'jinyu-lite';
+// 显示名见上「命名硬约束」：不可含 "WordPress"/"Theme"，且须 sanitize 成 WPORG_SLUG。
+const WPORG_NAME = 'Jinyu Lite';
 // 变体描述必须与实际能力一致：自托管版描述里的「支持后台可视化配置」在变体中是 Customizer
 // （独立设置中心与代码注入均已剔除），照抄会误导审核方与用户。
-const WPORG_DESC = '金玉（Jinyu）主题的 WordPress.org 发行版（纯呈现层）：高颜值自适应博客主题，支持暗色模式、多种布局、短代码、点赞收藏、评论互动与无限加载；外观选项统一在「外观 → 自定义」中配置。';
+// 描述同样避开 "WordPress" 字样，避免被读成与官方存在隶属关系。
+const WPORG_DESC = '金玉（Jinyu）纯呈现层发行版：高颜值自适应博客主题，支持暗色模式、多种布局、短代码、点赞收藏、评论互动与无限加载；外观选项统一在「外观 → 自定义」中配置。';
 const WPORG_DIR = `dist-wporg/${WPORG_SLUG}`;
 
 function copyWporg() {
+	// 先清空上一次构建产物，避免 gulp.dest 增量写入导致旧文件（如被新规则剔除的 .less/原始 .js）残留进包
+	fs.rmSync(WPORG_DIR, { recursive: true, force: true });
 	return gulp.src([
 		'**/*', '!node_modules/**', '!package-lock.json',
 		'!gulpfile.js', '!.git/**',
@@ -156,7 +164,19 @@ function copyWporg() {
 		// 操作系统 / 编辑器垃圾兜底
 		'!.DS_Store', '!Thumbs.db', '!*.tmp', '!*.swp', '!*~',
 		// 独立设置页文件在 w.org 变体中整体剔除（逻辑已由 JINYU_WPORG 门控跳过，此处一并移除文件）。
-		'!inc/setting/Jinyu_Setting.php'
+		'!inc/setting/Jinyu_Setting.php',
+		// —— 以下为「开发源文件」：运行期只加载编译产物，绝不该进提交包（用户要求：不要打包不相干的）——
+		// .less 源（assets/dist/style/*.min.css 才是运行期样式，WP.org 不读 less）
+		'!assets/style/**/*.less',
+		// 顶层原始 JS（buildJs/buildAdminJs 已编译为 assets/dist/js/*.min.js，运行期只认 .min 版）
+		'!assets/js/*.js',
+		// 原始 vendor（保留对应 *.min.js：functions.php enqueue 的是 .min 版）
+		'!assets/js/vendor/highlight.js', '!assets/js/vendor/qrcode.js', '!assets/js/vendor/viewer.js',
+		// WP.org 只需一份许可证：保留 license.txt，删去大写的 LICENSE 副本（内容相同，纯冗余）
+		'!LICENSE',
+		// 仓库本地恢复说明（中文名 `_先读我-恢复说明.md`）：纯开发/运维内部文档，
+		// 非主题运行期文件，且非 ASCII 文件名在部分平台不通用（WP.org 上传会拒）。不应进提交包。
+		'!_先读我-恢复说明.md'
 	], { base: '.' })
 		.pipe(gulp.dest(WPORG_DIR));
 }
@@ -181,7 +201,7 @@ function walkDir(dir, cb) {
 }
 
 /**
- * 把变体的 slug / text domain / 主题名从 jinyu 改为 jinyu-theme-lite。
+ * 把变体的 slug / text domain / 主题名从 jinyu 改为 jinyu-lite。
  * 只替换「引号包裹的 'jinyu'」（text domain 字面量）：
  * 不会误伤 jinyu_ 函数前缀、'jinyu_options' 选项名、'JINYU_WPORG' 常量（后缀/大小写不匹配）。
  */

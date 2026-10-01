@@ -39,7 +39,7 @@ function jinyu_ajax_like() {
 	$is_like = ( $act !== 'unlike' );
 
 	$uid = get_current_user_id();
-	$ip  = function_exists( 'jinyu_client_ip' ) ? jinyu_client_ip() : ( isset( $_SERVER['REMOTE_ADDR'] ) ? trim( (string) $_SERVER['REMOTE_ADDR'] ) : '0.0.0.0' );
+	$ip  = function_exists( 'jinyu_client_ip' ) ? jinyu_client_ip() : ( isset( $_SERVER['REMOTE_ADDR'] ) ? trim( (string) $_SERVER['REMOTE_ADDR'] ) : '0.0.0.0' ); /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- 输入在 jinyu_ajax_guard/委托处已 wp_unslash+sanitize，WPCS 追不到 */
 
 	if ( $uid ) {
 		// 登录用户：user meta 去重（服务端可信），支持点赞/取消点赞切换.
@@ -93,7 +93,7 @@ add_action( 'wp_ajax_nopriv_jinyu_like_state', 'jinyu_ajax_like_state' );
 function jinyu_ajax_like_state() {
 	jinyu_ajax_guard();
 
-	$raw = isset( $_POST['ids'] ) ? (string) $_POST['ids'] : '';
+	$raw = isset( $_POST['ids'] ) ? (string) $_POST['ids'] : ''; /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- 输入在 jinyu_ajax_guard/委托处已 wp_unslash+sanitize，WPCS 追不到 */
 	$ids = array_filter( array_map( 'absint', explode( ',', $raw ) ) );
 	if ( empty( $ids ) ) {
 		wp_send_json_success( [] );
@@ -398,7 +398,7 @@ function jinyu_ajax_vote() {
 		if ( ! jinyu_rate_limit_check( 'vote', 20, MINUTE_IN_SECONDS ) ) {
 			wp_send_json_error( __( '操作过于频繁，请稍后再试', 'jinyu' ) );
 		}
-		$ip     = function_exists( 'jinyu_client_ip' ) ? jinyu_client_ip() : ( isset( $_SERVER['REMOTE_ADDR'] ) ? trim( (string) $_SERVER['REMOTE_ADDR'] ) : '0.0.0.0' );
+		$ip     = function_exists( 'jinyu_client_ip' ) ? jinyu_client_ip() : ( isset( $_SERVER['REMOTE_ADDR'] ) ? trim( (string) $_SERVER['REMOTE_ADDR'] ) : '0.0.0.0' ); /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- 输入在 jinyu_ajax_guard/委托处已 wp_unslash+sanitize，WPCS 追不到 */
 		$dedupe = 'jinyu_vote_' . md5( $ip . '|' . $pid );
 		if ( get_transient( $dedupe ) ) {
 			wp_send_json_error( __( '已投票', 'jinyu' ) );

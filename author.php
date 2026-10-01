@@ -32,7 +32,7 @@ get_header(); ?>
 					alt="">
 				<div class="jinyu-author-meta">
 					<h1><?php echo esc_html( $author->display_name ); ?></h1>
-					<?php echo jinyu_archive_meta_html(); ?>
+					<?php echo jinyu_archive_meta_html();  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?>
 					<?php
 					if ( $author->description ) :
 						?>

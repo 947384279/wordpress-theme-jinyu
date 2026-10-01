@@ -122,7 +122,7 @@ class Jinyu_OptionUser extends Jinyu_BaseOptionItem {
 						[
 							'label' => __( 'WebP.se（国内）', 'jinyu' ),
 							'value' => 'webpse',
-					],
+						],
 						[
 							'label' => __( '首字母占位图', 'jinyu' ),
 							'value' => 'letter',
@@ -145,4 +145,3 @@ class Jinyu_OptionUser extends Jinyu_BaseOptionItem {
 		];
 	}
 }
-

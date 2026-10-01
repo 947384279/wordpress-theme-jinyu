@@ -1,4 +1,4 @@
-=== Jinyu Theme Lite ===
+=== Jinyu Lite ===
 Contributors: jinyu888
 Tags: blog, custom-colors, custom-logo, custom-menu, editor-style, featured-images, microformats, post-formats, rtl-language-support, sticky-post, threaded-comments, translation-ready, two-columns, three-columns, block-styles, wide-blocks, full-width-template, custom-background, theme-options
 Requires at least: 6.0
@@ -10,7 +10,7 @@ License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 == Description ==
 
-金玉主题的 WordPress.org 发行版（Jinyu Theme Lite）：一款面向内容站点的自适应博客主题，自研架构全新编写，纯呈现层实现，不含代码注入与外部服务依赖。
+金玉主题的 WordPress.org 发行版（Jinyu Lite）：一款面向内容站点的自适应博客主题，自研架构全新编写，纯呈现层实现，不含代码注入与外部服务依赖。
 
 主要特性：
 * 外观选项全部走 WordPress 标准「外观 → 自定义」（Customizer），20+ 个分组覆盖站点标识、全局风格、配色、首页版块、内容展示、评论与页脚。
@@ -28,7 +28,7 @@ License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 == Installation ==
 
-1. 后台「外观 → 主题 → 安装主题 → 上传主题」，选择 `jinyu-theme-lite-x.y.z.zip` 上传并启用；或直接把主题目录放进 `/wp-content/themes/` 后在「外观 → 主题」中启用。
+1. 后台「外观 → 主题 → 安装主题 → 上传主题」，选择 `jinyu-lite-x.y.z.zip` 上传并启用；或直接把主题目录放进 `/wp-content/themes/` 后在「外观 → 主题」中启用。
 2. 进入「外观 → 自定义」按需配置站点标识、配色与首页版块。
 3. （可选）到「设置 → 固定链接」保存一次以刷新重写规则。
 
@@ -36,7 +36,7 @@ License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 = 为什么和 GitHub 上的金玉主题功能不一样？ =
 
-金玉主题有两条发行线，源码同源：自托管版（slug `jinyu`）保留独立设置中心与代码注入等后台能力；本发行版（slug `jinyu-theme-lite`，即你正在使用的这一版）为 WordPress.org 规范版，外观选项统一走 Customizer，不含任意代码注入与后台独立设置页。两者可以共存互不干扰。
+金玉主题有两条发行线，源码同源：自托管版（slug `jinyu`）保留独立设置中心与代码注入等后台能力；本发行版（slug `jinyu-lite`，即你正在使用的这一版）为 WordPress.org 规范版，外观选项统一走 Customizer，不含任意代码注入与后台独立设置页。两者可以共存互不干扰。
 
 = 外观选项在哪里？ =
 
@@ -60,7 +60,7 @@ License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 == Compatibility ==
 
-* 多语言：文本域 `jinyu-theme-lite`，随主题提供 `.pot` 模板；字符串均可被 WPML / Polylang 翻译接管，菜单使用「外观 → 菜单」注册的菜单位置。
+* 多语言：文本域 `jinyu-lite`，随主题提供 `.pot` 模板；字符串均可被 WPML / Polylang 翻译接管，菜单使用「外观 → 菜单」注册的菜单位置。
 * 页面构建器：兼容 Gutenberg 区块编辑器（支持 block-styles / wide-blocks / align-wide）；提供「全宽页面」页面模板，适配 Elementor 等构建器的全宽布局需求。
 * 商城：未内置 WooCommerce 深度定制，但保持基础样式兼容。
 
@@ -85,7 +85,7 @@ License URI: https://www.gnu.org/licenses/gpl-3.0.html
 == Changelog ==
 
 = 1.2.3 =
-* 首次提交到 WordPress.org 主题目录的发行版（Jinyu Theme Lite），与自托管版 1.2.3 同源。
+* 首次提交到 WordPress.org 主题目录的发行版（Jinyu Lite），与自托管版 1.2.3 同源。
 * 剔除任意代码注入字段与后台独立设置页，外观选项统一为 WordPress 标准 Customizer。
 * 全部页面模板在编辑器「模板」选择器中可见；界面文案全面接入翻译体系。
 * 修复 ≤600px 视口下登录用户顶栏与管理栏的相对位置错位。

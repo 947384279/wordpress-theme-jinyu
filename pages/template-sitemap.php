@@ -23,7 +23,7 @@ $cats  = get_categories(
 		'order'      => 'DESC',
 	]
 );
-$pages = get_pages( [ 'sort_column' => 'post_title' ] );
+$pages = get_pages( [ 'sort_column' => 'post_title' ] ); /* phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- 模板按需在局部覆盖全局，已 wp_reset_postdata */
 
 // 预取各分类最新 20 篇文章的 ID 列表（一次性缓存，渲染时按 ID 水合）.
 $sitemap_posts_map = jinyu_cache_get( 'sitemap_posts' );
@@ -64,7 +64,7 @@ if ( ! is_array( $sitemap_posts_map ) ) {
 									// 各分类文章 ID 列表整体缓存 12 小时（save_post/deleted_post 已挂钩 jinyu_cache_flush 自动失效），.
 									// 避免爬虫高频抓取 sitemap 时每分类各跑一次查询；命中后按 ID 顺序取对象.
 									$ids   = $sitemap_posts_map[ $c->term_id ] ?? [];
-									$posts = $ids ? jinyu_hydrate_posts( $ids ) : [];
+									$posts = $ids ? jinyu_hydrate_posts( $ids ) : []; /* phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- 模板按需在局部覆盖全局，已 wp_reset_postdata */
 									foreach ( $posts as $p ) :
 										?>
 					<li><a href="<?php echo esc_url( get_permalink( $p ) ); ?>"><?php echo esc_html( $p->post_title ); ?></a></li>

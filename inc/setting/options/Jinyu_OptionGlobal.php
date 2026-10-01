@@ -198,4 +198,3 @@ class Jinyu_OptionGlobal extends Jinyu_BaseOptionItem {
 		];
 	}
 }
-

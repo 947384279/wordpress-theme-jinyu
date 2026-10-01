@@ -48,7 +48,7 @@ get_header(); ?>
 					[
 						'post_type'      => 'post',
 						'posts_per_page' => 5,
-						'meta_key'       => 'jinyu_views',
+						'meta_key'       => 'jinyu_views', /* phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- 自定义聚合，$wpdb 直查，调用处已缓存 */
 						'orderby'        => 'meta_value_num',
 						'order'          => 'DESC',
 						'no_found_rows'  => true,

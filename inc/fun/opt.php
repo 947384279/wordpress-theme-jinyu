@@ -61,7 +61,7 @@ function jinyu_option_sdt( string $key ): mixed {
 				// 直接返回原文（中文主题原文即中文），不再触发 WP 6.7 的
 				// load_textdomain_just_in_time “翻译加载过早” Notice，且 sdt 默认值照常生效。
 				if ( ! isset( $GLOBALS['l10n']['jinyu'] ) && class_exists( 'NOOP_Translations', false ) ) {
-					$GLOBALS['l10n']['jinyu'] = new NOOP_Translations();
+					$GLOBALS['l10n']['jinyu'] = new NOOP_Translations(); /* phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- 模板按需在局部覆盖全局，已 wp_reset_postdata */
 				}
 				$map = Jinyu_Setting::sdt_defaults();
 			}

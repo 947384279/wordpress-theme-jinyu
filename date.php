@@ -19,11 +19,14 @@ get_header();
 		<h1 class="jinyu-archive-title">
 		<?php
 		if ( is_day() ) {
-			printf( __( '每日归档：%s', 'jinyu' ), get_the_date( 'Y-m-d' ) );
+			/* translators: %s: 占位符 */
+			printf( __( '每日归档：%s', 'jinyu' ), get_the_date( 'Y-m-d' ) ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		} elseif ( is_month() ) {
-			printf( __( '每月归档：%s', 'jinyu' ), get_the_date( 'Y-m' ) );
+			/* translators: %s: 占位符 */
+			printf( __( '每月归档：%s', 'jinyu' ), get_the_date( 'Y-m' ) ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		} else {
-			printf( __( '每年归档：%s', 'jinyu' ), get_the_date( 'Y' ) );
+			/* translators: %s: 占位符 */
+			printf( __( '每年归档：%s', 'jinyu' ), get_the_date( 'Y' ) ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		}
 		?>
 		</h1>

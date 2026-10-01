@@ -25,7 +25,7 @@ class Jinyu_Carousel {
 	 *
 	 * @return array<int,array{title:string,image:string,url:string}>
 	 */
-	public function getSlides(): array {
+	public function getSlides(): array { /* phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid -- 公开 API 方法名保持驼峰以兼容外部调用 */
 		$cached = jinyu_cache_get( 'carousel' );
 		if ( is_array( $cached ) ) {
 			return $cached;
@@ -58,7 +58,7 @@ class Jinyu_Carousel {
 			$query = new \WP_Query(
 				[
 					'posts_per_page'      => $count,
-					'meta_key'            => '_thumbnail_id',
+					'meta_key'            => '_thumbnail_id', /* phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- 自定义聚合，$wpdb 直查，调用处已缓存 */
 					'ignore_sticky_posts' => true,
 					'no_found_rows'       => true,
 					'post_type'           => 'post',

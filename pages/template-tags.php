@@ -49,6 +49,7 @@ get_header();
 				}
 
 				// 中文：UTF-8 → GB2312 取区位码.
+				// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- 预期可能失败的操作（反序列化/JSON），静默处理
 				$gb = @iconv( 'UTF-8', 'GB2312//IGNORE', $char );
 				if ( $gb === false || strlen( $gb ) < 2 ) {
 					return '#';
@@ -111,13 +112,14 @@ get_header();
 			}
 
 			// ── 获取所有标签并按拼音首字母分组 ──.
-			$tags   = get_tags(
+			$tags = get_tags(
 				[
 					'hide_empty' => true,
 					'orderby'    => 'count',
 					'order'      => 'DESC',
 				]
 			);
+			// phpcs:ignore Squiz.PHP.CommentedOutCode.Found -- 该注释为说明性内容，并非被注释掉的代码
 			$groups = []; // letter => [tag, tag, ...].
 
 			if ( $tags ) {

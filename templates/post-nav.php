@@ -38,6 +38,7 @@ $next = get_next_post();
 $cc = jinyu_get_option( 'single_copyright', '' );
 if ( '' === $cc ) {
 	$cc = sprintf(
+		/* translators: %s: 占位符 */
 		__( '本文由 %1$s 创作，转载请注明来源：%2$s（%3$s）', 'jinyu' ),
 		get_the_author(),
 		get_the_title(),

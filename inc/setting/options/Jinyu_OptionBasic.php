@@ -49,12 +49,12 @@ class Jinyu_OptionBasic extends Jinyu_BaseOptionItem {
 					'desc'  => __( '留空则暗色模式复用亮色 Logo', 'jinyu' ),
 				],
 				[
-				'id'    => 'top_notice',
-				'title' => __( '顶部公告', 'jinyu' ),
-				'type'  => 'string',
-				'sdt'   => '',
-				'desc'  => __( '留空则不显示公告条。支持简单 HTML（如链接）', 'jinyu' ),
-				'html'  => true,
+					'id'    => 'top_notice',
+					'title' => __( '顶部公告', 'jinyu' ),
+					'type'  => 'string',
+					'sdt'   => '',
+					'desc'  => __( '留空则不显示公告条。支持简单 HTML（如链接）', 'jinyu' ),
+					'html'  => true,
 				],
 				[
 					'id'    => 'single_copyright',
@@ -94,4 +94,3 @@ class Jinyu_OptionBasic extends Jinyu_BaseOptionItem {
 		];
 	}
 }
-

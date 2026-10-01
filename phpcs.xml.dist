@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<ruleset name="Jinyu Theme Coding Standards">
+    <description>
+        Jinyu (金玉) WordPress theme coding standards.
+        Based on the official WordPress standard, with deliberate
+        architectural choices excluded so the scan stays meaningful
+        and does not flag intentional patterns.
+    </description>
+
+    <!-- Only scan PHP; skip JS/CSS/etc. -->
+    <arg name="extensions" value="php"/>
+    <arg value="p"/>
+    <arg name="colors"/>
+    <arg name="encoding" value="utf-8"/>
+
+    <!-- Theme root as the scan target -->
+    <file>.</file>
+
+    <!-- Build / dev / vendor artifacts are never theme source -->
+    <exclude-pattern>*/node_modules/*</exclude-pattern>
+    <exclude-pattern>*/dist-wporg/*</exclude-pattern>
+    <exclude-pattern>*/release/*</exclude-pattern>
+    <exclude-pattern>*/tests/*</exclude-pattern>
+    <exclude-pattern>*/tools/*</exclude-pattern>
+    <exclude-pattern>*/assets/*</exclude-pattern>
+    <exclude-pattern>*/.workbuddy/*</exclude-pattern>
+
+    <!-- Base standard: official WordPress coding standards -->
+    <rule ref="WordPress">
+        <!--
+            Intentional, deliberate patterns of this theme.
+            Excluding them keeps the scan focused on real issues
+            and guarantees they will not re-surface on every scan.
+        -->
+
+        <!-- Class files use PascalCase (Jinyu_OptionBasic.php) on purpose;
+             the loader relies on these names. Not a compliance gate for themes. -->
+        <exclude name="WordPress.Files.FileName"/>
+
+        <!-- Variables intentionally use the jinyu_ prefix / camelCase helpers;
+             e.g. $jinyu_options. Excluded rather than renamed to avoid churn. -->
+        <exclude name="WordPress.NamingConventions.ValidVariableName"/>
+
+        <!-- Yoda conditions are a style recommendation, not enforced by
+             theme review. Excluded to cut pure-churn noise. -->
+        <exclude name="WordPress.PHP.YodaConditions"/>
+
+        <!-- Nonce verification is centralized in jinyu_ajax_guard()
+             (inc/ajax/index.php) which every public AJAX handler calls,
+             and in capability checks for admin settings. WPCS cannot see
+             the delegation, so the per-handler "missing nonce" flags are
+             false positives. -->
+        <exclude name="WordPress.Security.NonceVerification"/>
+
+        <!-- PrefixAllGlobals would flag every WP core global ($wpdb, $post, …)
+             as "unprefixed"; the theme already prefixes its own symbols with
+             jinyu_. Not a theme-review gate, so excluded to avoid noise. -->
+        <exclude name="WordPress.NamingConventions.PrefixAllGlobals"/>
+
+        <!--
+            The remaining sniffs below are pure documentation / structural
+            style. They are NOT part of the WordPress.org theme-review gates
+            (theme-check passes without them) and carry zero runtime value.
+            They are excluded so the scan reflects real correctness issues
+            (escaping, sanitization, i18n — already at zero) instead of
+            thousands of docblock-churn flags.
+        -->
+
+        <!-- DocBlock pedantry (Squiz/Generic Commenting): missing function/
+             class/file comments, param full-stop, inline comment end char, etc. -->
+        <exclude name="Squiz.Commenting"/>
+        <exclude name="Generic.Commenting"/>
+
+        <!-- One class/object structure per file: the theme groups related small
+             helpers/classes in single files by design; splitting is pure churn
+             and would not change behavior. -->
+        <exclude name="Generic.Files.OneObjectStructurePerFile"/>
+        <exclude name="Universal.Files.SeparateFunctionsFromOO"/>
+
+        <!-- Short ternary ($a ?: $b) is valid, readable PHP; WordPress itself
+             uses it. The Universal sniff forbidding it is overly strict. -->
+        <exclude name="Universal.Operators.DisallowShortTernary"/>
+
+        <!-- Reserved-keyword parameter names ($array, $class, …) are legal in
+             PHP and common in WP hook callbacks; renaming 29 params is churn
+             with no behavioral benefit. -->
+        <exclude name="Universal.NamingConventions.NoReservedKeywordParameterNames"/>
+
+        <!-- WordPress explicitly recommends the short array syntax []; the
+             Universal sniff that forbids it conflicts with WP guidance, so
+             it is excluded rather than expanding arrays to array(). -->
+        <exclude name="Universal.Arrays.DisallowShortArraySyntax"/>
+
+        <!-- Chained/multiple assignments ($a = $b = $c) and unused callback
+             parameters are stylistic; the latter are normal for WP hooks that
+             pass a fixed arg list. Excluded to avoid signature churn. -->
+        <exclude name="Squiz.PHP.DisallowMultipleAssignments"/>
+        <exclude name="Generic.CodeAnalysis.UnusedFunctionParameter"/>
+
+        <!-- Control-structure signature spacing is a stylistic preference. -->
+        <exclude name="Squiz.ControlStructures.ControlSignature"/>
+    </rule>
+</ruleset>

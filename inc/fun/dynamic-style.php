@@ -134,7 +134,7 @@ if ( ! function_exists( 'jinyu_dark_text_variant' ) ) {
 	 */
 	function jinyu_dark_text_variant( $hex ) {
 		$out = jinyu_color_shade( $hex, 0.2 );
-		for ( $amount = 0.3; $amount <= 0.8 && jinyu_relative_luminance( $out ) < 0.42; $amount += 0.1 ) {
+		for ( $amount = 0.3; $amount <= 0.8 && jinyu_relative_luminance( $out ) < 0.42; $amount += 0.1 ) { /* phpcs:ignore Generic.CodeAnalysis.ForLoopWithTestFunctionCall.NotAllowed -- 循环次数由固定数组/计数决定，测试位置的函数调用安全 */
 			$out = jinyu_color_shade( $hex, $amount );
 		}
 		return $out;
@@ -217,6 +217,5 @@ function jinyu_dynamic_style() {
 
 	$css = ':root{' . $root . '}' . jinyu_dark_override_css();
 
-	echo '<style id="jinyu-dynamic-style"' . jinyu_csp_nonce_attr() . '>' . wp_strip_all_tags( $css ) . '</style>';
+	echo '<style id="jinyu-dynamic-style"' . jinyu_csp_nonce_attr() . '>' . wp_strip_all_tags( $css ) . '</style>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 }
-

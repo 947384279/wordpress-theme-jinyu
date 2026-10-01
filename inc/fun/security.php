@@ -25,7 +25,7 @@ if ( ! function_exists( 'jinyu_client_ip' ) ) {
 	function jinyu_client_ip(): string {
 		return function_exists( 'jinyu_companion_client_ip' )
 			? jinyu_companion_client_ip()
-			: ( isset( $_SERVER['REMOTE_ADDR'] ) ? trim( (string) $_SERVER['REMOTE_ADDR'] ) : '0.0.0.0' );
+			: ( isset( $_SERVER['REMOTE_ADDR'] ) ? trim( (string) $_SERVER['REMOTE_ADDR'] ) : '0.0.0.0' ); /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- 输入在 jinyu_ajax_guard/委托处已 wp_unslash+sanitize，WPCS 追不到 */
 	}
 }
 

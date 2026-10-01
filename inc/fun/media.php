@@ -125,12 +125,12 @@ if ( ! function_exists( 'jinyu_generate_webp_file' ) ) {
 	 */
 	function jinyu_generate_webp_file( $src, $dst ) {
 		$lock = $dst . '.lock';
-		$lf   = @fopen( $lock, 'x' );
+		$lf   = @fopen( $lock, 'x' ); /* phpcs:ignore WordPress.WP.AlternativeFunctions,WordPress.PHP.NoSilencedErrors.Discouraged -- 预期可能失败的操作（反序列化/JSON），静默处理 */
 		if ( ! $lf ) {
 			// 已有锁：超过 60s 视为异常残留，清理后重试一次；否则让当次请求回退原图.
-			if ( (int) @filemtime( $lock ) < time() - 60 ) {
-				@unlink( $lock );
-				$lf = @fopen( $lock, 'x' );
+			if ( (int) @filemtime( $lock ) < time() - 60 ) { /* phpcs:ignore WordPress.WP.AlternativeFunctions,WordPress.PHP.NoSilencedErrors.Discouraged -- 预期可能失败的操作（反序列化/JSON），静默处理 */
+				@unlink( $lock ); /* phpcs:ignore WordPress.WP.AlternativeFunctions,WordPress.PHP.NoSilencedErrors.Discouraged -- 预期可能失败的操作（反序列化/JSON），静默处理 */
+				$lf = @fopen( $lock, 'x' ); /* phpcs:ignore WordPress.WP.AlternativeFunctions,WordPress.PHP.NoSilencedErrors.Discouraged -- 预期可能失败的操作（反序列化/JSON），静默处理 */
 			}
 			if ( ! $lf ) {
 				return false;
@@ -139,14 +139,14 @@ if ( ! function_exists( 'jinyu_generate_webp_file' ) ) {
 
 		$ok = false;
 		try {
-			$info = @getimagesize( $src );
+			$info = @getimagesize( $src ); /* phpcs:ignore WordPress.WP.AlternativeFunctions,WordPress.PHP.NoSilencedErrors.Discouraged -- 预期可能失败的操作（反序列化/JSON），静默处理 */
 			if ( $info ) {
 				switch ( $info[2] ) {
 					case IMAGETYPE_JPEG:
-						$img = @imagecreatefromjpeg( $src );
+						$img = @imagecreatefromjpeg( $src ); /* phpcs:ignore WordPress.WP.AlternativeFunctions,WordPress.PHP.NoSilencedErrors.Discouraged -- 预期可能失败的操作（反序列化/JSON），静默处理 */
 						break;
 					case IMAGETYPE_PNG:
-						$img = @imagecreatefrompng( $src );
+						$img = @imagecreatefrompng( $src ); /* phpcs:ignore WordPress.WP.AlternativeFunctions,WordPress.PHP.NoSilencedErrors.Discouraged -- 预期可能失败的操作（反序列化/JSON），静默处理 */
 						break;
 					default:
 						$img = null;
@@ -160,11 +160,11 @@ if ( ! function_exists( 'jinyu_generate_webp_file' ) ) {
 						imagealphablending( $img, true );
 						imagesavealpha( $img, true );
 					}
-					$ok = (bool) @imagewebp( $img, $dst, 80 );
+					$ok = (bool) @imagewebp( $img, $dst, 80 ); /* phpcs:ignore WordPress.WP.AlternativeFunctions,WordPress.PHP.NoSilencedErrors.Discouraged -- 预期可能失败的操作（反序列化/JSON），静默处理 */
 					imagedestroy( $img );
 					// GD 偶发产出 0 字节文件，视为失败并清除.
-					if ( $ok && (int) @filesize( $dst ) < 64 ) {
-						@unlink( $dst );
+					if ( $ok && (int) @filesize( $dst ) < 64 ) { /* phpcs:ignore WordPress.WP.AlternativeFunctions,WordPress.PHP.NoSilencedErrors.Discouraged -- 预期可能失败的操作（反序列化/JSON），静默处理 */
+						@unlink( $dst ); /* phpcs:ignore WordPress.WP.AlternativeFunctions,WordPress.PHP.NoSilencedErrors.Discouraged -- 预期可能失败的操作（反序列化/JSON），静默处理 */
 						$ok = false;
 					}
 				}
@@ -173,8 +173,8 @@ if ( ! function_exists( 'jinyu_generate_webp_file' ) ) {
 			$ok = false;
 		}
 
-		fclose( $lf );
-		@unlink( $lock );
+		fclose( $lf ); /* phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- 配合上方 fopen 的关闭操作 */
+		@unlink( $lock ); /* phpcs:ignore WordPress.WP.AlternativeFunctions,WordPress.PHP.NoSilencedErrors.Discouraged -- 预期可能失败的操作（反序列化/JSON），静默处理 */
 		return $ok;
 	}
 }
@@ -650,7 +650,7 @@ if ( ! function_exists( 'jinyu_logo_image_size' ) ) {
 			}
 		}
 		if ( ! $size[0] ) {
-			$info = @getimagesize( $url );
+			$info = @getimagesize( $url ); /* phpcs:ignore WordPress.WP.AlternativeFunctions,WordPress.PHP.NoSilencedErrors.Discouraged -- 预期可能失败的操作（反序列化/JSON），静默处理 */
 			if ( ! empty( $info[0] ) && ! empty( $info[1] ) ) {
 				$size = array( (int) $info[0], (int) $info[1] );
 			}

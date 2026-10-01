@@ -31,6 +31,7 @@ class Jinyu_OptionAbout extends Jinyu_BaseOptionItem {
 					'id'    => 'version_info',
 					'title' => __( '当前版本', 'jinyu' ),
 					'type'  => 'info',
+					/* translators: %s: 占位符 */
 					'desc'  => sprintf( __( '金玉主题 v%s · PHP 8.0+ · WordPress 6.0+', 'jinyu' ), JINYU_CUR_VER ),
 				],
 				[

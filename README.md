@@ -82,8 +82,8 @@
 **SEO 结构化数据**
 | 短代码 | 作用 |
 |---|---|
-| `jinyu_faq` / `jy_faq` | FAQ 问答（产出 FAQPage JSON-LD） |
-| `jinyu_faq_item` / `jy_faq_item` | FAQ 单项 |
+| `jinyu_faq` | FAQ 问答（产出 FAQPage JSON-LD） |
+| `jinyu_faq_item` | FAQ 单项 |
 | `jinyu_howto` | HowTo 教程（产出 HowTo JSON-LD） |
 | `jinyu_step` | HowTo 步骤 |
 

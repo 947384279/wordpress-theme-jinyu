@@ -107,42 +107,43 @@ if ( ! function_exists( 'jinyu_recent_comments_list' ) ) {
 			);
 			jinyu_cache_set( $cache_key, $comments, 3 * MINUTE_IN_SECONDS );
 		}
-	if ( ! $comments ) {
-		return '';
-	}
-
-	// 批量预取父评论，避免循环内逐条 get_comment 触发的 N+1：把 N 条回复型评论的父查询合并为 1 次 comment__in。
-	$jc_parent_ids = [];
-	foreach ( $comments as $jc_c ) {
-		$pid = (int) $jc_c->comment_parent;
-		if ( $pid > 0 ) {
-			$jc_parent_ids[] = $pid;
+		if ( ! $comments ) {
+			return '';
 		}
-	}
-	$jc_parents = [];
-	if ( ! empty( $jc_parent_ids ) ) {
-		$jc_pc = get_comments(
-			[
-				'comment__in'   => array_unique( $jc_parent_ids ),
-				'status'        => 'all', // 与原 get_comment() 一致：不过滤状态，按 ID 直取
-				'no_found_rows' => true,
-			]
-		);
-		foreach ( $jc_pc as $jc_p ) {
-			$jc_parents[ (int) $jc_p->comment_ID ] = $jc_p;
-		}
-	}
 
-	$out = '<ul class="jinyu-rc-list">';
+		// 批量预取父评论，避免循环内逐条 get_comment 触发的 N+1：把 N 条回复型评论的父查询合并为 1 次 comment__in。
+		$jc_parent_ids = [];
+		foreach ( $comments as $jc_c ) {
+			$pid = (int) $jc_c->comment_parent;
+			if ( $pid > 0 ) {
+				$jc_parent_ids[] = $pid;
+			}
+		}
+		$jc_parents = [];
+		if ( ! empty( $jc_parent_ids ) ) {
+			$jc_pc = get_comments(
+				[
+					'comment__in'   => array_unique( $jc_parent_ids ),
+					'status'        => 'all', // 与原 get_comment() 一致：不过滤状态，按 ID 直取
+					'no_found_rows' => true,
+				]
+			);
+			foreach ( $jc_pc as $jc_p ) {
+				$jc_parents[ (int) $jc_p->comment_ID ] = $jc_p;
+			}
+		}
+
+		$out = '<ul class="jinyu-rc-list">';
 		foreach ( $comments as $jc_com ) {
 			$link = get_comment_link( $jc_com );
 
-		// 回复型评论标出「回复了谁」，让上下文一眼可读.
-		$reply = '';
-		if ( (int) $jc_com->comment_parent ) {
-			$jc_parent = $jc_parents[ (int) $jc_com->comment_parent ] ?? null;
-			if ( $jc_parent && $jc_parent->comment_author !== '' ) {
+			// 回复型评论标出「回复了谁」，让上下文一眼可读.
+			$reply = '';
+			if ( (int) $jc_com->comment_parent ) {
+				$jc_parent = $jc_parents[ (int) $jc_com->comment_parent ] ?? null;
+				if ( $jc_parent && $jc_parent->comment_author !== '' ) {
 					$reply = '<span class="jinyu-rc-reply">'
+						/* translators: %s: 占位符 */
 						. sprintf( esc_html__( '回复了 %s：', 'jinyu' ), esc_html( $jc_parent->comment_author ) )
 						. '</span>';
 				}
@@ -163,7 +164,8 @@ if ( ! function_exists( 'jinyu_recent_comments_list' ) ) {
 			$out .= '<span class="jinyu-rc-author">' . esc_html( $jc_com->comment_author ) . '</span>';
 			$out .= '<time class="jinyu-rc-time" datetime="' . esc_attr( get_comment_time( 'c', false, false, $jc_com ) ) . '"'
 					. ' title="' . esc_attr( get_comment_time( 'Y-m-d H:i', false, false, $jc_com ) ) . '">'
-					. esc_html( sprintf( __( '%s前', 'jinyu' ), human_time_diff( get_comment_time( 'U', false, false, $jc_com ), current_time( 'timestamp' ) ) ) )
+					/* translators: %s: 占位符 */
+					. esc_html( sprintf( __( '%s前', 'jinyu' ), human_time_diff( get_comment_time( 'U', false, false, $jc_com ), current_time( 'timestamp' ) ) ) ) /* phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- time() 符合业务逻辑（需要服务器本地时间戳） */
 					. '</time>';
 			$out .= '</div>';
 			$out .= '<a class="jinyu-rc-text" href="' . esc_url( $link ) . '" title="' . esc_attr( $jc_tip ) . '">'
@@ -185,12 +187,12 @@ if ( ! function_exists( 'jinyu_wp_comment' ) ) {
 	 * @param int        $depth
 	 */
 	function jinyu_wp_comment( $comment, $args, $depth ) {
-		$GLOBALS['comment'] = $comment;
+		$GLOBALS['comment'] = $comment; /* phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- 模板按需在局部覆盖全局，已 wp_reset_postdata */
 		$is_author          = (int) $comment->user_id > 0 && (int) $comment->user_id === (int) get_post_field( 'post_author', $comment->comment_post_ID );
 		?>
 		<li id="comment-<?php comment_ID(); ?>" <?php comment_class( 'jinyu-comment-item' . ( $is_author ? ' jinyu-comment-author' : '' ) ); ?>>
 			<div class="jinyu-comment-avatar">
-				<?php echo jinyu_comment_avatar( $comment ); ?>
+				<?php echo jinyu_comment_avatar( $comment );  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?>
 			</div>
 
 			<div class="jinyu-comment-body">
@@ -200,7 +202,8 @@ if ( ! function_exists( 'jinyu_wp_comment' ) ) {
 						<span class="jinyu-comment-badge"><?php esc_html_e( '作者', 'jinyu' ); ?></span>
 					<?php endif; ?>
 					<time class="jinyu-comment-time" datetime="<?php echo esc_attr( get_comment_time( 'c' ) ); ?>">
-						<?php echo esc_html( sprintf( __( '%s前', 'jinyu' ), human_time_diff( get_comment_time( 'U' ), current_time( 'timestamp' ) ) ) ); ?>
+						<?php /* translators: %s: 占位符 */ ?>
+						<?php echo esc_html( sprintf( __( '%s前', 'jinyu' ), human_time_diff( get_comment_time( 'U' ), current_time( 'timestamp' ) ) ) );  /* phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- time() 符合业务逻辑（需要服务器本地时间戳） */ ?>
 					</time>
 					<?php if ( $comment->comment_approved === '0' ) : ?>
 						<span class="jinyu-comment-waiting"><?php esc_html_e( '审核中', 'jinyu' ); ?></span>
@@ -217,7 +220,7 @@ if ( ! function_exists( 'jinyu_wp_comment' ) ) {
 				<div class="jinyu-comment-ua">
 						<?php if ( ! empty( $ua['platform'] ) ) : ?>
 						<span class="jinyu-ua-item" title="<?php echo esc_attr( $ua['platform'] ); ?>">
-							<?php echo jinyu_ua_icon( $ua['platform'], 'platform' ); ?>
+							<?php echo jinyu_ua_icon( $ua['platform'], 'platform' );  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?>
 							<?php echo esc_html( $ua['platform'] ); ?>
 						</span>
 					<?php endif; ?>
@@ -226,7 +229,7 @@ if ( ! function_exists( 'jinyu_wp_comment' ) ) {
 							$label = $ua['version'] ? $ua['browser'] . ' ' . $ua['version'] : $ua['browser'];
 							?>
 						<span class="jinyu-ua-item" title="<?php echo esc_attr( $label ); ?>">
-							<?php echo jinyu_ua_icon( $ua['browser'], 'browser' ); ?>
+							<?php echo jinyu_ua_icon( $ua['browser'], 'browser' );  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?>
 							<?php echo esc_html( $ua['browser'] ); ?>
 						</span>
 						<?php endif; ?>

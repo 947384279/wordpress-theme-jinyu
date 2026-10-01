@@ -66,7 +66,7 @@ add_action(
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
 			return;
 		}
-		if ( ! isset( $_POST['jinyu_post_meta_nonce_field'] ) || ! wp_verify_nonce( $_POST['jinyu_post_meta_nonce_field'], 'jinyu_post_meta_nonce' ) ) {
+		if ( ! isset( $_POST['jinyu_post_meta_nonce_field'] ) || ! wp_verify_nonce( $_POST['jinyu_post_meta_nonce_field'], 'jinyu_post_meta_nonce' ) ) { /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- 输入在 jinyu_ajax_guard/委托处已 wp_unslash+sanitize，WPCS 追不到 */
 			return;
 		}
 		if ( ! current_user_can( 'edit_post', $post_id ) ) {

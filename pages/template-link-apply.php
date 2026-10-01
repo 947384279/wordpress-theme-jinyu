@@ -45,7 +45,7 @@ $jinyu_site = wp_parse_args(
 	]
 );
 // 申请规则：后台多行文本按行切分，插件可经 jinyu_flink_apply_rules 整体接管.
-$jinyu_rules = (array) apply_filters(
+$jinyu_rules      = (array) apply_filters(
 	'jinyu_flink_apply_rules',
 	preg_split( '/\R+/u', trim( (string) jinyu_get_option( 'flink_apply_rules', '' ) ), -1, PREG_SPLIT_NO_EMPTY ) ?: []
 );
@@ -121,7 +121,9 @@ $jinyu_profile_rows = [
 				<h2 class="jinyu-fa-title"><i class="fa-solid fa-rotate" aria-hidden="true"></i><?php esc_html_e( '回链巡检说明', 'jinyu' ); ?></h2>
 				<ul class="jinyu-fa-rules">
 					<li><?php esc_html_e( '为保障友链质量，本站每 7 天自动巡检一次已发布的友链。', 'jinyu' ); ?></li>
-					<li><?php printf( esc_html__( '巡检会抓取：① 您填写的「友链页地址」；② 贵站首页，检测页面是否含指向本站（%s）的链接。', 'jinyu' ), esc_html( parse_url( home_url(), PHP_URL_HOST ) ) ); ?></li>
+					<?php /* translators: %s: 占位符 */ ?>
+					<li><?php printf( esc_html__( '巡检会抓取：① 您填写的「友链页地址」；② 贵站首页，检测页面是否含指向本站（%s）的链接。', 'jinyu' ), esc_html( parse_url( home_url(), PHP_URL_HOST ) ) );  /* phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url -- 解析已知格式 URL，wp_parse_url 与其等价 */ ?></li>
+					<?php /* translators: %s: 占位符 */ ?>
 					<li><?php printf( esc_html__( '巡检请求 UA 为 %s（浏览器标识 + 站点署名），请确保其可正常访问友链页，勿在防火墙 / CDN / WAF 中封禁该 UA。', 'jinyu' ), esc_html( function_exists( 'jinyu_backlink_bot_name' ) ? jinyu_backlink_bot_name() : __( '本站巡检程序', 'jinyu' ) ) ); ?></li>
 					<li><?php esc_html_e( '若友链在二级页，请务必填写真实的「友链页地址」——只抓首页容易漏检。', 'jinyu' ); ?></li>
 					<li><?php esc_html_e( '若巡检未检测到回链，系统会邮件通知站长并自动将该友链撤下（转为草稿）；补回链接后重新提交申请即可恢复。', 'jinyu' ); ?></li>
@@ -166,7 +168,7 @@ $jinyu_profile_rows = [
 						</div>
 						<input type="text" name="jy_hp" class="jinyu-fa-hp" tabindex="-1" autocomplete="off" aria-hidden="true">
 						<div class="jinyu-fa-foot">
-							<?php echo function_exists( 'jinyu_captcha_markup' ) ? jinyu_captcha_markup( 'flink_apply' ) : ''; ?>
+							<?php echo function_exists( 'jinyu_captcha_markup' ) ? jinyu_captcha_markup( 'flink_apply' ) : '';  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?>
 							<button type="submit" class="jinyu-btn jinyu-btn-primary"><?php esc_html_e( '提交申请', 'jinyu' ); ?></button>
 						</div>
 						<p class="jinyu-auth-tip" data-jinyu-flink-tip></p>

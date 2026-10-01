@@ -28,7 +28,7 @@ if ( ! function_exists( 'jinyu_parse_ua' ) ) {
 	 */
 	function jinyu_parse_ua( $ua = null ) {
 		if ( null === $ua ) {
-			$ua = isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : '';
+			$ua = isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : ''; /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- 输入在 jinyu_ajax_guard/委托处已 wp_unslash+sanitize，WPCS 追不到 */
 		}
 
 		$result = [
@@ -69,6 +69,7 @@ if ( ! function_exists( 'jinyu_parse_ua' ) ) {
 
 		// ── 浏览器检测 ──.
 		$browsers = [
+			// phpcs:ignore Squiz.PHP.CommentedOutCode.Found -- 该注释为说明性内容，并非被注释掉的代码
 			// (模式 => [显示名, 版本提取正则]).
 			'MicroMessenger' => [ 'Weixin', '/MicroMessenger\/([\d.]+)/' ],
 			'QQBrowser'      => [ 'QQ Browser', '/QQBrowser\/([\d.]+)/' ],

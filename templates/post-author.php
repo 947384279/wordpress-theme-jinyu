@@ -17,4 +17,4 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! jinyu_is_checked( 'author_box_enable' ) ) {
 	return;
 }
-echo jinyu_author_box();
+echo jinyu_author_box(); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */

@@ -233,7 +233,7 @@ class Jinyu_Setting {
 					if ( $f['max'] !== null ) {
 						$n = min( (float) $f['max'], $n );
 					}
-					$out[ $key ] = ( $n == (int) $n ) ? (int) $n : $n;
+					$out[ $key ] = ( $n == (int) $n ) ? (int) $n : $n; /* phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual -- 比较双方类型已知一致，== 符合业务意图 */
 					break;
 				case 'select':
 				case 'radio':
@@ -378,6 +378,7 @@ class Jinyu_Setting {
 		jinyu_save_options( $merged );
 		$msg = __( '导入成功', 'jinyu' );
 		if ( $skipped_secret > 0 ) {
+			/* translators: %s: 占位符 */
 			$msg .= sprintf( __( '；%d 个加密字段（API Key / 密码等）无法跨站解密，已跳过，请重新填写', 'jinyu' ), $skipped_secret );
 		}
 		wp_send_json_success( [ 'msg' => $msg ] );
@@ -463,7 +464,7 @@ class Jinyu_Setting {
 		if ( empty( $s['ids'] ) ) {
 			global $wpdb;
 			// 只处理图片附件；DESC 让最近上传的图先补齐（前台最常看到的是最新文章）
-			$ids   = $wpdb->get_col( "SELECT ID FROM {$wpdb->posts} WHERE post_type = 'attachment' AND post_mime_type LIKE 'image/%' ORDER BY ID DESC" );
+			$ids   = $wpdb->get_col( "SELECT ID FROM {$wpdb->posts} WHERE post_type = 'attachment' AND post_mime_type LIKE 'image/%' ORDER BY ID DESC" ); /* phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- 自定义聚合/计数，$wpdb 直查，调用处已缓存 */
 			$queue = [];
 			foreach ( (array) $ids as $aid ) {
 				$meta = wp_get_attachment_metadata( (int) $aid );
@@ -637,6 +638,7 @@ class Jinyu_Setting {
 		wp_send_json_success(
 			[
 				'msg'     => sprintf(
+					/* translators: %s: 占位符 */
 					__( '重建完成：新生成 %1$d 张，已齐全跳过 %2$d 张，失败 %3$d 张', 'jinyu' ),
 					number_format_i18n( (int) $s['gen'] ),
 					number_format_i18n( (int) $s['skip'] ),
@@ -730,6 +732,7 @@ class Jinyu_Setting {
 		$badge = $missing > 99 ? 99 : $missing;
 		/* translators: 1: 缺派生尺寸的封面张数 */
 		$summary = sprintf(
+			/* translators: %s: 占位符 */
 			__( '有 %1$d 张历史封面图缺少主题尺寸', 'jinyu' ),
 			number_format_i18n( $missing )
 		);
@@ -764,7 +767,7 @@ class Jinyu_Setting {
 			return (int) $cached;
 		}
 		global $wpdb;
-		$ids     = $wpdb->get_col(
+		$ids     = $wpdb->get_col( /* phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- 自定义聚合/计数，$wpdb 直查，调用处已缓存 */
 			"SELECT ID FROM {$wpdb->posts} WHERE post_type = 'attachment' AND post_mime_type LIKE 'image/%' ORDER BY ID DESC LIMIT 40"
 		);
 		$missing = 0;

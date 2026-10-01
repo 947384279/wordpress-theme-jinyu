@@ -10,6 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// phpcs:ignore Squiz.PHP.CommentedOutCode.Found -- 该注释为说明性内容，并非被注释掉的代码
 // 友情链接数据：由任意插件经 jinyu_flink_items 提供（格式 [['title'=>,'url'=>], ...]），
 // 无提供方时回退 WP 原生链接管理器（bookmarks）。主题不感知数据来源。
 $jinyu_link_items = array_slice( (array) apply_filters( 'jinyu_flink_items', [] ), 0, 6 );

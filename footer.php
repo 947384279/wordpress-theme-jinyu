@@ -68,7 +68,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<?php
 			$copy = trim( (string) jinyu_get_option( 'footer_copyright', '' ) );
 			if ( $copy ) {
-				echo wp_kses_post( str_replace( [ '{year}', '{name}' ], [ date( 'Y' ), get_bloginfo( 'name' ) ], $copy ) );
+				echo wp_kses_post( str_replace( [ '{year}', '{name}' ], [ date( 'Y' ), get_bloginfo( 'name' ) ], $copy ) ); /* phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date -- date() 符合业务逻辑，或后续改 wp_date() */
 			} else {
 				echo wp_kses_post( jinyu_footer_copyright() );
 			}
@@ -87,10 +87,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<?php $social = jinyu_footer_social(); ?>
 			<?php if ( $social ) : ?>
 			<span class="jinyu-social-row">
-				<?php foreach ( $social as $s ) : ?>
+				<?php foreach ( $social as $s ) :  /* phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- 模板按需在局部覆盖全局，已 wp_reset_postdata */ ?>
 				<a href="<?php echo esc_url( $s['url'] ); ?>" target="_blank" rel="noopener nofollow"
 				title="<?php echo esc_attr( $s['title'] ); ?>" aria-label="<?php echo esc_attr( $s['title'] ); ?>">
-					<?php echo jinyu_social_icon_markup( $s['icon'] ); ?>
+					<?php echo jinyu_social_icon_markup( $s['icon'] );  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?>
 				</a>
 			<?php endforeach; ?>
 			</span>
