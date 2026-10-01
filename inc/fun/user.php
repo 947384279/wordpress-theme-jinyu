@@ -51,23 +51,23 @@ function jinyu_login_redirect_url(): string {
 function jinyu_user_tabs(): array {
 	return [
 		'dashboard'     => [
-			'label' => __( '概览', 'jinyu' ),
+			'label' => __( 'Overview', 'jinyu' ),
 			'icon'  => 'fa-solid fa-gauge-high',
 		],
 		'posts'         => [
-			'label' => __( '我的文章', 'jinyu' ),
+			'label' => __( 'My Posts', 'jinyu' ),
 			'icon'  => 'fa-solid fa-file-lines',
 		],
 		'interact'      => [
-			'label' => __( '互动', 'jinyu' ),
+			'label' => __( 'Interactions', 'jinyu' ),
 			'icon'  => 'fa-solid fa-comment-dots',
 		],
 		'profile'       => [
-			'label' => __( '资料设置', 'jinyu' ),
+			'label' => __( 'Profile Settings', 'jinyu' ),
 			'icon'  => 'fa-solid fa-user-gear',
 		],
 		'notifications' => [
-			'label' => __( '消息', 'jinyu' ),
+			'label' => __( 'Messages', 'jinyu' ),
 			'icon'  => 'fa-solid fa-bell',
 		],
 	];
@@ -80,15 +80,15 @@ function jinyu_user_tabs(): array {
 function jinyu_user_interact_tabs(): array {
 	return [
 		'comments' => [
-			'label' => __( '评论', 'jinyu' ),
+			'label' => __( 'Comments', 'jinyu' ),
 			'icon'  => 'fa-solid fa-comments',
 		],
 		'favs'     => [
-			'label' => __( '收藏', 'jinyu' ),
+			'label' => __( 'Favorite', 'jinyu' ),
 			'icon'  => 'fa-solid fa-bookmark',
 		],
 		'follow'   => [
-			'label' => __( '关注', 'jinyu' ),
+			'label' => __( 'Follow', 'jinyu' ),
 			'icon'  => 'fa-solid fa-user-group',
 		],
 	];
@@ -594,7 +594,7 @@ function jinyu_user_pagination( int $total ): void {
 	}
 	printf(
 		'<nav class="jinyu-pagination jinyu-user-pagination" aria-label="%s">%s</nav>',
-		esc_attr__( '用户中心分页', 'jinyu' ),
+		esc_attr__( 'User Center Pagination', 'jinyu' ),
 		$links /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 	);
 }
@@ -631,20 +631,20 @@ function jinyu_user_post_row(): void {
 		<?php if ( current_user_can( 'edit_post', $pid ) ) : ?>
 			<a class="jinyu-btn jinyu-btn-ghost jinyu-post-act"
 			href="<?php echo esc_url( admin_url( 'post.php?post=' . $pid . '&action=edit' ) ); ?>">
-			<?php esc_html_e( '编辑', 'jinyu' ); ?>
+			<?php esc_html_e( 'Edit', 'jinyu' ); ?>
 			</a>
 		<?php endif; ?>
 		<?php if ( 'pending' === $status ) : ?>
 			<button type="button" class="jinyu-btn jinyu-btn-ghost jinyu-post-act jinyu-post-del"
 					data-post-id="<?php echo esc_attr( $pid ); ?>"
-					data-confirm="<?php esc_attr_e( '确定撤回该投稿吗？撤回后不可恢复。', 'jinyu' ); ?>">
-			<?php esc_html_e( '撤回', 'jinyu' ); ?>
+					data-confirm="<?php esc_attr_e( 'Are you sure you want to withdraw this submission? This cannot be undone.', 'jinyu' ); ?>">
+			<?php esc_html_e( 'Withdraw', 'jinyu' ); ?>
 			</button>
 		<?php elseif ( 'draft' === $status ) : ?>
 			<button type="button" class="jinyu-btn jinyu-btn-ghost jinyu-post-act jinyu-post-del"
 					data-post-id="<?php echo esc_attr( $pid ); ?>"
-					data-confirm="<?php esc_attr_e( '确定删除该草稿吗？删除后不可恢复。', 'jinyu' ); ?>">
-			<?php esc_html_e( '删除', 'jinyu' ); ?>
+					data-confirm="<?php esc_attr_e( 'Are you sure you want to delete this draft? This cannot be undone.', 'jinyu' ); ?>">
+			<?php esc_html_e( 'Delete', 'jinyu' ); ?>
 			</button>
 		<?php endif; ?>
 		</span>
@@ -679,7 +679,7 @@ function jinyu_fav_cell(): void {
 	echo '<div class="jinyu-fav-cell">';
 	get_template_part( 'templates/module', 'post' );
 	echo '<button type="button" class="jinyu-fav-remove" data-jinyu-fav-remove data-post-id="' . esc_attr( $pid ) . '">'
-		. '<i class="fa-solid fa-bookmark-slash" aria-hidden="true"></i>' . esc_html__( '取消收藏', 'jinyu' )
+		. '<i class="fa-solid fa-bookmark-slash" aria-hidden="true"></i>' . esc_html__( 'Remove from favorites', 'jinyu' )
 		. '</button>';
 	echo '</div>';
 }
@@ -711,14 +711,14 @@ function jinyu_user_stats( int $uid ): array {
 function jinyu_user_role_label( int $uid ): string {
 	$user = get_userdata( $uid );
 	if ( ! $user || empty( $user->roles ) ) {
-		return __( '访客', 'jinyu' );
+		return __( 'Guest', 'jinyu' );
 	}
 	$map  = [
-		'administrator' => __( '管理员', 'jinyu' ),
-		'editor'        => __( '编辑', 'jinyu' ),
-		'author'        => __( '作者', 'jinyu' ),
-		'contributor'   => __( '投稿者', 'jinyu' ),
-		'subscriber'    => __( '订阅者', 'jinyu' ),
+		'administrator' => __( 'Administrator', 'jinyu' ),
+		'editor'        => __( 'Edit', 'jinyu' ),
+		'author'        => __( 'Author', 'jinyu' ),
+		'contributor'   => __( 'Contributor', 'jinyu' ),
+		'subscriber'    => __( 'Subscriber', 'jinyu' ),
 	];
 	$role = $user->roles[0];
 	return $map[ $role ] ?? $role;
@@ -786,9 +786,9 @@ if ( ! function_exists( 'jinyu_post_status_label' ) ) {
 	 */
 	function jinyu_post_status_label( $status ): string {
 		$map = [
-			'publish' => __( '已发布', 'jinyu' ),
-			'pending' => __( '审核中', 'jinyu' ),
-			'draft'   => __( '草稿', 'jinyu' ),
+			'publish' => __( 'Published', 'jinyu' ),
+			'pending' => __( 'Pending review', 'jinyu' ),
+			'draft'   => __( 'Draft', 'jinyu' ),
 		];
 		if ( isset( $map[ $status ] ) ) {
 			return $map[ $status ];

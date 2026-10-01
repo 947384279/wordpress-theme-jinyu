@@ -108,7 +108,7 @@ if ( ! function_exists( 'jinyu_hitokoto_categories' ) ) {
 	/** 分类下拉选项：键 => 显示名 */
 	function jinyu_hitokoto_categories() {
 		$packs = jinyu_hitokoto_load_packs();
-		$map   = [ 'all' => __( '全部', 'jinyu' ) ];
+		$map   = [ 'all' => __( 'All', 'jinyu' ) ];
 		foreach ( $packs as $key => $rows ) {
 			$map[ $key ] = jinyu_hitokoto_cat_label( $key );
 		}

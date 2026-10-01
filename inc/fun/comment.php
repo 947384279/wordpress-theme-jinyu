@@ -144,7 +144,7 @@ if ( ! function_exists( 'jinyu_recent_comments_list' ) ) {
 				if ( $jc_parent && $jc_parent->comment_author !== '' ) {
 					$reply = '<span class="jinyu-rc-reply">'
 						/* translators: %s: 占位符 */
-						. sprintf( esc_html__( '回复了 %s：', 'jinyu' ), esc_html( $jc_parent->comment_author ) )
+						. sprintf( esc_html__( 'Replied to %s:', 'jinyu' ), esc_html( $jc_parent->comment_author ) )
 						. '</span>';
 				}
 			}
@@ -165,11 +165,11 @@ if ( ! function_exists( 'jinyu_recent_comments_list' ) ) {
 			$out .= '<time class="jinyu-rc-time" datetime="' . esc_attr( get_comment_time( 'c', false, false, $jc_com ) ) . '"'
 					. ' title="' . esc_attr( get_comment_time( 'Y-m-d H:i', false, false, $jc_com ) ) . '">'
 					/* translators: %s: 占位符 */
-					. esc_html( sprintf( __( '%s前', 'jinyu' ), human_time_diff( get_comment_time( 'U', false, false, $jc_com ), current_time( 'timestamp' ) ) ) ) /* phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- time() 符合业务逻辑（需要服务器本地时间戳） */
+					. esc_html( sprintf( __( '%s ago', 'jinyu' ), human_time_diff( get_comment_time( 'U', false, false, $jc_com ), current_time( 'timestamp' ) ) ) ) /* phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- time() 符合业务逻辑（需要服务器本地时间戳） */
 					. '</time>';
 			$out .= '</div>';
 			$out .= '<a class="jinyu-rc-text" href="' . esc_url( $link ) . '" title="' . esc_attr( $jc_tip ) . '">'
-					. $reply . esc_html( $jc_excerpt === '' ? __( '（无正文）', 'jinyu' ) : $jc_excerpt ) . '</a>';
+					. $reply . esc_html( $jc_excerpt === '' ? __( '(No content)', 'jinyu' ) : $jc_excerpt ) . '</a>';
 			$out .= '</div></li>';
 		}
 		$out .= '</ul>';
@@ -199,14 +199,14 @@ if ( ! function_exists( 'jinyu_wp_comment' ) ) {
 				<div class="jinyu-comment-head">
 					<span class="jinyu-comment-author"><?php comment_author_link( $comment ); ?></span>
 					<?php if ( $is_author ) : ?>
-						<span class="jinyu-comment-badge"><?php esc_html_e( '作者', 'jinyu' ); ?></span>
+						<span class="jinyu-comment-badge"><?php esc_html_e( 'Author', 'jinyu' ); ?></span>
 					<?php endif; ?>
 					<time class="jinyu-comment-time" datetime="<?php echo esc_attr( get_comment_time( 'c' ) ); ?>">
 						<?php /* translators: %s: 占位符 */ ?>
-						<?php echo esc_html( sprintf( __( '%s前', 'jinyu' ), human_time_diff( get_comment_time( 'U' ), current_time( 'timestamp' ) ) ) );  /* phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- time() 符合业务逻辑（需要服务器本地时间戳） */ ?>
+						<?php echo esc_html( sprintf( __( '%s ago', 'jinyu' ), human_time_diff( get_comment_time( 'U' ), current_time( 'timestamp' ) ) ) );  /* phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- time() 符合业务逻辑（需要服务器本地时间戳） */ ?>
 					</time>
 					<?php if ( $comment->comment_approved === '0' ) : ?>
-						<span class="jinyu-comment-waiting"><?php esc_html_e( '审核中', 'jinyu' ); ?></span>
+						<span class="jinyu-comment-waiting"><?php esc_html_e( 'Pending review', 'jinyu' ); ?></span>
 					<?php endif; ?>
 				</div>
 
@@ -245,7 +245,7 @@ endif;
 						array_merge(
 							$args,
 							[
-								'reply_text' => __( '回复', 'jinyu' ),
+								'reply_text' => __( 'Reply', 'jinyu' ),
 								'depth'      => $depth,
 								'max_depth'  => isset( $args['max_depth'] ) ? $args['max_depth'] : 5,
 								'before'     => '',
@@ -275,7 +275,7 @@ function jinyu_comment_form_fields( $fields ) {
 	if ( isset( $fields['comment'] ) ) {
 		$comment_field = str_replace(
 			'<textarea',
-			'<textarea rows="4" placeholder="' . esc_attr__( '说点什么吧...', 'jinyu' ) . '"',
+			'<textarea rows="4" placeholder="' . esc_attr__( 'Say something...', 'jinyu' ) . '"',
 			$fields['comment']
 		);
 		unset( $fields['comment'] );
@@ -323,20 +323,20 @@ if ( ! function_exists( 'jinyu_author_box' ) ) {
 		$stats         = jinyu_user_stats( $uid );
 		$bio           = get_the_author_meta( 'description', $uid );
 
-		$html  = '<section class="jinyu-author-box" aria-label="' . esc_attr__( '关于作者', 'jinyu' ) . '">';
+		$html  = '<section class="jinyu-author-box" aria-label="' . esc_attr__( 'About the author', 'jinyu' ) . '">';
 		$html .= '<img class="jinyu-author-avatar" src="' . ( $custom_avatar !== '' ? esc_url( $custom_avatar ) : $fallback ) . '" alt="' . esc_attr( $user->display_name ) . '" loading="lazy" data-jinyu-fallback="' . esc_url( $fallback ) . '">';
 		$html .= '<div class="jinyu-author-info">';
 		$html .= '<div class="jinyu-author-top">';
 		$html .= '<span class="jinyu-author-name">' . esc_html( $user->display_name ) . '</span>';
-		$html .= '<a class="jinyu-author-home" href="' . esc_url( get_author_posts_url( $uid ) ) . '">' . esc_html__( '查看主页', 'jinyu' ) . '<i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>';
+		$html .= '<a class="jinyu-author-home" href="' . esc_url( get_author_posts_url( $uid ) ) . '">' . esc_html__( 'View profile', 'jinyu' ) . '<i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>';
 		$html .= '</div>';
 		if ( '' !== $bio ) {
 			$html .= '<p class="jinyu-author-bio">' . esc_html( $bio ) . '</p>';
 		}
 		$html .= '<div class="jinyu-author-meta">';
-		$html .= '<span class="jinyu-author-num"><b>' . (int) $stats['posts'] . '</b>' . esc_html__( '文章', 'jinyu' ) . '</span>';
+		$html .= '<span class="jinyu-author-num"><b>' . (int) $stats['posts'] . '</b>' . esc_html__( 'Posts', 'jinyu' ) . '</span>';
 		$html .= '<span class="jinyu-author-sep" aria-hidden="true"></span>';
-		$html .= '<span class="jinyu-author-num"><b>' . (int) $stats['comments'] . '</b>' . esc_html__( '评论', 'jinyu' ) . '</span>';
+		$html .= '<span class="jinyu-author-num"><b>' . (int) $stats['comments'] . '</b>' . esc_html__( 'Comments', 'jinyu' ) . '</span>';
 		$html .= '</div></div></section>';
 		return $html;
 	}

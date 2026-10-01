@@ -35,14 +35,14 @@ if ( ! $jinyu_link_items ) {
 ?>
 <div class="jinyu-flinks">
 	<div class="jinyu-flinks-head">
-	<h2><?php esc_html_e( '友情链接', 'jinyu' ); ?></h2>
+	<h2><?php esc_html_e( 'Friend Links', 'jinyu' ); ?></h2>
 	<?php
 	// 入口 URL：后台手填优先；未填时自动指向使用「申请友链」模板的页面（都没有则不显示入口）.
 	$flink_apply = trim( (string) apply_filters( 'jinyu_flink_apply_url', (string) jinyu_get_option( 'flink_apply_url', '' ) ) );
 	if ( '' !== $flink_apply ) :
 		?>
 	<a class="jinyu-flinks-apply" href="<?php echo esc_url( $flink_apply ); ?>">
-		<?php esc_html_e( '申请友链', 'jinyu' ); ?>
+		<?php esc_html_e( 'Apply for friend link', 'jinyu' ); ?>
 		<i class="fa-solid fa-angle-right" aria-hidden="true"></i>
 	</a>
 	<?php endif; ?>

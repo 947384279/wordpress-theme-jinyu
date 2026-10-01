@@ -335,7 +335,7 @@ if ( version_compare( PHP_VERSION, '8.0', '<' ) ) {
 		'admin_notices',
 		function () {
 			/* translators: %s: 占位符 */
-			echo '<div class="notice notice-error"><p>' . sprintf( __( '金玉主题要求 PHP 8.0+，当前版本 %s', 'jinyu' ), PHP_VERSION ) . '</p></div>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+			echo '<div class="notice notice-error"><p>' . sprintf( __( 'The Jinyu theme requires PHP 8.0+. Current version: %s', 'jinyu' ), PHP_VERSION ) . '</p></div>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		}
 	);
 	return;
@@ -423,8 +423,8 @@ add_action(
 		);
 		register_nav_menus(
 			[
-				'primary' => __( '主导航菜单', 'jinyu' ),
-				'footer'  => __( '页脚菜单', 'jinyu' ),
+				'primary' => __( 'Primary Menu', 'jinyu' ),
+				'footer'  => __( 'Footer Menu', 'jinyu' ),
 			]
 		);
 
@@ -601,7 +601,7 @@ add_action(
 				// 分享渠道（逗号分隔，空=全部）.
 				'share_channels'        => jinyu_get_option( 'share_channels', '' ),
 				'favicon_badge'         => current_user_can( 'manage_options' ),
-				'reward_title'          => jinyu_get_option( 'reward_title', __( '赞赏作者', 'jinyu' ) ),
+				'reward_title'          => jinyu_get_option( 'reward_title', __( 'Tip the author', 'jinyu' ) ),
 				'reward_text'           => jinyu_get_option( 'reward_text', '' ),
 			]
 		);
@@ -612,38 +612,38 @@ add_action(
 			'jinyu-main',
 			'JINYU_I18N',
 			[
-				'lessThanMinute' => __( '不到 1 分钟', 'jinyu' ),
+				'lessThanMinute' => __( 'Less than 1 min', 'jinyu' ),
 				/* translators: %s: 占位符 */
-				'aboutMinutes'   => __( '约 %d 分钟', 'jinyu' ),
-				'loading'        => __( '加载中…', 'jinyu' ),
-				'submitting'     => __( '提交中…', 'jinyu' ),
-				'commentPosted'  => __( '评论已提交', 'jinyu' ),
-				'submitFailed'   => __( '提交失败，请稍后重试', 'jinyu' ),
-				'noMore'         => __( '没有更多了', 'jinyu' ),
-				'noCover'        => __( '暂无封面', 'jinyu' ),
-				'loadMore'       => __( '加载更多', 'jinyu' ),
-				'copy'           => __( '复制', 'jinyu' ),
-				'copied'         => __( '已复制', 'jinyu' ),
-				'favorited'      => __( '已收藏', 'jinyu' ),
-				'networkError'   => __( '网络异常，请稍后重试', 'jinyu' ),
-				'processing'     => __( '处理中…', 'jinyu' ),
-				'saveHint'       => __( '点「保存图片」放大后长按图片，即可保存到相册', 'jinyu' ),
-				'flat'           => __( '持平', 'jinyu' ),
+				'aboutMinutes'   => __( 'About %d min', 'jinyu' ),
+				'loading'        => __( 'Loading…', 'jinyu' ),
+				'submitting'     => __( 'Submitting…', 'jinyu' ),
+				'commentPosted'  => __( 'Comment submitted', 'jinyu' ),
+				'submitFailed'   => __( 'Submission failed. Please try again later.', 'jinyu' ),
+				'noMore'         => __( 'No more', 'jinyu' ),
+				'noCover'        => __( 'No cover image', 'jinyu' ),
+				'loadMore'       => __( 'Load more', 'jinyu' ),
+				'copy'           => __( 'Copy', 'jinyu' ),
+				'copied'         => __( 'Copied', 'jinyu' ),
+				'favorited'      => __( 'Favorited', 'jinyu' ),
+				'networkError'   => __( 'Network error. Please try again later.', 'jinyu' ),
+				'processing'     => __( 'Processing…', 'jinyu' ),
+				'saveHint'       => __( 'Tap "Save image" to enlarge it, then press and hold the image to save it to your album', 'jinyu' ),
+				'flat'           => __( 'Stable', 'jinyu' ),
 				/* translators: %s: 占位符 */
-				'nearSamples'    => __( '近 %d 次采样', 'jinyu' ),
-				'load'           => __( '负载', 'jinyu' ),
-				'memory'         => __( '内存占用', 'jinyu' ),
-				'sample'         => __( '采样', 'jinyu' ),
-				'copyFailed'     => __( '复制失败，请手动选择', 'jinyu' ),
-				'linkCopied'     => __( '链接已复制', 'jinyu' ),
-				'opSuccess'      => __( '操作成功', 'jinyu' ),
-				'noJumpPost'     => __( '没有可跳转的文章', 'jinyu' ),
-				'opFailed'       => __( '操作失败，请稍后再试', 'jinyu' ),
-				'thanksSupport'  => __( '感谢支持 ♥', 'jinyu' ),
-				'thanksFeedback' => __( '感谢你的反馈', 'jinyu' ),
-				'allRead'        => __( '已全部标记已读', 'jinyu' ),
-				'scanToRead'     => __( '长按 / 扫码阅读全文', 'jinyu' ),
-				'readDone'       => __( '已读完 ✓', 'jinyu' ),
+				'nearSamples'    => __( 'Last %d samples', 'jinyu' ),
+				'load'           => __( 'Load', 'jinyu' ),
+				'memory'         => __( 'Memory usage', 'jinyu' ),
+				'sample'         => __( 'Samples', 'jinyu' ),
+				'copyFailed'     => __( 'Copy failed. Please select the text manually', 'jinyu' ),
+				'linkCopied'     => __( 'Link copied', 'jinyu' ),
+				'opSuccess'      => __( 'Operation successful', 'jinyu' ),
+				'noJumpPost'     => __( 'No post to jump to', 'jinyu' ),
+				'opFailed'       => __( 'Operation failed. Please try again later.', 'jinyu' ),
+				'thanksSupport'  => __( 'Thanks for your support ♥', 'jinyu' ),
+				'thanksFeedback' => __( 'Thanks for your feedback', 'jinyu' ),
+				'allRead'        => __( 'All marked as read', 'jinyu' ),
+				'scanToRead'     => __( 'Press and hold or scan the QR code to read the full post', 'jinyu' ),
+				'readDone'       => __( 'Finished ✓', 'jinyu' ),
 				/* translators: %s: 占位符 */
 				'readProgress'   => __( '已读 %1$d% · 还需 %2$s', 'jinyu' ),
 			]
@@ -711,7 +711,7 @@ add_action(
 			// .inline：免得被 WP 核心搬进顶栏品牌区那个窄列（详见 inc/fun/cache.php 同类注释）.
 				'<div class="notice notice-warning inline"><p>%s</p></div>',
 				/* translators: %s: 缺失的 PHP 扩展名列表 */
-				sprintf( esc_html__( '金玉主题缺少 PHP 扩展：%s', 'jinyu' ), implode( ', ', $missing ) ) /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+				sprintf( esc_html__( 'The Jinyu theme is missing a PHP extension: %s', 'jinyu' ), implode( ', ', $missing ) ) /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 			);
 		}
 	}
@@ -896,11 +896,11 @@ add_action(
 		}
 		$text = trim( (string) jinyu_get_option( 'cookie_consent_text', '' ) );
 		if ( ! $text ) {
-			$text = __( '本站点使用 Cookie 以提升浏览体验，继续浏览即表示您同意我们的隐私政策。', 'jinyu' );
+			$text = __( 'This site uses cookies to improve your browsing experience. By continuing to browse, you agree to our privacy policy.', 'jinyu' );
 		}
-		echo '<div class="jinyu-cookie-bar" id="jinyu-cookie-bar" role="dialog" aria-label="' . esc_attr__( 'Cookie 提示', 'jinyu' ) . '">' .
+		echo '<div class="jinyu-cookie-bar" id="jinyu-cookie-bar" role="dialog" aria-label="' . esc_attr__( 'Cookie Notice', 'jinyu' ) . '">' .
 		'<span class="jinyu-cookie-text">' . esc_html( $text ) . '</span>' .
-		'<button type="button" class="jinyu-cookie-ok" id="jinyu-cookie-ok">' . esc_html__( '同意', 'jinyu' ) . '</button>' .
+		'<button type="button" class="jinyu-cookie-ok" id="jinyu-cookie-ok">' . esc_html__( 'Agree', 'jinyu' ) . '</button>' .
 		'</div>';
 		// 点击「同意」：写入 cookie 并移除提示条。脚本紧贴提示条 HTML 之后输出，.
 		// 保证元素已存在于 DOM 时再绑定（避免依赖 jinyu-main 内联脚本的时序问题）.

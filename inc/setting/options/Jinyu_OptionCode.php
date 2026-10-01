@@ -26,29 +26,29 @@ class Jinyu_OptionCode extends Jinyu_BaseOptionItem {
 		if ( ! \jinyu_is_wporg() ) {
 			$fields[] = [
 				'id'    => 'css_code_head',
-				'title' => __( '头部注入 CSS', 'jinyu' ),
+				'title' => __( 'Header CSS injection', 'jinyu' ),
 				'type'  => 'textarea',
 				'code'  => true,
 				'sdt'   => '',
-				'desc'  => __( '插入 wp_head 中', 'jinyu' ),
+				'desc'  => __( 'Inserted into wp_head', 'jinyu' ),
 			];
 			$fields[] = [
 				'id'    => 'js_code_head',
-				'title' => __( '头部注入 JS', 'jinyu' ),
+				'title' => __( 'Header JS injection', 'jinyu' ),
 				'type'  => 'textarea',
 				'code'  => true,
 				'sdt'   => '',
 			];
 			$fields[] = [
 				'id'    => 'css_code_foot',
-				'title' => __( '底部注入 CSS', 'jinyu' ),
+				'title' => __( 'Footer CSS injection', 'jinyu' ),
 				'type'  => 'textarea',
 				'code'  => true,
 				'sdt'   => '',
 			];
 			$fields[] = [
 				'id'    => 'js_code_foot',
-				'title' => __( '底部注入 JS', 'jinyu' ),
+				'title' => __( 'Footer JS injection', 'jinyu' ),
 				'type'  => 'textarea',
 				'code'  => true,
 				'sdt'   => '',
@@ -56,9 +56,9 @@ class Jinyu_OptionCode extends Jinyu_BaseOptionItem {
 		}
 		return [
 			'key'    => 'code',
-			'title'  => __( '自定义代码', 'jinyu' ),
+			'title'  => __( 'Custom Code', 'jinyu' ),
 			'icon'   => 'fa-solid fa-code',
-			'desc'   => __( '头部 / 底部注入的自定义 CSS、JS 代码。', 'jinyu' ),
+			'desc'   => __( 'Custom CSS and JS code injected into the header / footer.', 'jinyu' ),
 			'fields' => $fields,
 		];
 	}

@@ -394,13 +394,13 @@ if ( ! function_exists( 'jinyu_live_time' ) ) {
 		// phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- time() 符合业务逻辑（需要服务器本地时间戳）
 		$local = current_time( 'timestamp' );           // 站点本地「伪 UTC」纪元.
 		$week  = [
-			__( '星期日', 'jinyu' ),
-			__( '星期一', 'jinyu' ),
-			__( '星期二', 'jinyu' ),
-			__( '星期三', 'jinyu' ),
-			__( '星期四', 'jinyu' ),
-			__( '星期五', 'jinyu' ),
-			__( '星期六', 'jinyu' ),
+			__( 'Sunday', 'jinyu' ),
+			__( 'Monday', 'jinyu' ),
+			__( 'Tuesday', 'jinyu' ),
+			__( 'Wednesday', 'jinyu' ),
+			__( 'Thursday', 'jinyu' ),
+			__( 'Friday', 'jinyu' ),
+			__( 'Saturday', 'jinyu' ),
 		];
 
 		return [

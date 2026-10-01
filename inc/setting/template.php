@@ -17,14 +17,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 		高度 60px 且滚动时常驻，避免长表单「滚到底才能保存」。所有按钮 id 保持不变，
 		admin.js 的事件绑定与快捷键（Ctrl+K）无需改动。 -->
 	<div class="jinyu-topbar">
-		<nav class="jinyu-crumb" aria-label="<?php esc_attr_e( '当前位置', 'jinyu' ); ?>">
-			<span class="jinyu-crumb-root"><span class="jinyu-crumb-logo" aria-hidden="true"></span><?php esc_html_e( '金玉主题配置', 'jinyu' ); ?></span>
+		<nav class="jinyu-crumb" aria-label="<?php esc_attr_e( 'Current location', 'jinyu' ); ?>">
+			<span class="jinyu-crumb-root"><span class="jinyu-crumb-logo" aria-hidden="true"></span><?php esc_html_e( 'Jinyu Theme Settings', 'jinyu' ); ?></span>
 			<span class="jinyu-crumb-sep" aria-hidden="true">/</span>
 			<!-- 当前分组名由 admin.js 在切换分组时写入 -->
 			<b class="jinyu-crumb-cur" id="jinyu-crumb-cur"><?php echo esc_html( get_admin_page_title() ); ?></b>
 			<span class="jinyu-ver-chip">v<?php echo esc_html( JINYU_CUR_VER ); ?></span>
 			<span class="jinyu-ver-req"><?php esc_html_e( 'PHP 8.0+ · WordPress 6.0+', 'jinyu' ); ?></span>
-			<button type="button" class="jinyu-btn jinyu-btn-sm jinyu-btn-ghost jinyu-crumb-update" id="jinyu-check-update" data-check-update><?php esc_html_e( '检查更新', 'jinyu' ); ?></button>
+			<button type="button" class="jinyu-btn jinyu-btn-sm jinyu-btn-ghost jinyu-crumb-update" id="jinyu-check-update" data-check-update><?php esc_html_e( 'Check for updates', 'jinyu' ); ?></button>
 		</nav>
 
 		<div class="jinyu-topbar-actions">
@@ -37,21 +37,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 			?>
 			<span id="jinyu-saved-time" class="jinyu-saved-time"></span>
 			<div class="jinyu-search-wrap">
-				<input type="search" id="jinyu-search" class="jinyu-search" placeholder="<?php esc_attr_e( '搜索设置…', 'jinyu' ); ?>">
-				<button type="button" id="jinyu-search-clear" class="jinyu-search-clear" aria-label="<?php esc_attr_e( '清除搜索', 'jinyu' ); ?>" hidden>
+				<input type="search" id="jinyu-search" class="jinyu-search" placeholder="<?php esc_attr_e( 'Search settings…', 'jinyu' ); ?>">
+				<button type="button" id="jinyu-search-clear" class="jinyu-search-clear" aria-label="<?php esc_attr_e( 'Clear search', 'jinyu' ); ?>" hidden>
 					<span class="dashicons dashicons-no-alt"></span>
 				</button>
 				<kbd class="jinyu-search-kbd" aria-hidden="true">Ctrl + K</kbd>
 			</div>
 			<!-- 「恢复默认」保留纯图标（低频次操作，图标比文字更克制）；图标提示由
 				.jinyu-icon-btn 的 CSS 浮层渲染，不引 JS、也不与原生 title 重复。 -->
-			<button type="button" id="jinyu-reset" class="jinyu-icon-btn jinyu-icon-btn--ghost" data-tip="<?php esc_attr_e( '恢复默认', 'jinyu' ); ?>" aria-label="<?php esc_attr_e( '恢复默认', 'jinyu' ); ?>">
+			<button type="button" id="jinyu-reset" class="jinyu-icon-btn jinyu-icon-btn--ghost" data-tip="<?php esc_attr_e( 'Restore defaults', 'jinyu' ); ?>" aria-label="<?php esc_attr_e( 'Restore defaults', 'jinyu' ); ?>">
 				<svg class="jinyu-ico-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4V1L8 5l4 4V6a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8z"/></svg>
 			</button>
 			<!-- 保存是主操作：用文字主按钮而非图标，避免「猜谜图标」且窄屏不易误触 -->
-			<button type="button" id="jinyu-save" class="jinyu-btn jinyu-btn-primary jinyu-save-btn" aria-label="<?php esc_attr_e( '保存更改', 'jinyu' ); ?>">
+			<button type="button" id="jinyu-save" class="jinyu-btn jinyu-btn-primary jinyu-save-btn" aria-label="<?php esc_attr_e( 'Save changes', 'jinyu' ); ?>">
 				<svg class="jinyu-save-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7l-4-4zM7 5h6v5H7V5zm10 14H7v-6h10v6z"/></svg>
-				<span><?php esc_html_e( '保存更改', 'jinyu' ); ?></span>
+				<span><?php esc_html_e( 'Save changes', 'jinyu' ); ?></span>
 			</button>
 		</div>
 	</div>
@@ -63,17 +63,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<div class="jinyu-dirtybar" id="jinyu-dirtybar" role="status" aria-live="polite" hidden>
 		<span class="jinyu-dirty-dot" aria-hidden="true"></span>
 		<span class="jinyu-dirty-text">
-			<?php esc_html_e( '有未保存的更改', 'jinyu' ); ?>
+			<?php esc_html_e( 'You have unsaved changes', 'jinyu' ); ?>
 			<span class="jinyu-dirty-count" hidden></span>
 		</span>
 		<span class="jinyu-dirty-actions">
-			<button type="button" id="jinyu-discard" class="jinyu-dirty-btn jinyu-dirty-btn--ghost" aria-label="<?php esc_attr_e( '放弃更改', 'jinyu' ); ?>">
+			<button type="button" id="jinyu-discard" class="jinyu-dirty-btn jinyu-dirty-btn--ghost" aria-label="<?php esc_attr_e( 'Discard changes', 'jinyu' ); ?>">
 				<span class="dashicons dashicons-undo" aria-hidden="true"></span>
-				<span class="jinyu-dirty-btn-label" aria-hidden="true"><?php esc_html_e( '放弃更改', 'jinyu' ); ?></span>
+				<span class="jinyu-dirty-btn-label" aria-hidden="true"><?php esc_html_e( 'Discard changes', 'jinyu' ); ?></span>
 			</button>
-			<button type="button" id="jinyu-save-float" class="jinyu-dirty-btn jinyu-dirty-btn--primary" aria-label="<?php esc_attr_e( '保存', 'jinyu' ); ?>">
+			<button type="button" id="jinyu-save-float" class="jinyu-dirty-btn jinyu-dirty-btn--primary" aria-label="<?php esc_attr_e( 'Save', 'jinyu' ); ?>">
 				<span class="dashicons dashicons-saved" aria-hidden="true"></span>
-				<span class="jinyu-dirty-btn-label" aria-hidden="true"><?php esc_html_e( '保存', 'jinyu' ); ?></span>
+				<span class="jinyu-dirty-btn-label" aria-hidden="true"><?php esc_html_e( 'Save', 'jinyu' ); ?></span>
 			</button>
 		</span>
 	</div>

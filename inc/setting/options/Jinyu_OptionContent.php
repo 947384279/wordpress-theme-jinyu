@@ -23,30 +23,30 @@ class Jinyu_OptionContent extends Jinyu_BaseOptionItem {
 	public function get_fields(): array {
 		return [
 			'key'    => 'content',
-			'title'  => __( '内容增强', 'jinyu' ),
+			'title'  => __( 'Content Enhancements', 'jinyu' ),
 			'icon'   => 'fa-solid fa-wand-magic-sparkles',
-			'desc'   => __( '文章页的阅读增强（目录/面包屑/进度条等）与底部模块开关。', 'jinyu' ),
+			'desc'   => __( 'Reading enhancements for single posts (TOC / breadcrumbs / progress bar, etc.) and post-bottom module toggles.', 'jinyu' ),
 			'fields' => [
 				[
 					'type'  => 'subhead',
-					'title' => __( '阅读增强', 'jinyu' ),
+					'title' => __( 'Reading Enhancements', 'jinyu' ),
 				],
 				/* ─── 阅读增强 ─── */
 				[
 					'id'    => 'toc_enable',
-					'title' => __( '文章目录 TOC', 'jinyu' ),
+					'title' => __( 'Post table of contents (TOC)', 'jinyu' ),
 					'type'  => 'switch',
 					'sdt'   => true,
-					'desc'  => __( '自动提取正文 H2/H3/H4 生成目录并滚动高亮', 'jinyu' ),
+					'desc'  => __( 'Automatically build a TOC from H2/H3/H4 in the content with scroll highlighting', 'jinyu' ),
 				],
 				[
 					'id'      => 'toc_depth',
-					'title'   => __( '目录标题层级', 'jinyu' ),
+					'title'   => __( 'TOC heading levels', 'jinyu' ),
 					'type'    => 'select',
 					'sdt'     => '3',
 					'options' => [
 						[
-							'label' => __( '仅 H2', 'jinyu' ),
+							'label' => __( 'H2 only', 'jinyu' ),
 							'value' => '2',
 						],
 						[
@@ -61,87 +61,87 @@ class Jinyu_OptionContent extends Jinyu_BaseOptionItem {
 				],
 				[
 					'id'    => 'breadcrumb_enable',
-					'title' => __( '面包屑导航', 'jinyu' ),
+					'title' => __( 'Breadcrumbs', 'jinyu' ),
 					'type'  => 'switch',
 					'sdt'   => true,
 				],
 				[
 					'id'    => 'back_top_enable',
-					'title' => __( '返回顶部按钮', 'jinyu' ),
+					'title' => __( 'Back-to-top button', 'jinyu' ),
 					'type'  => 'switch',
 					'sdt'   => true,
 				],
 				[
 					'id'    => 'code_highlight_enable',
-					'title' => __( '代码高亮', 'jinyu' ),
+					'title' => __( 'Syntax highlighting', 'jinyu' ),
 					'type'  => 'switch',
 					'sdt'   => true,
 				],
 				[
 					'id'    => 'read_progress_enable',
-					'title' => __( '阅读进度条', 'jinyu' ),
+					'title' => __( 'Reading progress bar', 'jinyu' ),
 					'type'  => 'switch',
 					'sdt'   => true,
 				],
 				[
 					'id'    => 'show_cover',
-					'title' => __( '文章封面图（全局）', 'jinyu' ),
+					'title' => __( 'Post cover image (global)', 'jinyu' ),
 					'type'  => 'switch',
 					'sdt'   => true,
-					'desc'  => __( '关闭后全站不展示特色图；单篇仍可用「隐藏封面」覆盖', 'jinyu' ),
+					'desc'  => __( 'When off, featured images are hidden site-wide; single posts can still override with "Hide cover"', 'jinyu' ),
 				],
 				[
 					'id'    => 'default_thumbnail',
-					'title' => __( '默认缩略图', 'jinyu' ),
+					'title' => __( 'Default thumbnail', 'jinyu' ),
 					'type'  => 'upload',
 					'sdt'   => '',
-					'desc'  => __( '无特色图且正文无图片时的兜底缩略图（留空即用主题内置的「七彩云」渐变默认图，此处在需要换图时覆盖）', 'jinyu' ),
+					'desc'  => __( 'Fallback thumbnail when a post has no featured image and no images in the content (leave empty to use the theme\'s built-in "colorful cloud" gradient default; override here only when you want a different image)', 'jinyu' ),
 				],
 				[
 					'id'    => 'excerpt_length',
-					'title' => __( '摘要字数', 'jinyu' ),
+					'title' => __( 'Excerpt length', 'jinyu' ),
 					'type'  => 'number',
 					'sdt'   => 120,
 					'min'   => 20,
 					'max'   => 300,
-					'unit'  => __( '字', 'jinyu' ),
-					'desc'  => __( '列表/归档页自动摘要长度', 'jinyu' ),
+					'unit'  => __( 'words', 'jinyu' ),
+					'desc'  => __( 'Auto excerpt length on list / archive pages', 'jinyu' ),
 				],
 
 				[
 					'type'  => 'subhead',
-					'title' => __( '列表卡片信息行', 'jinyu' ),
+					'title' => __( 'List card meta line', 'jinyu' ),
 				],
 				/* ─── 列表卡片信息行 ─── */
 				[
 					'id'    => 'card_series_enable',
-					'title' => __( '卡片显示所属系列', 'jinyu' ),
+					'title' => __( 'Show series in cards', 'jinyu' ),
 					'type'  => 'switch',
 					'sdt'   => true,
-					'desc'  => __( '信息行显示「系列名 · 第 N/M 篇」，引导连载阅读；未归入系列的文章不显示', 'jinyu' ),
+					'desc'  => __( 'The meta line shows "Series name · Part N/M" to guide series reading; posts not in a series show nothing', 'jinyu' ),
 				],
 				[
 					'id'    => 'card_updated_enable',
-					'title' => __( '卡片显示最近更新', 'jinyu' ),
+					'title' => __( 'Show last updated in cards', 'jinyu' ),
 					'type'  => 'switch',
 					'sdt'   => true,
-					'desc'  => __( '文章修改晚于发布 3 天以上才提示「更新于 X」，避免小改动造成噪音', 'jinyu' ),
+					'desc'  => __( 'Shows "Updated on X" only when a post is modified more than 3 days after publication, to avoid noise from minor edits', 'jinyu' ),
 				],
 
 				[
 					'type'  => 'subhead',
-					'title' => __( '文章底部模块', 'jinyu' ),
+					'title' => __( 'Post-bottom modules', 'jinyu' ),
 				],
 				/* ─── 文章底部模块 ─── */
 				[
 					'id'    => 'related_enable',
-					'title' => __( '相关文章', 'jinyu' ),
+					'title' => __( 'Related Posts', 'jinyu' ),
 					'type'  => 'switch',
 					'sdt'   => true,
 				],
 				[
 					'id'    => 'related_num',
-					'title' => __( '相关文章数量', 'jinyu' ),
+					'title' => __( 'Number of related posts', 'jinyu' ),
 					'type'  => 'number',
 					'sdt'   => 4,
 					'min'   => 1,
@@ -149,62 +149,62 @@ class Jinyu_OptionContent extends Jinyu_BaseOptionItem {
 				],
 				[
 					'id'      => 'related_type',
-					'title'   => __( '相关文章依据', 'jinyu' ),
+					'title'   => __( 'Related posts based on', 'jinyu' ),
 					'type'    => 'select',
 					'sdt'     => 'tags',
 					'options' => [
 						[
-							'label' => __( '相同标签', 'jinyu' ),
+							'label' => __( 'Same tags', 'jinyu' ),
 							'value' => 'tags',
 						],
 						[
-							'label' => __( '相同分类', 'jinyu' ),
+							'label' => __( 'Same categories', 'jinyu' ),
 							'value' => 'cats',
 						],
 						[
-							'label' => __( '随机', 'jinyu' ),
+							'label' => __( 'Random', 'jinyu' ),
 							'value' => 'random',
 						],
 					],
 				],
 				[
 					'id'    => 'post_nav_enable',
-					'title' => __( '上一篇 / 下一篇', 'jinyu' ),
+					'title' => __( 'Previous / Next', 'jinyu' ),
 					'type'  => 'switch',
 					'sdt'   => true,
 				],
 
 				[
 					'type'  => 'subhead',
-					'title' => __( '文章操作栏', 'jinyu' ),
+					'title' => __( 'Post action bar', 'jinyu' ),
 				],
 				/* ─── 文章操作栏 ─── */
 				[
 					'id'    => 'like_enable',
-					'title' => __( '点赞', 'jinyu' ),
+					'title' => __( 'Like', 'jinyu' ),
 					'type'  => 'switch',
 					'sdt'   => true,
 				],
 				[
 					'id'    => 'fav_enable',
-					'title' => __( '收藏', 'jinyu' ),
+					'title' => __( 'Favorite', 'jinyu' ),
 					'type'  => 'switch',
 					'sdt'   => true,
 				],
 				[
 					'id'    => 'share_enable',
-					'title' => __( '分享', 'jinyu' ),
+					'title' => __( 'Share', 'jinyu' ),
 					'type'  => 'switch',
 					'sdt'   => true,
 				],
 				[
 					'id'      => 'share_channels',
-					'title'   => __( '分享渠道', 'jinyu' ),
+					'title'   => __( 'Share channels', 'jinyu' ),
 					'type'    => 'checkboxes',
 					'sdt'     => 'weibo,qq,qzone,wechat,link',
 					'options' => [
 						[
-							'label' => __( '微博', 'jinyu' ),
+							'label' => __( 'Weibo', 'jinyu' ),
 							'value' => 'weibo',
 						],
 						[
@@ -212,29 +212,29 @@ class Jinyu_OptionContent extends Jinyu_BaseOptionItem {
 							'value' => 'qq',
 						],
 						[
-							'label' => __( 'QQ空间', 'jinyu' ),
+							'label' => __( 'Qzone', 'jinyu' ),
 							'value' => 'qzone',
 						],
 						[
-							'label' => __( '微信', 'jinyu' ),
+							'label' => __( 'WeChat', 'jinyu' ),
 							'value' => 'wechat',
 						],
 						[
-							'label' => __( '复制链接', 'jinyu' ),
+							'label' => __( 'Copy link', 'jinyu' ),
 							'value' => 'link',
 						],
 					],
-					'desc'    => __( '多选，留空则全部显示', 'jinyu' ),
+					'desc'    => __( 'Multiple choices; leave empty to show all', 'jinyu' ),
 				],
 				[
 					'id'    => 'poster_enable',
-					'title' => __( '海报生成', 'jinyu' ),
+					'title' => __( 'Poster generation', 'jinyu' ),
 					'type'  => 'switch',
 					'sdt'   => true,
 				],
 				[
 					'id'    => 'qr_enable',
-					'title' => __( '二维码', 'jinyu' ),
+					'title' => __( 'QR Code', 'jinyu' ),
 					'type'  => 'switch',
 					'sdt'   => false,
 				],

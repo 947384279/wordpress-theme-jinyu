@@ -209,8 +209,8 @@ function jinyu_cz_register( $wp_customize ) {
 	$wp_customize->add_panel(
 		$panel_id,
 		[
-			'title'       => __( '金玉主题设置', 'jinyu' ),
-			'description' => __( '主题外观与布局选项，修改后可在右侧实时预览。', 'jinyu' ),
+			'title'       => __( 'Jinyu Theme Settings', 'jinyu' ),
+			'description' => __( 'Theme appearance and layout options. Changes can be previewed live on the right.', 'jinyu' ),
 			'priority'    => 30,
 		]
 	);
@@ -220,7 +220,7 @@ function jinyu_cz_register( $wp_customize ) {
 		$wp_customize->add_section(
 			$section_id,
 			[
-				'title'       => $group['title'] ?? __( '设置', 'jinyu' ),
+				'title'       => $group['title'] ?? __( 'Settings', 'jinyu' ),
 				'description' => $group['desc'] ?? '',
 				'panel'       => $panel_id,
 				'priority'    => 10 + (int) $gi,

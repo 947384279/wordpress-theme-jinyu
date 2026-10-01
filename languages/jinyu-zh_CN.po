@@ -7,7 +7,7 @@ msgstr ""
 "PO-Revision-Date: 2026-10-01 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
-"Language: en_US\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -16,157 +16,175 @@ msgstr ""
 
 #: 404.php:40
 msgid "Back to home"
-msgstr ""
+msgstr "返回首页"
 
 #: 404.php:41
 msgid "Go back"
-msgstr ""
+msgstr "返回上一页"
 
 #: 404.php:24
 msgid "Page not found"
-msgstr ""
+msgstr "页面走丢了"
 
 #: 404.php:45 sidebar.php:43
 msgid "Popular Posts"
-msgstr ""
+msgstr "热门文章"
 
 #: 404.php:25
 msgid ""
 "The page you are looking for does not exist, has been moved, or the link has"
 " expired. Start again from below."
-msgstr ""
+msgstr "你要访问的页面不存在、已被移动或链接已过期，从下面重新出发吧。"
 
 #: assets/js/admin.js
 msgid " copy"
-msgstr ""
+msgstr " 副本"
 
 #: assets/js/admin.js
 msgid " images"
-msgstr ""
+msgstr " 张"
 
 #: assets/js/admin.js
 msgid " items"
-msgstr ""
+msgstr " 项"
 
 #: assets/js/admin.js
 msgid " items</span>"
-msgstr ""
+msgstr " 项</span>"
 
 #: assets/js/admin.js
 msgid "\" aria-label=\"Remove\">×</button>"
-msgstr ""
+msgstr "\" aria-label=\"移除\">×</button>"
 
 #: assets/js/admin.js
 msgid "\" aria-label=\"Remove\">×</button></span>"
-msgstr ""
+msgstr "\" aria-label=\"移除\">×</button></span>"
 
 #: assets/js/admin.js
 msgid "\" group to defaults? Customized settings in this group will be cleared."
-msgstr ""
+msgstr "」分组为默认值？该分组下的自定义设置将被清除。"
 
 #: assets/js/admin.js
 msgid "\" placeholder=\"Click the button on the right to select, or enter a URL\">"
-msgstr ""
+msgstr "\" placeholder=\"点击右侧按钮选择，或手动输入 URL\">"
 
 #: assets/js/admin.js
 msgid "\" placeholder=\"Click to select or enter a URL\">"
-msgstr ""
+msgstr "\" placeholder=\"点击选择或输入 URL\">"
 
 #: assets/js/admin.js
 msgid "\" target=\"_blank\" rel=\"noopener\">Download update package</a>"
-msgstr ""
+msgstr "\" target=\"_blank\" rel=\"noopener\">下载更新包</a>"
 
 #: assets/js/admin.js
 msgid "\" target=\"_blank\" rel=\"noopener\">View details</a>"
-msgstr ""
+msgstr "\" target=\"_blank\" rel=\"noopener\">查看详情</a>"
 
 #: assets/js/admin.js
 msgid "\">+ Add item</button>"
-msgstr ""
+msgstr "\">+ 添加一项</button>"
 
 #: assets/js/admin.js
 msgid "\">Clear</button>"
-msgstr ""
+msgstr "\">清空</button>"
 
 #: assets/js/admin.js
 msgid "\">Select</button>"
-msgstr ""
+msgstr "\">选择</button>"
 
 #: assets/js/admin.js assets/js/jinyu.js
 msgid ")"
-msgstr ""
+msgstr "）"
 
 #: assets/js/admin.js
 msgid "). Make sure the Jinyu theme companion plugin is enabled"
-msgstr ""
+msgstr "），请检查「金玉主题配套插件」是否已启用"
 
 #: assets/js/admin.js
 msgid ". Download it from the About panel"
-msgstr ""
+msgstr "，到「关于」面板下载"
 
 #: assets/js/admin.js
 msgid ""
 "<button type=\"button\" class=\"button jinyu-dyn-upload\" data-dyn-"
 "upload>Select</button></div>"
 msgstr ""
+"<button type=\"button\" class=\"button jinyu-dyn-upload\" data-dyn-"
+"upload>选择</button></div>"
 
 #: assets/js/admin.js
 msgid ""
 "<button type=\"button\" class=\"jinyu-dyn-btn jinyu-dyn-del\" data-dyn-del "
 "title=\"Delete\">×</button>"
 msgstr ""
+"<button type=\"button\" class=\"jinyu-dyn-btn jinyu-dyn-del\" data-dyn-del "
+"title=\"删除\">×</button>"
 
 #: assets/js/admin.js
 msgid ""
 "<button type=\"button\" class=\"jinyu-dyn-btn\" data-dyn-copy "
 "title=\"Copy\">⧉</button>"
 msgstr ""
+"<button type=\"button\" class=\"jinyu-dyn-btn\" data-dyn-copy "
+"title=\"复制\">⧉</button>"
 
 #: assets/js/admin.js
 msgid ""
 "<button type=\"button\" class=\"jinyu-dyn-btn\" data-dyn-down title=\"Move "
 "down\">↓</button>"
 msgstr ""
+"<button type=\"button\" class=\"jinyu-dyn-btn\" data-dyn-down "
+"title=\"下移\">↓</button>"
 
 #: assets/js/admin.js
 msgid ""
 "<button type=\"button\" class=\"jinyu-dyn-btn\" data-dyn-up title=\"Move "
 "up\">↑</button>"
 msgstr ""
+"<button type=\"button\" class=\"jinyu-dyn-btn\" data-dyn-up "
+"title=\"上移\">↑</button>"
 
 #: assets/js/admin.js
 msgid ""
 "<button type=\"button\" class=\"jinyu-nav-toggle\" data-nav-toggle aria-"
 "label=\"Collapse / expand sidebar\" title=\"Collapse / expand sidebar\">"
 msgstr ""
+"<button type=\"button\" class=\"jinyu-nav-toggle\" data-nav-toggle aria-"
+"label=\"折叠 / 展开侧栏\" title=\"折叠 / 展开侧栏\">"
 
 #: assets/js/admin.js
 msgid ""
 "<button type=\"button\" class=\"jinyu-tool-btn jinyu-tool-btn--sm\" "
 "id=\"jinyu-thumbs-stop\">Stop</button>"
 msgstr ""
+"<button type=\"button\" class=\"jinyu-tool-btn jinyu-tool-btn--sm\" "
+"id=\"jinyu-thumbs-stop\">停止</button>"
 
 #: assets/js/admin.js
 msgid ""
 "<button type=\"button\" class=\"jinyu-update-pop-close\" data-close-update "
 "aria-label=\"Close\">×</button>"
 msgstr ""
+"<button type=\"button\" class=\"jinyu-update-pop-close\" data-close-update "
+"aria-label=\"关闭\">×</button>"
 
 #: assets/js/admin.js
 msgid ""
 "<div class=\"jinyu-ms-search\"><input type=\"text\" class=\"jinyu-ms-q\" "
 "placeholder=\"Search…\" autocomplete=\"off\">"
 msgstr ""
+"<div class=\"jinyu-ms-search\"><input type=\"text\" class=\"jinyu-ms-q\" "
+"placeholder=\"搜索…\" autocomplete=\"off\">"
 
 #: assets/js/admin.js
 msgid ""
 "<div class=\"jinyu-search-empty\" hidden>No matching settings. Try a "
 "different keyword</div>"
-msgstr ""
+msgstr "<div class=\"jinyu-search-empty\" hidden>没有匹配的设置项，换个关键词试试</div>"
 
 #: assets/js/admin.js
 msgid "<nav class=\"jinyu-nav\" aria-label=\"Settings groups\">"
-msgstr ""
+msgstr "<nav class=\"jinyu-nav\" aria-label=\"设置分组\">"
 
 #: assets/js/admin.js
 msgid ""
@@ -175,119 +193,123 @@ msgid ""
 "dashboards, object storage push and acceleration. Manage it under the "
 "\"Jinyu Booster\" menu in the admin sidebar.</p>"
 msgstr ""
+"<p class=\"jinyu-tools-note\">「金玉增强」插件提供：邮件 SMTP、缓存清理、数据库优化、OPcache / "
+"Memcached 看板、对象存储推送与加速。请到后台左侧菜单「金玉增强」中操作。</p>"
 
 #: assets/js/admin.js
 msgid "<p class=\"jinyu-update-nocl\">No changelog yet.</p>"
-msgstr ""
+msgstr "<p class=\"jinyu-update-nocl\">暂无更新日志。</p>"
 
 #: assets/js/admin.js
 msgid "<span class=\"jinyu-dyn-grip\" title=\"Drag to sort\">⠿</span>"
-msgstr ""
+msgstr "<span class=\"jinyu-dyn-grip\" title=\"拖拽排序\">⠿</span>"
 
 #: assets/js/admin.js
 msgid "<span class=\"jinyu-nav-title\">Jinyu Theme Settings</span></span>"
-msgstr ""
+msgstr "<span class=\"jinyu-nav-title\">金玉主题配置</span></span>"
 
 #: assets/js/admin.js
 msgid ""
 "<span class=\"jinyu-thumbs-progress-label\" id=\"jinyu-thumbs-progress-"
 "label\">Preparing…</span>"
 msgstr ""
+"<span class=\"jinyu-thumbs-progress-label\" id=\"jinyu-thumbs-progress-"
+"label\">准备中…</span>"
 
 #: assets/js/admin.js
 msgid "<span>Current v"
-msgstr ""
+msgstr "<span>当前 v"
 
 #: assets/js/admin.js
 msgid ">Remove</button>"
-msgstr ""
+msgstr ">移除</button>"
 
 #: assets/js/admin.js
 msgid ">Selected: "
-msgstr ""
+msgstr ">已选 "
 
 #: assets/js/admin.js
 msgid "A task is already running; it will resume automatically…"
-msgstr ""
+msgstr "任务正在进行，稍候自动接管…"
 
 #: assets/js/admin.js
 msgid "Already up to date: v"
-msgstr ""
+msgstr "已是最新版本 v"
 
 #: assets/js/admin.js
 msgid "API request failed (HTTP "
-msgstr ""
+msgstr "接口返回异常（HTTP "
 
 #: assets/js/admin.js
 msgid "Check failed"
-msgstr ""
+msgstr "检查失败"
 
 #: assets/js/admin.js inc/setting/options/Jinyu_OptionAbout.php:39
 #: inc/setting/template.php:27
 msgid "Check for updates"
-msgstr ""
+msgstr "检查更新"
 
 #: assets/js/admin.js
 msgid "Checking…"
-msgstr ""
+msgstr "检查中…"
 
 #: assets/js/admin.js
 msgid "Choose a file and import"
-msgstr ""
+msgstr "选择文件并导入"
 
 #: assets/js/admin.js
 msgid "Could not parse the API response (HTTP "
-msgstr ""
+msgstr "接口返回内容无法解析（HTTP "
 
 #: assets/js/admin.js
 msgid "Deselect all"
-msgstr ""
+msgstr "全不选"
 
 #: assets/js/admin.js
 msgid "Disabled"
-msgstr ""
+msgstr "已关闭"
 
 #: assets/js/admin.js
 msgid "Done"
-msgstr ""
+msgstr "完成"
 
 #: assets/js/admin.js
 msgid "Enabled"
-msgstr ""
+msgstr "已开启"
 
 #: assets/js/admin.js
 msgid ""
 "Export all theme settings to a JSON file for backup and multi-site "
 "migration."
-msgstr ""
+msgstr "将当前所有主题设置导出为 JSON 文件，便于备份与多站迁移。"
 
 #: assets/js/admin.js
 msgid "Export failed"
-msgstr ""
+msgstr "导出失败"
 
 #: assets/js/admin.js
 msgid "Export JSON"
-msgstr ""
+msgstr "导出 JSON"
 
 #: assets/js/admin.js
 msgid "Export settings"
-msgstr ""
+msgstr "导出配置"
 
 #: assets/js/admin.js
 msgid "Exported"
-msgstr ""
+msgstr "已导出"
 
 #: assets/js/admin.js
 msgid "Exporting…"
-msgstr ""
+msgstr "导出中…"
 
 #: assets/js/admin.js
 msgid "Failed"
-msgstr ""
+msgstr "失败"
 
 #: assets/js/admin.js
 msgid "Failed "
-msgstr ""
+msgstr "失败 "
 
 #: assets/js/admin.js
 msgid ""
@@ -296,187 +318,191 @@ msgid ""
 " of originals. Only images missing these sizes are processed, in batches "
 "until complete."
 msgstr ""
+"为历史上传的封面图补出主题自建尺寸 jinyu-cover（768×512）与 jinyu-"
+"thumb（400×267），卡片就用小图、不再加载原图。仅处理缺这两个尺寸的图，分批进行直至完成。"
 
 #: assets/js/admin.js
 msgid "Generated "
-msgstr ""
+msgstr "新生成 "
 
 #: assets/js/admin.js
 msgid "Import failed"
-msgstr ""
+msgstr "导入失败"
 
 #: assets/js/admin.js
 msgid "Import settings"
-msgstr ""
+msgstr "导入配置"
 
 #: assets/js/admin.js
 msgid "Importing…"
-msgstr ""
+msgstr "导入中…"
 
 #: assets/js/admin.js
 msgid "Item "
-msgstr ""
+msgstr "项目 "
 
 #: assets/js/admin.js
 msgid "items"
-msgstr ""
+msgstr "项"
 
 #: assets/js/admin.js
 msgid "JSON parse failed"
-msgstr ""
+msgstr "JSON 解析失败"
 
 #: assets/js/admin.js
 msgid "Network error"
-msgstr ""
+msgstr "网络错误"
 
 #: assets/js/admin.js
 msgid "Network error: "
-msgstr ""
+msgstr "网络错误："
 
+#. Ambiguous zh translations for this msgid; using the most common one.
+#. Alternatives: 新版本 v
 #: assets/js/admin.js
 msgid "New version v"
-msgstr ""
+msgstr "新版本 v"
 
 #: assets/js/admin.js
 msgid "No options available"
-msgstr ""
+msgstr "暂无可选"
 
 #: assets/js/admin.js
 msgid ""
 "Output real-time run info in the footer (queries / memory / render time). "
 "After enabling, clear the cache once in \"Jinyu Booster\" for it to take "
 "effect."
-msgstr ""
+msgstr "在前台页脚输出实时运行信息（查询数 / 内存 / 渲染耗时）。开启后到「金玉增强」清理一次缓存即可生效。"
 
 #: assets/js/admin.js
 msgid "Processed "
-msgstr ""
+msgstr "已处理 "
 
 #: assets/js/admin.js functions.php:629
 msgid "Processing…"
-msgstr ""
+msgstr "处理中…"
 
 #: assets/js/admin.js
 msgid "Rebuild complete"
-msgstr ""
+msgstr "重建完成"
 
 #: assets/js/admin.js
 msgid "Regenerate cover thumbnails"
-msgstr ""
+msgstr "重建封面缩略图"
 
 #: assets/js/admin.js
 msgid "Regenerating cover thumbnails…"
-msgstr ""
+msgstr "正在重建封面缩略图…"
 
 #: assets/js/admin.js
 msgid "Request failed: "
-msgstr ""
+msgstr "请求失败："
 
 #: assets/js/admin.js
 msgid "Reset only this group to defaults"
-msgstr ""
+msgstr "仅重置本组为默认值"
 
 #: assets/js/admin.js
 msgid "Reset the \""
-msgstr ""
+msgstr "确认仅重置「"
 
 #: assets/js/admin.js
 msgid "Reset this group"
-msgstr ""
+msgstr "重置本组"
 
 #: assets/js/admin.js
 msgid "Restore all options to defaults? This action cannot be undone."
-msgstr ""
+msgstr "确认恢复所有选项为默认值？此操作不可撤销。"
 
 #: assets/js/admin.js
 msgid ""
 "Restore theme settings from a JSON file. This overwrites all current "
 "settings — export a backup first."
-msgstr ""
+msgstr "从 JSON 文件恢复主题设置，将覆盖当前全部配置，请先导出备份。"
 
 #: assets/js/admin.js assets/js/jinyu.js
 msgid "Save failed"
-msgstr ""
+msgstr "保存失败"
 
 #: assets/js/admin.js
 msgid "Saved at "
-msgstr ""
+msgstr "已保存 "
 
 #: assets/js/admin.js inc/setting/Jinyu_Setting.php:317
 msgid "Saved successfully"
-msgstr ""
+msgstr "保存成功"
 
 #: assets/js/admin.js
 msgid "Saving…"
-msgstr ""
+msgstr "保存中…"
 
 #: assets/js/admin.js
 msgid "Select all"
-msgstr ""
+msgstr "全选"
 
 #: assets/js/admin.js
 msgid "Select image"
-msgstr ""
+msgstr "选择图片"
 
 #: assets/js/admin.js
 msgid "Selected: "
-msgstr ""
+msgstr "已选 "
 
 #: assets/js/admin.js
 msgid "Select…"
-msgstr ""
+msgstr "请选择…"
 
 #: assets/js/admin.js
 msgid "Set. Leave empty to keep unchanged"
-msgstr ""
+msgstr "已设置，留空则不修改"
 
 #: assets/js/admin.js
 msgid "Show/hide"
-msgstr ""
+msgstr "显示/隐藏"
 
 #: assets/js/admin.js
 msgid "Skipped "
-msgstr ""
+msgstr "跳过 "
 
 #: assets/js/admin.js
 msgid "Start rebuild"
-msgstr ""
+msgstr "开始重建"
 
 #: assets/js/admin.js
 msgid "Stopped"
-msgstr ""
+msgstr "已停止"
 
 #: assets/js/admin.js
 msgid "Stopping…"
-msgstr ""
+msgstr "正在停止…"
 
 #: assets/js/admin.js
 msgid "Success"
-msgstr ""
+msgstr "成功"
 
 #: assets/js/admin.js
 msgid "Up to "
-msgstr ""
+msgstr "最多 "
 
 #: assets/js/ai-chat.js
 msgid "[jinyu-ai] JINYU_CONFIG not ready"
-msgstr ""
+msgstr "[jinyu-ai] JINYU_CONFIG 未就绪"
 
 #: assets/js/ai-chat.js
 msgid "Request failed"
-msgstr ""
+msgstr "请求失败"
 
 #: assets/js/ai-chat.js
 msgid "Send"
-msgstr ""
+msgstr "发送"
 
 #: assets/js/ai-chat.js
 msgid "Thinking..."
-msgstr ""
+msgstr "思考中..."
 
 #: assets/js/ai-chat.js
 msgid "❌ Network error"
-msgstr ""
+msgstr "❌ 网络错误"
 
 #: assets/js/jinyu.js
 msgid ""
@@ -484,58 +510,65 @@ msgid ""
 "\n"
 "—— From \""
 msgstr ""
+"\n"
+"\n"
+"—— 本文出自《"
 
 #: assets/js/jinyu.js
 msgid " (by "
-msgstr ""
+msgstr "（作者："
 
 #: assets/js/jinyu.js
 msgid " results ›</a>"
-msgstr ""
+msgstr " 条结果 ›</a>"
 
 #: assets/js/jinyu.js
 msgid " submenu"
-msgstr ""
+msgstr " 子菜单"
 
 #: assets/js/jinyu.js
 msgid " user"
-msgstr ""
+msgstr "用户"
 
 #: assets/js/jinyu.js
 msgid "\" alt=\"alipay\"><span>Scan with Alipay</span></div>"
-msgstr ""
+msgstr "\" alt=\"alipay\"><span>支付宝扫一扫</span></div>"
 
 #: assets/js/jinyu.js
 msgid "\" alt=\"Post poster\">"
-msgstr ""
+msgstr "\" alt=\"文章海报\">"
 
 #: assets/js/jinyu.js
 msgid "\" alt=\"wechat\"><span>Scan with WeChat</span></div>"
-msgstr ""
+msgstr "\" alt=\"wechat\"><span>微信扫一扫</span></div>"
 
 #: assets/js/jinyu.js
 msgid "\": "
-msgstr ""
+msgstr "》："
 
 #: assets/js/jinyu.js
 msgid "\">View all "
-msgstr ""
+msgstr "\">查看全部 "
 
 #: assets/js/jinyu.js
 msgid "\">View my posts</a>"
-msgstr ""
+msgstr "\">查看我的投稿</a>"
 
 #: assets/js/jinyu.js
 msgid ""
 "<button type=\"button\" class=\"jinyu-btn\" data-jinyu-submit-again>Submit "
 "another</button>"
 msgstr ""
+"<button type=\"button\" class=\"jinyu-btn\" data-jinyu-submit-"
+"again>再投一篇</button>"
 
 #: assets/js/jinyu.js
 msgid ""
 "<button type=\"button\" class=\"jinyu-modal-close\" data-jinyu-modal-close "
 "aria-label=\"Close\"><i class=\"fa-solid fa-xmark\"></i></button>"
 msgstr ""
+"<button type=\"button\" class=\"jinyu-modal-close\" data-jinyu-modal-close "
+"aria-label=\"关闭\"><i class=\"fa-solid fa-xmark\"></i></button>"
 
 #: assets/js/jinyu.js
 msgid ""
@@ -543,97 +576,111 @@ msgid ""
 " of contents\" aria-expanded=\"false\"><i class=\"fa-solid fa-chevron-"
 "down\"></i></button></span>"
 msgstr ""
+"<button type=\"button\" class=\"jinyu-toc-toggle\" aria-label=\"展开/收起目录\" "
+"aria-expanded=\"false\"><i class=\"fa-solid fa-chevron-"
+"down\"></i></button></span>"
 
 #: assets/js/jinyu.js
 msgid ""
 "<div class=\"jinyu-donate-item\"><div class=\"jinyu-donate-"
 "name\">Alipay</div><img src=\""
 msgstr ""
+"<div class=\"jinyu-donate-item\"><div class=\"jinyu-donate-"
+"name\">支付宝</div><img src=\""
 
 #: assets/js/jinyu.js
 msgid ""
 "<div class=\"jinyu-donate-item\"><div class=\"jinyu-donate-"
 "name\">WeChat</div><img src=\""
 msgstr ""
+"<div class=\"jinyu-donate-item\"><div class=\"jinyu-donate-"
+"name\">微信</div><img src=\""
 
 #: assets/js/jinyu.js
 msgid ""
 "<div class=\"jinyu-modal-loading\"><i class=\"fa-solid fa-spinner fa-"
 "spin\"></i> Generating…</div>"
 msgstr ""
+"<div class=\"jinyu-modal-loading\"><i class=\"fa-solid fa-spinner fa-"
+"spin\"></i> 生成中…</div>"
 
 #: assets/js/jinyu.js
 msgid ""
 "<div class=\"jinyu-rv-item--empty\">Your reading history will appear "
 "here</div>"
-msgstr ""
+msgstr "<div class=\"jinyu-rv-item--empty\">浏览文章后这里会显示你的足迹</div>"
 
 #: assets/js/jinyu.js
 msgid "<div class=\"jinyu-search-suggest-empty\">No related posts found</div>"
-msgstr ""
+msgstr "<div class=\"jinyu-search-suggest-empty\">没有找到相关文章</div>"
 
 #: assets/js/jinyu.js
 msgid ""
 "<div class=\"jinyu-share-title\">Share to</div><div class=\"jinyu-share-"
 "btns\"></div>"
 msgstr ""
+"<div class=\"jinyu-share-title\">分享到</div><div class=\"jinyu-share-"
+"btns\"></div>"
 
 #: assets/js/jinyu.js
 msgid ""
 "<div class=\"jinyu-wechat-guide-tip\">Tap <b>···</b> in the top-right "
 "corner<br>to share with friends or on Moments</div>"
 msgstr ""
+"<div class=\"jinyu-wechat-guide-tip\">点击右上角 <b>···</b><br>即可分享给好友或朋友圈</div>"
 
 #: assets/js/jinyu.js
 msgid "<h3 class=\"jinyu-widget-title\">People also read</h3>"
-msgstr ""
+msgstr "<h3 class=\"jinyu-widget-title\">读过这篇的人还读了</h3>"
 
 #: assets/js/jinyu.js
 msgid ""
 "<i class=\"fa-regular fa-copy\" aria-hidden=\"true\"></i><span "
 "class=\"jinyu-code-copy-label\">Copy</span>"
 msgstr ""
+"<i class=\"fa-regular fa-copy\" aria-hidden=\"true\"></i><span "
+"class=\"jinyu-code-copy-label\">复制</span>"
 
 #: assets/js/jinyu.js
 msgid "<i class=\"fa-solid fa-ban\" aria-hidden=\"true\"></i> Download not supported"
-msgstr ""
+msgstr "<i class=\"fa-solid fa-ban\" aria-hidden=\"true\"></i> 暂不支持下载"
 
 #: assets/js/jinyu.js
 msgid "<i class=\"fa-solid fa-download\" aria-hidden=\"true\"></i> Download poster"
-msgstr ""
+msgstr "<i class=\"fa-solid fa-download\" aria-hidden=\"true\"></i> 下载海报"
 
 #: assets/js/jinyu.js
 msgid "<i class=\"fa-solid fa-download\" aria-hidden=\"true\"></i> Save image"
-msgstr ""
+msgstr "<i class=\"fa-solid fa-download\" aria-hidden=\"true\"></i> 保存图片"
 
 #: assets/js/jinyu.js
 msgid "<i class=\"fa-solid fa-xmark\" aria-hidden=\"true\"></i> Close"
-msgstr ""
+msgstr "<i class=\"fa-solid fa-xmark\" aria-hidden=\"true\"></i> 关闭"
 
 #: assets/js/jinyu.js
 msgid "<p class=\"jinyu-empty\">No payment QR code configured yet</p>"
-msgstr ""
+msgstr "<p class=\"jinyu-empty\">暂未配置收款码</p>"
 
 #: assets/js/jinyu.js
 msgid ""
 "<p class=\"jinyu-empty\">Poster generation failed. Refresh and try again</p>"
-msgstr ""
+msgstr "<p class=\"jinyu-empty\">海报生成失败，请刷新后重试</p>"
 
 #: assets/js/jinyu.js
 msgid "<p class=\"jinyu-empty\">Poster generation failed: "
-msgstr ""
+msgstr "<p class=\"jinyu-empty\">海报生成失败："
 
 #: assets/js/jinyu.js
 msgid ""
 "<p class=\"jinyu-poster-fs-tip\">Long-press the image and choose \"Save "
 "image / Save to album\"</p>"
-msgstr ""
+msgstr "<p class=\"jinyu-poster-fs-tip\">长按图片选择「保存图片 / 保存到相册」</p>"
 
 #: assets/js/jinyu.js
 msgid ""
 "<p class=\"jinyu-qr-url\">Failed to generate the QR code. Copy the link to "
 "share instead</p>"
-msgstr ""
+msgstr "<p class=\"jinyu-qr-url\">二维码生成失败，请复制链接分享</p>"
 
 #: assets/js/jinyu.js
 msgid ""
@@ -642,429 +689,441 @@ msgid ""
 "close this dialog, tap \"Copy link\" in the share bar and paste it into "
 "WeChat.</p>"
 msgstr ""
+"<p class=\"jinyu-qr-"
+"url\">用微信「扫一扫」识别上方二维码，即可在微信中打开本文。<br>手机可截屏后于微信内扫本地图片；或关闭后点分享栏「复制链接」粘贴到微信。</p>"
 
 #: assets/js/jinyu.js
 msgid ""
 "<p>Your post has entered the review queue and will be published once "
 "approved. You can check the progress under \"My Posts\" in the meantime.</p>"
-msgstr ""
+msgstr "<p>您的文章已进入审核队列，通过后将自动发布。期间可前往「我的文章」查看审核进度。</p>"
 
 #: assets/js/jinyu.js
 msgid "<span class=\"jinyu-modal-title\">Scan with WeChat to open</span>"
-msgstr ""
+msgstr "<span class=\"jinyu-modal-title\">微信扫码打开</span>"
 
 #: assets/js/jinyu.js
 msgid ""
 "<span class=\"jinyu-toc-heading\"><i class=\"fa-solid fa-list-ul jinyu-toc-"
 "ico\" aria-hidden=\"true\"></i>Table of Contents</span>"
 msgstr ""
+"<span class=\"jinyu-toc-heading\"><i class=\"fa-solid fa-list-ul jinyu-toc-"
+"ico\" aria-hidden=\"true\"></i>文章目录</span>"
 
 #: assets/js/jinyu.js functions.php:644
 msgid "All marked as read"
-msgstr ""
+msgstr "已全部标记已读"
 
 #: assets/js/jinyu.js
 msgid "Already on page "
-msgstr ""
+msgstr "已是第 "
 
 #: assets/js/jinyu.js
 msgid "Bind now"
-msgstr ""
+msgstr "去绑定"
 
 #: assets/js/jinyu.js
 msgid "Busy"
-msgstr ""
+msgstr "拥堵"
 
 #: assets/js/jinyu.js
 msgid "Caps Lock is on"
-msgstr ""
+msgstr "大写锁定已开启"
 
 #: assets/js/jinyu.js header.php:56
 msgid "Close menu"
-msgstr ""
+msgstr "关闭菜单"
 
 #: assets/js/jinyu.js functions.php:620
 msgid "Comment submitted"
-msgstr ""
+msgstr "评论已提交"
 
 #: assets/js/jinyu.js functions.php:626
 msgid "Copied"
-msgstr ""
+msgstr "已复制"
 
 #: assets/js/jinyu.js functions.php:625
 msgid "Copy"
-msgstr ""
+msgstr "复制"
 
 #: assets/js/jinyu.js
 msgid "Copy code"
-msgstr ""
+msgstr "复制代码"
 
 #: assets/js/jinyu.js inc/setting/options/Jinyu_OptionContent.php:223
 msgid "Copy link"
-msgstr ""
+msgstr "复制链接"
 
 #: assets/js/jinyu.js
 msgid "Copy paragraph"
-msgstr ""
+msgstr "复制本段"
 
 #: assets/js/jinyu.js
 msgid "Copy this content: "
-msgstr ""
+msgstr "复制此内容："
 
 #: assets/js/jinyu.js
 msgid "Copy this link: "
-msgstr ""
+msgstr "复制此链接："
 
 #: assets/js/jinyu.js
 msgid "Enter a page number"
-msgstr ""
+msgstr "请输入页码"
 
 #: assets/js/jinyu.js
 msgid "Fair"
-msgstr ""
+msgstr "中"
 
 #: assets/js/jinyu.js functions.php:646
 msgid "Finished ✓"
-msgstr ""
+msgstr "已读完 ✓"
 
 #: assets/js/jinyu.js author.php:47 inc/fun/user.php:91
 msgid "Follow"
-msgstr ""
+msgstr "关注"
 
 #: assets/js/jinyu.js author.php:47
 msgid "Following"
-msgstr ""
+msgstr "已关注"
 
 #: assets/js/jinyu.js inc/fun/live.php:402
 msgid "Friday"
-msgstr ""
+msgstr "星期五"
 
 #: assets/js/jinyu.js
 msgid "Hello, "
-msgstr ""
+msgstr "你好，"
 
 #: assets/js/jinyu.js inc/fun/widget.php:1171
 msgid "Hello, friend"
-msgstr ""
+msgstr "你好，朋友"
 
 #: assets/js/jinyu.js
 msgid "Hide password"
-msgstr ""
+msgstr "隐藏密码"
 
 #: assets/js/jinyu.js functions.php:633
 msgid "Last %d samples"
-msgstr ""
+msgstr "近 %d 次采样"
 
 #: assets/js/jinyu.js
 msgid "Last sample: "
-msgstr ""
+msgstr "上一采样 "
 
 #: assets/js/jinyu.js functions.php:615
 msgid "Less than 1 min"
-msgstr ""
+msgstr "不到 1 分钟"
 
 #: assets/js/jinyu.js functions.php:638
 msgid "Link copied"
-msgstr ""
+msgstr "链接已复制"
 
 #: assets/js/jinyu.js functions.php:634 inc/fun/widget.php:1476
 msgid "Load"
-msgstr ""
+msgstr "负载"
 
 #: assets/js/jinyu.js
 msgid "Load failed. Refresh and try again"
-msgstr ""
+msgstr "加载失败，请刷新重试"
 
 #: assets/js/jinyu.js functions.php:624 inc/fun/template-tags.php:39
 msgid "Load more"
-msgstr ""
+msgstr "加载更多"
 
 #: assets/js/jinyu.js
 msgid "MB, "
-msgstr ""
+msgstr "MB 的 "
 
 #: assets/js/jinyu.js
 msgid "Mem: "
-msgstr ""
+msgstr "占 "
 
 #: assets/js/jinyu.js footer.php:105 inc/fun/widget.php:1469
 msgid "Memory"
-msgstr ""
+msgstr "内存"
 
 #: assets/js/jinyu.js inc/fun/live.php:398
 msgid "Monday"
-msgstr ""
+msgstr "星期一"
 
 #: assets/js/jinyu.js functions.php:628
 msgid "Network error. Please try again later."
-msgstr ""
+msgstr "网络异常，请稍后重试"
 
 #: assets/js/jinyu.js functions.php:640
 msgid "No post to jump to"
-msgstr ""
+msgstr "没有可跳转的文章"
 
 #: assets/js/jinyu.js
 msgid "Operation failed"
-msgstr ""
+msgstr "操作失败"
 
+#. Ambiguous zh translations for this msgid; using the most common one.
+#. Alternatives: 操作失败，请稍后重试
 #: assets/js/jinyu.js functions.php:641
 msgid "Operation failed. Please try again later."
-msgstr ""
+msgstr "操作失败，请稍后再试"
 
 #: assets/js/jinyu.js
 msgid "Peak: "
-msgstr ""
+msgstr "峰值 "
 
 #: assets/js/jinyu.js
 msgid "PHP limit: "
-msgstr ""
+msgstr "占 PHP 上限 "
 
 #: assets/js/jinyu.js
 msgid "Please enter a valid contact email"
-msgstr ""
+msgstr "请填写有效的联系邮箱"
 
 #: assets/js/jinyu.js
 msgid "Please enter the captcha"
-msgstr ""
+msgstr "请填写验证码"
 
 #: assets/js/jinyu.js
 msgid "Please enter your password"
-msgstr ""
+msgstr "请输入密码"
 
 #: assets/js/jinyu.js
 msgid "Post poster"
-msgstr ""
+msgstr "文章海报"
 
+#. Ambiguous zh translations for this msgid; using the most common one.
+#. Alternatives: 空间
 #: assets/js/jinyu.js inc/setting/options/Jinyu_OptionContent.php:215
 msgid "Qzone"
-msgstr ""
+msgstr "QQ空间"
 
 #: assets/js/jinyu.js
 msgid "Real-time"
-msgstr ""
+msgstr "实时"
 
 #: assets/js/jinyu.js
 msgid "Remove this post from favorites?"
-msgstr ""
+msgstr "确定取消收藏这篇文章吗？"
 
 #: assets/js/jinyu.js
 msgid "Removed from favorites"
-msgstr ""
+msgstr "已取消收藏"
 
 #: assets/js/jinyu.js
 msgid "Render error"
-msgstr ""
+msgstr "渲染错误"
 
 #: assets/js/jinyu.js
 msgid "Request failed. Please try again later."
-msgstr ""
+msgstr "请求失败，请稍后重试"
 
 #: assets/js/jinyu.js
 msgid "s"
-msgstr ""
+msgstr " 秒"
 
 #: assets/js/jinyu.js inc/fun/live.php:403
 msgid "Saturday"
-msgstr ""
+msgstr "星期六"
 
 #: assets/js/jinyu.js inc/setting/template.php:74 inc/setting/template.php:76
 msgid "Save"
-msgstr ""
+msgstr "保存"
 
 #: assets/js/jinyu.js
 msgid "Scan to read"
-msgstr ""
+msgstr "扫码阅读"
 
 #: assets/js/jinyu.js templates/auth-modal.php:64 templates/auth-modal.php:94
 #: templates/auth-modal.php:101
 msgid "Show password"
-msgstr ""
+msgstr "显示密码"
 
 #: assets/js/jinyu.js
 msgid "Site name must be 2-50 characters"
-msgstr ""
+msgstr "网站名称需 2-50 个字符"
 
 #: assets/js/jinyu.js
 msgid "Site URL must start with http:// or https://"
-msgstr ""
+msgstr "网站地址需以 http:// 或 https:// 开头"
 
 #: assets/js/jinyu.js
 msgid "Slow"
-msgstr ""
+msgstr "偏慢"
 
 #: assets/js/jinyu.js
 msgid "Strong"
-msgstr ""
+msgstr "强"
 
+#. Ambiguous zh translations for this msgid; using the most common one.
+#. Alternatives: 提交失败，请稍后再试
 #: assets/js/jinyu.js functions.php:621
 msgid "Submission failed. Please try again later."
-msgstr ""
+msgstr "提交失败，请稍后重试"
 
 #: assets/js/jinyu.js
 msgid "Submitted successfully"
-msgstr ""
+msgstr "投稿成功"
 
 #: assets/js/jinyu.js
 msgid "Subscribed"
-msgstr ""
+msgstr "订阅成功"
 
 #: assets/js/jinyu.js
 msgid "Subscription failed. Please retry"
-msgstr ""
+msgstr "订阅失败，请重试"
 
 #: assets/js/jinyu.js inc/fun/live.php:397
 msgid "Sunday"
-msgstr ""
+msgstr "星期日"
 
 #: assets/js/jinyu.js
 msgid "Switch to dark mode"
-msgstr ""
+msgstr "切换到暗色模式"
 
 #: assets/js/jinyu.js
 msgid "Switch to light mode"
-msgstr ""
+msgstr "切换到亮色模式"
 
 #: assets/js/jinyu.js functions.php:643
 msgid "Thanks for your feedback"
-msgstr ""
+msgstr "感谢你的反馈"
 
 #: assets/js/jinyu.js functions.php:642
 msgid "Thanks for your support ♥"
-msgstr ""
+msgstr "感谢支持 ♥"
 
 #: assets/js/jinyu.js inc/fun/live.php:401
 msgid "Thursday"
-msgstr ""
+msgstr "星期四"
 
 #: assets/js/jinyu.js
 msgid "Title must be 4-100 characters"
-msgstr ""
+msgstr "标题需 4-100 个字符"
 
 #: assets/js/jinyu.js inc/fun/live.php:399
 msgid "Tuesday"
-msgstr ""
+msgstr "星期二"
 
 #: assets/js/jinyu.js
 msgid "Unbind failed. Please try again later."
-msgstr ""
+msgstr "解绑失败，请稍后再试"
 
 #: assets/js/jinyu.js
 msgid "Unbind this platform?"
-msgstr ""
+msgstr "确定解除该平台的绑定吗？"
 
 #: assets/js/jinyu.js
 msgid "Unbound successfully"
-msgstr ""
+msgstr "解绑成功"
 
 #: assets/js/jinyu.js
 msgid "Update failed"
-msgstr ""
+msgstr "修改失败"
 
 #: assets/js/jinyu.js
 msgid "Upload failed"
-msgstr ""
+msgstr "上传失败"
 
 #: assets/js/jinyu.js
 msgid "Username must be 3-30 characters"
-msgstr ""
+msgstr "用户名需 3-30 位"
 
 #: assets/js/jinyu.js
 msgid "Very strong"
-msgstr ""
+msgstr "极强"
 
 #: assets/js/jinyu.js
 msgid "Weak"
-msgstr ""
+msgstr "弱"
 
 #: assets/js/jinyu.js inc/setting/options/Jinyu_OptionContent.php:219
 msgid "WeChat"
-msgstr ""
+msgstr "微信"
 
 #: assets/js/jinyu.js inc/fun/live.php:400
 msgid "Wednesday"
-msgstr ""
+msgstr "星期三"
 
 #: assets/js/jinyu.js inc/setting/options/Jinyu_OptionContent.php:207
 msgid "Weibo"
-msgstr ""
+msgstr "微博"
 
 #: assets/js/shortcodes.js
 msgid "Jinyu Shortcodes"
-msgstr ""
+msgstr "金玉短码"
 
 #: comments.php:91
 msgid ""
 "Be respectful and constructive. First-time comments will appear after "
 "approval"
-msgstr ""
+msgstr "文明发言，理性交流 · 首次评论将在审核后展示"
 
 #: comments.php:126
 msgid "Comment"
-msgstr ""
+msgstr "评论内容"
 
 #: comments.php:29
 msgid "Comments (%d)"
-msgstr ""
+msgstr "评论 (%d)"
 
 #: comments.php:114 templates/auth-modal.php:89
 msgid "Email"
-msgstr ""
+msgstr "邮箱"
 
 #: comments.php:114
 msgid "Email (visible to admins only)"
-msgstr ""
+msgstr "邮箱（仅站长可见）"
 
 #: comments.php:22
 msgid "Insert emoji"
-msgstr ""
+msgstr "插入表情"
 
 #: comments.php:50
 msgid "Load more comments"
-msgstr ""
+msgstr "加载更多评论"
 
+#. Ambiguous zh translations for this msgid; using the most common one.
+#. Alternatives: 名称
 #: comments.php:112 inc/fun/widget.php:154
 msgid "Name"
-msgstr ""
+msgstr "称呼"
 
 #: comments.php:126
 msgid "Share your thoughts…"
-msgstr ""
+msgstr "说说你的看法…"
 
 #: comments.php:127
 msgid "Submit comment"
-msgstr ""
+msgstr "提交评论"
 
 #: comments.php:116
 msgid "Website"
-msgstr ""
+msgstr "网址"
 
 #: comments.php:116
 msgid "Website (optional)"
-msgstr ""
+msgstr "网址（可选）"
 
 #: comments.php:82
 msgid "Welcome back, <em>%s</em>. Thanks for joining the discussion!"
-msgstr ""
+msgstr "欢迎回来，<em>%s</em>，感谢参与互动！"
 
 #: comments.php:84
 msgid "Welcome, <em>new friend</em>. Thanks for joining the discussion!"
-msgstr ""
+msgstr "欢迎你，<em>新朋友</em>，感谢参与互动！"
 
 #: date.php:23
 msgid "Daily Archive: %s"
-msgstr ""
+msgstr "每日归档：%s"
 
 #: date.php:26
 msgid "Monthly Archive: %s"
-msgstr ""
+msgstr "每月归档：%s"
 
 #: date.php:29
 msgid "Yearly Archive: %s"
-msgstr ""
+msgstr "每年归档：%s"
 
 #: footer.php:118
 msgid "Back to top"
-msgstr ""
+msgstr "回到顶部"
 
 #: footer.php:105
 msgid "MB"
@@ -1072,335 +1131,341 @@ msgstr ""
 
 #: footer.php:84
 msgid "Official WordPress website"
-msgstr ""
+msgstr "WordPress 官方网站"
 
 #: footer.php:103 inc/fun/widget.php:1463
 msgid "Queries"
-msgstr ""
+msgstr "查询"
 
 #: footer.php:46
 msgid "Quick Links"
-msgstr ""
+msgstr "快速导航"
 
 #: footer.php:107
 msgid "Render"
-msgstr ""
+msgstr "渲染"
 
 #: footer.php:107 inc/fun/widget.php:1363
 msgid "sec"
-msgstr ""
+msgstr "秒"
 
 #: footer.php:115
 msgid "To bottom"
-msgstr ""
+msgstr "去底部"
 
+#. Pending manual decision: original string is still Chinese (see
+#. .workbuddy/i18n/reverse_report.md section 2).
 #: footer.php:103
 msgid "次"
-msgstr ""
+msgstr "次"
 
 #: functions.php:617
 msgid "About %d min"
-msgstr ""
+msgstr "约 %d 分钟"
 
 #: functions.php:903
 msgid "Agree"
-msgstr ""
+msgstr "同意"
 
 #: functions.php:901
 msgid "Cookie Notice"
-msgstr ""
+msgstr "Cookie 提示"
 
 #: functions.php:637
 msgid "Copy failed. Please select the text manually"
-msgstr ""
+msgstr "复制失败，请手动选择"
 
 #: functions.php:627 templates/post-actions.php:42
 msgid "Favorited"
-msgstr ""
+msgstr "已收藏"
 
 #: functions.php:427
 msgid "Footer Menu"
-msgstr ""
+msgstr "页脚菜单"
 
 #: functions.php:618
 msgid "Loading…"
-msgstr ""
+msgstr "加载中…"
 
 #: functions.php:635
 msgid "Memory usage"
-msgstr ""
+msgstr "内存占用"
 
 #: functions.php:623
 msgid "No cover image"
-msgstr ""
+msgstr "暂无封面"
 
 #: functions.php:622 inc/ajax/index.php:231
 msgid "No more"
-msgstr ""
+msgstr "没有更多了"
 
 #: functions.php:639
 msgid "Operation successful"
-msgstr ""
+msgstr "操作成功"
 
 #: functions.php:645
 msgid "Press and hold or scan the QR code to read the full post"
-msgstr ""
+msgstr "长按 / 扫码阅读全文"
 
 #: functions.php:426
 msgid "Primary Menu"
-msgstr ""
+msgstr "主导航菜单"
 
 #: functions.php:636
 msgid "Samples"
-msgstr ""
+msgstr "采样"
 
 #: functions.php:631
 msgid "Stable"
-msgstr ""
+msgstr "持平"
 
 #: functions.php:619
 msgid "Submitting…"
-msgstr ""
+msgstr "提交中…"
 
 #: functions.php:630
 msgid ""
 "Tap \"Save image\" to enlarge it, then press and hold the image to save it "
 "to your album"
-msgstr ""
+msgstr "点「保存图片」放大后长按图片，即可保存到相册"
 
 #: functions.php:714
 msgid "The Jinyu theme is missing a PHP extension: %s"
-msgstr ""
+msgstr "金玉主题缺少 PHP 扩展：%s"
 
 #: functions.php:338
 msgid "The Jinyu theme requires PHP 8.0+. Current version: %s"
-msgstr ""
+msgstr "金玉主题要求 PHP 8.0+，当前版本 %s"
 
 #: functions.php:899
 msgid ""
 "This site uses cookies to improve your browsing experience. By continuing to"
 " browse, you agree to our privacy policy."
-msgstr ""
+msgstr "本站点使用 Cookie 以提升浏览体验，继续浏览即表示您同意我们的隐私政策。"
 
 #: functions.php:604 inc/setting/options/Jinyu_OptionBasic.php:71
 msgid "Tip the author"
-msgstr ""
+msgstr "赞赏作者"
 
+#. Pending manual decision: original string is still Chinese (see
+#. .workbuddy/i18n/reverse_report.md section 2).
 #: functions.php:648
 msgid "已读 %1$d% · 还需 %2$s"
-msgstr ""
+msgstr "已读 %1$d% · 还需 %2$s"
 
 #: header.php:218
 msgid "Account Settings"
-msgstr ""
+msgstr "账号设置"
 
 #: header.php:228
 msgid "Are you sure you want to log out?"
-msgstr ""
+msgstr "确定退出登录吗？"
 
 #: header.php:55 header.php:57
 msgid "Expand menu"
-msgstr ""
+msgstr "展开菜单"
 
 #: header.php:232 templates/auth-modal.php:49 templates/auth-modal.php:76
 msgid "Log in"
-msgstr ""
+msgstr "登录"
 
 #: header.php:228
 msgid "Log out"
-msgstr ""
+msgstr "退出登录"
 
+#. Ambiguous zh translations for this msgid; using the most common one.
+#. Alternatives: 消息
 #: header.php:220 inc/fun/user.php:70
 msgid "Messages"
-msgstr ""
+msgstr "消息中心"
 
 #: header.php:254
 msgid "Press Esc to close"
-msgstr ""
+msgstr "按 Esc 关闭"
 
 #: header.php:157 searchform.php:14 searchform.php:19 searchform.php:20
 #: sidebar.php:116
 msgid "Search"
-msgstr ""
+msgstr "搜索"
 
 #: header.php:241 inc/fun/widget.php:173
 msgid "Site Notice"
-msgstr ""
+msgstr "站点公告"
 
 #: header.php:251
 msgid "Site search"
-msgstr ""
+msgstr "站内搜索"
 
 #: header.php:25
 msgid "Skip to content"
-msgstr ""
+msgstr "跳到主内容"
 
 #: header.php:216
 msgid "Submit Post"
-msgstr ""
+msgstr "投稿"
 
 #: header.php:162
 msgid "Toggle light/dark mode"
-msgstr ""
+msgstr "切换明暗模式"
 
 #: header.php:201
 msgid "User Center"
-msgstr ""
+msgstr "用户中心"
 
 #: header.php:169
 msgid "User menu"
-msgstr ""
+msgstr "用户菜单"
 
 #: inc/ajax/index.php:393
 msgid "Invalid parameter"
-msgstr ""
+msgstr "参数无效"
 
 #: inc/ajax/index.php:50 inc/ajax/index.php:70
 msgid "Liked"
-msgstr ""
+msgstr "已点赞"
 
 #: inc/ajax/index.php:56 inc/ajax/index.php:76
 msgid "Not liked yet"
-msgstr ""
+msgstr "尚未点赞"
 
 #: inc/ajax/index.php:121 inc/ajax/user.php:237 inc/ajax/user.php:440
 #: inc/ajax/user.php:485 inc/ajax/user.php:550 inc/ajax/user.php:726
 #: inc/ajax/user.php:766 inc/ajax/user.php:812 inc/ajax/user.php:863
 #: inc/ajax/user.php:919
 msgid "Please log in first"
-msgstr ""
+msgstr "请先登录"
 
 #: inc/ajax/index.php:35 inc/ajax/index.php:128
 msgid "Post not found"
-msgstr ""
+msgstr "文章不存在"
 
 #: inc/ajax/index.php:64 inc/ajax/index.php:399 inc/ajax/user.php:93
 msgid "Too many requests. Please try again later."
-msgstr ""
+msgstr "操作过于频繁，请稍后再试"
 
 #: inc/ajax/index.php:404
 msgid "Voted"
-msgstr ""
+msgstr "已投票"
 
 #: inc/ajax/user.php:323
 msgid "[%s] Confirm Email Change"
-msgstr ""
+msgstr "[%s] 确认修改邮箱"
 
 #: inc/ajax/user.php:210
 msgid "[%s] Password Reset"
-msgstr ""
+msgstr "[%s] 密码重置"
 
 #: inc/ajax/user.php:300
 msgid ""
 "A verification email has been sent to %s. Please check your inbox and click "
 "the link to complete the binding. If you did not receive it, please try "
 "again later."
-msgstr ""
+msgstr "验证邮件已发送至 %s，请查收并点击完成绑定。若未收到，请稍后重试。"
 
 #: inc/ajax/user.php:529
 msgid "Avatar updated"
-msgstr ""
+msgstr "头像已更新"
 
 #: inc/ajax/user.php:360
 msgid "Back to site"
-msgstr ""
+msgstr "返回网站"
 
 #: inc/ajax/user.php:649
 msgid "Cover image upload failed. Please try again."
-msgstr ""
+msgstr "封面上传失败，请重试"
 
 #: inc/ajax/user.php:745
 msgid "Delete failed. Please try again later."
-msgstr ""
+msgstr "删除失败，请稍后再试"
 
 #: inc/ajax/user.php:748
 msgid "Deleted"
-msgstr ""
+msgstr "已删除"
 
 #: inc/ajax/user.php:358
 msgid "Email updated"
-msgstr ""
+msgstr "邮箱已更新"
 
 #: inc/ajax/user.php:194 inc/ajax/user.php:219
 msgid "If the account exists, a reset link has been sent to the email address"
-msgstr ""
+msgstr "如账号存在，重置链接已发送至邮箱"
 
 #: inc/ajax/user.php:61
 msgid "Incorrect username or password"
-msgstr ""
+msgstr "账号或密码错误"
 
 #: inc/ajax/user.php:112 inc/ajax/user.php:256
 msgid "Invalid email address"
-msgstr ""
+msgstr "邮箱格式不正确"
 
 #: inc/ajax/user.php:731 inc/ajax/user.php:822
 #: inc/setting/Jinyu_Setting.php:669
 msgid "Invalid parameters"
-msgstr ""
+msgstr "参数错误"
 
 #: inc/ajax/user.php:375
 msgid "Invalid verification link"
-msgstr ""
+msgstr "验证链接无效"
 
 #: inc/ajax/user.php:68
 msgid "Login successful. Redirecting…"
-msgstr ""
+msgstr "登录成功，正在跳转…"
 
 #: inc/ajax/user.php:867 inc/ajax/user.php:923
 msgid "Messaging is not enabled"
-msgstr ""
+msgstr "消息功能未启用"
 
 #: inc/ajax/user.php:771
 msgid "No favorites yet"
-msgstr ""
+msgstr "还没有收藏任何文章"
 
 #: inc/ajax/user.php:897
 msgid "No messages"
-msgstr ""
+msgstr "暂无消息"
 
 #: inc/ajax/user.php:505
 msgid "Only JPG / PNG / WebP / GIF are supported"
-msgstr ""
+msgstr "仅支持 JPG / PNG / WebP / GIF"
 
 #: inc/ajax/user.php:466
 msgid "Password changed"
-msgstr ""
+msgstr "密码已修改"
 
 #: inc/ajax/user.php:37
 msgid "Please enter your username and password"
-msgstr ""
+msgstr "请输入账号和密码"
 
 #: inc/ajax/user.php:178
 msgid "Please enter your username or email address"
-msgstr ""
+msgstr "请输入用户名或邮箱"
 
 #: inc/ajax/user.php:488
 msgid "Please select an image file"
-msgstr ""
+msgstr "请选择图片文件"
 
 #: inc/ajax/user.php:708
 msgid "Post submitted successfully. Pending review"
-msgstr ""
+msgstr "投稿成功，请等待审核"
 
 #: inc/ajax/user.php:306
 msgid "Profile saved"
-msgstr ""
+msgstr "资料已保存"
 
 #: inc/ajax/user.php:740
 msgid "Published posts cannot be deleted here"
-msgstr ""
+msgstr "已发布的文章不能在此删除"
 
 #: inc/ajax/user.php:88
 msgid "Registration is currently closed"
-msgstr ""
+msgstr "站点已关闭注册"
 
 #: inc/ajax/user.php:155
 msgid "Registration successful. Redirecting…"
-msgstr ""
+msgstr "注册成功，正在跳转…"
 
 #: inc/ajax/user.php:199
 msgid "Reset failed. Please contact the administrator"
-msgstr ""
+msgstr "重置失败，请联系管理员"
 
 #: inc/ajax/user.php:212
 msgid ""
@@ -1413,122 +1478,130 @@ msgid ""
 "Click the link below to reset your password:\n"
 "%2$s\n"
 msgstr ""
+"有人请求重置以下账号的密码：\n"
+"\n"
+"用户名：%1$s\n"
+"\n"
+"如果不是你本人操作，请忽略本邮件。\n"
+"\n"
+"点击链接重置密码：\n"
+"%2$s\n"
 
 #: inc/ajax/user.php:565
 msgid "Tab not found"
-msgstr ""
+msgstr "页签不存在"
 
 #: inc/ajax/user.php:633
 msgid "The content must be at least 20 characters"
-msgstr ""
+msgstr "正文至少 20 个字符"
 
 #: inc/ajax/user.php:652
 msgid "The cover image cannot exceed 5MB"
-msgstr ""
+msgstr "封面图不能超过 5MB"
 
 #: inc/ajax/user.php:656
 msgid "The cover image only supports JPG / PNG / WebP / GIF"
-msgstr ""
+msgstr "封面仅支持 JPG / PNG / WebP / GIF"
 
 #: inc/ajax/user.php:449
 msgid "The current password is incorrect"
-msgstr ""
+msgstr "当前密码不正确"
 
 #: inc/ajax/user.php:253
 msgid "The email address cannot be empty"
-msgstr ""
+msgstr "邮箱不能为空"
 
 #: inc/ajax/user.php:816
 msgid "The follow feature is not enabled"
-msgstr ""
+msgstr "关注功能未启用"
 
 #: inc/ajax/user.php:493
 msgid "The image cannot exceed 2MB"
-msgstr ""
+msgstr "图片不能超过 2MB"
 
 #: inc/ajax/user.php:452
 msgid "The new password must be at least 6 characters"
-msgstr ""
+msgstr "新密码至少 6 位"
 
 #: inc/ajax/user.php:250
 msgid "The nickname cannot be empty"
-msgstr ""
+msgstr "昵称不能为空"
 
 #: inc/ajax/user.php:118
 msgid "The password must be at least 6 characters"
-msgstr ""
+msgstr "密码至少 6 位"
 
 #: inc/ajax/user.php:630
 msgid "The title must be 4-100 characters long"
-msgstr ""
+msgstr "标题长度需为 4-100 个字符"
 
 #: inc/ajax/user.php:455
 msgid "The two new passwords do not match"
-msgstr ""
+msgstr "两次输入的新密码不一致"
 
 #: inc/ajax/user.php:121
 msgid "The two passwords do not match"
-msgstr ""
+msgstr "两次输入的密码不一致"
 
 #: inc/ajax/user.php:106
 msgid "The username contains invalid characters"
-msgstr ""
+msgstr "用户名含非法字符"
 
 #: inc/ajax/user.php:103
 msgid "The username must be 3-30 characters long"
-msgstr ""
+msgstr "用户名长度需为 3-30 个字符"
 
 #: inc/ajax/user.php:404
 msgid ""
 "The verification link has expired. Please change your email again in Account"
 " Settings"
-msgstr ""
+msgstr "验证链接已过期，请重新在账号设置中修改邮箱"
 
 #: inc/ajax/user.php:422
 msgid "The verification link is invalid or has already been used"
-msgstr ""
+msgstr "验证链接无效或已被使用"
 
 #: inc/ajax/user.php:259
 msgid "This email address is already in use by another account"
-msgstr ""
+msgstr "该邮箱已被其他账号使用"
 
 #: inc/ajax/user.php:410
 msgid ""
 "This email address is already linked to another account. Please try a "
 "different one"
-msgstr ""
+msgstr "该邮箱已被其他账号绑定，请更换后重试"
 
 #: inc/ajax/user.php:115
 msgid "This email address is already registered"
-msgstr ""
+msgstr "该邮箱已注册"
 
 #: inc/ajax/user.php:109
 msgid "This username is already taken"
-msgstr ""
+msgstr "该用户名已被占用"
 
 #: inc/ajax/user.php:830
 msgid "User not found"
-msgstr ""
+msgstr "用户不存在"
 
 #: inc/ajax/user.php:358
 msgid "Verification failed"
-msgstr ""
+msgstr "验证失败"
 
 #: inc/ajax/user.php:621
 msgid "You are submitting too frequently. Please try again later."
-msgstr ""
+msgstr "投稿过于频繁，请稍后再试"
 
 #: inc/ajax/user.php:827
 msgid "You cannot follow yourself"
-msgstr ""
+msgstr "不能关注自己"
 
 #: inc/ajax/user.php:736
 msgid "You do not have permission to do this"
-msgstr ""
+msgstr "无权操作"
 
 #: inc/ajax/user.php:618
 msgid "You do not have permission to submit posts"
-msgstr ""
+msgstr "无投稿权限"
 
 #: inc/ajax/user.php:325
 msgid ""
@@ -1539,10 +1612,16 @@ msgid ""
 "\n"
 "If this was not you, please ignore this email and the original email address will remain unchanged.\n"
 msgstr ""
+"你正在申请将账号邮箱修改为：%1$s\n"
+"\n"
+"请点击以下链接完成验证（24 小时内有效）：\n"
+"%2$s\n"
+"\n"
+"如果这不是你本人的操作，请忽略本邮件，原邮箱不受影响。\n"
 
 #: inc/fun/cache.php:599
 msgid "Don't show again"
-msgstr ""
+msgstr "不再提示"
 
 #: inc/fun/cache.php:598
 msgid ""
@@ -1551,461 +1630,475 @@ msgid ""
 "database queries and responds slowly under high concurrency. Install and "
 "enable an object cache to get about 4 queries / 60ms performance."
 msgstr ""
+"检测到当前站点未启用持久对象缓存（Memcached / Redis）。金玉主题首页在无对象缓存下约需 70+ "
+"条数据库查询，高并发时响应偏慢。建议安装并启用对象缓存，以获得约 4 条查询 / 60ms 的极致性能。"
 
 #: inc/fun/comment-ajax.php:68
 msgid "Comment published"
-msgstr ""
+msgstr "评论已发布"
 
 #: inc/fun/comment-ajax.php:69
 msgid "Comment submitted and pending approval"
-msgstr ""
+msgstr "评论已提交，等待审核"
 
 #: inc/fun/comment.php:168 inc/fun/comment.php:206
 msgid "%s ago"
-msgstr ""
+msgstr "%s前"
 
 #: inc/fun/comment.php:172
 msgid "(No content)"
-msgstr ""
+msgstr "（无正文）"
 
 #: inc/fun/comment.php:326
 msgid "About the author"
-msgstr ""
+msgstr "关于作者"
 
 #: inc/fun/comment.php:202 inc/fun/user.php:719
 msgid "Author"
-msgstr ""
+msgstr "作者"
 
 #: inc/fun/comment.php:339 inc/fun/user.php:83 inc/fun/widget.php:571
 msgid "Comments"
-msgstr ""
+msgstr "评论"
 
 #: inc/fun/comment.php:209 inc/fun/user.php:790
 msgid "Pending review"
-msgstr ""
+msgstr "审核中"
 
 #: inc/fun/comment.php:337 inc/fun/widget.php:569
 msgid "Posts"
-msgstr ""
+msgstr "文章"
 
 #: inc/fun/comment.php:147
 msgid "Replied to %s:"
-msgstr ""
+msgstr "回复了 %s："
 
 #: inc/fun/comment.php:248
 msgid "Reply"
-msgstr ""
+msgstr "回复"
 
 #: inc/fun/comment.php:278
 msgid "Say something..."
-msgstr ""
+msgstr "说点什么吧..."
 
 #: inc/fun/comment.php:331
 msgid "View profile"
-msgstr ""
+msgstr "查看主页"
 
 #: inc/fun/hitokoto-data.php:111
 msgid "All"
-msgstr ""
+msgstr "全部"
 
 #: inc/fun/maintenance.php:57
 msgid "Site Under Maintenance"
-msgstr ""
+msgstr "网站维护中"
 
 #: inc/fun/maintenance.php:44
 msgid "The site is under maintenance. Please come back later."
-msgstr ""
+msgstr "网站正在维护中，请稍后再访。"
 
 #: inc/fun/maintenance.php:49
 msgid "Under Maintenance"
-msgstr ""
+msgstr "维护中"
 
 #: inc/fun/meta-fields.php:47
 msgid "Displayed below the title"
-msgstr ""
+msgstr "显示在标题下方"
 
 #: inc/fun/meta-fields.php:51
 msgid "e.g. Reposted from xxx / Original"
-msgstr ""
+msgstr "如：转载自xxx / 原创"
 
 #: inc/fun/meta-fields.php:54
 msgid "External link URL (redirect)"
-msgstr ""
+msgstr "外链地址（跳转）"
 
 #: inc/fun/meta-fields.php:58
 msgid "Hide the featured cover image in post content"
-msgstr ""
+msgstr "隐藏正文特色封面图"
 
 #: inc/fun/meta-fields.php:23
 msgid "Jinyu: Post Extra Fields"
-msgstr ""
+msgstr "金玉 · 文章扩展字段"
 
 #: inc/fun/meta-fields.php:50
 msgid "Post Source"
-msgstr ""
+msgstr "文章来源"
 
 #: inc/fun/meta-fields.php:46
 msgid "Post Subtitle"
-msgstr ""
+msgstr "文章副标题"
 
 #: inc/fun/patterns.php:24
 msgid "Jinyu"
-msgstr ""
+msgstr "金玉"
 
 #: inc/fun/patterns.php:25
 msgid ""
 "Pattern presets built into the Jinyu theme: image-text, feature card, FAQ, "
 "call to action, featured posts, and author card."
-msgstr ""
+msgstr "金玉主题内置的预设排版图案：图文、特性卡、FAQ、行动号召、精选文章、作者卡。"
 
 #: inc/fun/sidebar.php:36
 msgid "Above the footer. 3-4 widgets recommended"
-msgstr ""
+msgstr "页脚上方，建议 3-4 个"
 
 #: inc/fun/sidebar.php:46
 msgid "Below Post Content"
-msgstr ""
+msgstr "文章底部"
 
 #: inc/fun/sidebar.php:34
 msgid "Footer Widgets"
-msgstr ""
+msgstr "底部小工具"
 
 #: inc/fun/sidebar.php:22
 msgid "Primary Sidebar"
-msgstr ""
+msgstr "主侧边栏"
 
 #: inc/fun/sidebar.php:48
 msgid "Reading recommendations below single posts"
-msgstr ""
+msgstr "单篇文章下方，阅读推荐"
 
 #: inc/fun/sidebar.php:24
 msgid "Right side of posts, category pages, and the homepage"
-msgstr ""
+msgstr "文章页 / 分类页 / 首页右侧"
 
 #: inc/fun/template-tags.php:135
 msgid "%d min read"
-msgstr ""
+msgstr "%d 分钟阅读"
 
 #: inc/fun/template-tags.php:187
 #: inc/setting/options/Jinyu_OptionContent.php:64
 msgid "Breadcrumbs"
-msgstr ""
+msgstr "面包屑导航"
 
 #: inc/fun/template-tags.php:104
 msgid "Enter a page number between 1 and %d to jump"
-msgstr ""
+msgstr "输入 1 到 %d 之间的页码后跳转"
 
 #: inc/fun/template-tags.php:188 inc/fun/template-tags.php:376
 msgid "Home"
-msgstr ""
+msgstr "首页"
 
 #: inc/fun/template-tags.php:102
 msgid "Page number"
-msgstr ""
+msgstr "页码"
 
 #: inc/fun/template-tags.php:377
 msgid "Post Archives"
-msgstr ""
+msgstr "文章归档"
 
 #: inc/fun/template-tags.php:225
 msgid "posts"
-msgstr ""
+msgstr "篇文章"
 
 #: inc/fun/template-tags.php:201
 msgid "Search:"
-msgstr ""
+msgstr "搜索:"
 
 #: inc/fun/template-tags.php:149
 #: inc/setting/options/Jinyu_OptionContent.php:107
 msgid "words"
-msgstr ""
+msgstr "字"
 
+#. Pending manual decision: original string is still Chinese (see
+#. .workbuddy/i18n/reverse_report.md section 2).
 #: inc/fun/template-tags.php:71
 msgid "上一页"
-msgstr ""
+msgstr "上一页"
 
+#. Pending manual decision: original string is still Chinese (see
+#. .workbuddy/i18n/reverse_report.md section 2).
 #: inc/fun/template-tags.php:72
 msgid "下一页"
-msgstr ""
+msgstr "下一页"
 
+#. Pending manual decision: original string is still Chinese (see
+#. .workbuddy/i18n/reverse_report.md section 2).
 #: inc/fun/template-tags.php:176
 msgid "更新于 %s"
-msgstr ""
+msgstr "更新于 %s"
 
+#. Pending manual decision: original string is still Chinese (see
+#. .workbuddy/i18n/reverse_report.md section 2).
 #: inc/fun/template-tags.php:227
 msgid "最后更新于"
-msgstr ""
+msgstr "最后更新于"
 
+#. Pending manual decision: original string is still Chinese (see
+#. .workbuddy/i18n/reverse_report.md section 2).
 #: inc/fun/template-tags.php:99 inc/fun/template-tags.php:105
 msgid "跳转"
-msgstr ""
+msgstr "跳转"
 
 #: inc/fun/user.php:717
 msgid "Administrator"
-msgstr ""
+msgstr "管理员"
 
 #: inc/fun/user.php:646
 msgid "Are you sure you want to delete this draft? This cannot be undone."
-msgstr ""
+msgstr "确定删除该草稿吗？删除后不可恢复。"
 
 #: inc/fun/user.php:640
 msgid ""
 "Are you sure you want to withdraw this submission? This cannot be undone."
-msgstr ""
+msgstr "确定撤回该投稿吗？撤回后不可恢复。"
 
 #: inc/fun/user.php:720
 msgid "Contributor"
-msgstr ""
+msgstr "投稿者"
 
 #: inc/fun/user.php:647
 msgid "Delete"
-msgstr ""
+msgstr "删除"
 
 #: inc/fun/user.php:791
 msgid "Draft"
-msgstr ""
+msgstr "草稿"
 
 #: inc/fun/user.php:634 inc/fun/user.php:718
 msgid "Edit"
-msgstr ""
+msgstr "编辑"
 
 #: inc/fun/user.php:87 inc/setting/options/Jinyu_OptionContent.php:190
 #: templates/post-actions.php:42
 msgid "Favorite"
-msgstr ""
+msgstr "收藏"
 
 #: inc/fun/user.php:714
 msgid "Guest"
-msgstr ""
+msgstr "访客"
 
 #: inc/fun/user.php:62
 msgid "Interactions"
-msgstr ""
+msgstr "互动"
 
 #: inc/fun/user.php:58
 msgid "My Posts"
-msgstr ""
+msgstr "我的文章"
 
 #: inc/fun/user.php:54
 msgid "Overview"
-msgstr ""
+msgstr "概览"
 
 #: inc/fun/user.php:66
 msgid "Profile Settings"
-msgstr ""
+msgstr "资料设置"
 
 #: inc/fun/user.php:789
 msgid "Published"
-msgstr ""
+msgstr "已发布"
 
 #: inc/fun/user.php:682
 msgid "Remove from favorites"
-msgstr ""
+msgstr "取消收藏"
 
 #: inc/fun/user.php:721
 msgid "Subscriber"
-msgstr ""
+msgstr "订阅者"
 
 #: inc/fun/user.php:597
 msgid "User Center Pagination"
-msgstr ""
+msgstr "用户中心分页"
 
 #: inc/fun/user.php:641
 msgid "Withdraw"
-msgstr ""
+msgstr "撤回"
 
 #: inc/fun/widget.php:311 inc/fun/widget.php:327
 msgid "<i class=\"fa-regular fa-calendar-days\"></i> Archives"
-msgstr ""
+msgstr "<i class=\"fa-regular fa-calendar-days\"></i> 归档"
 
 #: inc/fun/widget.php:880 inc/fun/widget.php:888
 msgid "<i class=\"fa-regular fa-clock\"></i> Recently Viewed"
-msgstr ""
+msgstr "<i class=\"fa-regular fa-clock\"></i> 最近浏览"
 
 #: inc/fun/widget.php:1515
 msgid "<i class=\"fa-regular fa-clock\"></i> Site Time"
-msgstr ""
+msgstr "<i class=\"fa-regular fa-clock\"></i> 本站时间"
 
 #: inc/fun/widget.php:728 inc/fun/widget.php:786
 msgid "<i class=\"fa-regular fa-comment-dots\"></i> Most Commented"
-msgstr ""
+msgstr "<i class=\"fa-regular fa-comment-dots\"></i> 热评文章"
 
 #: inc/fun/widget.php:348 inc/fun/widget.php:362
 msgid "<i class=\"fa-regular fa-comment-dots\"></i> Recent Comments"
-msgstr ""
+msgstr "<i class=\"fa-regular fa-comment-dots\"></i> 最新评论"
 
 #: inc/fun/widget.php:481 inc/fun/widget.php:497
 msgid "<i class=\"fa-regular fa-folder-open\"></i> Categories"
-msgstr ""
+msgstr "<i class=\"fa-regular fa-folder-open\"></i> 分类"
 
 #: inc/fun/widget.php:929 inc/fun/widget.php:1001
 msgid "<i class=\"fa-regular fa-images\"></i> Featured"
-msgstr ""
+msgstr "<i class=\"fa-regular fa-images\"></i> 推荐"
 
 #: inc/fun/widget.php:180 inc/fun/widget.php:186
 msgid "<i class=\"fa-solid fa-bullhorn\"></i> Notice"
-msgstr ""
+msgstr "<i class=\"fa-solid fa-bullhorn\"></i> 公告"
 
 #: inc/fun/widget.php:560 inc/fun/widget.php:585
 msgid "<i class=\"fa-solid fa-chart-simple\"></i> Site Stats"
-msgstr ""
+msgstr "<i class=\"fa-solid fa-chart-simple\"></i> 站点统计"
 
 #: inc/fun/widget.php:207 inc/fun/widget.php:252
 msgid "<i class=\"fa-solid fa-fire\"></i> Popular"
-msgstr ""
+msgstr "<i class=\"fa-solid fa-fire\"></i> 热门"
 
 #: inc/fun/widget.php:1416
 msgid "<i class=\"fa-solid fa-gauge-high\"></i> Site Performance"
-msgstr ""
+msgstr "<i class=\"fa-solid fa-gauge-high\"></i> 站点性能"
 
 #: inc/fun/widget.php:518 inc/fun/widget.php:539
 msgid "<i class=\"fa-solid fa-link\"></i> Friend Links"
-msgstr ""
+msgstr "<i class=\"fa-solid fa-link\"></i> 友情链接"
 
 #: inc/fun/widget.php:455 inc/fun/widget.php:462
 msgid "<i class=\"fa-solid fa-magnifying-glass\"></i> Search"
-msgstr ""
+msgstr "<i class=\"fa-solid fa-magnifying-glass\"></i> 搜索"
 
 #: inc/fun/widget.php:1050 inc/fun/widget.php:1114
 msgid "<i class=\"fa-solid fa-quote-left\"></i> Daily Quote"
-msgstr ""
+msgstr "<i class=\"fa-solid fa-quote-left\"></i> 每日一句"
 
 #: inc/fun/widget.php:1349
 msgid "<i class=\"fa-solid fa-server\"></i> Site Overview"
-msgstr ""
+msgstr "<i class=\"fa-solid fa-server\"></i> 网站概况"
 
 #: inc/fun/widget.php:383 inc/fun/widget.php:430
 msgid "<i class=\"fa-solid fa-shuffle\"></i> Random Posts"
-msgstr ""
+msgstr "<i class=\"fa-solid fa-shuffle\"></i> 随机文章"
 
 #: inc/fun/widget.php:278 inc/fun/widget.php:290
 msgid "<i class=\"fa-solid fa-tags\"></i> Tags"
-msgstr ""
+msgstr "<i class=\"fa-solid fa-tags\"></i> 标签"
 
 #: inc/fun/widget.php:622 inc/fun/widget.php:654
 msgid "<i class=\"fa-solid fa-thumbs-up\"></i> Related Posts"
-msgstr ""
+msgstr "<i class=\"fa-solid fa-thumbs-up\"></i> 相关文章"
 
 #: inc/fun/widget.php:1158
 msgid "<i class=\"fa-solid fa-user-astronaut\"></i> Visitor Info"
-msgstr ""
+msgstr "<i class=\"fa-solid fa-user-astronaut\"></i> 访客信息"
 
 #: inc/fun/widget.php:1218
 msgid "<i class=\"fa-solid fa-user-plus\"></i> Recently Joined"
-msgstr ""
+msgstr "<i class=\"fa-solid fa-user-plus\"></i> 最近加入"
 
 #: inc/fun/widget.php:813 inc/fun/widget.php:859
 msgid "<i class=\"fa-solid fa-users\"></i> Readers Wall"
-msgstr ""
+msgstr "<i class=\"fa-solid fa-users\"></i> 读者墙"
 
 #: inc/fun/widget.php:1509
 msgid "A cute clock showing the site's local time"
-msgstr ""
+msgstr "显示站点本地时间的可爱时钟"
 
 #: inc/fun/widget.php:89
 msgid "Author info card"
-msgstr ""
+msgstr "作者信息卡片"
 
 #: inc/fun/widget.php:1010
 msgid "Auto category thumbnails"
-msgstr ""
+msgstr "自动取分类缩略图"
 
 #: inc/fun/widget.php:1014
 msgid "Auto mode: category"
-msgstr ""
+msgstr "自动模式：分类"
 
 #: inc/fun/widget.php:1020
 msgid "Auto mode: count"
-msgstr ""
+msgstr "自动模式：数量"
 
 #: inc/fun/widget.php:1317
 msgid "Available placeholders: {name} name, {date} date"
-msgstr ""
+msgstr "可用占位符：{name} 名称、{date} 日期"
 
 #: inc/fun/widget.php:158
 msgid "Avatar image URL"
-msgstr ""
+msgstr "头像图片地址"
 
 #: inc/fun/widget.php:1474
 msgid "Average"
-msgstr ""
+msgstr "均值"
 
 #: inc/fun/widget.php:875
 msgid ""
 "Based on locally stored browsing history (works for anonymous visitors)"
-msgstr ""
+msgstr "基于本地存储的浏览足迹（匿名可用）"
 
 #: inc/fun/widget.php:1178
 msgid "Browser"
-msgstr ""
+msgstr "浏览器"
 
 #: inc/fun/widget.php:160
 msgid "Button text"
-msgstr ""
+msgstr "按钮文字"
 
+#. Ambiguous zh translations for this msgid; using the most common one.
+#. Alternatives: 分类目录
 #: inc/fun/widget.php:572 sidebar.php:74
 msgid "Categories"
-msgstr ""
+msgstr "分类"
 
 #: inc/fun/widget.php:1428
 msgid "Collecting"
-msgstr ""
+msgstr "采集中"
 
 #: inc/fun/widget.php:189
 msgid "Content"
-msgstr ""
+msgstr "内容"
 
 #: inc/fun/widget.php:257 inc/fun/widget.php:293 inc/fun/widget.php:330
 #: inc/fun/widget.php:365 inc/fun/widget.php:434 inc/fun/widget.php:542
 #: inc/fun/widget.php:658 inc/fun/widget.php:791 inc/fun/widget.php:862
 msgid "Count"
-msgstr ""
+msgstr "数量"
 
 #: inc/fun/widget.php:1304
 msgid "Data source"
-msgstr ""
+msgstr "数据来源"
 
 #: inc/fun/widget.php:1360 inc/setting/options/Jinyu_OptionComment.php:64
 msgid "days"
-msgstr ""
+msgstr "天"
 
 #: inc/fun/widget.php:155
 msgid "Description"
-msgstr ""
+msgstr "描述"
 
 #: inc/fun/widget.php:808
 msgid "Display an avatar wall of recent commenters"
-msgstr ""
+msgstr "展示近期评论读者的头像墙"
 
 #: inc/fun/widget.php:513
 msgid "Display the site's friend links"
-msgstr ""
+msgstr "展示站点的友情链接"
 
 #: inc/fun/widget.php:1431
 msgid "Health score based on response time / queries / memory / load"
-msgstr ""
+msgstr "综合耗时 / 查询 / 内存 / 负载的健康分"
 
 #: inc/fun/widget.php:500
 msgid "Hide empty categories"
-msgstr ""
+msgstr "隐藏空分类"
 
 #: inc/fun/widget.php:1361
 msgid "hrs"
-msgstr ""
+msgstr "时"
 
 #: inc/fun/widget.php:1008
 msgid "Image source"
-msgstr ""
+msgstr "图片来源"
 
 #: inc/fun/widget.php:923
 msgid ""
 "Image-text recommendations; fill in images manually or use category "
 "thumbnails automatically"
-msgstr ""
+msgstr "图文推荐；手动填图或自动取分类缩略图"
 
 #: inc/fun/widget.php:1021
 msgid "Images per row"
-msgstr ""
+msgstr "每行几张"
 
 #: inc/fun/widget.php:1176
 msgid "IP"
@@ -2013,312 +2106,312 @@ msgstr ""
 
 #: inc/fun/widget.php:303
 msgid "Jinyu: Archives"
-msgstr ""
+msgstr "金玉·归档"
 
 #: inc/fun/widget.php:86
 msgid "Jinyu: Author Card"
-msgstr ""
+msgstr "金玉·作者卡"
 
 #: inc/fun/widget.php:473
 msgid "Jinyu: Categories"
-msgstr ""
+msgstr "金玉·分类目录"
 
 #: inc/fun/widget.php:1506
 msgid "Jinyu: Clock"
-msgstr ""
+msgstr "金玉·时钟"
 
 #: inc/fun/widget.php:671
 msgid "Jinyu: Custom Menu"
-msgstr ""
+msgstr "金玉·自定义菜单"
 
 #: inc/fun/widget.php:1041
 msgid "Jinyu: Daily Quote"
-msgstr ""
+msgstr "金玉·每日一句"
 
 #: inc/fun/widget.php:510
 msgid "Jinyu: Friend Links"
-msgstr ""
+msgstr "金玉·友情链接"
 
 #: inc/fun/widget.php:920
 msgid "Jinyu: Image-Text Recommendations"
-msgstr ""
+msgstr "金玉·图文推荐位"
 
 #: inc/fun/widget.php:720
 msgid "Jinyu: Most Commented"
-msgstr ""
+msgstr "金玉·热评文章"
 
 #: inc/fun/widget.php:170
 msgid "Jinyu: Notice"
-msgstr ""
+msgstr "金玉·公告"
 
 #: inc/fun/widget.php:199
 msgid "Jinyu: Popular Posts"
-msgstr ""
+msgstr "金玉·热门文章"
 
 #: inc/fun/widget.php:375
 msgid "Jinyu: Random Posts"
-msgstr ""
+msgstr "金玉·随机文章"
 
 #: inc/fun/widget.php:805
 msgid "Jinyu: Readers Wall"
-msgstr ""
+msgstr "金玉·读者墙"
 
 #: inc/fun/widget.php:340
 msgid "Jinyu: Recent Comments"
-msgstr ""
+msgstr "金玉·最新评论"
 
 #: inc/fun/widget.php:1209
 msgid "Jinyu: Recently Joined"
-msgstr ""
+msgstr "金玉·最近加入"
 
 #: inc/fun/widget.php:872
 msgid "Jinyu: Recently Viewed"
-msgstr ""
+msgstr "金玉·最近浏览"
 
 #: inc/fun/widget.php:607
 msgid "Jinyu: Related Posts"
-msgstr ""
+msgstr "金玉·相关文章"
 
 #: inc/fun/widget.php:447
 msgid "Jinyu: Search"
-msgstr ""
+msgstr "金玉·搜索"
 
 #: inc/fun/widget.php:1340
 msgid "Jinyu: Site Overview"
-msgstr ""
+msgstr "金玉·网站概况"
 
 #: inc/fun/widget.php:1407
 msgid "Jinyu: Site Performance"
-msgstr ""
+msgstr "金玉·站点性能"
 
 #: inc/fun/widget.php:552
 msgid "Jinyu: Site Stats"
-msgstr ""
+msgstr "金玉·站点统计"
 
 #: inc/fun/widget.php:270
 msgid "Jinyu: Tag Cloud"
-msgstr ""
+msgstr "金玉·标签云"
 
 #: inc/fun/widget.php:1149
 msgid "Jinyu: Visitor Info"
-msgstr ""
+msgstr "金玉·访客信息"
 
 #: inc/fun/widget.php:102 inc/fun/widget.php:152
 msgid "Learn more"
-msgstr ""
+msgstr "了解更多"
 
 #: inc/fun/widget.php:158
 msgid ""
 "Leave empty to use the site icon automatically (Appearance › Customize › "
 "Site Identity); if not set, the site-wide \"Avatar source\" setting applies"
-msgstr ""
+msgstr "留空则自动使用站点图标（外观 › 自定义 › 站点身份）；未设置时按全站「头像来源」显示"
 
 #: inc/fun/widget.php:159
 msgid "Link"
-msgstr ""
+msgstr "链接"
 
 #: inc/fun/widget.php:476
 msgid "List of post categories"
-msgstr ""
+msgstr "文章分类列表"
 
 #: inc/fun/widget.php:1009
 msgid "Manual entry"
-msgstr ""
+msgstr "手动填写"
 
 #: inc/fun/widget.php:1011
 msgid "Manual list (one per line: image URL|link|title)"
-msgstr ""
+msgstr "手动列表（每行：图片地址|跳转链接|标题）"
 
 #: inc/fun/widget.php:705
 msgid "Menu"
-msgstr ""
+msgstr "菜单"
 
 #: inc/fun/widget.php:1362
 msgid "min"
-msgstr ""
+msgstr "分"
 
 #: inc/fun/widget.php:306
 msgid "Monthly archives"
-msgstr ""
+msgstr "按月归档"
 
 #: inc/fun/widget.php:1105
 msgid "Next quote"
-msgstr ""
+msgstr "换一句"
 
 #: inc/fun/widget.php:357 inc/fun/widget.php:780 sidebar.php:101
 msgid "No comments yet"
-msgstr ""
+msgstr "暂无评论"
 
 #: inc/fun/widget.php:1288
 msgid "No data yet"
-msgstr ""
+msgstr "暂无数据"
 
 #: inc/fun/widget.php:534
 msgid "No friend links yet"
-msgstr ""
+msgstr "暂无友情链接"
 
 #: inc/fun/widget.php:246 sidebar.php:66
 msgid "No popular posts yet"
-msgstr ""
+msgstr "暂无热门文章"
 
 #: inc/fun/widget.php:854
 msgid "No readers yet"
-msgstr ""
+msgstr "暂无读者"
 
 #: inc/fun/widget.php:1370
 msgid "No site founding date available"
-msgstr ""
+msgstr "暂无建站时间数据"
 
 #: inc/fun/widget.php:1311
 msgid "Number to show"
-msgstr ""
+msgstr "显示数量"
 
 #: inc/fun/widget.php:450
 msgid "On-site search box"
-msgstr ""
+msgstr "站内搜索框"
 
 #: inc/fun/widget.php:1119
 msgid "One fixed quote per day"
-msgstr ""
+msgstr "每天固定一条"
 
 #: inc/fun/widget.php:792
 msgid "Only within the last N days (0 = no limit)"
-msgstr ""
+msgstr "仅近 N 天（0 = 不限）"
 
 #: inc/fun/widget.php:570
 msgid "Pages"
-msgstr ""
+msgstr "页面"
 
 #: inc/fun/widget.php:1475
 msgid "Peak"
-msgstr ""
+msgstr "峰值"
 
 #: inc/fun/widget.php:723
 msgid "Popular posts sorted by comment count"
-msgstr ""
+msgstr "按评论数排序的热门文章"
 
 #: inc/fun/widget.php:1122
 msgid "Quote category"
-msgstr ""
+msgstr "语录分类"
 
 #: inc/fun/widget.php:1128
 msgid ""
 "Quotes (one per line: content|source; source optional. Leave empty to use "
 "the built-in corpus)"
-msgstr ""
+msgstr "语录（每行：内容|出处；出处可省。留空用内置语料库）"
 
 #: inc/fun/widget.php:1120
 msgid "Random on each refresh"
-msgstr ""
+msgstr "每次刷新随机"
 
 #: inc/fun/widget.php:1044
 msgid "Randomly display a quote; no external API required"
-msgstr ""
+msgstr "随机显示一条语录；不依赖外部 API"
 
 #: inc/fun/widget.php:378
 msgid "Randomly recommended posts"
-msgstr ""
+msgstr "随机推荐文章"
 
 #: inc/fun/widget.php:1306
 msgid "Recent commenters"
-msgstr ""
+msgstr "近期评论者"
 
 #: inc/fun/widget.php:1307
 msgid "Registered members"
-msgstr ""
+msgstr "注册会员"
 
 #: inc/fun/widget.php:610
 msgid ""
 "Related recommendations for the current post (shown on single posts only)"
-msgstr ""
+msgstr "当前文章的相关推荐（仅在文章页显示）"
 
 #: inc/fun/widget.php:1565
 msgid ""
 "Render a newsletter subscription form (depends on the \"Sales & Monetization"
 " › Newsletter\" toggle)"
-msgstr ""
+msgstr "渲染邮件订阅表单（依赖「销售与变现 › 邮件订阅」开关）"
 
 #: inc/fun/widget.php:674
 msgid "Render a selected navigation menu"
-msgstr ""
+msgstr "渲染指定的导航菜单"
 
 #: inc/fun/widget.php:1457
 msgid "Response time"
-msgstr ""
+msgstr "响应耗时"
 
 #: inc/fun/widget.php:1366
 msgid "Running steadily since %s"
-msgstr ""
+msgstr "自 %s 已稳定运行"
 
 #: inc/fun/widget.php:1343
 msgid "Show how long the site has been running (days / hours / min / sec)"
-msgstr ""
+msgstr "展示站点已稳定运行的天 / 时 / 分 / 秒"
 
 #: inc/fun/widget.php:343
 msgid "Show recent comments with their posts"
-msgstr ""
+msgstr "显示最新评论及对应文章"
 
 #: inc/fun/widget.php:1212
 msgid "Show recently registered members or recent commenters"
-msgstr ""
+msgstr "展示最近注册会员或近期评论者"
 
 #: inc/fun/widget.php:1410
 msgid "Show site response time / database queries / memory usage in real time"
-msgstr ""
+msgstr "实时展示站点响应耗时 / 数据库查询 / 内存占用心跳"
 
 #: inc/fun/widget.php:1152
 msgid ""
 "Show the current visitor's IP / OS / browser / location in real time "
 "(fetched via Ajax, not cached)"
-msgstr ""
+msgstr "实时展示当前访客的 IP / 系统 / 浏览器 / 归属地（经 Ajax 取回，不进缓存）"
 
 #: inc/fun/widget.php:435 inc/fun/widget.php:659
 msgid "Show thumbnails"
-msgstr ""
+msgstr "显示缩略图"
 
 #: inc/fun/widget.php:258 inc/fun/widget.php:793
 msgid "Show thumbnails (replaces ranked dots)"
-msgstr ""
+msgstr "显示缩略图（取代圆点名次）"
 
 #: inc/fun/widget.php:1384
 msgid "Site founding date (leave empty to use the earliest post)"
-msgstr ""
+msgstr "建站日期（留空自动取最早文章）"
 
 #: inc/fun/widget.php:202
 msgid "Sorted by views"
-msgstr ""
+msgstr "按浏览量排序"
 
 #: inc/fun/widget.php:555
 msgid "Stats for posts / pages / comments / categories / tags"
-msgstr ""
+msgstr "文章/页面/评论/分类/标签统计"
 
 #: inc/fun/widget.php:1129
 msgid "Still waters run deep.|Anonymous"
-msgstr ""
+msgstr "静水流深。|佚名"
 
 #: inc/fun/widget.php:1118
 msgid "Switch mode"
-msgstr ""
+msgstr "切换方式"
 
 #: inc/fun/widget.php:1177
 msgid "System"
-msgstr ""
+msgstr "系统"
 
 #: inc/fun/widget.php:273 sidebar.php:109
 msgid "Tag Cloud"
-msgstr ""
+msgstr "标签云"
 
 #: inc/fun/widget.php:573
 msgid "Tags"
-msgstr ""
+msgstr "标签"
 
 #: inc/fun/widget.php:1315
 msgid "Text template"
-msgstr ""
+msgstr "文案模板"
 
 #: inc/fun/widget.php:1180
 msgid "The above is info about this visit, visible only to you"
-msgstr ""
+msgstr "以上为本次访问的信息，仅你可见"
 
 #: inc/fun/widget.php:188 inc/fun/widget.php:256 inc/fun/widget.php:292
 #: inc/fun/widget.php:329 inc/fun/widget.php:364 inc/fun/widget.php:433
@@ -2329,67 +2422,69 @@ msgstr ""
 #: inc/fun/widget.php:1300 inc/fun/widget.php:1380 inc/fun/widget.php:1487
 #: inc/fun/widget.php:1545 inc/setting/options/Jinyu_OptionCarousel.php:133
 msgid "Title"
-msgstr ""
+msgstr "标题"
 
 #: inc/fun/widget.php:1587
 msgid "Title (leave empty to use the admin setting)"
-msgstr ""
+msgstr "标题（留空用后台设置）"
 
 #: inc/fun/widget.php:100
 msgid "Welcome to my blog"
-msgstr ""
+msgstr "欢迎来到我的博客"
 
 #: inc/fun/widget.php:1221 inc/fun/widget.php:1297 inc/fun/widget.php:1327
 msgid "{name} joined the site"
-msgstr ""
+msgstr "{name} 加入了网站"
 
 #: inc/fun/widget.php:1015
 msgid "— All categories (newest first) —"
-msgstr ""
+msgstr "— 全部分类（按最新）—"
 
 #: inc/fun/widget.php:706
 msgid "— Select a menu —"
-msgstr ""
+msgstr "— 选择菜单 —"
 
 #: inc/setting/Jinyu_Setting.php:736
 msgid "%1$d historical cover images are missing the theme size"
-msgstr ""
+msgstr "有 %1$d 张历史封面图缺少主题尺寸"
 
 #: inc/setting/Jinyu_Setting.php:458
 msgid "A regeneration task is already running. Please try again later."
-msgstr ""
+msgstr "已有重建任务正在进行，请稍候再试"
 
 #: inc/setting/Jinyu_Setting.php:340
 msgid "Export successful"
-msgstr ""
+msgstr "导出成功"
 
 #: inc/setting/Jinyu_Setting.php:679
 msgid "Group not found"
-msgstr ""
+msgstr "分组不存在"
 
 #: inc/setting/Jinyu_Setting.php:379
 msgid "Import successful"
-msgstr ""
+msgstr "导入成功"
 
 #: inc/setting/Jinyu_Setting.php:303 inc/setting/Jinyu_Setting.php:323
 #: inc/setting/Jinyu_Setting.php:335 inc/setting/Jinyu_Setting.php:352
 #: inc/setting/Jinyu_Setting.php:402 inc/setting/Jinyu_Setting.php:581
 #: inc/setting/Jinyu_Setting.php:664
 msgid "Insufficient permissions"
-msgstr ""
+msgstr "权限不足"
 
 #: inc/setting/Jinyu_Setting.php:307 inc/setting/Jinyu_Setting.php:356
 msgid "Invalid data format"
-msgstr ""
+msgstr "数据格式错误"
 
+#. Ambiguous zh translations for this msgid; using the most common one.
+#. Alternatives: 金玉主题设置
 #: inc/setting/Jinyu_Setting.php:37 inc/setting/Jinyu_Setting.php:38
 #: inc/setting/customizer.php:212 inc/setting/template.php:21
 msgid "Jinyu Theme Settings"
-msgstr ""
+msgstr "金玉主题配置"
 
 #: inc/setting/Jinyu_Setting.php:134
 msgid "Maintenance Tools"
-msgstr ""
+msgstr "维护工具"
 
 #: inc/setting/Jinyu_Setting.php:143
 msgid ""
@@ -2398,34 +2493,35 @@ msgid ""
 " full-page cache. After enabling, clear the cache once in \"Jinyu "
 "Enhancements\" to take effect"
 msgstr ""
+"在前台页脚输出一行实时运行信息：查询数 / 内存 / 渲染耗时。数值由 JS 实时拉取，不会被整页缓存冻结。开启后到「金玉增强」清理一次缓存即可生效"
 
 #: inc/setting/Jinyu_Setting.php:546
 msgid "Processed %1$d/%2$d, generated %3$d, skipped %4$d, failed %5$d"
-msgstr ""
+msgstr "已处理 %1$d/%2$d，新生成 %3$d，跳过 %4$d，失败 %5$d"
 
 #: inc/setting/Jinyu_Setting.php:642
 msgid ""
 "Regeneration complete: %1$d generated, %2$d skipped (already complete), %3$d"
 " failed"
-msgstr ""
+msgstr "重建完成：新生成 %1$d 张，已齐全跳过 %2$d 张，失败 %3$d 张"
 
 #: inc/setting/Jinyu_Setting.php:326
 msgid "Reset"
-msgstr ""
+msgstr "已重置"
 
 #: inc/setting/Jinyu_Setting.php:140
 msgid "Show runtime info in the footer"
-msgstr ""
+msgstr "页脚显示运行信息"
 
 #: inc/setting/Jinyu_Setting.php:425
 msgid "Stopped. Clicking again will rescan"
-msgstr ""
+msgstr "已停止，下次点击将重新扫描"
 
 #: inc/setting/Jinyu_Setting.php:410
 msgid ""
 "The current server environment does not support thumbnail regeneration "
 "(missing GD or an outdated WordPress version)"
-msgstr ""
+msgstr "当前服务器环境不支持缩略图重建（缺少 GD 或 WordPress 版本过旧）"
 
 #: inc/setting/Jinyu_Setting.php:135
 msgid ""
@@ -2433,95 +2529,102 @@ msgid ""
 "and runtime info toggles. For SMTP mail / cache clearing / database "
 "optimization / object storage, use the \"Jinyu Enhancements\" plugin panel."
 msgstr ""
+"封面缩略图重建、配置导出导入与运行信息开关等主题侧运维操作。邮件 SMTP / 缓存清理 / 数据库优化 / 对象存储请用「金玉增强」插件面板。"
 
 #: inc/setting/Jinyu_Setting.php:690
 msgid "This group has been reset"
-msgstr ""
+msgstr "已重置本组"
 
+#. Pending manual decision: original string is still Chinese (see
+#. .workbuddy/i18n/reverse_report.md section 2).
 #: inc/setting/Jinyu_Setting.php:742
 msgid "：缺 jinyu-cover / jinyu-thumb，卡片会直接加载原图拖慢页面；前往「维护工具」重建一次即可，无需手动裁剪。"
-msgstr ""
+msgstr "：缺 jinyu-cover / jinyu-thumb，卡片会直接加载原图拖慢页面；前往「维护工具」重建一次即可，无需手动裁剪。"
 
+#. Pending manual decision: original string is still Chinese (see
+#. .workbuddy/i18n/reverse_report.md section 2).
 #: inc/setting/Jinyu_Setting.php:382
 msgid "；%d 个加密字段（API Key / 密码等）无法跨站解密，已跳过，请重新填写"
-msgstr ""
+msgstr "；%d 个加密字段（API Key / 密码等）无法跨站解密，已跳过，请重新填写"
 
 #: inc/setting/customizer.php:223
 msgid "Settings"
-msgstr ""
+msgstr "设置"
 
 #: inc/setting/customizer.php:213
 msgid ""
 "Theme appearance and layout options. Changes can be previewed live on the "
 "right."
-msgstr ""
+msgstr "主题外观与布局选项，修改后可在右侧实时预览。"
 
 #: inc/setting/options/Jinyu_BaseOptionItem.php:38
 msgid "None"
-msgstr ""
+msgstr "无"
 
 #: inc/setting/options/Jinyu_OptionAbout.php:26
 msgid "About"
-msgstr ""
+msgstr "关于"
 
 #: inc/setting/options/Jinyu_OptionAbout.php:32
 msgid "Current version"
-msgstr ""
+msgstr "当前版本"
 
 #: inc/setting/options/Jinyu_OptionAbout.php:35
 msgid "Jinyu theme v%s · PHP 8.0+ · WordPress 6.0+"
-msgstr ""
+msgstr "金玉主题 v%s · PHP 8.0+ · WordPress 6.0+"
 
 #: inc/setting/options/Jinyu_OptionAbout.php:27
 msgid "Theme version, update server, and update check."
-msgstr ""
+msgstr "主题版本、更新服务器与检查更新。"
 
 #: inc/setting/options/Jinyu_OptionBasic.php:42
 msgid ""
 "A transparent PNG is recommended. Dark mode automatically switches to the "
 "\"Dark mode\" logo below; if not set, this image is reused"
-msgstr ""
+msgstr "建议使用透明背景 PNG；暗色模式会自动切换下方「暗色模式」Logo，未填则复用本图"
 
 #: inc/setting/options/Jinyu_OptionBasic.php:88
 msgid "Alipay QR code"
-msgstr ""
+msgstr "支付宝收款码"
 
 #: inc/setting/options/Jinyu_OptionBasic.php:63
 msgid ""
 "Article link: {url}\n"
 "Please credit the source when reposting: {title} (by {author})"
 msgstr ""
+"本文链接：{url}\n"
+"转载请注明出处：{title}（作者：{author}）"
 
 #: inc/setting/options/Jinyu_OptionBasic.php:26
 msgid "Basic Settings"
-msgstr ""
+msgstr "基础设置"
 
 #: inc/setting/options/Jinyu_OptionBasic.php:61
 msgid "Copyright notice at the end of posts"
-msgstr ""
+msgstr "文末版权声明"
 
 #: inc/setting/options/Jinyu_OptionBasic.php:75
 msgid "Donation message"
-msgstr ""
+msgstr "打赏文案"
 
 #: inc/setting/options/Jinyu_OptionBasic.php:69
 msgid "Donation title"
-msgstr ""
+msgstr "打赏标题"
 
 #: inc/setting/options/Jinyu_OptionBasic.php:77
 msgid ""
 "If you found this post helpful, feel free to support the author with a "
 "donation!"
-msgstr ""
+msgstr "如果觉得文章对你有帮助，欢迎打赏支持～"
 
 #: inc/setting/options/Jinyu_OptionBasic.php:56
 msgid ""
 "Leave empty to hide the notice bar. Simple HTML (e.g. links) is supported"
-msgstr ""
+msgstr "留空则不显示公告条。支持简单 HTML（如链接）"
 
 #: inc/setting/options/Jinyu_OptionBasic.php:49
 msgid "Leave empty to reuse the light-mode logo in dark mode"
-msgstr ""
+msgstr "留空则暗色模式复用亮色 Logo"
 
 #: inc/setting/options/Jinyu_OptionBasic.php:64
 msgid ""
@@ -2529,317 +2632,322 @@ msgid ""
 "link, {title} title, {author} author, {date} date; simple HTML (e.g. links) "
 "is supported"
 msgstr ""
+"留空则使用默认声明。支持占位符：{url} 文章链接、{title} 标题、{author} 作者、{date} 日期；支持简单 HTML（如链接）"
 
 #: inc/setting/options/Jinyu_OptionBasic.php:35
 msgid "Leave empty to use the WordPress site title"
-msgstr ""
+msgstr "留空则使用 WordPress 站点标题"
 
 #: inc/setting/options/Jinyu_OptionBasic.php:27
 msgid "Site info, logo, top notice, footer copyright, and post donation."
-msgstr ""
+msgstr "站点信息、Logo、顶部公告、文末版权与文章打赏。"
 
 #: inc/setting/options/Jinyu_OptionBasic.php:46
 msgid "Site Logo (dark mode)"
-msgstr ""
+msgstr "站点 Logo（暗色模式）"
 
 #: inc/setting/options/Jinyu_OptionBasic.php:39
 msgid "Site Logo (light mode)"
-msgstr ""
+msgstr "站点 Logo（亮色模式）"
 
 #: inc/setting/options/Jinyu_OptionBasic.php:32
 msgid "Site Title"
-msgstr ""
+msgstr "站点标题"
 
 #: inc/setting/options/Jinyu_OptionBasic.php:53
 msgid "Top Notice"
-msgstr ""
+msgstr "顶部公告"
 
 #: inc/setting/options/Jinyu_OptionBasic.php:84
 msgid "Upload a WeChat Pay QR code image; leave empty to hide this channel"
-msgstr ""
+msgstr "上传微信收款二维码图片；留空则不显示该渠道"
 
 #: inc/setting/options/Jinyu_OptionBasic.php:91
 msgid "Upload an Alipay QR code image; leave empty to hide this channel"
-msgstr ""
+msgstr "上传支付宝收款二维码图片；留空则不显示该渠道"
 
 #: inc/setting/options/Jinyu_OptionBasic.php:81
 msgid "WeChat Pay QR code"
-msgstr ""
+msgstr "微信收款码"
 
 #: inc/setting/options/Jinyu_OptionCarousel.php:64
 msgid "0 disables autoplay"
-msgstr ""
+msgstr "0 为不自动播放"
 
 #: inc/setting/options/Jinyu_OptionCarousel.php:60
 msgid "Autoplay interval (ms)"
-msgstr ""
+msgstr "自动播放间隔 (ms)"
 
 #: inc/setting/options/Jinyu_OptionCarousel.php:109
 msgid "Categories excluded from latest posts"
-msgstr ""
+msgstr "最新文章排除分类"
 
 #: inc/setting/options/Jinyu_OptionCarousel.php:176
 msgid "Check the categories to display (split into two columns)"
-msgstr ""
+msgstr "勾选要展示的分类（按分类分两栏）"
 
 #: inc/setting/options/Jinyu_OptionCarousel.php:112
 msgid "Checked categories will not appear in the homepage loop (latest posts)"
-msgstr ""
+msgstr "勾选的分类不会出现在首页主循环（最新文章）中"
 
 #: inc/setting/options/Jinyu_OptionCarousel.php:97
 msgid "Custom slides (optional)"
-msgstr ""
+msgstr "手动指定轮播（可选）"
 
 #: inc/setting/options/Jinyu_OptionCarousel.php:33
 msgid "Enable homepage slider"
-msgstr ""
+msgstr "启用首页轮播"
 
 #: inc/setting/options/Jinyu_OptionCarousel.php:89
 msgid "Fade"
-msgstr ""
+msgstr "淡入淡出"
 
+#. Ambiguous zh translations for this msgid; using the most common one.
+#. Alternatives: 不显示
 #: inc/setting/options/Jinyu_OptionCarousel.php:157
 #: inc/setting/options/Jinyu_OptionGlobal.php:173
 msgid "Hidden"
-msgstr ""
+msgstr "隐藏"
 
 #: inc/setting/options/Jinyu_OptionCarousel.php:46
 msgid "Hide title"
-msgstr ""
+msgstr "隐藏标题"
 
 #: inc/setting/options/Jinyu_OptionCarousel.php:124
 msgid "Homepage four-grid list"
-msgstr ""
+msgstr "首页四宫格列表"
 
 #: inc/setting/options/Jinyu_OptionCarousel.php:26
 msgid "Homepage Modules"
-msgstr ""
+msgstr "首页模块"
 
 #: inc/setting/options/Jinyu_OptionCarousel.php:28
 msgid ""
 "Homepage top sections: slider, four-grid, two-column categories, and "
 "categories excluded from the homepage loop."
-msgstr ""
+msgstr "首页顶部版块：幻灯片、四宫格、分类两栏，以及首页主循环排除分类。"
 
 #: inc/setting/options/Jinyu_OptionCarousel.php:139
 msgid "Image"
-msgstr ""
+msgstr "图片"
 
 #: inc/setting/options/Jinyu_OptionCarousel.php:53
 msgid "Loop"
-msgstr ""
+msgstr "循环播放"
 
 #: inc/setting/options/Jinyu_OptionCarousel.php:69
 msgid "Number of auto slides"
-msgstr ""
+msgstr "自动轮播数量"
 
 #: inc/setting/options/Jinyu_OptionCarousel.php:160
 msgid "Once hidden, it will not be displayed"
-msgstr ""
+msgstr "隐藏后将不会显示"
 
 #: inc/setting/options/Jinyu_OptionCarousel.php:100
 msgid ""
 "One per line, format: title|image URL|link. Leave empty to use the latest "
 "posts automatically."
-msgstr ""
+msgstr "每行一条，格式：标题|图片URL|链接。留空则自动取最新文章。"
 
 #: inc/setting/options/Jinyu_OptionCarousel.php:151
 msgid "Open in new tab"
-msgstr ""
+msgstr "新标签打开"
 
 #: inc/setting/options/Jinyu_OptionCarousel.php:117
 msgid "Show homepage four-grid"
-msgstr ""
+msgstr "显示首页四宫格"
 
 #: inc/setting/options/Jinyu_OptionCarousel.php:167
 msgid "Show two-column categories"
-msgstr ""
+msgstr "显示分类两栏"
 
 #: inc/setting/options/Jinyu_OptionCarousel.php:120
 msgid "Shown on the first page of the homepage only, below the slider"
-msgstr ""
+msgstr "仅首页第一页显示，位置在幻灯片下方"
 
 #: inc/setting/options/Jinyu_OptionCarousel.php:163
 msgid ""
 "Shows up to the first 4 items that are not hidden and have images set; drag "
 "to reorder"
-msgstr ""
+msgstr "最多显示前 4 个未隐藏且已设置图片的项目，可拖拽排序"
 
 #: inc/setting/options/Jinyu_OptionCarousel.php:85
 msgid "Slide (default)"
-msgstr ""
+msgstr "位移（默认）"
 
 #: inc/setting/options/Jinyu_OptionCarousel.php:39
 msgid "Switch with mouse wheel"
-msgstr ""
+msgstr "鼠标滚轮切换"
 
 #: inc/setting/options/Jinyu_OptionCarousel.php:146
 msgid "Target link"
-msgstr ""
+msgstr "指向链接"
 
 #: inc/setting/options/Jinyu_OptionCarousel.php:142
 msgid "The four images should share the same aspect ratio"
-msgstr ""
+msgstr "建议四张图片尺寸比例一致"
 
 #: inc/setting/options/Jinyu_OptionCarousel.php:80
 msgid "Transition effect"
-msgstr ""
+msgstr "切换效果"
 
 #: inc/setting/options/Jinyu_OptionCarousel.php:173
 msgid "Two-column categories: categories"
-msgstr ""
+msgstr "分类两栏·分类"
 
 #: inc/setting/options/Jinyu_OptionCarousel.php:180
 msgid "Two-column categories: items per column"
-msgstr ""
+msgstr "分类两栏·每栏数量"
 
 #: inc/setting/options/Jinyu_OptionCarousel.php:135
 msgid "Used as the image alt text"
-msgstr ""
+msgstr "用于图片替代文本"
 
 #: inc/setting/options/Jinyu_OptionCarousel.php:74
 msgid ""
 "When no slides are set manually, take this many of the latest posts with "
 "cover images"
-msgstr ""
+msgstr "未手动指定轮播时，自动取最新且含封面的文章数量"
 
 #: inc/setting/options/Jinyu_OptionCode.php:59
 msgid "Custom Code"
-msgstr ""
+msgstr "自定义代码"
 
 #: inc/setting/options/Jinyu_OptionCode.php:61
 msgid "Custom CSS and JS code injected into the header / footer."
-msgstr ""
+msgstr "头部 / 底部注入的自定义 CSS、JS 代码。"
 
 #: inc/setting/options/Jinyu_OptionCode.php:44
 msgid "Footer CSS injection"
-msgstr ""
+msgstr "底部注入 CSS"
 
 #: inc/setting/options/Jinyu_OptionCode.php:51
 msgid "Footer JS injection"
-msgstr ""
+msgstr "底部注入 JS"
 
 #: inc/setting/options/Jinyu_OptionCode.php:29
 msgid "Header CSS injection"
-msgstr ""
+msgstr "头部注入 CSS"
 
 #: inc/setting/options/Jinyu_OptionCode.php:37
 msgid "Header JS injection"
-msgstr ""
+msgstr "头部注入 JS"
 
 #: inc/setting/options/Jinyu_OptionCode.php:33
 msgid "Inserted into wp_head"
-msgstr ""
+msgstr "插入 wp_head 中"
 
 #: inc/setting/options/Jinyu_OptionComment.php:53
 msgid "Auto-close comments on old posts"
-msgstr ""
+msgstr "旧文章自动关评"
 
 #: inc/setting/options/Jinyu_OptionComment.php:56
 msgid ""
 "Automatically close comments on posts older than the specified number of "
 "days"
-msgstr ""
+msgstr "超过指定天数的文章自动关闭评论"
 
 #: inc/setting/options/Jinyu_OptionComment.php:85
 msgid ""
 "Comma-separated. If a comment contains any of these words, it is marked as "
 "spam. A list of common spam words is built in; you can add or remove entries"
 " here"
-msgstr ""
+msgstr "英文逗号分隔，评论内容命中即标记为垃圾。已内置一批常见垃圾词，可在此增删"
 
 #: inc/setting/options/Jinyu_OptionComment.php:68
 msgid "Comment emoji picker"
-msgstr ""
+msgstr "评论表情选择器"
 
 #: inc/setting/options/Jinyu_OptionComment.php:27
 msgid ""
 "Comment toggles, pagination, auto-closing comments on old posts, emoji, and "
 "spam keywords."
-msgstr ""
+msgstr "评论开关、分页、旧文关评、表情与防垃圾关键词。"
 
 #: inc/setting/options/Jinyu_OptionComment.php:60
 msgid "Comment-closing threshold (days)"
-msgstr ""
+msgstr "关评天数阈值"
 
 #: inc/setting/options/Jinyu_OptionComment.php:26
 msgid "Comments & Interaction"
-msgstr ""
+msgstr "评论互动"
 
 #: inc/setting/options/Jinyu_OptionComment.php:45
 msgid "Comments per page"
-msgstr ""
+msgstr "每页评论数"
 
 #: inc/setting/options/Jinyu_OptionComment.php:32
 msgid "Disable comments site-wide"
-msgstr ""
+msgstr "关闭全站评论功能"
 
 #: inc/setting/options/Jinyu_OptionComment.php:38
 msgid "Paginate comments"
-msgstr ""
+msgstr "评论分页"
 
 #: inc/setting/options/Jinyu_OptionComment.php:71
 msgid "Provide an emoji panel in the comment box; click to insert emoji"
-msgstr ""
+msgstr "评论框提供表情面板，点击插入表情"
 
 #: inc/setting/options/Jinyu_OptionComment.php:78
 msgid ""
 "Show the commenter's browser and OS in comments (parsed from User-Agent)"
-msgstr ""
+msgstr "在评论中展示评论者的浏览器与操作系统（基于 User-Agent 解析）"
 
 #: inc/setting/options/Jinyu_OptionComment.php:75
 msgid "Show UA in comments"
-msgstr ""
+msgstr "评论显示 UA"
 
 #: inc/setting/options/Jinyu_OptionComment.php:82
 msgid "Spam comment keywords"
-msgstr ""
+msgstr "垃圾评论关键词"
 
 #: inc/setting/options/Jinyu_OptionComment.php:41
 msgid ""
 "Split comments into pages when there are many, to avoid overly long pages"
-msgstr ""
+msgstr "评论较多时分页展示，避免单页过长"
 
+#. Pending manual decision: original string is still Chinese (see
+#. .workbuddy/i18n/reverse_report.md section 2).
 #: inc/setting/options/Jinyu_OptionComment.php:84
 msgid "彩票,色情,赌博,代写,刷量,贷款,发票,办证,加微信,返利,兼职,代运营"
-msgstr ""
+msgstr "彩票,色情,赌博,代写,刷量,贷款,发票,办证,加微信,返利,兼职,代运营"
 
 #: inc/setting/options/Jinyu_OptionContent.php:108
 msgid "Auto excerpt length on list / archive pages"
-msgstr ""
+msgstr "列表/归档页自动摘要长度"
 
 #: inc/setting/options/Jinyu_OptionContent.php:40
 msgid ""
 "Automatically build a TOC from H2/H3/H4 in the content with scroll "
 "highlighting"
-msgstr ""
+msgstr "自动提取正文 H2/H3/H4 生成目录并滚动高亮"
 
 #: inc/setting/options/Jinyu_OptionContent.php:70
 msgid "Back-to-top button"
-msgstr ""
+msgstr "返回顶部按钮"
 
 #: inc/setting/options/Jinyu_OptionContent.php:26
 msgid "Content Enhancements"
-msgstr ""
+msgstr "内容增强"
 
 #: inc/setting/options/Jinyu_OptionContent.php:95
 msgid "Default thumbnail"
-msgstr ""
+msgstr "默认缩略图"
 
 #: inc/setting/options/Jinyu_OptionContent.php:102
 msgid "Excerpt length"
-msgstr ""
+msgstr "摘要字数"
 
 #: inc/setting/options/Jinyu_OptionContent.php:98
 msgid ""
 "Fallback thumbnail when a post has no featured image and no images in the "
 "content (leave empty to use the theme's built-in \"colorful cloud\" gradient"
 " default; override here only when you want a different image)"
-msgstr ""
+msgstr "无特色图且正文无图片时的兜底缩略图（留空即用主题内置的「七彩云」渐变默认图，此处在需要换图时覆盖）"
 
 #: inc/setting/options/Jinyu_OptionContent.php:49
 msgid "H2 only"
-msgstr ""
+msgstr "仅 H2"
 
 #: inc/setting/options/Jinyu_OptionContent.php:53
 msgid "H2–H3"
@@ -2852,43 +2960,43 @@ msgstr ""
 #: inc/setting/options/Jinyu_OptionContent.php:184
 #: templates/post-actions.php:30
 msgid "Like"
-msgstr ""
+msgstr "点赞"
 
 #: inc/setting/options/Jinyu_OptionContent.php:113
 msgid "List card meta line"
-msgstr ""
+msgstr "列表卡片信息行"
 
 #: inc/setting/options/Jinyu_OptionContent.php:227
 msgid "Multiple choices; leave empty to show all"
-msgstr ""
+msgstr "多选，留空则全部显示"
 
 #: inc/setting/options/Jinyu_OptionContent.php:144
 msgid "Number of related posts"
-msgstr ""
+msgstr "相关文章数量"
 
 #: inc/setting/options/Jinyu_OptionContent.php:179
 msgid "Post action bar"
-msgstr ""
+msgstr "文章操作栏"
 
 #: inc/setting/options/Jinyu_OptionContent.php:88
 msgid "Post cover image (global)"
-msgstr ""
+msgstr "文章封面图（全局）"
 
 #: inc/setting/options/Jinyu_OptionContent.php:37
 msgid "Post table of contents (TOC)"
-msgstr ""
+msgstr "文章目录 TOC"
 
 #: inc/setting/options/Jinyu_OptionContent.php:133
 msgid "Post-bottom modules"
-msgstr ""
+msgstr "文章底部模块"
 
 #: inc/setting/options/Jinyu_OptionContent.php:231
 msgid "Poster generation"
-msgstr ""
+msgstr "海报生成"
 
 #: inc/setting/options/Jinyu_OptionContent.php:172
 msgid "Previous / Next"
-msgstr ""
+msgstr "上一篇 / 下一篇"
 
 #: inc/setting/options/Jinyu_OptionContent.php:211
 msgid "QQ"
@@ -2897,147 +3005,147 @@ msgstr ""
 #: inc/setting/options/Jinyu_OptionContent.php:237
 #: templates/post-actions.php:63
 msgid "QR Code"
-msgstr ""
+msgstr "二维码"
 
 #: inc/setting/options/Jinyu_OptionContent.php:165
 msgid "Random"
-msgstr ""
+msgstr "随机"
 
 #: inc/setting/options/Jinyu_OptionContent.php:32
 msgid "Reading Enhancements"
-msgstr ""
+msgstr "阅读增强"
 
 #: inc/setting/options/Jinyu_OptionContent.php:28
 msgid ""
 "Reading enhancements for single posts (TOC / breadcrumbs / progress bar, "
 "etc.) and post-bottom module toggles."
-msgstr ""
+msgstr "文章页的阅读增强（目录/面包屑/进度条等）与底部模块开关。"
 
 #: inc/setting/options/Jinyu_OptionContent.php:82
 msgid "Reading progress bar"
-msgstr ""
+msgstr "阅读进度条"
 
 #: inc/setting/options/Jinyu_OptionContent.php:138
 msgid "Related Posts"
-msgstr ""
+msgstr "相关文章"
 
 #: inc/setting/options/Jinyu_OptionContent.php:152
 msgid "Related posts based on"
-msgstr ""
+msgstr "相关文章依据"
 
 #: inc/setting/options/Jinyu_OptionContent.php:161
 msgid "Same categories"
-msgstr ""
+msgstr "相同分类"
 
 #: inc/setting/options/Jinyu_OptionContent.php:157
 msgid "Same tags"
-msgstr ""
+msgstr "相同标签"
 
 #: inc/setting/options/Jinyu_OptionContent.php:196
 #: templates/post-actions.php:49
 msgid "Share"
-msgstr ""
+msgstr "分享"
 
 #: inc/setting/options/Jinyu_OptionContent.php:202
 msgid "Share channels"
-msgstr ""
+msgstr "分享渠道"
 
 #: inc/setting/options/Jinyu_OptionContent.php:125
 msgid "Show last updated in cards"
-msgstr ""
+msgstr "卡片显示最近更新"
 
 #: inc/setting/options/Jinyu_OptionContent.php:118
 msgid "Show series in cards"
-msgstr ""
+msgstr "卡片显示所属系列"
 
 #: inc/setting/options/Jinyu_OptionContent.php:128
 msgid ""
 "Shows \"Updated on X\" only when a post is modified more than 3 days after "
 "publication, to avoid noise from minor edits"
-msgstr ""
+msgstr "文章修改晚于发布 3 天以上才提示「更新于 X」，避免小改动造成噪音"
 
 #: inc/setting/options/Jinyu_OptionContent.php:76
 msgid "Syntax highlighting"
-msgstr ""
+msgstr "代码高亮"
 
 #: inc/setting/options/Jinyu_OptionContent.php:121
 msgid ""
 "The meta line shows \"Series name · Part N/M\" to guide series reading; "
 "posts not in a series show nothing"
-msgstr ""
+msgstr "信息行显示「系列名 · 第 N/M 篇」，引导连载阅读；未归入系列的文章不显示"
 
 #: inc/setting/options/Jinyu_OptionContent.php:44
 msgid "TOC heading levels"
-msgstr ""
+msgstr "目录标题层级"
 
 #: inc/setting/options/Jinyu_OptionContent.php:91
 msgid ""
 "When off, featured images are hidden site-wide; single posts can still "
 "override with \"Hide cover\""
-msgstr ""
+msgstr "关闭后全站不展示特色图；单篇仍可用「隐藏封面」覆盖"
 
 #: inc/setting/options/Jinyu_OptionEmail.php:90
 msgid "Authorization code / password"
-msgstr ""
+msgstr "授权码 / 密码"
 
 #: inc/setting/options/Jinyu_OptionEmail.php:62
 msgid "Auto (detected by port)"
-msgstr ""
+msgstr "自动（按端口判断）"
 
 #: inc/setting/options/Jinyu_OptionEmail.php:78
 msgid ""
 "Choose SSL for port 465 and STARTTLS for 587; a wrong choice will fail to "
 "connect (465+STARTTLS is a common pitfall)."
-msgstr ""
+msgstr "端口 465 选 SSL，587 选 STARTTLS；选错会连不上（465+STARTTLS 是常见坑）。"
 
 #: inc/setting/options/Jinyu_OptionEmail.php:28
 msgid ""
 "Configure the SMTP mail channel. Once enabled, all system emails (comment "
 "replies, password resets, registration notices, etc.) go through SMTP, no "
 "longer limited by shared-hosting mail()."
-msgstr ""
+msgstr "配置 SMTP 发信通道。开启后全站系统邮件（评论回复、找回密码、注册通知等）均改走 SMTP，不受虚拟主机 mail() 限制。"
 
 #: inc/setting/options/Jinyu_OptionEmail.php:26
 msgid "Email sending"
-msgstr ""
+msgstr "邮件发送"
 
 #: inc/setting/options/Jinyu_OptionEmail.php:32
 msgid "Enable SMTP mail"
-msgstr ""
+msgstr "启用 SMTP 发信"
 
 #: inc/setting/options/Jinyu_OptionEmail.php:57
 msgid "Encryption"
-msgstr ""
+msgstr "加密方式"
 
 #: inc/setting/options/Jinyu_OptionEmail.php:93
 msgid ""
 "For third-party mailboxes, enter the \"authorization code\" instead of the "
 "login password. Leave empty to keep the saved value."
-msgstr ""
+msgstr "第三方邮箱填「授权码」而非登录密码。留空表示不修改已保存的值。"
 
 #: inc/setting/options/Jinyu_OptionEmail.php:101
 msgid "Leave empty to use the \"Sender account\" as the sender."
-msgstr ""
+msgstr "留空则使用「发件账号」作为发件人。"
 
 #: inc/setting/options/Jinyu_OptionEmail.php:74
 msgid "No encryption"
-msgstr ""
+msgstr "不加密"
 
 #: inc/setting/options/Jinyu_OptionEmail.php:47
 msgid "Port"
-msgstr ""
+msgstr "端口"
 
 #: inc/setting/options/Jinyu_OptionEmail.php:82
 msgid "Sender account"
-msgstr ""
+msgstr "发件账号"
 
 #: inc/setting/options/Jinyu_OptionEmail.php:97
 msgid "Sender email"
-msgstr ""
+msgstr "发件人邮箱"
 
 #: inc/setting/options/Jinyu_OptionEmail.php:39
 msgid "SMTP server"
-msgstr ""
+msgstr "SMTP 服务器"
 
 #: inc/setting/options/Jinyu_OptionEmail.php:66
 msgid "SSL"
@@ -3045,7 +3153,7 @@ msgstr ""
 
 #: inc/setting/options/Jinyu_OptionEmail.php:53
 msgid "SSL usually uses 465; STARTTLS usually uses 587."
-msgstr ""
+msgstr "SSL 通常 465，STARTTLS 通常 587。"
 
 #: inc/setting/options/Jinyu_OptionEmail.php:70
 msgid "STARTTLS"
@@ -3053,46 +3161,46 @@ msgstr ""
 
 #: inc/setting/options/Jinyu_OptionEmail.php:86
 msgid "The full email address; most providers require it to match the sender."
-msgstr ""
+msgstr "完整邮箱地址，多数服务商要求与发件人一致。"
 
 #: inc/setting/options/Jinyu_OptionEmail.php:43
 msgid ""
 "The SMTP host provided by your email provider, without a protocol prefix."
-msgstr ""
+msgstr "邮件服务商提供的 SMTP 域名，不要带协议前缀。"
 
 #: inc/setting/options/Jinyu_OptionEmail.php:35
 msgid ""
 "When off, you can still verify the channel separately via \"Maintenance "
 "Tools → Send test email\", but site-wide sending is unaffected."
-msgstr ""
+msgstr "关闭时仍可用「维护工具 → 发送测试邮件」单独验证通道，但不影响全站发信。"
 
 #: inc/setting/options/Jinyu_OptionExtend.php:26
 msgid "Advanced Settings"
-msgstr ""
+msgstr "高级设置"
 
 #: inc/setting/options/Jinyu_OptionExtend.php:32
 msgid "Disable REST API"
-msgstr ""
+msgstr "关闭 REST API"
 
 #: inc/setting/options/Jinyu_OptionExtend.php:39
 msgid "Enable PJAX navigation"
-msgstr ""
+msgstr "启用 PJAX 无刷新导航"
 
 #: inc/setting/options/Jinyu_OptionExtend.php:46
 msgid "Sidebar visitor location lookup"
-msgstr ""
+msgstr "侧栏访客归属地查询"
 
 #: inc/setting/options/Jinyu_OptionExtend.php:42
 msgid ""
 "Switch content via internal links without page reloads (experimental; test "
 "with a small traffic sample first)"
-msgstr ""
+msgstr "站内链接无刷新切换内容（实验性，建议先小流量验证）"
 
 #: inc/setting/options/Jinyu_OptionExtend.php:27
 msgid ""
 "Third-party integrations, compatibility toggles, AI chat, theme updates, and"
 " other advanced configurations."
-msgstr ""
+msgstr "第三方服务接入、兼容性开关、AI 对话与主题更新等非常规配置。"
 
 #: inc/setting/options/Jinyu_OptionExtend.php:35
 msgid ""
@@ -3101,6 +3209,8 @@ msgid ""
 "on the public REST API may break — make sure nothing depends on it before "
 "disabling"
 msgstr ""
+"⚠️ 仅对未登录访客关闭 REST API；已登录用户在后台使用古登堡编辑器不受影响。依赖公开 REST "
+"的第三方应用/接口可能失效，请确认无依赖后再关闭"
 
 #: inc/setting/options/Jinyu_OptionExtend.php:49
 msgid ""
@@ -3109,69 +3219,71 @@ msgid ""
 "by default; only locally available IP/OS/browser info is shown. Results are "
 "cached for 12 hours; sending stops immediately when disabled"
 msgstr ""
+"⚠️ 隐私提示：开启后侧栏实时数据会把访客 IP 发往第三方服务（whois.pconline.com.cn）查询归属地。默认关闭，仅显示访客本机可得的"
+" IP/系统/浏览器信息。结果缓存 12 小时，关闭后立即停止外发"
 
 #: inc/setting/options/Jinyu_OptionFooter.php:36
 msgid "About section title"
-msgstr ""
+msgstr "关于区块标题"
 
 #: inc/setting/options/Jinyu_OptionFooter.php:32
 #: inc/setting/options/Jinyu_OptionFooter.php:38
 msgid "About This Site"
-msgstr ""
+msgstr "关于本站"
 
 #: inc/setting/options/Jinyu_OptionFooter.php:42
 msgid "About this site text"
-msgstr ""
+msgstr "关于本站介绍"
 
 #: inc/setting/options/Jinyu_OptionFooter.php:109
 msgid "Also show social icons in the header"
-msgstr ""
+msgstr "页眉也显示社交图标"
 
 #: inc/setting/options/Jinyu_OptionFooter.php:87
 msgid "Copyright & ICP"
-msgstr ""
+msgstr "版权与备案"
 
 #: inc/setting/options/Jinyu_OptionFooter.php:91
 msgid "Copyright text"
-msgstr ""
+msgstr "版权信息文案"
 
 #: inc/setting/options/Jinyu_OptionFooter.php:59
 msgid "e.g. /friend-link or https://xxx.com/apply"
-msgstr ""
+msgstr "如 /friend-link 或 https://xxx.com/apply"
 
 #: inc/setting/options/Jinyu_OptionFooter.php:94
 msgid ""
 "e.g. © {year} {name}. All rights reserved. Leave empty to use the default "
 "copyright"
-msgstr ""
+msgstr "如 © {year} {name} 版权所有，留空使用默认版权"
 
 #: inc/setting/options/Jinyu_OptionFooter.php:71
 msgid "Email notification for new applications"
-msgstr ""
+msgstr "新申请邮件通知"
 
 #: inc/setting/options/Jinyu_OptionFooter.php:64
 msgid "Enable front-end application form"
-msgstr ""
+msgstr "开放前台申请表单"
 
 #: inc/setting/options/Jinyu_OptionFooter.php:27
 msgid "Footer columns, social links, and copyright / ICP info."
-msgstr ""
+msgstr "页脚栏目、社交链接与版权备案信息。"
 
 #: inc/setting/options/Jinyu_OptionFooter.php:26
 msgid "Footer Settings"
-msgstr ""
+msgstr "页脚设置"
 
 #: inc/setting/options/Jinyu_OptionFooter.php:78
 msgid "Friend link application requirements"
-msgstr ""
+msgstr "友链申请要求"
 
 #: inc/setting/options/Jinyu_OptionFooter.php:56
 msgid "Friend link application URL"
-msgstr ""
+msgstr "友链申请链接"
 
 #: inc/setting/options/Jinyu_OptionFooter.php:52 templates/flinks.php:38
 msgid "Friend Links"
-msgstr ""
+msgstr "友情链接"
 
 #: inc/setting/options/Jinyu_OptionFooter.php:80
 msgid ""
@@ -3180,15 +3292,19 @@ msgid ""
 "A link to this site must be added and visible on the homepage\n"
 "The site must have a reasonable amount of content, not an empty shell"
 msgstr ""
+"内容健康、原创为主，无违法违规与灰色内容\n"
+"网站能正常访问，非采集站、非纯导航站\n"
+"已添加本站友链，且友链位置在首页可见\n"
+"站点有一定内容积累，不做空壳站"
 
 #: inc/setting/options/Jinyu_OptionFooter.php:117
 msgid "ICP filing number"
-msgstr ""
+msgstr "ICP 备案号"
 
 #: inc/setting/options/Jinyu_OptionFooter.php:45
 msgid ""
 "Introduce your site in one sentence; leave empty to show the site tagline"
-msgstr ""
+msgstr "一句话介绍你的站点，留空则显示站点副标题"
 
 #: inc/setting/options/Jinyu_OptionFooter.php:60
 msgid ""
@@ -3196,19 +3312,19 @@ msgid ""
 "link\" template (create a page → choose the \"Apply for friend link\" "
 "template on the right); if none exists, the entry is hidden. A manually "
 "filled URL overrides auto-detection"
-msgstr ""
+msgstr "留空则自动指向使用「申请友链」模板的页面（新建页面 → 右侧模板选「申请友链」即可）；都没有则不显示入口。手填可覆盖自动识别"
 
 #: inc/setting/options/Jinyu_OptionFooter.php:95
 msgid ""
 "Leave empty to use the default copyright. Placeholders supported: {year} "
 "year, {name} site name; simple HTML (e.g. links) is supported"
-msgstr ""
+msgstr "留空则使用默认版权。支持占位符：{year} 年份、{name} 站点名；支持简单 HTML（如链接）"
 
 #: inc/setting/options/Jinyu_OptionFooter.php:46
 msgid ""
 "Leave empty to use the site tagline. Simple HTML (links / bold, etc.) is "
 "supported"
-msgstr ""
+msgstr "留空则使用站点副标题。支持简单 HTML（链接/加粗等）"
 
 #: inc/setting/options/Jinyu_OptionFooter.php:104
 msgid ""
@@ -3216,227 +3332,231 @@ msgid ""
 " Icons are auto-detected for: GitHub, Gitee, Weibo, WeChat, QQ, Email, "
 "Telegram, X, Twitter, Zhihu, Bilibili, RSS, Douyin, Douban, Toutiao"
 msgstr ""
+"每行一个，格式：平台|链接。例如：GitHub|https://github.com/xxx "
+"。自动识别图标：GitHub、Gitee、微博、微信、QQ、邮箱、Telegram、X、Twitter、知乎、B站、RSS、抖音、豆瓣、今日头条"
 
 #: inc/setting/options/Jinyu_OptionFooter.php:82
 msgid ""
 "One per line, shown in the \"Requirements\" card on the application page; "
 "leave empty to hide the card"
-msgstr ""
+msgstr "每行一条，显示在申请页「申请要求」卡片；留空则隐藏该卡片"
 
 #: inc/setting/options/Jinyu_OptionFooter.php:81
 msgid "One requirement per line"
-msgstr ""
+msgstr "每行一条要求"
 
 #: inc/setting/options/Jinyu_OptionFooter.php:74
 msgid ""
 "Send an email to the site owner when a friend link application is submitted "
 "(depends on the site's mail configuration)"
-msgstr ""
+msgstr "有人提交友链申请时发一封邮件到站长邮箱（依赖站点发信配置）"
 
 #: inc/setting/options/Jinyu_OptionFooter.php:112
 msgid ""
 "Show the social accounts above in the header tools area (the header and "
 "footer share the same social list)"
-msgstr ""
+msgstr "在页眉工具区展示上方社交账号（页眉与页脚共用同一份社交列表）"
 
 #: inc/setting/options/Jinyu_OptionFooter.php:121
 msgid "Shown in the footer once filled"
-msgstr ""
+msgstr "填后展示于页脚"
 
 #: inc/setting/options/Jinyu_OptionFooter.php:101
 msgid "Social accounts"
-msgstr ""
+msgstr "社交账号"
 
 #: inc/setting/options/Jinyu_OptionFooter.php:44
 msgid ""
 "Welcome to this site! Here we share …… (introduce your site's focus, "
 "features, and update direction in a sentence or two)"
-msgstr ""
+msgstr "欢迎访问本站！这里分享 ……（用一两句话介绍你的站点定位、特色与更新方向）"
 
 #: inc/setting/options/Jinyu_OptionFooter.php:67
 msgid ""
 "When enabled, the application page shows an online form; submissions enter "
 "the \"Friend Links\" review queue and go live once approved. When off, only "
 "the application requirements and the site owner's email are shown"
-msgstr ""
+msgstr "开启后申请页显示在线表单，提交内容进入「友情链接」待审核队列，发布即上线；关闭则只展示申请要求与站长邮箱"
 
 #: inc/setting/options/Jinyu_OptionFooter.php:93
 msgid "© {year} {name}. All rights reserved"
-msgstr ""
+msgstr "© {year} {name} 版权所有 · 保留所有权利"
 
+#. Pending manual decision: original string is still Chinese (see
+#. .workbuddy/i18n/reverse_report.md section 2).
 #: inc/setting/options/Jinyu_OptionFooter.php:120
 msgid "如 京ICP备12345678号"
-msgstr ""
+msgstr "如 京ICP备12345678号"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:145
 msgid "2 columns"
-msgstr ""
+msgstr "2 列"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:149
 msgid "3 columns"
-msgstr ""
+msgstr "3 列"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:153
 msgid "4 columns"
-msgstr ""
+msgstr "4 列"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:142
 msgid ""
 "Applies to the site-wide post list grid; 2 columns recommended with a "
 "sidebar"
-msgstr ""
+msgstr "作用于全站文章列表网格，有侧边栏时建议 2 列"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:186
 msgid "Auto-load on scroll to bottom"
-msgstr ""
+msgstr "滚动到底部自动加载"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:45
 msgid "Card style"
-msgstr ""
+msgstr "卡片风格"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:67
 msgid "Compatibility & Widgets"
-msgstr ""
+msgstr "兼容性与小工具"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:113
 msgid "Cookie Compliance"
-msgstr ""
+msgstr "Cookie 合规"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:118
 msgid "Cookie compliance notice bar"
-msgstr ""
+msgstr "Cookie 合规提示条"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:79
 msgid "Disable the Gutenberg editor"
-msgstr ""
+msgstr "禁用古腾堡编辑器"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:49
 msgid "Full-width large image"
-msgstr ""
+msgstr "大图通栏"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:26
 msgid "Global Settings"
-msgstr ""
+msgstr "全局设置"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:86
 msgid "Hide post view counts"
-msgstr ""
+msgstr "隐藏文章浏览量"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:134
 msgid "Layout & Display"
-msgstr ""
+msgstr "布局与展示"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:108
 #: inc/setting/options/Jinyu_OptionGlobal.php:129
 msgid "Leave empty to use the default text"
-msgstr ""
+msgstr "留空使用默认文案"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:169
 msgid "Left"
-msgstr ""
+msgstr "左侧"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:53
 msgid "Magazine mixed"
-msgstr ""
+msgstr "杂志混排"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:104
 msgid "Maintenance message text"
-msgstr ""
+msgstr "维护提示文案"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:93
 #: inc/setting/options/Jinyu_OptionGlobal.php:97
 msgid "Maintenance Mode"
-msgstr ""
+msgstr "维护模式"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:125
 msgid "Notice text"
-msgstr ""
+msgstr "提示文案"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:139
 msgid "Post list columns"
-msgstr ""
+msgstr "文章列表列数"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:36
 msgid "Post list style"
-msgstr ""
+msgstr "文章列表风格"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:32
 msgid "Post Lists"
-msgstr ""
+msgstr "文章列表"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:195
 msgid "Prevents view-count spamming"
-msgstr ""
+msgstr "防止狂刷"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:165
 msgid "Right"
-msgstr ""
+msgstr "右侧"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:60
 msgid "Show \"Load more\" in blog mode"
-msgstr ""
+msgstr "博客模式显示加载更多"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:121
 msgid ""
 "Show visitors a cookie / privacy notice; hidden for 30 days after clicking "
 "\"Agree\""
-msgstr ""
+msgstr "向访客展示 Cookie/隐私提示，点击「同意」后不再显示（30 天）"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:160
 msgid "Sidebar position"
-msgstr ""
+msgstr "侧边栏位置"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:27
 msgid ""
 "Site-wide behavior: maintenance mode, login page appearance, social "
 "accounts, cookie notice, etc."
-msgstr ""
+msgstr "维护模式、登录页外观、社交账号与 Cookie 提示等全站行为。"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:180
 msgid "Site-wide grayscale (mourning mode)"
-msgstr ""
+msgstr "全站灰度 (哀悼模式)"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:41
 msgid "Standard list"
-msgstr ""
+msgstr "标准列表"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:106
 msgid ""
 "The site is under maintenance. We will be back soon. We apologize for the "
 "inconvenience."
-msgstr ""
+msgstr "网站维护中，敬请期待恢复。给您带来的不便，我们深表歉意。"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:72
 msgid "Use block widgets"
-msgstr ""
+msgstr "使用区块小工具"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:82
 msgid ""
 "Use the classic editor for posts / pages in the admin and disable the block "
 "(Gutenberg) editor. Only affects the writing screen, not published content"
-msgstr ""
+msgstr "后台文章/页面改用经典编辑器撰写，关闭区块（Gutenberg）编辑器。仅影响撰写界面，不影响已发布内容"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:192
 msgid "View count cooldown per IP (seconds)"
-msgstr ""
+msgstr "同一 IP 浏览量冷却秒数"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:127
 msgid ""
 "We use cookies to improve your browsing experience. By continuing to browse,"
 " you agree to our use of cookies."
-msgstr ""
+msgstr "我们使用 Cookie 来提升您的浏览体验。继续浏览即表示您同意我们使用 Cookie。"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:100
 msgid ""
 "When enabled, non-admin visitors see the \"Site under maintenance\" page "
 "(HTTP 503)"
-msgstr ""
+msgstr "开启后非管理员访问站点将看到「网站维护中」页（HTTP 503）"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:75
 msgid ""
 "When off, classic widgets are forced (default); when on, the WordPress block"
 " widget editor is used"
-msgstr ""
+msgstr "关闭时强制经典小工具（默认），开启后使用 WordPress 区块小工具编辑器"
 
 #: inc/setting/options/Jinyu_OptionStyle.php:104
 msgid ""
@@ -3444,151 +3564,151 @@ msgid ""
 "the visitor's OS. Either way, the light/dark toggle always appears at the "
 "top right on the front end, and visitors can switch manually at any time "
 "(choice is remembered)."
-msgstr ""
+msgstr "日光 / 暗黑为固定默认模式；「跟随系统」按访客系统自动切换。无论选哪种，前台右上角始终显示明暗切换按钮，访客可随时手动切换并记忆选择。"
 
 #: inc/setting/options/Jinyu_OptionStyle.php:81
 msgid "Auto-spacing between CJK and Latin text"
-msgstr ""
+msgstr "中英文自动加空格"
 
 #: inc/setting/options/Jinyu_OptionStyle.php:60
 msgid "Base font size for post content"
-msgstr ""
+msgstr "文章正文基准字号"
 
 #: inc/setting/options/Jinyu_OptionStyle.php:32
 msgid "Basic Appearance"
-msgstr ""
+msgstr "基础外观"
 
 #: inc/setting/options/Jinyu_OptionStyle.php:135
 msgid "Body font"
-msgstr ""
+msgstr "正文字体"
 
 #: inc/setting/options/Jinyu_OptionStyle.php:53
 msgid "Body font size"
-msgstr ""
+msgstr "正文字号"
 
 #: inc/setting/options/Jinyu_OptionStyle.php:43
 msgid "Border radius"
-msgstr ""
+msgstr "圆角大小"
 
 #: inc/setting/options/Jinyu_OptionStyle.php:64
 msgid "Dark color scheme"
-msgstr ""
+msgstr "暗色配色方案"
 
 #: inc/setting/options/Jinyu_OptionStyle.php:70
 msgid "Dark gray"
-msgstr ""
+msgstr "默认深灰"
 
 #: inc/setting/options/Jinyu_OptionStyle.php:111
 msgid "Dark mode"
-msgstr ""
+msgstr "暗黑模式"
 
 #: inc/setting/options/Jinyu_OptionStyle.php:101
 msgid "Default theme mode"
-msgstr ""
+msgstr "默认主题模式"
 
 #: inc/setting/options/Jinyu_OptionStyle.php:88
 msgid "External links in new window + nofollow"
-msgstr ""
+msgstr "外链新窗口 + nofollow"
 
 #: inc/setting/options/Jinyu_OptionStyle.php:115
 msgid "Follow system"
-msgstr ""
+msgstr "跟随系统"
 
 #: inc/setting/options/Jinyu_OptionStyle.php:130
 msgid "Fonts"
-msgstr ""
+msgstr "字体"
 
 #: inc/setting/options/Jinyu_OptionStyle.php:84
 msgid ""
 "Handled in PHP: automatically inserts spaces at CJK / Latin / number "
 "boundaries (protects HTML tags and links; does not affect already formatted "
 "content)"
-msgstr ""
+msgstr "PHP 级处理：在中英文/数字边界自动插入空格（保护 HTML 标签与链接，不影响已排版内容）"
 
 #: inc/setting/options/Jinyu_OptionStyle.php:107
 msgid "Light mode"
-msgstr ""
+msgstr "日光模式"
 
 #: inc/setting/options/Jinyu_OptionStyle.php:148
 msgid "Monospace"
-msgstr ""
+msgstr "等宽"
 
 #: inc/setting/options/Jinyu_OptionStyle.php:122
 msgid "Navbar frosted-glass effect"
-msgstr ""
+msgstr "导航栏毛玻璃效果"
 
 #: inc/setting/options/Jinyu_OptionStyle.php:67
 msgid ""
 "Only takes effect in dark mode: click the moon icon at the top right on the "
 "front end to see it. \"Dark gray\" is softer and easier on the eyes; \"Pure "
 "black\" has stronger contrast, saves power, and suits OLED screens"
-msgstr ""
+msgstr "仅在暗色模式下生效：前台右上角点月亮图标切到暗色即可看到；「默认深灰」更柔和耐看，「纯黑」对比更强、更省电，适合 OLED 屏"
 
 #: inc/setting/options/Jinyu_OptionStyle.php:91
 msgid "Open content external links in a new window with rel=\"nofollow noopener\""
-msgstr ""
+msgstr "正文外链新窗口打开并加 rel=\"nofollow noopener\""
 
 #: inc/setting/options/Jinyu_OptionStyle.php:156
 msgid "Overrides the global font stack for content and UI"
-msgstr ""
+msgstr "覆盖正文与界面全局字体栈"
 
 #: inc/setting/options/Jinyu_OptionStyle.php:74
 msgid "Pure black"
-msgstr ""
+msgstr "纯黑"
 
 #: inc/setting/options/Jinyu_OptionStyle.php:152
 msgid "Rounded (YouYuan / Microsoft YaHei)"
-msgstr ""
+msgstr "圆体（幼圆/微软雅黑）"
 
 #: inc/setting/options/Jinyu_OptionStyle.php:125
 msgid ""
 "Semi-transparent frosted-glass effect for the header nav; falls back to a "
 "solid color when the browser does not support backdrop-filter"
-msgstr ""
+msgstr "头部导航的半透明磨砂玻璃效果；浏览器不支持 backdrop-filter 时自动降级为纯色"
 
 #: inc/setting/options/Jinyu_OptionStyle.php:144
 msgid "Serif (SimSun)"
-msgstr ""
+msgstr "宋体 / 衬线"
 
 #: inc/setting/options/Jinyu_OptionStyle.php:26
 msgid "Style & Appearance"
-msgstr ""
+msgstr "风格外观"
 
 #: inc/setting/options/Jinyu_OptionStyle.php:140
 msgid "System sans-serif (default)"
-msgstr ""
+msgstr "系统无衬线（默认）"
 
 #: inc/setting/options/Jinyu_OptionStyle.php:96
 msgid "Theme Mode"
-msgstr ""
+msgstr "主题模式"
 
 #: inc/setting/options/Jinyu_OptionStyle.php:36
 msgid "Theme primary color"
-msgstr ""
+msgstr "主题主色"
 
 #: inc/setting/options/Jinyu_OptionStyle.php:27
 msgid "Visual style: theme color, light/dark mode, border radius, fonts, etc."
-msgstr ""
+msgstr "主题色、明暗模式、圆角与字体等视觉风格。"
 
 #: inc/setting/options/Jinyu_OptionUser.php:136
 msgid "Allow front-end post submission"
-msgstr ""
+msgstr "允许前台投稿"
 
 #: inc/setting/options/Jinyu_OptionUser.php:73
 msgid "Always required"
-msgstr ""
+msgstr "始终要求"
 
 #: inc/setting/options/Jinyu_OptionUser.php:91
 msgid "Author card at the end of posts"
-msgstr ""
+msgstr "文末作者信息卡"
 
 #: inc/setting/options/Jinyu_OptionUser.php:98
 msgid "Avatar source"
-msgstr ""
+msgstr "头像来源"
 
 #: inc/setting/options/Jinyu_OptionUser.php:63
 msgid "CAPTCHA policy"
-msgstr ""
+msgstr "验证码策略"
 
 #: inc/setting/options/Jinyu_OptionUser.php:131
 msgid ""
@@ -3596,15 +3716,17 @@ msgid ""
 "Gravatar-compatible and faster in China, for both comment and author "
 "avatars; letter mode needs no avatar server and works offline"
 msgstr ""
+"国内源（Cravatar / WeAvatar / V2EX / Loli / WebP.se 等）兼容 Gravatar "
+"协议、国内访问更快，评论与作者头像均生效；letter 模式不依赖任何头像服务器，离线也能显示"
 
 #: inc/setting/options/Jinyu_OptionUser.php:77 templates/auth-modal.php:26
 msgid "Close"
-msgstr ""
+msgstr "关闭"
 
 #: inc/setting/options/Jinyu_OptionUser.php:27
 msgid ""
 "Comment avatars, UA badges, login / registration, and user interactions."
-msgstr ""
+msgstr "评论头像、UA 徽标、登录注册与用户互动。"
 
 #: inc/setting/options/Jinyu_OptionUser.php:66
 msgid ""
@@ -3613,104 +3735,106 @@ msgid ""
 "friend link application), where it is required only after 3 failed attempts "
 "(recommended); Always = required in all cases; Off = never required."
 msgstr ""
+"统一控制登录 / 注册 / 找回密码 / 友链申请的验证码：智能=除登录外（注册、找回、友链申请）始终要求、登录仅失败 3 "
+"次后要求（推荐）；始终=全部场景都始终要求；关闭=全部不验证。"
 
 #: inc/setting/options/Jinyu_OptionUser.php:107
 msgid "Cravatar (China)"
-msgstr ""
+msgstr "Cravatar（国内）"
 
 #: inc/setting/options/Jinyu_OptionUser.php:58
 msgid "Custom background image for the WP login page"
-msgstr ""
+msgstr "自定义 WP 登录页背景图"
 
 #: inc/setting/options/Jinyu_OptionUser.php:51
 msgid "Custom logo image for the WP login page"
-msgstr ""
+msgstr "自定义 WP 登录页 Logo 图片"
 
 #: inc/setting/options/Jinyu_OptionUser.php:32
 msgid "Enable user center"
-msgstr ""
+msgstr "启用用户中心"
 
 #: inc/setting/options/Jinyu_OptionUser.php:103
 msgid "Gravatar (default)"
-msgstr ""
+msgstr "Gravatar（默认）"
 
 #: inc/setting/options/Jinyu_OptionUser.php:127
 msgid "Letter avatar placeholder"
-msgstr ""
+msgstr "首字母占位图"
 
 #: inc/setting/options/Jinyu_OptionUser.php:55
 msgid "Login page background image"
-msgstr ""
+msgstr "登录页背景图"
 
 #: inc/setting/options/Jinyu_OptionUser.php:48
 msgid "Login page logo"
-msgstr ""
+msgstr "登录页 Logo"
 
 #: inc/setting/options/Jinyu_OptionUser.php:119
 msgid "Loli (China)"
-msgstr ""
+msgstr "Loli（国内）"
 
 #: inc/setting/options/Jinyu_OptionUser.php:84
 msgid "Notify the admin on registration"
-msgstr ""
+msgstr "注册时通知管理员"
 
 #: inc/setting/options/Jinyu_OptionUser.php:43
 msgid ""
 "Select a \"User Center\" page template; if none is selected, redirects to "
 "the admin profile page"
-msgstr ""
+msgstr "选择一个「用户中心」页面模板，未选则跳转后台个人资料"
 
 #: inc/setting/options/Jinyu_OptionUser.php:94
 msgid ""
 "Show the author's avatar, bio, and post / comment counts at the bottom of "
 "posts"
-msgstr ""
+msgstr "文章底部展示作者头像、简介与文章/评论数"
 
 #: inc/setting/options/Jinyu_OptionUser.php:69
 msgid "Smart (recommended)"
-msgstr ""
+msgstr "智能（推荐）"
 
 #: inc/setting/options/Jinyu_OptionUser.php:39
 msgid "User center page"
-msgstr ""
+msgstr "用户中心页面"
 
 #: inc/setting/options/Jinyu_OptionUser.php:26
 msgid "Users & Login"
-msgstr ""
+msgstr "用户与登录"
 
 #: inc/setting/options/Jinyu_OptionUser.php:115
 msgid "V2EX (China)"
-msgstr ""
+msgstr "V2EX（国内）"
 
 #: inc/setting/options/Jinyu_OptionUser.php:111
 msgid "WeAvatar (China)"
-msgstr ""
+msgstr "WeAvatar（国内）"
 
 #: inc/setting/options/Jinyu_OptionUser.php:123
 msgid "WebP.se (China)"
-msgstr ""
+msgstr "WebP.se（国内）"
 
 #: inc/setting/options/Jinyu_OptionUser.php:139
 msgid ""
 "When enabled, logged-in users can submit posts in the user center; "
 "submissions enter the review queue"
-msgstr ""
+msgstr "开启后登录用户可在用户中心投稿，文章进入待审核队列"
 
 #: inc/setting/options/Jinyu_OptionUser.php:35
 msgid "When off, login / registration entries are hidden"
-msgstr ""
+msgstr "关闭后将不再显示登录/注册入口"
 
 #: inc/setting/template.php:41
 msgid "Clear search"
-msgstr ""
+msgstr "清除搜索"
 
 #: inc/setting/template.php:20
 msgid "Current location"
-msgstr ""
+msgstr "当前位置"
 
 #: inc/setting/template.php:70 inc/setting/template.php:72
 msgid "Discard changes"
-msgstr ""
+msgstr "放弃更改"
 
 #: inc/setting/template.php:26
 msgid "PHP 8.0+ · WordPress 6.0+"
@@ -3718,204 +3842,218 @@ msgstr ""
 
 #: inc/setting/template.php:48
 msgid "Restore defaults"
-msgstr ""
+msgstr "恢复默认"
 
 #: inc/setting/template.php:52 inc/setting/template.php:54
 msgid "Save changes"
-msgstr ""
+msgstr "保存更改"
 
 #: inc/setting/template.php:40
 msgid "Search settings…"
-msgstr ""
+msgstr "搜索设置…"
 
 #: inc/setting/template.php:66
 msgid "You have unsaved changes"
-msgstr ""
+msgstr "有未保存的更改"
 
 #: index.php:45
 msgid "Featured posts slider"
-msgstr ""
+msgstr "精选文章轮播"
 
 #: index.php:87
 msgid "Go to slide %d"
-msgstr ""
+msgstr "跳转到第 %d 张"
 
 #: index.php:61
 msgid "Slide %1$d of %2$d"
-msgstr ""
+msgstr "第 %1$d 张，共 %2$d 张"
 
+#. Pending manual decision: original string is still Chinese (see
+#. .workbuddy/i18n/reverse_report.md section 2).
 #: index.php:77
 msgid "上一张"
-msgstr ""
+msgstr "上一张"
 
+#. Pending manual decision: original string is still Chinese (see
+#. .workbuddy/i18n/reverse_report.md section 2).
 #: index.php:80
 msgid "下一张"
-msgstr ""
+msgstr "下一张"
 
 #: search.php:25
 msgid "Search Results"
-msgstr ""
+msgstr "搜索结果"
 
 #: searchform.php:17
 msgid "Type keywords to search..."
-msgstr ""
+msgstr "输入关键词搜索..."
 
 #: sidebar.php:90
 msgid "No categories yet"
-msgstr ""
+msgstr "暂无分类"
 
 #: sidebar.php:97
 msgid "Recent Comments"
-msgstr ""
+msgstr "最新评论"
 
 #: single.php:75
 msgid "Decrease font size"
-msgstr ""
+msgstr "缩小字号"
 
 #: single.php:77
 msgid "Default"
-msgstr ""
+msgstr "默认"
 
 #: single.php:111 single.php:112
 msgid "Helpful"
-msgstr ""
+msgstr "有用"
 
 #: single.php:76
 msgid "Increase font size"
-msgstr ""
+msgstr "放大字号"
 
 #: single.php:114 single.php:115
 msgid "Not helpful"
-msgstr ""
+msgstr "没用"
 
 #: single.php:64
 msgid "Post %1$d / %2$d"
-msgstr ""
+msgstr "第 %1$d / %2$d 篇"
 
 #: single.php:73
 msgid "Reading font size"
-msgstr ""
+msgstr "阅读字号调节"
 
 #: single.php:77
 msgid "Reset font size"
-msgstr ""
+msgstr "重置字号"
 
 #: single.php:85
 msgid "View original"
-msgstr ""
+msgstr "查看原文"
 
 #: single.php:109
 msgid "Was this post helpful?"
-msgstr ""
+msgstr "这篇有帮助吗？"
 
+#. Pending manual decision: original string is still Chinese (see
+#. .workbuddy/i18n/reverse_report.md section 2).
 #: single.php:62 templates/post-nav.php:24
 msgid "上一篇"
-msgstr ""
+msgstr "上一篇"
 
+#. Pending manual decision: original string is still Chinese (see
+#. .workbuddy/i18n/reverse_report.md section 2).
 #: single.php:68 templates/post-nav.php:30
 msgid "下一篇"
-msgstr ""
+msgstr "下一篇"
 
+#. Pending manual decision: original string is still Chinese (see
+#. .workbuddy/i18n/reverse_report.md section 2).
 #: single.php:36
 msgid "更新于"
-msgstr ""
+msgstr "更新于"
 
 #: taxonomy-jinyu_series.php:34
 msgid "Favorite series"
-msgstr ""
+msgstr "收藏系列"
 
 #: taxonomy-jinyu_series.php:34
 msgid "Favorited series"
-msgstr ""
+msgstr "已收藏系列"
 
 #: taxonomy-jinyu_series.php:24
 msgid "Post Series"
-msgstr ""
+msgstr "文章系列"
 
 #: templates/auth-modal.php:100
 msgid "Confirm password"
-msgstr ""
+msgstr "确认密码"
 
 #: templates/auth-modal.php:113
 msgid ""
 "Enter your username or email address and a reset link will be sent to your "
 "inbox."
-msgstr ""
+msgstr "输入用户名或邮箱，重置链接将发送到你的邮箱。"
 
+#. Ambiguous zh translations for this msgid; using the most common one.
+#. Alternatives: 忘记密码？
 #: templates/auth-modal.php:51 templates/auth-modal.php:73
 msgid "Forgot password?"
-msgstr ""
+msgstr "找回密码"
 
 #: templates/auth-modal.php:24
 msgid "Log in or register"
-msgstr ""
+msgstr "登录或注册"
 
 #: templates/auth-modal.php:63
 msgid "Password"
-msgstr ""
+msgstr "密码"
 
 #: templates/auth-modal.php:93
 msgid "Password (at least 6 characters)"
-msgstr ""
+msgstr "密码（至少 6 位）"
 
 #: templates/auth-modal.php:124
 msgid "Quick login"
-msgstr ""
+msgstr "快速登录"
 
 #: templates/auth-modal.php:50 templates/auth-modal.php:106
 msgid "Register"
-msgstr ""
+msgstr "注册"
 
 #: templates/auth-modal.php:71
 msgid "Remember me"
-msgstr ""
+msgstr "记住我"
 
 #: templates/auth-modal.php:119
 msgid "Send reset link"
-msgstr ""
+msgstr "发送重置链接"
 
 #: templates/auth-modal.php:85
 msgid "Username (3-30 characters)"
-msgstr ""
+msgstr "用户名（3-30 位）"
 
 #: templates/auth-modal.php:59 templates/auth-modal.php:116
 msgid "Username or email address"
-msgstr ""
+msgstr "用户名或邮箱"
 
 #: templates/content-none.php:15
 msgid "Nothing here yet"
-msgstr ""
+msgstr "暂无内容"
 
 #: templates/content-none.php:16
 msgid "Sorry, no related posts found."
-msgstr ""
+msgstr "抱歉，没有找到相关文章。"
 
 #: templates/flinks.php:45
 msgid "Apply for friend link"
-msgstr ""
+msgstr "申请友链"
 
 #: templates/module-post.php:89
 msgid "Part %1$d/%2$d"
-msgstr ""
+msgstr "第 %1$d/%2$d 篇"
 
 #: templates/module-post.php:65
 msgid "Sticky"
-msgstr ""
+msgstr "置顶"
 
 #: templates/post-actions.php:56
 msgid "Poster"
-msgstr ""
+msgstr "海报"
 
 #: templates/post-actions.php:76
 msgid "Tip"
-msgstr ""
+msgstr "打赏"
 
 #: templates/post-nav.php:42
 msgid ""
 "This post was created by %1$s. Please credit the source when reposting: %2$s"
 " (%3$s)"
-msgstr ""
+msgstr "本文由 %1$s 创作，转载请注明来源：%2$s（%3$s）"
 
+#. Pending manual decision: original string is still Chinese (see
+#. .workbuddy/i18n/reverse_report.md section 2).
 #: templates/post-nav.php:21
 msgid "上一篇下一篇"
-msgstr ""
+msgstr "上一篇下一篇"

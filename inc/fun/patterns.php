@@ -21,8 +21,8 @@ add_action(
 		register_block_pattern_category(
 			'jinyu',
 			array(
-				'label'       => __( '金玉', 'jinyu' ),
-				'description' => __( '金玉主题内置的预设排版图案：图文、特性卡、FAQ、行动号召、精选文章、作者卡。', 'jinyu' ),
+				'label'       => __( 'Jinyu', 'jinyu' ),
+				'description' => __( 'Pattern presets built into the Jinyu theme: image-text, feature card, FAQ, call to action, featured posts, and author card.', 'jinyu' ),
 			)
 		);
 	}

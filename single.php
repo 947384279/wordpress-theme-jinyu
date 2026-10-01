@@ -61,7 +61,7 @@ get_header(); ?>
 				?>
 				<a class="jinyu-series-prev" href="<?php echo esc_url( get_permalink( $jy_series['prev'] ) ); ?>"><i class="fa-solid fa-angle-left" aria-hidden="true"></i> <?php esc_html_e( '上一篇', 'jinyu' ); ?></a><?php endif; ?>
 			<?php /* translators: %s: 占位符 */ ?>
-			<span class="jinyu-series-count"><?php printf( esc_html__( '第 %1$d / %2$d 篇', 'jinyu' ), $jy_series['index'] + 1, $jy_series['total'] );  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?></span>
+			<span class="jinyu-series-count"><?php printf( esc_html__( 'Post %1$d / %2$d', 'jinyu' ), $jy_series['index'] + 1, $jy_series['total'] );  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?></span>
 			<?php
 			if ( $jy_series['next'] ) :
 				?>
@@ -70,11 +70,11 @@ get_header(); ?>
 		</div>
 		<?php endif; ?>
 
-		<div class="jinyu-reader-tools" aria-label="<?php esc_attr_e( '阅读字号调节', 'jinyu' ); ?>">
+		<div class="jinyu-reader-tools" aria-label="<?php esc_attr_e( 'Reading font size', 'jinyu' ); ?>">
 			<span class="jinyu-reader-tools-label"><i class="fa-solid fa-text-height" aria-hidden="true"></i></span>
-			<button type="button" class="jinyu-fs-btn" data-jinyu-fs="dec" aria-label="<?php esc_attr_e( '缩小字号', 'jinyu' ); ?>">A⁻</button>
-			<button type="button" class="jinyu-fs-btn" data-jinyu-fs="inc" aria-label="<?php esc_attr_e( '放大字号', 'jinyu' ); ?>">A⁺</button>
-			<button type="button" class="jinyu-fs-btn jinyu-fs-reset" data-jinyu-fs="reset" aria-label="<?php esc_attr_e( '重置字号', 'jinyu' ); ?>"><?php esc_html_e( '默认', 'jinyu' ); ?></button>
+			<button type="button" class="jinyu-fs-btn" data-jinyu-fs="dec" aria-label="<?php esc_attr_e( 'Decrease font size', 'jinyu' ); ?>">A⁻</button>
+			<button type="button" class="jinyu-fs-btn" data-jinyu-fs="inc" aria-label="<?php esc_attr_e( 'Increase font size', 'jinyu' ); ?>">A⁺</button>
+			<button type="button" class="jinyu-fs-btn jinyu-fs-reset" data-jinyu-fs="reset" aria-label="<?php esc_attr_e( 'Reset font size', 'jinyu' ); ?>"><?php esc_html_e( 'Default', 'jinyu' ); ?></button>
 			<span class="jinyu-fs-state" data-jinyu-fs-state aria-live="polite">100%</span>
 		</div>
 
@@ -82,7 +82,7 @@ get_header(); ?>
 		<?php
 		if ( $jy_ext ) :
 			?>
-			<div class="jinyu-article-external"><a class="jinyu-btn" href="<?php echo esc_url( $jy_ext ); ?>" target="_blank" rel="noopener"><?php esc_html_e( '查看原文', 'jinyu' ); ?> <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div><?php endif; ?>
+			<div class="jinyu-article-external"><a class="jinyu-btn" href="<?php echo esc_url( $jy_ext ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'View original', 'jinyu' ); ?> <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div><?php endif; ?>
 		<?php $cover = jinyu_get_post_cover(); if ( $cover && jinyu_is_checked( 'show_cover' ) && ! get_post_meta( get_the_ID(), '_jinyu_hide_cover', true ) ) : ?>
 			<?php $ph_feat = jinyu_lqip_url( jinyu_get_post_cover( get_the_ID(), 'thumbnail' ) ); ?>
 			<img class="jinyu-featured jinyu-blur-img" src="<?php echo esc_url( $cover ); ?>" alt="<?php the_title_attribute(); ?>" loading="eager"<?php echo $ph_feat ? ' data-ph="' . esc_url( $ph_feat ) . '"' : ''; ?>>
@@ -106,13 +106,13 @@ get_header(); ?>
 		<?php do_action( 'jinyu_single_after_content' ); ?>
 
 		<div class="jinyu-vote" data-jinyu-vote data-jinyu-post="<?php echo get_the_ID();  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?>">
-			<span class="jinyu-vote-q"><?php esc_html_e( '这篇有帮助吗？', 'jinyu' ); ?></span>
+			<span class="jinyu-vote-q"><?php esc_html_e( 'Was this post helpful?', 'jinyu' ); ?></span>
 			<div class="jinyu-vote-btns">
-			<button type="button" class="jinyu-vote-btn jinyu-vote-yes" data-jinyu-vote-yes aria-label="<?php esc_attr_e( '有用', 'jinyu' ); ?>">
-				<i class="fa-solid fa-thumbs-up" aria-hidden="true"></i><span class="jinyu-vote-label"><?php esc_html_e( '有用', 'jinyu' ); ?></span><span class="jinyu-vote-count" data-jinyu-vote-yes-n><?php echo (int) get_post_meta( get_the_ID(), '_jinyu_helpful_yes', true ); ?></span>
+			<button type="button" class="jinyu-vote-btn jinyu-vote-yes" data-jinyu-vote-yes aria-label="<?php esc_attr_e( 'Helpful', 'jinyu' ); ?>">
+				<i class="fa-solid fa-thumbs-up" aria-hidden="true"></i><span class="jinyu-vote-label"><?php esc_html_e( 'Helpful', 'jinyu' ); ?></span><span class="jinyu-vote-count" data-jinyu-vote-yes-n><?php echo (int) get_post_meta( get_the_ID(), '_jinyu_helpful_yes', true ); ?></span>
 			</button>
-			<button type="button" class="jinyu-vote-btn jinyu-vote-no" data-jinyu-vote-no aria-label="<?php esc_attr_e( '没用', 'jinyu' ); ?>">
-				<i class="fa-solid fa-thumbs-down" aria-hidden="true"></i><span class="jinyu-vote-label"><?php esc_html_e( '没用', 'jinyu' ); ?></span><span class="jinyu-vote-count" data-jinyu-vote-no-n><?php echo (int) get_post_meta( get_the_ID(), '_jinyu_helpful_no', true ); ?></span>
+			<button type="button" class="jinyu-vote-btn jinyu-vote-no" data-jinyu-vote-no aria-label="<?php esc_attr_e( 'Not helpful', 'jinyu' ); ?>">
+				<i class="fa-solid fa-thumbs-down" aria-hidden="true"></i><span class="jinyu-vote-label"><?php esc_html_e( 'Not helpful', 'jinyu' ); ?></span><span class="jinyu-vote-count" data-jinyu-vote-no-n><?php echo (int) get_post_meta( get_the_ID(), '_jinyu_helpful_no', true ); ?></span>
 			</button>
 			</div>
 		</div>

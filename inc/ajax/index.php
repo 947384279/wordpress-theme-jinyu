@@ -32,7 +32,7 @@ function jinyu_ajax_like() {
 
 	$pid = isset( $_POST['post_id'] ) ? absint( $_POST['post_id'] ) : 0;
 	if ( ! $pid || get_post_status( $pid ) !== 'publish' ) {
-		wp_send_json_error( __( '文章不存在', 'jinyu' ) );
+		wp_send_json_error( __( 'Post not found', 'jinyu' ) );
 	}
 
 	$act     = isset( $_POST['action_type'] ) ? sanitize_key( $_POST['action_type'] ) : 'like';
@@ -47,13 +47,13 @@ function jinyu_ajax_like() {
 		$has   = in_array( $pid, $liked, true );
 		if ( $is_like ) {
 			if ( $has ) {
-				wp_send_json_error( __( '已点赞', 'jinyu' ) );
+				wp_send_json_error( __( 'Liked', 'jinyu' ) );
 			}
 			$liked[] = $pid;
 			update_user_meta( $uid, 'jinyu_liked_posts', $liked );
 		} else {
 			if ( ! $has ) {
-				wp_send_json_error( __( '尚未点赞', 'jinyu' ) );
+				wp_send_json_error( __( 'Not liked yet', 'jinyu' ) );
 			}
 			$liked = array_values( array_diff( $liked, array( $pid ) ) );
 			update_user_meta( $uid, 'jinyu_liked_posts', $liked );
@@ -61,19 +61,19 @@ function jinyu_ajax_like() {
 	} else {
 		// 游客：cookie 仅作 UI 提示（可被清除绕过），必须叠加服务端 IP 去重 + 限流，杜绝无限刷量.
 		if ( ! jinyu_rate_limit_check( 'like', 20, MINUTE_IN_SECONDS ) ) {
-			wp_send_json_error( __( '操作过于频繁，请稍后再试', 'jinyu' ) );
+			wp_send_json_error( __( 'Too many requests. Please try again later.', 'jinyu' ) );
 		}
 		$dedupe = 'jinyu_like_' . md5( $ip . '|' . $pid );
 		$has    = (bool) get_transient( $dedupe ) || ! empty( $_COOKIE[ 'jinyu_liked_' . $pid ] );
 		if ( $is_like ) {
 			if ( $has ) {
-				wp_send_json_error( __( '已点赞', 'jinyu' ) );
+				wp_send_json_error( __( 'Liked', 'jinyu' ) );
 			}
 			setcookie( 'jinyu_liked_' . $pid, '1', time() + DAY_IN_SECONDS * 30, '/', '', is_ssl(), false );
 			set_transient( $dedupe, 1, DAY_IN_SECONDS * 30 );
 		} else {
 			if ( ! $has ) {
-				wp_send_json_error( __( '尚未点赞', 'jinyu' ) );
+				wp_send_json_error( __( 'Not liked yet', 'jinyu' ) );
 			}
 			setcookie( 'jinyu_liked_' . $pid, '0', time() - DAY_IN_SECONDS, '/', '', is_ssl(), false );
 			delete_transient( $dedupe );
@@ -118,14 +118,14 @@ function jinyu_ajax_fav() {
 	jinyu_ajax_guard();
 
 	if ( ! is_user_logged_in() ) {
-		wp_send_json_error( __( '请先登录', 'jinyu' ) );
+		wp_send_json_error( __( 'Please log in first', 'jinyu' ) );
 	}
 
 	$pid = isset( $_POST['post_id'] ) ? absint( $_POST['post_id'] ) : 0;
 	$fav = isset( $_POST['fav'] ) && $_POST['fav'] === '1';
 
 	if ( ! $pid || get_post_status( $pid ) !== 'publish' ) {
-		wp_send_json_error( __( '文章不存在', 'jinyu' ) );
+		wp_send_json_error( __( 'Post not found', 'jinyu' ) );
 	}
 
 	$uid  = get_current_user_id();
@@ -228,7 +228,7 @@ function jinyu_ajax_load_more() {
 	);
 
 	if ( ! $q->have_posts() ) {
-		wp_send_json_error( __( '没有更多了', 'jinyu' ) );
+		wp_send_json_error( __( 'No more', 'jinyu' ) );
 	}
 
 	ob_start();
@@ -390,18 +390,18 @@ function jinyu_ajax_vote() {
 	$pid = isset( $_POST['post_id'] ) ? absint( $_POST['post_id'] ) : 0;
 	$dir = isset( $_POST['dir'] ) ? sanitize_key( $_POST['dir'] ) : '';
 	if ( ! $pid || ! in_array( $dir, [ 'yes', 'no' ], true ) || get_post_status( $pid ) !== 'publish' ) {
-		wp_send_json_error( __( '参数无效', 'jinyu' ) );
+		wp_send_json_error( __( 'Invalid parameter', 'jinyu' ) );
 	}
 
 	// 游客端原本无任何防重复，可无限刷。叠加 IP 去重（每 IP 每文一票）+ 限流.
 	if ( ! is_user_logged_in() ) {
 		if ( ! jinyu_rate_limit_check( 'vote', 20, MINUTE_IN_SECONDS ) ) {
-			wp_send_json_error( __( '操作过于频繁，请稍后再试', 'jinyu' ) );
+			wp_send_json_error( __( 'Too many requests. Please try again later.', 'jinyu' ) );
 		}
 		$ip     = function_exists( 'jinyu_client_ip' ) ? jinyu_client_ip() : ( isset( $_SERVER['REMOTE_ADDR'] ) ? trim( (string) $_SERVER['REMOTE_ADDR'] ) : '0.0.0.0' ); /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- 输入在 jinyu_ajax_guard/委托处已 wp_unslash+sanitize，WPCS 追不到 */
 		$dedupe = 'jinyu_vote_' . md5( $ip . '|' . $pid );
 		if ( get_transient( $dedupe ) ) {
-			wp_send_json_error( __( '已投票', 'jinyu' ) );
+			wp_send_json_error( __( 'Voted', 'jinyu' ) );
 		}
 		set_transient( $dedupe, 1, DAY_IN_SECONDS * 30 );
 	}

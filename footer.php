@@ -43,7 +43,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<?php if ( has_nav_menu( 'footer' ) ) : ?>
 		<div class="jinyu-footer-links">
 		<div class="jinyu-footer-col">
-			<h4><i class="fa-solid fa-compass" aria-hidden="true"></i><?php esc_html_e( '快速导航', 'jinyu' ); ?></h4>
+			<h4><i class="fa-solid fa-compass" aria-hidden="true"></i><?php esc_html_e( 'Quick Links', 'jinyu' ); ?></h4>
 			<?php
 			wp_nav_menu(
 				[
@@ -81,7 +81,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 		<?php /* 主题署名：硬编码静态输出，无后台开关、无链接；社交图标内联在署名右侧 */ ?>
 		<div class="jinyu-footer-credit">
-			<a class="jinyu-wp-official" href="https://cn.wordpress.org/" target="_blank" rel="noopener nofollow" title="<?php esc_attr_e( 'WordPress 官方网站', 'jinyu' ); ?>">
+			<a class="jinyu-wp-official" href="https://cn.wordpress.org/" target="_blank" rel="noopener nofollow" title="<?php esc_attr_e( 'Official WordPress website', 'jinyu' ); ?>">
 			<i class="fa-brands fa-wordpress" aria-hidden="true"></i>
 			</a>
 			<?php $social = jinyu_footer_social(); ?>
@@ -100,11 +100,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 		<?php if ( jinyu_get_option( 'footer_runinfo', 0 ) ) : ?>
 		<div class="jinyu-footer-runinfo" data-jinyu-live="runinfo" hidden>
-		<span class="jinyu-runinfo-item"><?php esc_html_e( '查询', 'jinyu' ); ?> <b data-ri="q">—</b> <?php esc_html_e( '次', 'jinyu' ); ?></span>
+		<span class="jinyu-runinfo-item"><?php esc_html_e( 'Queries', 'jinyu' ); ?> <b data-ri="q">—</b> <?php esc_html_e( '次', 'jinyu' ); ?></span>
 		<span class="jinyu-runinfo-sep">·</span>
-		<span class="jinyu-runinfo-item"><?php esc_html_e( '内存', 'jinyu' ); ?> <b data-ri="mem">—</b> <?php esc_html_e( 'MB', 'jinyu' ); ?></span>
+		<span class="jinyu-runinfo-item"><?php esc_html_e( 'Memory', 'jinyu' ); ?> <b data-ri="mem">—</b> <?php esc_html_e( 'MB', 'jinyu' ); ?></span>
 		<span class="jinyu-runinfo-sep">·</span>
-		<span class="jinyu-runinfo-item"><?php esc_html_e( '渲染', 'jinyu' ); ?> <b data-ri="ms">—</b> <?php esc_html_e( '秒', 'jinyu' ); ?></span>
+		<span class="jinyu-runinfo-item"><?php esc_html_e( 'Render', 'jinyu' ); ?> <b data-ri="ms">—</b> <?php esc_html_e( 'sec', 'jinyu' ); ?></span>
 		</div>
 		<?php endif; ?>
 	</div>
@@ -112,10 +112,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 </footer>
 
 <div class="jinyu-scroll-util" aria-hidden="true">
-	<button type="button" class="jinyu-scroll-btn jinyu-go-bottom" title="<?php esc_attr_e( '去底部', 'jinyu' ); ?>" aria-label="<?php esc_attr_e( '去底部', 'jinyu' ); ?>">
+	<button type="button" class="jinyu-scroll-btn jinyu-go-bottom" title="<?php esc_attr_e( 'To bottom', 'jinyu' ); ?>" aria-label="<?php esc_attr_e( 'To bottom', 'jinyu' ); ?>">
 	<i class="fa-solid fa-arrow-down" aria-hidden="true"></i>
 	</button>
-	<button type="button" class="jinyu-scroll-btn jinyu-back-top" title="<?php esc_attr_e( '回到顶部', 'jinyu' ); ?>" aria-label="<?php esc_attr_e( '回到顶部', 'jinyu' ); ?>">
+	<button type="button" class="jinyu-scroll-btn jinyu-back-top" title="<?php esc_attr_e( 'Back to top', 'jinyu' ); ?>" aria-label="<?php esc_attr_e( 'Back to top', 'jinyu' ); ?>">
 	<i class="fa-solid fa-arrow-up" aria-hidden="true"></i>
 	</button>
 </div>

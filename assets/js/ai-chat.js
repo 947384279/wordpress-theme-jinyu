@@ -5,7 +5,7 @@
  */
 (function () {
     if (typeof JINYU_CONFIG === 'undefined' || !JINYU_CONFIG.ajax_url) {
-        if (window.console) console.error('[jinyu-ai] JINYU_CONFIG 未就绪');
+        if (window.console) console.error('[jinyu-ai] JINYU_CONFIG not ready');
         return;
     }
 
@@ -33,7 +33,7 @@
         addMsg('user', text);
         input.value = '';
         send.disabled = true;
-        send.textContent = '思考中...';
+        send.textContent = 'Thinking...';
 
         fetch(JINYU_CONFIG.ajax_url, {
             method: 'POST',
@@ -51,13 +51,13 @@
                     history.push({ role: 'assistant', content: data.data });
                     if (history.length > 20) history.splice(0, history.length - 20);
                 } else {
-                    addMsg('bot', '❌ ' + (data && data.data ? data.data : '请求失败'));
+                    addMsg('bot', '❌ ' + (data && data.data ? data.data : 'Request failed'));
                 }
             })
-            .catch(function () { addMsg('bot', '❌ 网络错误'); })
+            .catch(function () { addMsg('bot', '❌ Network error'); })
             .then(function () {
                 send.disabled = false;
-                send.textContent = '发送';
+                send.textContent = 'Send';
             });
     }
 

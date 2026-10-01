@@ -107,8 +107,8 @@
                 inner = '<label class="jinyu-switch jinyu-switch--sm"><input type="checkbox" data-dyn-sub="switch" data-dyn-key="' + esc(m.id) + '"' + (mv ? ' checked' : '') + '><span class="jinyu-switch-track"></span></label>';
             } else if (m.type === 'img' || m.type === 'upload') {
                 inner = '<div class="jinyu-upload jinyu-upload--sm">' +
-                    '<input type="text" class="jinyu-input jinyu-dyn-sub" data-dyn-sub="upload" data-dyn-key="' + esc(m.id) + '" value="' + esc(mv || '') + '" placeholder="点击选择或输入 URL">' +
-                    '<button type="button" class="button jinyu-dyn-upload" data-dyn-upload>选择</button></div>';
+                    '<input type="text" class="jinyu-input jinyu-dyn-sub" data-dyn-sub="upload" data-dyn-key="' + esc(m.id) + '" value="' + esc(mv || '') + '" placeholder="Click to select or enter a URL">' +
+                    '<button type="button" class="button jinyu-dyn-upload" data-dyn-upload>Select</button></div>';
             } else if (m.type === 'select') {
                 var sopts = '';
                 (m.options || []).forEach(function (o) {
@@ -126,13 +126,13 @@
         sub += '</div>';
         return '<div class="jinyu-dyn-item" draggable="true">' +
             '<div class="jinyu-dyn-item-bar">' +
-            '<span class="jinyu-dyn-grip" title="拖拽排序">⠿</span>' +
-            '<span class="jinyu-dyn-title">' + esc((it && it.title) ? it.title : ('项目 ' + (i + 1))) + '</span>' +
+            '<span class="jinyu-dyn-grip" title="Drag to sort">⠿</span>' +
+            '<span class="jinyu-dyn-title">' + esc((it && it.title) ? it.title : ('Item ' + (i + 1))) + '</span>' +
             '<span class="jinyu-dyn-actions">' +
-            '<button type="button" class="jinyu-dyn-btn" data-dyn-up title="上移">↑</button>' +
-            '<button type="button" class="jinyu-dyn-btn" data-dyn-down title="下移">↓</button>' +
-            '<button type="button" class="jinyu-dyn-btn" data-dyn-copy title="复制">⧉</button>' +
-            '<button type="button" class="jinyu-dyn-btn jinyu-dyn-del" data-dyn-del title="删除">×</button>' +
+            '<button type="button" class="jinyu-dyn-btn" data-dyn-up title="Move up">↑</button>' +
+            '<button type="button" class="jinyu-dyn-btn" data-dyn-down title="Move down">↓</button>' +
+            '<button type="button" class="jinyu-dyn-btn" data-dyn-copy title="Copy">⧉</button>' +
+            '<button type="button" class="jinyu-dyn-btn jinyu-dyn-del" data-dyn-del title="Delete">×</button>' +
             '</span></div>' + sub + '</div>';
     }
 
@@ -153,8 +153,8 @@
             '<div class="jinyu-dynlist" data-dynlist="' + esc(id) + '" data-model="' + esc(JSON.stringify(model)) + '"' + maxAttr + '">';
         items.forEach(function (it, i) { html += renderDynItem(f, it, i); });
         html += '</div>' +
-            '<button type="button" class="button jinyu-dyn-add" data-dyn-add="' + esc(id) + '">+ 添加一项</button>' +
-            (f.max ? ' <span class="jinyu-field-desc">' + esc('最多 ' + f.max + ' 项') + '</span>' : '') +
+            '<button type="button" class="button jinyu-dyn-add" data-dyn-add="' + esc(id) + '">+ Add item</button>' +
+            (f.max ? ' <span class="jinyu-field-desc">' + esc('Up to ' + f.max + ' items') + '</span>' : '') +
             (f.desc ? '<p class="jinyu-field-desc">' + esc(f.desc) + '</p>' : '') +
             '</div>';
         return html;
@@ -216,7 +216,7 @@
         var clone = item.cloneNode(true);
         // 复制品的标题加「副本」后缀，避免与原件混淆
         var titleEl = qs('.jinyu-dyn-title', clone);
-        if (titleEl) titleEl.textContent = titleEl.textContent + ' 副本';
+        if (titleEl) titleEl.textContent = titleEl.textContent + ' copy';
         item.parentNode.insertBefore(clone, item.nextSibling);
         syncDyn(wrapper);
         refreshDynUI(wrapper);
@@ -236,7 +236,7 @@
         if (typeof window.wp === 'undefined' || !window.wp.media) return;
         var input = qs('.jinyu-dyn-sub[data-dyn-sub="upload"]', item);
         if (!input) return;
-        var frame = window.wp.media({ title: '选择图片', multiple: false });
+        var frame = window.wp.media({ title: 'Select image', multiple: false });
         frame.on('select', function () {
             var url = frame.state().get('selection').first().toJSON().url;
             input.value = url;
@@ -286,7 +286,7 @@
             var name = (items || {})[v];
             return '<span class="jinyu-ms-chip"><span class="jinyu-ms-chip-txt">' + esc(name || v) + '</span>' +
                 '<span class="jinyu-ms-chip-ord">' + order[v] + '</span>' +
-                '<button type="button" class="jinyu-ms-chip-rm" data-ms-rm="' + esc(v) + '" aria-label="移除">×</button></span>';
+                '<button type="button" class="jinyu-ms-chip-rm" data-ms-rm="' + esc(v) + '" aria-label="Remove">×</button></span>';
         }).join('');
         // 自适应折叠：先渲染全部 chip + 「+N」徽标，实际显示个数由 layoutMultiChips 按触发框宽度测量决定
         // 注意：显隐必须用 style.display —— .jinyu-ms-chip 的 display:inline-flex 会覆盖 hidden 属性
@@ -294,7 +294,7 @@
         // 初始按钮文案：可见项（初始无过滤=全部）是否全部已选
         var allKeys = Object.keys(items || {});
         var allSel = allKeys.length > 0 && allKeys.every(function (k) { return order[k] !== undefined; });
-        var allLabel = allSel ? '全不选' : '全选';
+        var allLabel = allSel ? 'Deselect all' : 'Select all';
         var list = '';
         Object.keys(items || {}).forEach(function (k) {
             var on = order[k] !== undefined;
@@ -303,21 +303,21 @@
                 '<span class="jinyu-ms-nm">' + esc(items[k]) + '</span>' +
                 '<span class="jinyu-ms-ord" aria-hidden="true">' + (on ? '#' + order[k] : '') + '</span></div>';
         });
-        if (!list) list = '<p class="jinyu-ms-empty">' + esc(f.empty || '暂无可选') + '</p>';
+        if (!list) list = '<p class="jinyu-ms-empty">' + esc(f.empty || 'No options available') + '</p>';
         var initCount = sel.length;
         return '<div class="jinyu-field jinyu-field--multi" data-field="' + esc(id) + '">' +
             '<div class="jinyu-field-labelrow">' +
             '<label class="jinyu-field-label">' + esc(f.title) + '</label>' +
-            '<span class="jinyu-multi-count" data-multi-count="' + esc(id) + '"' + (initCount ? '' : ' hidden') + '>已选 ' + initCount + ' 项</span>' +
+            '<span class="jinyu-multi-count" data-multi-count="' + esc(id) + '"' + (initCount ? '' : ' hidden') + '>Selected: ' + initCount + ' items</span>' +
             '</div>' +
             '<div class="jinyu-ms" data-multi-box="' + esc(id) + '">' +
             '<div class="jinyu-ms-trigger" role="button" tabindex="0" aria-haspopup="listbox">' +
-            '<span class="jinyu-ms-placeholder' + (initCount ? ' is-hidden' : '') + '">' + esc(f.placeholder || '请选择…') + '</span>' +
+            '<span class="jinyu-ms-placeholder' + (initCount ? ' is-hidden' : '') + '">' + esc(f.placeholder || 'Select…') + '</span>' +
             '<div class="jinyu-ms-chips">' + chips + moreChip + '</div>' +
             '<span class="jinyu-ms-caret" aria-hidden="true"></span>' +
             '</div>' +
             '<div class="jinyu-ms-panel">' +
-            '<div class="jinyu-ms-search"><input type="text" class="jinyu-ms-q" placeholder="搜索…" autocomplete="off">' +
+            '<div class="jinyu-ms-search"><input type="text" class="jinyu-ms-q" placeholder="Search…" autocomplete="off">' +
             '<button type="button" class="jinyu-ms-all" data-ms-all>' + allLabel + '</button></div>' +
             '<div class="jinyu-ms-list" role="listbox" aria-multiselectable="true">' + list + '</div>' +
             '</div>' +
@@ -351,7 +351,7 @@
                 chip.className = 'jinyu-ms-chip';
                 chip.innerHTML = '<span class="jinyu-ms-chip-txt">' + esc(names[v] || v) + '</span>' +
                     '<span class="jinyu-ms-chip-ord">' + order[v] + '</span>' +
-                    '<button type="button" class="jinyu-ms-chip-rm" data-ms-rm="' + esc(v) + '" aria-label="移除">×</button>';
+                    '<button type="button" class="jinyu-ms-chip-rm" data-ms-rm="' + esc(v) + '" aria-label="Remove">×</button>';
                 chipsWrap.appendChild(chip);
             });
             if (!qs('.jinyu-ms-chip-more', chipsWrap)) {
@@ -378,7 +378,7 @@
         });
 
         var cnt = qs('[data-multi-count="' + id + '"]', root);
-        if (cnt) { cnt.textContent = '已选 ' + sel.length + ' 项'; cnt.hidden = !sel.length; }
+        if (cnt) { cnt.textContent = 'Selected: ' + sel.length + ' items'; cnt.hidden = !sel.length; }
     }
 
     // 依据当前可见项是否全部已选，切换全选/全不选按钮文案
@@ -393,7 +393,7 @@
         var vis = [];
         qsa('.jinyu-ms-item', box).forEach(function (it) { if (!it.hidden) vis.push(it.getAttribute('data-val')); });
         var allOn = vis.length > 0 && vis.every(function (v) { return order[v] === true; });
-        allBtn.textContent = allOn ? '全不选' : '全选';
+        allBtn.textContent = allOn ? 'Deselect all' : 'Select all';
     }
 
     // 自适应折叠：按触发框（.jinyu-ms-chips）实际可用宽度显示尽可能多的 chip，
@@ -546,7 +546,7 @@
                 '<label class="jinyu-field-label">' + esc(f.title) + '</label>' +
                 '<div class="jinyu-field-body">' +
                 '<div class="jinyu-update-box">' +
-                '<button type="button" class="jinyu-btn jinyu-btn-primary" data-check-update>' + esc('检查更新') + '</button>' +
+                '<button type="button" class="jinyu-btn jinyu-btn-primary" data-check-update>' + esc('Check for updates') + '</button>' +
                 '<span class="jinyu-update-status" data-update-status></span>' +
                 '</div>' +
                 '<div class="jinyu-update-detail" data-update-detail></div>' +
@@ -601,7 +601,7 @@
                 body = '<div class="jinyu-color">' +
                     '<input type="color" class="jinyu-color-swatch" data-color-swatch="' + esc(id) + '" value="' + esc(v || '#1C60F3') + '">' +
                     '<input type="text" class="jinyu-input jinyu-color-text" data-key="' + esc(id) + '" data-type="color" value="' + esc(v || '') + '" placeholder="#1C60F3">' +
-                    '<button type="button" class="button jinyu-color-clear" data-color-clear="' + esc(id) + '">清空</button>' +
+                    '<button type="button" class="button jinyu-color-clear" data-color-clear="' + esc(id) + '">Clear</button>' +
                     '</div>';
                 if (f.presets && f.presets.length) {
                     body += '<div class="jinyu-color-presets">';
@@ -613,9 +613,9 @@
                 break;
             case 'upload':
                 body = '<div class="jinyu-upload">' +
-                    '<input type="text" class="jinyu-input jinyu-upload-url" data-key="' + esc(id) + '" data-type="upload" value="' + esc(v || '') + '" placeholder="点击右侧按钮选择，或手动输入 URL">' +
-                    '<button type="button" class="button jinyu-upload-btn" data-upload="' + esc(id) + '">选择</button>' +
-                    '<button type="button" class="button jinyu-upload-remove" data-upload-remove="' + esc(id) + '"' + (v ? '' : ' hidden') + '>移除</button>' +
+                    '<input type="text" class="jinyu-input jinyu-upload-url" data-key="' + esc(id) + '" data-type="upload" value="' + esc(v || '') + '" placeholder="Click the button on the right to select, or enter a URL">' +
+                    '<button type="button" class="button jinyu-upload-btn" data-upload="' + esc(id) + '">Select</button>' +
+                    '<button type="button" class="button jinyu-upload-remove" data-upload-remove="' + esc(id) + '"' + (v ? '' : ' hidden') + '>Remove</button>' +
                     '</div>' +
                     '<div class="jinyu-upload-preview" data-upload-preview="' + esc(id) + '">' + (v ? '<img src="' + esc(v) + '" alt="">' : '') + '</div>';
                 break;
@@ -641,8 +641,8 @@
                 break;
             case 'password':
                 body = '<div class="jinyu-password">' +
-                    '<input type="password" class="jinyu-input" data-key="' + esc(id) + '" data-type="password" value="" autocomplete="new-password" placeholder="' + esc('已设置，留空则不修改') + '">' +
-                    '<button type="button" class="jinyu-pw-toggle" data-pw-toggle="' + esc(id) + '" title="' + esc('显示/隐藏') + '"><i class="dashicons dashicons-visibility"></i></button>' +
+                    '<input type="password" class="jinyu-input" data-key="' + esc(id) + '" data-type="password" value="" autocomplete="new-password" placeholder="' + esc('Set. Leave empty to keep unchanged') + '">' +
+                    '<button type="button" class="jinyu-pw-toggle" data-pw-toggle="' + esc(id) + '" title="' + esc('Show/hide') + '"><i class="dashicons dashicons-visibility"></i></button>' +
                     '</div>';
                 break;
             default: // string
@@ -667,7 +667,7 @@
         }
         // 自定义面板（维护工具 / 我要反馈）不持有设置字段，无需「重置本组」
         var resetBtn = g.custom ? '' :
-            '<button type="button" class="jinyu-panel-reset" data-reset-group="' + esc(g.key) + '" title="' + esc('仅重置本组为默认值') + '">' + esc('重置本组') + '</button>';
+            '<button type="button" class="jinyu-panel-reset" data-reset-group="' + esc(g.key) + '" title="' + esc('Reset only this group to defaults') + '">' + esc('Reset this group') + '</button>';
         var gIcon = ICONS[g.key] || 'dashicons-admin-generic';
         // 自定义面板（维护工具 / 我要反馈）的内容自带独立卡片（jinyu-tools-list / jinyu-fb），
         // 不再包 .jinyu-panel-body 外层圆角白卡，避免卡片套卡片的双层背景
@@ -711,10 +711,10 @@
     function thumbsToolRow() {
         // dashicons 没有 "images" 这个类（只有 images-alt / images-alt2 / format-gallery），
         // 写错会渲染出一个空白图标框
-        return toolRow('format-gallery', '重建封面缩略图', '为历史上传的封面图补出主题自建尺寸 jinyu-cover（768×512）与 jinyu-thumb（400×267），卡片就用小图、不再加载原图。仅处理缺这两个尺寸的图，分批进行直至完成。', toolAction('jinyu-regenerate-thumbs', '开始重建', 'jinyu-regenerate-thumbs-tip')) +
+        return toolRow('format-gallery', 'Regenerate cover thumbnails', 'Generate the theme image sizes jinyu-cover (768×512) and jinyu-thumb (400×267) for previously uploaded covers, so cards load small images instead of originals. Only images missing these sizes are processed, in batches until complete.', toolAction('jinyu-regenerate-thumbs', 'Start rebuild', 'jinyu-regenerate-thumbs-tip')) +
             '<div class="jinyu-thumbs-progress" id="jinyu-thumbs-progress" hidden>' +
             '<div class="jinyu-thumbs-progress-head">' +
-            '<span class="jinyu-thumbs-progress-label" id="jinyu-thumbs-progress-label">准备中…</span>' +
+            '<span class="jinyu-thumbs-progress-label" id="jinyu-thumbs-progress-label">Preparing…</span>' +
             '<span class="jinyu-thumbs-progress-pct" id="jinyu-thumbs-progress-pct">0%</span>' +
             '</div>' +
             '<div class="jinyu-thumbs-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="jinyu-thumbs-progress-bar">' +
@@ -722,14 +722,14 @@
             '</div>' +
             '<div class="jinyu-thumbs-progress-foot">' +
             '<span class="jinyu-thumbs-progress-detail" id="jinyu-thumbs-progress-detail"></span>' +
-            '<button type="button" class="jinyu-tool-btn jinyu-tool-btn--sm" id="jinyu-thumbs-stop">停止</button>' +
+            '<button type="button" class="jinyu-tool-btn jinyu-tool-btn--sm" id="jinyu-thumbs-stop">Stop</button>' +
             '</div>' +
             '</div>';
     }
 
     function toolsHtml() {
         var runOn = !!SAVED.footer_runinfo;
-        var runSwitch = '<span class="jinyu-tool-state' + (runOn ? ' on' : '') + '" id="jinyu-runinfo-state">' + (runOn ? '已开启' : '已关闭') + '</span>' +
+        var runSwitch = '<span class="jinyu-tool-state' + (runOn ? ' on' : '') + '" id="jinyu-runinfo-state">' + (runOn ? 'Enabled' : 'Disabled') + '</span>' +
             '<label class="jinyu-switch jinyu-switch--sm">' +
             '<input type="checkbox" id="jinyu-runinfo-toggle"' + (runOn ? ' checked' : '') + '>' +
             '<span class="jinyu-switch-track"></span>' +
@@ -737,23 +737,23 @@
                     '<span id="jinyu-runinfo-tip" class="jinyu-tools-tip"></span>';
         return '<div class="jinyu-tools-list" id="jinyu-tools">' +
             thumbsToolRow() +
-            toolRow('download', '导出配置', '将当前所有主题设置导出为 JSON 文件，便于备份与多站迁移。', toolAction('jinyu-export', '导出 JSON', 'jinyu-export-tip')) +
-            toolRow('upload', '导入配置', '从 JSON 文件恢复主题设置，将覆盖当前全部配置，请先导出备份。', toolAction('jinyu-import', '选择文件并导入', 'jinyu-import-tip') + '<input type="file" id="jinyu-import-file" accept="application/json,.json" hidden>') +
-            toolRow('chart-bar', '页脚运行信息', '在前台页脚输出实时运行信息（查询数 / 内存 / 渲染耗时）。开启后到「金玉增强」清理一次缓存即可生效。', runSwitch) +
+            toolRow('download', 'Export settings', 'Export all theme settings to a JSON file for backup and multi-site migration.', toolAction('jinyu-export', 'Export JSON', 'jinyu-export-tip')) +
+            toolRow('upload', 'Import settings', 'Restore theme settings from a JSON file. This overwrites all current settings — export a backup first.', toolAction('jinyu-import', 'Choose a file and import', 'jinyu-import-tip') + '<input type="file" id="jinyu-import-file" accept="application/json,.json" hidden>') +
+            toolRow('chart-bar', '页脚运行信息', 'Output real-time run info in the footer (queries / memory / render time). After enabling, clear the cache once in "Jinyu Booster" for it to take effect.', runSwitch) +
             '</div>' +
             // 邮件 SMTP / 缓存清理 / 数据库优化 / 对象存储等运维能力归属配套插件（jinyu-theme-companion），
             // 主题侧不再重复提供入口：两套实现会各持一套 nonce，跨插件调用必然被 check_ajax_referer 打回。
-            '<p class="jinyu-tools-note">「金玉增强」插件提供：邮件 SMTP、缓存清理、数据库优化、OPcache / Memcached 看板、对象存储推送与加速。请到后台左侧菜单「金玉增强」中操作。</p>';
+            '<p class="jinyu-tools-note">Provided by the "Jinyu Booster" plugin: SMTP mail, cache clearing, database optimization, OPcache / Memcached dashboards, object storage push and acceleration. Manage it under the "Jinyu Booster" menu in the admin sidebar.</p>';
     }
 
     function sidebarHtml() {
         var head = '<div class="jinyu-nav-head">' +
             '<span class="jinyu-nav-brand"><span class="jinyu-nav-logo" aria-hidden="true"></span>' +
-            '<span class="jinyu-nav-title">金玉主题配置</span></span>' +
-            '<button type="button" class="jinyu-nav-toggle" data-nav-toggle aria-label="折叠 / 展开侧栏" title="折叠 / 展开侧栏">' +
+            '<span class="jinyu-nav-title">Jinyu Theme Settings</span></span>' +
+            '<button type="button" class="jinyu-nav-toggle" data-nav-toggle aria-label="Collapse / expand sidebar" title="Collapse / expand sidebar">' +
             '<span class="dashicons dashicons-arrow-left-alt2"></span></button>' +
             '</div>';
-        var html = '<nav class="jinyu-nav" aria-label="设置分组">' + head;
+        var html = '<nav class="jinyu-nav" aria-label="Settings groups">' + head;
         GROUPS.forEach(function (g) {
             if (g.hidden) return;
             html += navItemHtml(g);
@@ -805,7 +805,7 @@
         var badge = qs('.jinyu-dirty-count', dirtybar);
         if (badge) {
             var n = dirty ? dirtyCount(cur) : 0;
-            badge.textContent = n + ' ' + ((n === 1) ? '项' : '项');
+            badge.textContent = n + ' ' + ((n === 1) ? 'items' : 'items');
             badge.hidden = n < 1;
         }
         refreshNavModified();
@@ -846,7 +846,7 @@
         root.innerHTML = '<div class="jinyu-layout">' + sidebarHtml() +
             '<div class="jinyu-main"><div class="jinyu-panels">' +
             GROUPS.map(groupHtml).join('') +
-            '<div class="jinyu-search-empty" hidden>没有匹配的设置项，换个关键词试试</div>' +
+            '<div class="jinyu-search-empty" hidden>No matching settings. Try a different keyword</div>' +
             '</div></div></div>';
 
         // 顶栏归位到内容列：它必须与内容卡共享同一个 padding 盒（.jinyu-panels），
@@ -1235,7 +1235,7 @@
             if (field) field.focus();
             return;
         }
-        var frame = window.wp.media({ title: '选择图片', multiple: false });
+        var frame = window.wp.media({ title: 'Select image', multiple: false });
         frame.on('select', function () {
             var url = frame.state().get('selection').first().toJSON().url;
             var field = qs('[data-key="' + key + '"]', root);
@@ -1324,12 +1324,12 @@
             return r.text().then(function (t) {
                 var head = t.charAt(0);
                 if ('<' === head || '{' !== head) {
-                    throw new Error('接口返回异常（HTTP ' + r.status + '），请检查「金玉主题配套插件」是否已启用');
+                    throw new Error('API request failed (HTTP ' + r.status + '). Make sure the Jinyu theme companion plugin is enabled');
                 }
                 try {
                     return JSON.parse(t);
                 } catch (e) {
-                    throw new Error('接口返回内容无法解析（HTTP ' + r.status + '）');
+                    throw new Error('Could not parse the API response (HTTP ' + r.status + ')');
                 }
             });
         });
@@ -1347,36 +1347,36 @@
                     refreshNavModified();
                     if (dirtybar) dirtybar.hidden = true;
                     var st = qs('#jinyu-saved-time');
-                    if (st) st.textContent = '已保存 ' + new Date().toLocaleTimeString();
-                    toast((json.data && json.data.msg) ? json.data.msg : '保存成功', true);
+                    if (st) st.textContent = 'Saved at ' + new Date().toLocaleTimeString();
+                    toast((json.data && json.data.msg) ? json.data.msg : 'Saved successfully', true);
                 } else {
-                    toast((json && json.data && json.data.msg) ? json.data.msg : '保存失败', false);
+                    toast((json && json.data && json.data.msg) ? json.data.msg : 'Save failed', false);
                 }
             })
-            .catch(function (err) { toast('网络错误：' + err.message, false); })
+            .catch(function (err) { toast('Network error: ' + err.message, false); })
             .then(function () { if (btn) btn.disabled = false; });
     }
 
     function resetAll(btn) {
-        if (!window.confirm('确认恢复所有选项为默认值？此操作不可撤销。')) return;
+        if (!window.confirm('Restore all options to defaults? This action cannot be undone.')) return;
         if (btn) btn.disabled = true;
         doFetch(S.ajax_url + '?action=jinyu_reset_options&nonce=' + encodeURIComponent(S.nonce), { reset: 1 })
             .then(function (json) {
-                toast((json && json.data && json.data.msg) ? json.data.msg : '完成', !!(json && json.success));
+                toast((json && json.data && json.data.msg) ? json.data.msg : 'Done', !!(json && json.success));
                 if (json && json.success) { window.setTimeout(function () { window.location.reload(); }, 600); }
             })
-            .catch(function (err) { toast('网络错误：' + err.message, false); })
+            .catch(function (err) { toast('Network error: ' + err.message, false); })
             .then(function () { if (btn) btn.disabled = false; });
     }
 
     function resetSection(key) {
-        if (!window.confirm('确认仅重置「' + key + '」分组为默认值？该分组下的自定义设置将被清除。')) return;
+        if (!window.confirm('Reset the "' + key + '" group to defaults? Customized settings in this group will be cleared.')) return;
         doFetch(S.ajax_url + '?action=jinyu_reset_section&nonce=' + encodeURIComponent(S.nonce), { key: key })
             .then(function (json) {
-                toast((json && json.data && json.data.msg) ? json.data.msg : '完成', !!(json && json.success));
+                toast((json && json.data && json.data.msg) ? json.data.msg : 'Done', !!(json && json.success));
                 if (json && json.success) { window.setTimeout(function () { window.location.reload(); }, 600); }
             })
-            .catch(function (err) { toast('网络错误：' + err.message, false); });
+            .catch(function (err) { toast('Network error: ' + err.message, false); });
     }
 
     /* ---------- Toast ---------- */
@@ -1398,7 +1398,7 @@
     /* ---------- 配置导入 / 导出 ---------- */
     function doExport() {
         var tip = qs('#jinyu-export-tip');
-        if (tip) { tip.textContent = '导出中…'; tip.className = 'jinyu-tools-tip'; }
+        if (tip) { tip.textContent = 'Exporting…'; tip.className = 'jinyu-tools-tip'; }
         fetch(S.ajax_url + '?action=jinyu_export_options&nonce=' + encodeURIComponent(S.nonce), {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -1416,24 +1416,24 @@
                     a.click();
                     a.remove();
                     URL.revokeObjectURL(url);
-                    if (tip) { tip.textContent = '已导出'; tip.className = 'jinyu-tools-tip ok'; }
+                    if (tip) { tip.textContent = 'Exported'; tip.className = 'jinyu-tools-tip ok'; }
                 } else {
-                    if (tip) { tip.textContent = (res && res.data && res.data.msg) || '导出失败'; tip.className = 'jinyu-tools-tip err'; }
+                    if (tip) { tip.textContent = (res && res.data && res.data.msg) || 'Export failed'; tip.className = 'jinyu-tools-tip err'; }
                 }
             })
-            .catch(function () { if (tip) { tip.textContent = '网络错误'; tip.className = 'jinyu-tools-tip err'; } });
+            .catch(function () { if (tip) { tip.textContent = 'Network error'; tip.className = 'jinyu-tools-tip err'; } });
     }
 
     function handleImport(input) {
         var tip = qs('#jinyu-import-tip');
         var file = input.files && input.files[0];
         if (!file) return;
-        if (tip) { tip.textContent = '导入中…'; tip.className = 'jinyu-tools-tip'; }
+        if (tip) { tip.textContent = 'Importing…'; tip.className = 'jinyu-tools-tip'; }
         var reader = new FileReader();
         reader.onload = function () {
             var parsed;
             try { parsed = JSON.parse(reader.result); } catch (e) {
-                if (tip) { tip.textContent = 'JSON 解析失败'; tip.className = 'jinyu-tools-tip err'; }
+                if (tip) { tip.textContent = 'JSON parse failed'; tip.className = 'jinyu-tools-tip err'; }
                 input.value = '';
                 return;
             }
@@ -1445,14 +1445,14 @@
                 .then(function (r) { return r.json(); })
                 .then(function (res) {
                     if (res && res.success) {
-                        if (tip) { tip.textContent = (res.data && res.data.msg) || '导入成功'; tip.className = 'jinyu-tools-tip ok'; }
+                        if (tip) { tip.textContent = (res.data && res.data.msg) || 'Imported successfully'; tip.className = 'jinyu-tools-tip ok'; }
                         window.setTimeout(function () { window.location.reload(); }, 600);
                     } else {
-                        if (tip) { tip.textContent = (res && res.data && res.data.msg) || '导入失败'; tip.className = 'jinyu-tools-tip err'; }
+                        if (tip) { tip.textContent = (res && res.data && res.data.msg) || 'Import failed'; tip.className = 'jinyu-tools-tip err'; }
                     }
                     input.value = '';
                 })
-                .catch(function () { if (tip) { tip.textContent = '网络错误'; tip.className = 'jinyu-tools-tip err'; } input.value = ''; });
+                .catch(function () { if (tip) { tip.textContent = 'Network error'; tip.className = 'jinyu-tools-tip err'; } input.value = ''; });
         };
         reader.readAsText(file);
     }
@@ -1460,7 +1460,7 @@
     /* ---------- 工具（SMTP / 缓存）：事件委托，重建面板后依然有效 ---------- */
     // 页脚运行信息开关：直接写入主题设置（复用 jinyu_save_options 的合并 + 校验路径），落库即生效
     function saveRuninfo(val, tipEl) {
-        if (tipEl) { tipEl.textContent = '保存中…'; tipEl.className = 'jinyu-tools-tip'; }
+        if (tipEl) { tipEl.textContent = 'Saving…'; tipEl.className = 'jinyu-tools-tip'; }
         doFetch(S.ajax_url + '?action=jinyu_save_options&nonce=' + encodeURIComponent(S.nonce), { footer_runinfo: val ? 1 : 0 })
             .then(function (json) {
                 if (json && json.success) {
@@ -1468,18 +1468,18 @@
                     toast('已' + (val ? '开启' : '关闭') + '页脚运行信息', true);
                     var stateEl = qs('#jinyu-runinfo-state', root);
                     if (stateEl) {
-                        stateEl.textContent = val ? '已开启' : '已关闭';
+                        stateEl.textContent = val ? 'Enabled' : 'Disabled';
                         stateEl.className = 'jinyu-tool-state' + (val ? ' on' : '');
                     }
                     if (tipEl) { tipEl.textContent = '已' + (val ? '开启' : '关闭'); tipEl.className = 'jinyu-tools-tip ok'; }
                 } else {
-                    toast((json && json.data && json.data.msg) ? json.data.msg : '保存失败', false);
-                    if (tipEl) { tipEl.textContent = '保存失败'; tipEl.className = 'jinyu-tools-tip err'; }
+                    toast((json && json.data && json.data.msg) ? json.data.msg : 'Save failed', false);
+                    if (tipEl) { tipEl.textContent = 'Save failed'; tipEl.className = 'jinyu-tools-tip err'; }
                 }
             })
             .catch(function (err) {
-                toast('网络错误：' + err.message, false);
-                if (tipEl) { tipEl.textContent = '网络错误'; tipEl.className = 'jinyu-tools-tip err'; }
+                toast('Network error: ' + err.message, false);
+                if (tipEl) { tipEl.textContent = 'Network error'; tipEl.className = 'jinyu-tools-tip err'; }
             });
     }
     /* WP 的 wp_send_json_success/error 既可返回字符串（data 直接是文案），
@@ -1507,7 +1507,7 @@
         var body = '_ajax_nonce=' + encodeURIComponent(S.nonce);
         var onProgress = opts.onProgress || null;
         function run(isStop) {
-            tipEl.textContent = isStop ? '正在停止…' : '处理中…';
+            tipEl.textContent = isStop ? 'Stopping…' : 'Processing…';
             tipEl.className = 'jinyu-tools-tip';
             if (isStop) body += '&stop=1';
             fetch(S.ajax_url + '?action=' + action, {
@@ -1530,12 +1530,12 @@
                         return run(false);
                     }
                     if (onProgress) onProgress(d, true);
-                    tipEl.textContent = apiMsg(res, res.success ? '成功' : '失败');
+                    tipEl.textContent = apiMsg(res, res.success ? 'Success' : 'Failed');
                     tipEl.className = 'jinyu-tools-tip ' + (res.success && !d.more ? 'ok' : 'err');
                 })
                 .catch(function (err) {
                     if (onProgress) onProgress({}, false, true);
-                    var m = (err && err.message) ? ('请求失败：' + err.message) : '网络错误';
+                    var m = (err && err.message) ? ('Request failed: ' + err.message) : 'Network error';
                     if (window.console && console.error) console.error('[jinyu-tool]', action, err);
                     tipEl.textContent = m;
                     tipEl.className = 'jinyu-tools-tip err';
@@ -1572,15 +1572,15 @@
         if (pctEl) pctEl.textContent = pct + '%';
         if (label) {
             label.textContent = running
-                ? '正在重建封面缩略图…'
-                : ((data && data.percent === 100) ? '重建完成' : '已停止');
+                ? 'Regenerating cover thumbnails…'
+                : ((data && data.percent === 100) ? 'Rebuild complete' : 'Stopped');
         }
         if (detail) {
             var bits = [];
-            if (total > 0) bits.push('已处理 ' + fmtNum(done) + ' / ' + fmtNum(total) + ' 张');
-            if (data && data.gen) bits.push('新生成 ' + fmtNum(data.gen) + ' 张');
-            if (data && data.skip) bits.push('跳过 ' + fmtNum(data.skip) + ' 张');
-            if (data && data.fail) bits.push('失败 ' + fmtNum(data.fail) + ' 张');
+            if (total > 0) bits.push('Processed ' + fmtNum(done) + ' / ' + fmtNum(total) + ' images');
+            if (data && data.gen) bits.push('Generated ' + fmtNum(data.gen) + ' images');
+            if (data && data.skip) bits.push('Skipped ' + fmtNum(data.skip) + ' images');
+            if (data && data.fail) bits.push('Failed ' + fmtNum(data.fail) + ' images');
             detail.textContent = bits.join(' · ');
         }
         if (stopBtn) stopBtn.hidden = !running;
@@ -1630,7 +1630,7 @@
                             tries++;
                             if (tip) {
                                 tip.className = 'jinyu-tools-tip';
-                                tip.textContent = '任务正在进行，稍候自动接管…';
+                                tip.textContent = 'A task is already running; it will resume automatically…';
                             }
                             window.setTimeout(go, 4000);
                             return true;
@@ -1674,12 +1674,12 @@
         var box = btn.closest('.jinyu-update-box');
         var status = box ? qs('[data-update-status]', box) : null;
         var detail = box ? qs('[data-update-detail]', box) : null;
-        if (status) { status.textContent = '检查中…'; status.className = 'jinyu-update-status'; }
+        if (status) { status.textContent = 'Checking…'; status.className = 'jinyu-update-status'; }
         if (detail) detail.innerHTML = '';
         doFetch(S.ajax_url + '?action=jinyu_check_update&nonce=' + encodeURIComponent(S.nonce), {})
             .then(function (json) {
                 if (!json || !json.success) {
-                    var emsg = (json && json.data && json.data.msg) || '检查失败';
+                    var emsg = (json && json.data && json.data.msg) || 'Check failed';
                     if (status) { status.textContent = emsg; status.className = 'jinyu-update-status err'; }
                     else toast(emsg, false);   // 顶栏按钮没有状态区容器，用 toast 反馈
                     return;
@@ -1687,17 +1687,17 @@
                 var d = json.data || {};
                 if (status) {
                     if (d.has_update) {
-                        status.textContent = '发现新版本 v' + d.latest;
+                        status.textContent = 'New version v' + d.latest;
                         status.className = 'jinyu-update-status ok';
                     } else {
-                        status.textContent = '已是最新版本 v' + d.current;
+                        status.textContent = 'Already up to date: v' + d.current;
                         status.className = 'jinyu-update-status';
                     }
                 }
                 if (!box) {
                     // 顶栏「检查更新」：没有 .jinyu-update-box 容器，结果弹卡无处渲染，
                     // 必须用全局 toast 给出结果——否则点击后毫无反馈，看起来像按钮坏了
-                    toast(d.has_update ? ('发现新版本 v' + d.latest + '，到「关于」面板下载') : ('已是最新版本 v' + d.current), true);
+                    toast(d.has_update ? ('New version v' + d.latest + '. Download it from the About panel') : ('Already up to date: v' + d.current), true);
                 }
                 if (detail) {
                     // 仅在确有新版本时才浮出更新卡片（更新日志 + 操作按钮）；已是最新时不渲染任何详情，不撑爆顶栏
@@ -1706,21 +1706,21 @@
                         html += '<div class="jinyu-update-pop">' +
                             '<div class="jinyu-update-pop-head">' +
                             '<i class="dashicons dashicons-download" aria-hidden="true"></i>' +
-                            '新版本 v' + esc(d.latest) +
-                            '<span>当前 v' + esc(d.current) + '</span>' +
-                            '<button type="button" class="jinyu-update-pop-close" data-close-update aria-label="关闭">×</button>' +
+                            'New version v' + esc(d.latest) +
+                            '<span>Current v' + esc(d.current) + '</span>' +
+                            '<button type="button" class="jinyu-update-pop-close" data-close-update aria-label="Close">×</button>' +
                             '</div>' +
-                            (d.changelog ? '<div class="jinyu-update-cl">' + esc(d.changelog) + '</div>' : '<p class="jinyu-update-nocl">暂无更新日志。</p>') +
+                            (d.changelog ? '<div class="jinyu-update-cl">' + esc(d.changelog) + '</div>' : '<p class="jinyu-update-nocl">No changelog yet.</p>') +
                             '<div class="jinyu-update-pop-actions">' +
-                            (d.download_url ? '<a class="jinyu-btn jinyu-btn-sm jinyu-btn-primary" href="' + esc(d.download_url) + '" target="_blank" rel="noopener">下载更新包</a>' : '') +
-                            (d.detail_url ? '<a class="jinyu-btn jinyu-btn-sm" href="' + esc(d.detail_url) + '" target="_blank" rel="noopener">查看详情</a>' : '') +
+                            (d.download_url ? '<a class="jinyu-btn jinyu-btn-sm jinyu-btn-primary" href="' + esc(d.download_url) + '" target="_blank" rel="noopener">Download update package</a>' : '') +
+                            (d.detail_url ? '<a class="jinyu-btn jinyu-btn-sm" href="' + esc(d.detail_url) + '" target="_blank" rel="noopener">View details</a>' : '') +
                             '</div></div>';
                     }
                     detail.innerHTML = html;
                     if (d.has_update) attachUpdatePopClose(); else detachUpdatePopClose();
                 }
             })
-            .catch(function (err) { if (status) { status.textContent = '网络错误：' + err.message; status.className = 'jinyu-update-status err'; } else toast('网络错误：' + err.message, false); })
+            .catch(function (err) { if (status) { status.textContent = 'Network error: ' + err.message; status.className = 'jinyu-update-status err'; } else toast('Network error: ' + err.message, false); })
             .then(function () { btn.disabled = false; });
     }
 

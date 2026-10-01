@@ -44,7 +44,7 @@ get_header(); ?>
 						<button type="button" class="jinyu-follow-btn<?php echo $jinyu_following ? ' is-following' : ''; ?>"
 								data-jinyu-follow data-target="user" data-id="<?php echo (int) $author->ID; ?>">
 							<i class="fa-solid <?php echo $jinyu_following ? 'fa-user-check' : 'fa-user-plus'; ?>" aria-hidden="true"></i>
-							<span><?php echo $jinyu_following ? esc_html__( '已关注', 'jinyu' ) : esc_html__( '关注', 'jinyu' ); ?></span>
+							<span><?php echo $jinyu_following ? esc_html__( 'Following', 'jinyu' ) : esc_html__( 'Follow', 'jinyu' ); ?></span>
 						</button>
 					<?php endif; ?>
 				</div>

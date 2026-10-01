@@ -53,16 +53,16 @@
                 }, item.label);
             });
         } else {
-            children = el('div', { className: 'jinyu-sc-gb-empty' }, '暂无可用短代码');
+            children = el('div', { className: 'jinyu-sc-gb-empty' }, 'No shortcodes available');
         }
 
         return el(Fragment, null,
             el(editPost.PluginSidebarMoreMenuItem, {
                 target: 'jinyu-sc-gb-sidebar'
-            }, '金玉短码'),
+            }, 'Jinyu Shortcodes'),
             el(editPost.PluginSidebar, {
                 name: 'jinyu-sc-gb-sidebar',
-                title: '金玉短码',
+                title: 'Jinyu Shortcodes',
                 icon: 'shortcode'
             },
             el('div', { className: 'jinyu-sc-gb-panel' }, children))

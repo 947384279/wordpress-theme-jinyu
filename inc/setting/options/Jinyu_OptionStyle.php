@@ -23,24 +23,24 @@ class Jinyu_OptionStyle extends Jinyu_BaseOptionItem {
 	public function get_fields(): array {
 		return [
 			'key'    => 'style',
-			'title'  => __( '风格外观', 'jinyu' ),
-			'desc'   => __( '主题色、明暗模式、圆角与字体等视觉风格。', 'jinyu' ),
+			'title'  => __( 'Style & Appearance', 'jinyu' ),
+			'desc'   => __( 'Visual style: theme color, light/dark mode, border radius, fonts, etc.', 'jinyu' ),
 			'icon'   => 'fa-solid fa-palette',
 			'fields' => [
 				[
 					'type'  => 'subhead',
-					'title' => __( '基础外观', 'jinyu' ),
+					'title' => __( 'Basic Appearance', 'jinyu' ),
 				],
 				[
 					'id'      => 'style_color_primary',
-					'title'   => __( '主题主色', 'jinyu' ),
+					'title'   => __( 'Theme primary color', 'jinyu' ),
 					'type'    => 'color',
 					'sdt'     => '#FF6B35',
 					'presets' => [ '#FF6B35', '#1C60F3', '#07c160', '#ff4d4f', '#722ed1', '#000000' ],
 				],
 				[
 					'id'    => 'style_radius',
-					'title' => __( '圆角大小', 'jinyu' ),
+					'title' => __( 'Border radius', 'jinyu' ),
 					'type'  => 'slider',
 					'sdt'   => 6,
 					'min'   => 0,
@@ -50,110 +50,110 @@ class Jinyu_OptionStyle extends Jinyu_BaseOptionItem {
 				],
 				[
 					'id'    => 'content_font_size',
-					'title' => __( '正文字号', 'jinyu' ),
+					'title' => __( 'Body font size', 'jinyu' ),
 					'type'  => 'slider',
 					'sdt'   => 16,
 					'min'   => 13,
 					'max'   => 20,
 					'step'  => 1,
 					'unit'  => 'px',
-					'desc'  => __( '文章正文基准字号', 'jinyu' ),
+					'desc'  => __( 'Base font size for post content', 'jinyu' ),
 				],
 				[
 					'id'      => 'dark_palette',
-					'title'   => __( '暗色配色方案', 'jinyu' ),
+					'title'   => __( 'Dark color scheme', 'jinyu' ),
 					'type'    => 'select',
 					'sdt'     => 'default',
-					'desc'    => __( '仅在暗色模式下生效：前台右上角点月亮图标切到暗色即可看到；「默认深灰」更柔和耐看，「纯黑」对比更强、更省电，适合 OLED 屏', 'jinyu' ),
+					'desc'    => __( 'Only takes effect in dark mode: click the moon icon at the top right on the front end to see it. "Dark gray" is softer and easier on the eyes; "Pure black" has stronger contrast, saves power, and suits OLED screens', 'jinyu' ),
 					'options' => [
 						[
-							'label' => __( '默认深灰', 'jinyu' ),
+							'label' => __( 'Dark gray', 'jinyu' ),
 							'value' => 'default',
 						],
 						[
-							'label' => __( '纯黑', 'jinyu' ),
+							'label' => __( 'Pure black', 'jinyu' ),
 							'value' => 'pureblack',
 						],
 					],
 				],
 				[
 					'id'    => 'cn_autospace',
-					'title' => __( '中英文自动加空格', 'jinyu' ),
+					'title' => __( 'Auto-spacing between CJK and Latin text', 'jinyu' ),
 					'type'  => 'switch',
 					'sdt'   => false,
-					'desc'  => __( 'PHP 级处理：在中英文/数字边界自动插入空格（保护 HTML 标签与链接，不影响已排版内容）', 'jinyu' ),
+					'desc'  => __( 'Handled in PHP: automatically inserts spaces at CJK / Latin / number boundaries (protects HTML tags and links; does not affect already formatted content)', 'jinyu' ),
 				],
 				[
 					'id'    => 'ext_link_target',
-					'title' => __( '外链新窗口 + nofollow', 'jinyu' ),
+					'title' => __( 'External links in new window + nofollow', 'jinyu' ),
 					'type'  => 'switch',
 					'sdt'   => true,
-					'desc'  => __( '正文外链新窗口打开并加 rel="nofollow noopener"', 'jinyu' ),
+					'desc'  => __( 'Open content external links in a new window with rel="nofollow noopener"', 'jinyu' ),
 				],
 
 				[
 					'type'  => 'subhead',
-					'title' => __( '主题模式', 'jinyu' ),
+					'title' => __( 'Theme Mode', 'jinyu' ),
 				],
 				/* ─── 主题模式 ─── */
 				[
 					'id'      => 'theme_mode',
-					'title'   => __( '默认主题模式', 'jinyu' ),
+					'title'   => __( 'Default theme mode', 'jinyu' ),
 					'type'    => 'select',
 					'sdt'     => 'auto',
-					'desc'    => __( '日光 / 暗黑为固定默认模式；「跟随系统」按访客系统自动切换。无论选哪种，前台右上角始终显示明暗切换按钮，访客可随时手动切换并记忆选择。', 'jinyu' ),
+					'desc'    => __( '"Light / Dark" sets a fixed default mode; "Follow system" switches with the visitor\'s OS. Either way, the light/dark toggle always appears at the top right on the front end, and visitors can switch manually at any time (choice is remembered).', 'jinyu' ),
 					'options' => [
 						[
-							'label' => __( '日光模式', 'jinyu' ),
+							'label' => __( 'Light mode', 'jinyu' ),
 							'value' => 'light',
 						],
 						[
-							'label' => __( '暗黑模式', 'jinyu' ),
+							'label' => __( 'Dark mode', 'jinyu' ),
 							'value' => 'dark',
 						],
 						[
-							'label' => __( '跟随系统', 'jinyu' ),
+							'label' => __( 'Follow system', 'jinyu' ),
 							'value' => 'auto',
 						],
 					],
 				],
 				[
 					'id'    => 'nav_blur',
-					'title' => __( '导航栏毛玻璃效果', 'jinyu' ),
+					'title' => __( 'Navbar frosted-glass effect', 'jinyu' ),
 					'type'  => 'switch',
 					'sdt'   => true,
-					'desc'  => __( '头部导航的半透明磨砂玻璃效果；浏览器不支持 backdrop-filter 时自动降级为纯色', 'jinyu' ),
+					'desc'  => __( 'Semi-transparent frosted-glass effect for the header nav; falls back to a solid color when the browser does not support backdrop-filter', 'jinyu' ),
 				],
 
 				[
 					'type'  => 'subhead',
-					'title' => __( '字体', 'jinyu' ),
+					'title' => __( 'Fonts', 'jinyu' ),
 				],
 				/* ─── 字体 ─── */
 				[
 					'id'      => 'content_font',
-					'title'   => __( '正文字体', 'jinyu' ),
+					'title'   => __( 'Body font', 'jinyu' ),
 					'type'    => 'select',
 					'sdt'     => 'system',
 					'options' => [
 						[
-							'label' => __( '系统无衬线（默认）', 'jinyu' ),
+							'label' => __( 'System sans-serif (default)', 'jinyu' ),
 							'value' => 'system',
 						],
 						[
-							'label' => __( '宋体 / 衬线', 'jinyu' ),
+							'label' => __( 'Serif (SimSun)', 'jinyu' ),
 							'value' => 'serif',
 						],
 						[
-							'label' => __( '等宽', 'jinyu' ),
+							'label' => __( 'Monospace', 'jinyu' ),
 							'value' => 'mono',
 						],
 						[
-							'label' => __( '圆体（幼圆/微软雅黑）', 'jinyu' ),
+							'label' => __( 'Rounded (YouYuan / Microsoft YaHei)', 'jinyu' ),
 							'value' => 'round',
 						],
 					],
-					'desc'    => __( '覆盖正文与界面全局字体栈', 'jinyu' ),
+					'desc'    => __( 'Overrides the global font stack for content and UI', 'jinyu' ),
 				],
 			],
 		];

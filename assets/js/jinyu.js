@@ -189,7 +189,7 @@
             var dark = isDark();
             var icon = btn.querySelector('i');
             btn.setAttribute('aria-pressed', dark ? 'true' : 'false');
-            btn.setAttribute('title', dark ? '切换到亮色模式' : '切换到暗色模式');
+            btn.setAttribute('title', dark ? 'Switch to light mode' : 'Switch to dark mode');
             if (icon) icon.className = dark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
         }
 
@@ -244,8 +244,8 @@
         if (!toggle || !panel) return;
 
         var mqDesktop = window.matchMedia('(min-width: 1241px)');
-        var labelOpen = toggle.getAttribute('data-label-open') || '展开菜单';
-        var labelClose = toggle.getAttribute('data-label-close') || '关闭菜单';
+        var labelOpen = toggle.getAttribute('data-label-open') || 'Open menu';
+        var labelClose = toggle.getAttribute('data-label-close') || 'Close menu';
         var opened = false;
         var padRight = '';
         var headerPadRight = '';
@@ -278,7 +278,7 @@
             btn.type = 'button';
             btn.className = 'jinyu-sub-toggle';
             btn.setAttribute('aria-expanded', 'false');
-            btn.setAttribute('aria-label', (label ? label.textContent.trim() : '') + ' 子菜单');
+            btn.setAttribute('aria-label', (label ? label.textContent.trim() : '') + ' submenu');
             btn.innerHTML = '<i class="fa-solid fa-chevron-down" aria-hidden="true"></i>';
             li.insertBefore(btn, sub);
         });
@@ -588,12 +588,12 @@
             var frac = compute();
             var pct = Math.round(frac * 100);
             if (pct >= 100) {
-                label.textContent = _t('readDone', '已读完 ✓');
+                label.textContent = _t('readDone', 'Finished ✓');
                 pill.classList.add('jinyu-done');
             } else {
                 pill.classList.remove('jinyu-done');
                 var remain = totalMin * (1 - frac);
-                var remainTxt = remain < 1 ? _t('lessThanMinute', '不到 1 分钟') : _tFill(_t('aboutMinutes', '约 %d 分钟'), { '%d': Math.ceil(remain) });
+                var remainTxt = remain < 1 ? _t('lessThanMinute', 'Less than 1 min') : _tFill(_t('aboutMinutes', 'About %d min'), { '%d': Math.ceil(remain) });
                 label.textContent = _tFill(_t('readProgress', '已读 %1$d% · 还需 %2$s'), {
                     '%1$d': pct,
                     '%2$s': remainTxt,
@@ -665,9 +665,9 @@
         var wrap = doc.createElement('div');
         wrap.className = 'jinyu-toc';
         wrap.innerHTML = '<div class="jinyu-toc-title">' +
-            '<span class="jinyu-toc-heading"><i class="fa-solid fa-list-ul jinyu-toc-ico" aria-hidden="true"></i>文章目录</span>' +
+            '<span class="jinyu-toc-heading"><i class="fa-solid fa-list-ul jinyu-toc-ico" aria-hidden="true"></i>Table of Contents</span>' +
             '<span class="jinyu-toc-meta"><span class="jinyu-toc-cur"></span><span class="jinyu-toc-count"></span>' +
-            '<button type="button" class="jinyu-toc-toggle" aria-label="展开/收起目录" aria-expanded="false"><i class="fa-solid fa-chevron-down"></i></button></span>' +
+            '<button type="button" class="jinyu-toc-toggle" aria-label="Toggle table of contents" aria-expanded="false"><i class="fa-solid fa-chevron-down"></i></button></span>' +
             '</div>' +
             '<ul class="jinyu-toc-list"></ul>';
         var list = $('.jinyu-toc-list', wrap);
@@ -767,7 +767,7 @@
             var btn = doc.createElement('button');
             btn.type = 'button';
             btn.className = 'jinyu-para-copy';
-            btn.setAttribute('aria-label', '复制本段');
+            btn.setAttribute('aria-label', 'Copy paragraph');
             btn.innerHTML = '<i class="fa-regular fa-copy" aria-hidden="true"></i>';
             btn.addEventListener('click', function (e) {
                 e.stopPropagation();
@@ -776,7 +776,7 @@
                     btn.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i>';
                     btn.classList.add('jinyu-copied');
                     setTimeout(function () { btn.innerHTML = old; btn.classList.remove('jinyu-copied'); }, 1400);
-                }).catch(function () { Util.toast(_t('copyFailed', '复制失败，请手动选择')); });
+                }).catch(function () { Util.toast(_t('copyFailed', 'Copy failed. Please select manually')); });
             });
             el.appendChild(btn);
         });
@@ -802,21 +802,21 @@
             var btn = doc.createElement('button');
             btn.className = 'jinyu-code-copy';
             btn.type = 'button';
-            btn.setAttribute('aria-label', '复制代码');
-            btn.innerHTML = '<i class="fa-regular fa-copy" aria-hidden="true"></i><span class="jinyu-code-copy-label">复制</span>';
+            btn.setAttribute('aria-label', 'Copy code');
+            btn.innerHTML = '<i class="fa-regular fa-copy" aria-hidden="true"></i><span class="jinyu-code-copy-label">Copy</span>';
             wrap.appendChild(btn);
 
             var label = btn.querySelector('.jinyu-code-copy-label');
             btn.addEventListener('click', function () {
                 Util.copy(pre.innerText).then(function () {
-                    if (label) label.textContent = _t('copied', '已复制');
+                    if (label) label.textContent = _t('copied', 'Copied');
                     btn.classList.add('jinyu-copied');
                     setTimeout(function () {
-                        if (label) label.textContent = _t('copy', '复制');
+                        if (label) label.textContent = _t('copy', 'Copy');
                         btn.classList.remove('jinyu-copied');
                     }, 1500);
                 }).catch(function () {
-                    Util.toast(_t('copyFailed', '复制失败，请手动选择'));
+                    Util.toast(_t('copyFailed', 'Copy failed. Please select manually'));
                 });
             });
         });
@@ -964,7 +964,7 @@
                     like.classList.remove('jinyu-loading');
                     if (err || !res || !res.success) {
                         // 已点赞 / 限流 / 网络异常：给出可见反馈，避免“点了没反应”
-                        Util.toast((res && res.data) ? res.data : '操作失败，请稍后重试');
+                        Util.toast((res && res.data) ? res.data : 'Operation failed. Please try again later.');
                         return;
                     }
                     like.classList.toggle('jinyu-liked', willLike);
@@ -1008,7 +1008,7 @@
 
         function applyFavState(btn, label, faved) {
             btn.classList.toggle('jinyu-faved', faved);
-            if (label) label.textContent = faved ? '已收藏' : '收藏';
+            if (label) label.textContent = faved ? 'Saved' : 'Save';
         }
 
         function toggleLocalFav(id, title, willFav) {
@@ -1084,7 +1084,7 @@
             if (CFG.fav_posts && CFG.fav_posts.indexOf(Number(btn.dataset.postId)) > -1) {
                 btn.classList.add('jinyu-faved');
                 var label = btn.querySelector('.jinyu-fav-label');
-                if (label) label.textContent = _t('favorited', '已收藏');
+                if (label) label.textContent = _t('favorited', 'Saved');
             }
         });
 
@@ -1122,11 +1122,11 @@
        模块：分享弹窗
        ====================================================================== */
     var SHARE_TARGETS = {
-        weibo: { label: '微博', icon: 'fa-brands fa-weibo', url: function (u, t) { return 'https://service.weibo.com/share/share.php?url=' + encodeURIComponent(u) + '&title=' + encodeURIComponent(t); } },
+        weibo: { label: 'Weibo', icon: 'fa-brands fa-weibo', url: function (u, t) { return 'https://service.weibo.com/share/share.php?url=' + encodeURIComponent(u) + '&title=' + encodeURIComponent(t); } },
         qq: { label: 'QQ', icon: 'fa-brands fa-qq', url: function (u, t) { return 'https://connect.qq.com/widget/shareqq/index.html?url=' + encodeURIComponent(u) + '&title=' + encodeURIComponent(t); } },
-        qzone: { label: '空间', icon: 'fa-solid fa-star', url: function (u, t) { return 'https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=' + encodeURIComponent(u) + '&title=' + encodeURIComponent(t); } },
-        wechat: { label: '微信', icon: 'fa-brands fa-weixin', url: null },
-        link: { label: '复制链接', icon: 'fa-solid fa-link', url: null }
+        qzone: { label: 'Qzone', icon: 'fa-solid fa-star', url: function (u, t) { return 'https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=' + encodeURIComponent(u) + '&title=' + encodeURIComponent(t); } },
+        wechat: { label: 'WeChat', icon: 'fa-brands fa-weixin', url: null },
+        link: { label: 'Copy link', icon: 'fa-solid fa-link', url: null }
     };
 
     function share() {
@@ -1141,7 +1141,7 @@
 
             var box = doc.createElement('div');
             box.className = 'jinyu-share-box';
-            box.innerHTML = '<div class="jinyu-share-title">分享到</div><div class="jinyu-share-btns"></div>';
+            box.innerHTML = '<div class="jinyu-share-title">Share to</div><div class="jinyu-share-btns"></div>';
 
             var btns = $('.jinyu-share-btns', box);
             var enabled = (CFG.share_channels || '').split(',').map(function (s) { return s.trim(); }).filter(Boolean);
@@ -1174,8 +1174,8 @@
                     return;
                 }
                 if (!target.url) {
-                    Util.copy(url).then(function () { Util.toast(_t('linkCopied', '链接已复制')); })
-                        .catch(function () { window.prompt('复制此链接：', url); });
+                    Util.copy(url).then(function () { Util.toast(_t('linkCopied', 'Link copied')); })
+                        .catch(function () { window.prompt('Copy this link: ', url); });
                 } else {
                     window.open(target.url(url, title), '_blank', 'width=600,height=500');
                 }
@@ -1197,7 +1197,7 @@
             ov.innerHTML =
                 '<div class="jinyu-wechat-guide">' +
                     '<div class="jinyu-wechat-guide-arrow">···</div>' +
-                    '<div class="jinyu-wechat-guide-tip">点击右上角 <b>···</b><br>即可分享给好友或朋友圈</div>' +
+                    '<div class="jinyu-wechat-guide-tip">Tap <b>···</b> in the top-right corner<br>to share with friends or on Moments</div>' +
                 '</div>';
             ov.addEventListener('click', function (e) { if (e.target === ov) ov.remove(); });
             doc.body.appendChild(ov);
@@ -1208,12 +1208,12 @@
         mask.innerHTML =
             '<div class="jinyu-modal-card jinyu-wechat-qr-card">' +
                 '<div class="jinyu-modal-head">' +
-                    '<span class="jinyu-modal-title">微信扫码打开</span>' +
-                    '<button type="button" class="jinyu-modal-close" data-jinyu-modal-close aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>' +
+                    '<span class="jinyu-modal-title">Scan with WeChat to open</span>' +
+                    '<button type="button" class="jinyu-modal-close" data-jinyu-modal-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button>' +
                 '</div>' +
                 '<div class="jinyu-modal-body" style="text-align:center">' +
                     '<div class="jinyu-wechat-qr-box" id="jinyu-wechat-qr"></div>' +
-                    '<p class="jinyu-qr-url">用微信「扫一扫」识别上方二维码，即可在微信中打开本文。<br>手机可截屏后于微信内扫本地图片；或关闭后点分享栏「复制链接」粘贴到微信。</p>' +
+                    '<p class="jinyu-qr-url">Scan the QR code above with WeChat to open this post in WeChat.<br>On mobile, screenshot it and scan from your gallery; or close this dialog, tap "Copy link" in the share bar and paste it into WeChat.</p>' +
                 '</div>' +
             '</div>';
         mask.addEventListener('click', function (e) { if (e.target === mask || e.target.closest('[data-jinyu-modal-close]')) mask.remove(); });
@@ -1317,7 +1317,7 @@
             if (loading || done) return;
             loading = true;
             btn.disabled = true;
-            btn.textContent = _t('loading', '加载中…');
+            btn.textContent = _t('loading', 'Loading…');
 
             Util.ajax('jinyu_load_more', { page: page }, function (err, res) {
                 loading = false;
@@ -1325,7 +1325,7 @@
 
                 if (err || !res || !res.success) {
                     done = true;
-                    btn.textContent = _t('noMore', '没有更多了');
+                    btn.textContent = _t('noMore', 'No more posts');
                     btn.disabled = true;
                     return;
                 }
@@ -1337,10 +1337,10 @@
                 btn.dataset.page = page;
 
                 if (res.data.has_more) {
-                    btn.textContent = _t('loadMore', '加载更多');
+                    btn.textContent = _t('loadMore', 'Load more');
                 } else {
                     done = true;
-                    btn.textContent = _t('noMore', '没有更多了');
+                    btn.textContent = _t('noMore', 'No more posts');
                     btn.disabled = true;
                 }
             });
@@ -1444,12 +1444,12 @@
                 var raw = input.value.trim();
                 if (!raw) {
                     try { input.focus(); } catch (e2) {}
-                    flash(form, '请输入页码');
+                    flash(form, 'Enter a page number');
                     return;
                 }
                 var n = clamp(parseInt(raw, 10));
                 input.value = n;
-                if (n === cur) { flash(form, '已是第 ' + n + ' 页'); return; }
+                if (n === cur) { flash(form, 'Already on page ' + n + ''); return; }
                 location.assign(form.dataset.base.replace('__PAGE__', n));
             });
 
@@ -1484,14 +1484,14 @@
                 var codeEl = preBox && preBox.querySelector('.jinyu-pre-code');
                 if (codeEl) {
                     Util.copy(codeEl.innerText).then(function () {
-                        preCopy.textContent = _t('copied', '已复制');
+                        preCopy.textContent = _t('copied', 'Copied');
                         preCopy.classList.add('jinyu-copied');
                         setTimeout(function () {
-                            preCopy.textContent = _t('copy', '复制');
+                            preCopy.textContent = _t('copy', 'Copy');
                             preCopy.classList.remove('jinyu-copied');
                         }, 1500);
                     }).catch(function () {
-                        Util.toast(_t('copyFailed', '复制失败，请手动选择'));
+                        Util.toast(_t('copyFailed', 'Copy failed. Please select manually'));
                     });
                 }
                 return;
@@ -1529,7 +1529,7 @@
 
             var submit = form.querySelector('input[type="submit"]');
             var originText = submit ? submit.value : '';
-            if (submit) { submit.disabled = true; submit.value = _t('submitting', '提交中…'); }
+            if (submit) { submit.disabled = true; submit.value = _t('submitting', 'Submitting…'); }
 
             var payload = new FormData(form);
             payload.append('action', 'jinyu_comment');
@@ -1542,12 +1542,12 @@
 
                     if (!res || !res.success) {
                         tip.className = 'jinyu-comment-tip jinyu-comment-tip-err';
-                        tip.textContent = (res && res.data) ? res.data : _t('submitFailed', '提交失败，请稍后重试');
+                        tip.textContent = (res && res.data) ? res.data : _t('submitFailed', 'Submission failed. Please try again later.');
                         return;
                     }
 
                     tip.className = 'jinyu-comment-tip jinyu-comment-tip-ok';
-                    tip.textContent = res.data.message || _t('commentPosted', '评论已提交');
+                    tip.textContent = res.data.message || _t('commentPosted', 'Comment submitted');
 
                     var list = $('.jinyu-comment-list');
                     if (list && res.data.html) {
@@ -1558,7 +1558,7 @@
                 .catch(function () {
                     if (submit) { submit.disabled = false; submit.value = originText; }
                     tip.className = 'jinyu-comment-tip jinyu-comment-tip-err';
-                    tip.textContent = _t('networkError', '网络异常，请稍后重试');
+                    tip.textContent = _t('networkError', 'Network error. Please try again later.');
                 });
         });
     }
@@ -1637,7 +1637,7 @@
             var show = input.type === 'password';
             input.type = show ? 'text' : 'password';
             toggle.setAttribute('aria-pressed', String(show));
-            toggle.setAttribute('aria-label', show ? _t('hidePassword', '隐藏密码') : _t('showPassword', '显示密码'));
+            toggle.setAttribute('aria-label', show ? _t('hidePassword', 'Hide password') : _t('showPassword', 'Show password'));
             var icon = toggle.querySelector('i');
             if (icon) icon.className = show ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
             input.focus();
@@ -1758,19 +1758,19 @@
             };
             var need = function (msg, name) { return { msg: msg, name: name || '' }; };
             if (pane === 'login') {
-                if (!val('log')) return need(_t('fillUser', '请输入用户名或邮箱'), 'log');
-                if (!val('pwd')) return need(_t('fillPwd', '请输入密码'), 'pwd');
+                if (!val('log')) return need(_t('fillUser', 'Please enter your username or email address'), 'log');
+                if (!val('pwd')) return need(_t('fillPwd', 'Please enter your password'), 'pwd');
                 return null;
             }
             if (pane === 'register') {
                 var log = val('log');
-                if (log.length < 3 || log.length > 30) return need(_t('userNameLen', '用户名需 3-30 位'), 'log');
-                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val('email'))) return need(_t('emailBad', '邮箱格式不正确'), 'email');
-                if (val('pwd').length < 6) return need(_t('pwdShort', '密码至少 6 位'), 'pwd');
-                if (val('pwd') !== val('pwd2')) return need(_t('pwdMismatch', '两次输入的密码不一致'), 'pwd2');
+                if (log.length < 3 || log.length > 30) return need(_t('userNameLen', 'Username must be 3-30 characters'), 'log');
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val('email'))) return need(_t('emailBad', 'Invalid email address'), 'email');
+                if (val('pwd').length < 6) return need(_t('pwdShort', 'Password must be at least 6 characters'), 'pwd');
+                if (val('pwd') !== val('pwd2')) return need(_t('pwdMismatch', 'Passwords do not match'), 'pwd2');
                 return null;
             }
-            return val('log') ? null : need(_t('fillUser', '请输入用户名或邮箱'), 'log');
+            return val('log') ? null : need(_t('fillUser', 'Please enter your username or email address'), 'log');
         }
         function clearFieldErrors(form) {
             $$('.jinyu-field.is-error', form).forEach(function (f) { f.classList.remove('is-error'); });
@@ -1800,7 +1800,7 @@
                 if (on && !badge) {
                     badge = doc.createElement('span');
                     badge.className = 'jinyu-caps-badge';
-                    badge.textContent = _t('capsOn', '大写锁定已开启');
+                    badge.textContent = _t('capsOn', 'Caps Lock is on');
                     field.appendChild(badge);
                 } else if (!on && badge) {
                     badge.remove();
@@ -1835,7 +1835,7 @@
                 if (/\d/.test(v)) score++;
                 if (/[^A-Za-z0-9]/.test(v)) score++;
                 var level = score <= 1 ? 0 : score === 2 ? 1 : score === 3 ? 2 : 3;
-                var labels = [_t('pwdWeak', '弱'), _t('pwdMid', '中'), _t('pwdStrong', '强'), _t('pwdVStrong', '极强')];
+                var labels = [_t('pwdWeak', 'Weak'), _t('pwdMid', 'Fair'), _t('pwdStrong', 'Strong'), _t('pwdVStrong', 'Very strong')];
                 meter.setAttribute('data-level', String(level));
                 $('.jinyu-pwd-label', meter).textContent = labels[level];
             });
@@ -1865,19 +1865,19 @@
             });
 
             Util.showTip(tip, '');
-            if (btn) { btn.disabled = true; btn.classList.add('is-loading'); var label = btn.textContent; btn.textContent = _t('processing', '处理中…'); }
+            if (btn) { btn.disabled = true; btn.classList.add('is-loading'); var label = btn.textContent; btn.textContent = _t('processing', 'Processing…'); }
 
             Util.ajax(action, data, function (err, res) {
                 if (btn) { btn.disabled = false; btn.classList.remove('is-loading', 'is-success'); btn.textContent = label; }
                 if (err || !res || !res.success) {
-                    Util.showTip(tip, (res && res.data) ? res.data : '请求失败，请稍后重试', false);
+                    Util.showTip(tip, (res && res.data) ? res.data : 'Request failed. Please try again later.', false);
                     var cap = form.querySelector('[data-jinyu-captcha]');
                     if (cap) refreshCaptcha(cap);
                     return;
                 }
                 // 成功态：按钮保持禁用变绿打勾，稍后跳转（防重复提交）
-                if (btn) { btn.disabled = true; btn.classList.add('is-success'); btn.textContent = '✓ ' + (res.data.message || _t('opSuccess', '操作成功')); }
-                Util.showTip(tip, res.data.message || _t('opSuccess', '操作成功'), true);
+                if (btn) { btn.disabled = true; btn.classList.add('is-success'); btn.textContent = '✓ ' + (res.data.message || _t('opSuccess', 'Operation successful')); }
+                Util.showTip(tip, res.data.message || _t('opSuccess', 'Operation successful'), true);
                 setTimeout(function () {
                     if (res.data && res.data.redirect) location.href = res.data.redirect;
                     else location.reload();
@@ -1915,7 +1915,7 @@
             var fd = new FormData(pf);
             Util.ajaxForm('jinyu_update_profile', fd, function (err, res) {
                 if (err || !res || !res.success) {
-                    Util.showTip(tip, (res && res.data) ? res.data : '保存失败', false);
+                    Util.showTip(tip, (res && res.data) ? res.data : 'Save failed', false);
                     return;
                 }
                 Util.showTip(tip, res.data.message, true);
@@ -1937,7 +1937,7 @@
             var tip = $('[data-jinyu-password-tip]', pw);
             Util.ajaxForm('jinyu_update_password', new FormData(pw), function (err, res) {
                 if (err || !res || !res.success) {
-                    Util.showTip(tip, (res && res.data) ? res.data : '修改失败', false);
+                    Util.showTip(tip, (res && res.data) ? res.data : 'Update failed', false);
                 } else {
                     Util.showTip(tip, res.data.message, true);
                     pw.reset();
@@ -1952,20 +1952,20 @@
             btn.addEventListener('click', function () {
                 if (btn.dataset.loading) return;
                 var platform = btn.getAttribute('data-jinyu-unbind');
-                if (!window.confirm(btn.getAttribute('data-bind-label') || '确定解除该平台的绑定吗？')) return;
+                if (!window.confirm(btn.getAttribute('data-bind-label') || 'Unbind this platform?')) return;
                 btn.dataset.loading = '1';
                 Util.ajax('jinyu_sl_unbind', { platform: platform, nonce: btn.getAttribute('data-nonce') }, function (err, res) {
                     delete btn.dataset.loading;
                     if (err || !res || !res.success) {
-                        window.alert((res && res.data && res.data.msg) || '解绑失败，请稍后再试');
+                        window.alert((res && res.data && res.data.msg) || 'Unbind failed. Please try again later.');
                         return;
                     }
-                    Util.toast(res.data.msg || '解绑成功');
+                    Util.toast(res.data.msg || 'Unbound successfully');
                     // 行内切回「去绑定」链接（绑定 URL 预置在 data-bind-url）
                     var a = doc.createElement('a');
                     a.className = 'jinyu-bind-go';
                     a.href = btn.getAttribute('data-bind-url');
-                    a.textContent = '去绑定';
+                    a.textContent = 'Bind now';
                     btn.parentNode.replaceChild(a, btn);
                 });
             });
@@ -1993,7 +1993,7 @@
                     if (/[^A-Za-z0-9]/.test(v)) score++;
                     var level = score <= 1 ? 0 : score === 2 ? 1 : score === 3 ? 2 : 3;
                     meter.setAttribute('data-level', String(level));
-                    $('.jinyu-pwd-label', meter).textContent = ['弱', '中', '强', '极强'][level];
+                    $('.jinyu-pwd-label', meter).textContent = ['Weak', 'Fair', 'Strong', 'Very strong'][level];
                 });
             }
             ['keydown', 'keyup'].forEach(function (evt) {
@@ -2007,7 +2007,7 @@
                     if (on && !badge) {
                         badge = doc.createElement('span');
                         badge.className = 'jinyu-caps-badge';
-                        badge.textContent = '大写锁定已开启';
+                        badge.textContent = 'Caps Lock is on';
                         field.appendChild(badge);
                     } else if (!on && badge) {
                         badge.remove();
@@ -2057,12 +2057,12 @@
             var t = (title && title.value || '').trim();
             if (t.length < 4 || t.length > 100) {
                 if (title) { var tf = title.closest('.jinyu-field'); if (tf) tf.classList.add('is-error'); }
-                firstError = '标题需 4-100 个字符';
+                firstError = 'Title must be 4-100 characters';
             }
             var c = (content && content.value || '').trim();
             if (c.length < 20) {
                 if (content) content.classList.add('is-error');
-                firstError = firstError || '正文至少 20 个字符';
+                firstError = firstError || 'Content must be at least 20 characters';
             }
             if (firstError) {
                 if (tip) Util.showTip(tip, firstError, false);
@@ -2072,15 +2072,15 @@
             }
 
             var btn = sp.querySelector('button[type="submit"]');
-            if (btn) { btn.disabled = true; var l = btn.textContent; btn.textContent = _t('submitting', '提交中…'); }
+            if (btn) { btn.disabled = true; var l = btn.textContent; btn.textContent = _t('submitting', 'Submitting…'); }
             Util.ajaxForm('jinyu_submit_post', new FormData(sp), function (err, res) {
                 if (btn) { btn.disabled = false; btn.textContent = l; }
                 if (err || !res || !res.success) {
-                    if (tip) Util.showTip(tip, (res && res.data) ? res.data : _t('submitFailed', '提交失败，请稍后再试'), false);
+                    if (tip) Util.showTip(tip, (res && res.data) ? res.data : _t('submitFailed', 'Submission failed. Please try again later.'), false);
                     return;
                 }
                 // 成功 → 渲染「审核中」成功面板，完成投稿闭环
-                showSubmitSuccess(sp, (res.data && res.data.message) || '投稿成功');
+                showSubmitSuccess(sp, (res.data && res.data.message) || 'Submitted successfully');
             });
         });
 
@@ -2091,10 +2091,10 @@
             card.innerHTML =
                 '<i class="fa-solid fa-circle-check" aria-hidden="true"></i>' +
                 '<h3>' + escHtml(msg) + '</h3>' +
-                '<p>您的文章已进入审核队列，通过后将自动发布。期间可前往「我的文章」查看审核进度。</p>' +
+                '<p>Your post has entered the review queue and will be published once approved. You can check the progress under "My Posts" in the meantime.</p>' +
                 '<div class="jinyu-submit-success-actions">' +
-                  '<a class="jinyu-btn jinyu-btn-primary" href="' + escHtml(jinyuTabUrl('posts')) + '">查看我的投稿</a>' +
-                  '<button type="button" class="jinyu-btn" data-jinyu-submit-again>再投一篇</button>' +
+                  '<a class="jinyu-btn jinyu-btn-primary" href="' + escHtml(jinyuTabUrl('posts')) + '">View my posts</a>' +
+                  '<button type="button" class="jinyu-btn" data-jinyu-submit-again>Submit another</button>' +
                 '</div>';
             form.style.display = 'none';
             if (form.parentNode) form.parentNode.insertBefore(card, form.nextSibling);
@@ -2124,7 +2124,7 @@
             btn.addEventListener('click', function () {
                 var pid = btn.getAttribute('data-post-id');
                 if (!pid) return;
-                var confirmMsg = btn.getAttribute('data-confirm') || '确定撤回该投稿吗？撤回后不可恢复。';
+                var confirmMsg = btn.getAttribute('data-confirm') || 'Withdraw this submission? This cannot be undone.';
                 if (!window.confirm(confirmMsg)) return;
                 btn.disabled = true;
                 var fd = new FormData();
@@ -2132,7 +2132,7 @@
                 Util.ajaxForm('jinyu_delete_post', fd, function (err, res) {
                     if (err || !res || !res.success) {
                         btn.disabled = false;
-                        Util.toast((res && res.data) ? res.data : '操作失败');
+                        Util.toast((res && res.data) ? res.data : 'Operation failed');
                         return;
                     }
                     var item = btn.closest('.jinyu-user-post-item');
@@ -2151,7 +2151,7 @@
             var tip = $('[data-jinyu-profile-tip]', wrap);
             Util.ajaxForm('jinyu_upload_avatar', fd, function (err, res) {
                 if (err || !res || !res.success) {
-                    Util.showTip(tip, (res && res.data) ? res.data : '上传失败', false);
+                    Util.showTip(tip, (res && res.data) ? res.data : 'Upload failed', false);
                 } else {
                     Util.showTip(tip, res.data.message, true);
                     if (res.data.url) {
@@ -2353,7 +2353,7 @@
             '<div class="jinyu-modal-card">' +
                 '<div class="jinyu-modal-head">' +
                     '<span class="jinyu-modal-title">' + (opts.title || '') + '</span>' +
-                    '<button type="button" class="jinyu-modal-close" data-jinyu-modal-close aria-label="' + (CFG.i18n && CFG.i18n.close ? CFG.i18n.close : '关闭') + '"><i class="fa-solid fa-xmark"></i></button>' +
+                    '<button type="button" class="jinyu-modal-close" data-jinyu-modal-close aria-label="' + (CFG.i18n && CFG.i18n.close ? CFG.i18n.close : 'Close') + '"><i class="fa-solid fa-xmark"></i></button>' +
                 '</div>' +
                 '<div class="jinyu-modal-body">' + (opts.body || '') + '</div>' +
             '</div>';
@@ -2416,7 +2416,7 @@
         $$('[data-jinyu-poster]').forEach(function (btn) {
             btn.addEventListener('click', function () {
                 var pid = btn.getAttribute('data-post-id');
-                var m = openModal({ title: '文章海报', className: 'jinyu-poster-modal', body: '<div class="jinyu-modal-loading"><i class="fa-solid fa-spinner fa-spin"></i> 生成中…</div>' });
+                var m = openModal({ title: 'Post poster', className: 'jinyu-poster-modal', body: '<div class="jinyu-modal-loading"><i class="fa-solid fa-spinner fa-spin"></i> Generating…</div>' });
                 var body = m.querySelector('.jinyu-modal-body');
 
                 var tEl = doc.querySelector('.jinyu-article-title') || doc.querySelector('h1');
@@ -2427,7 +2427,7 @@
                     try {
                         canvas = drawPoster((tEl ? tEl.textContent : doc.title).trim(), cover);
                     } catch (err) {
-                        body.innerHTML = '<p class="jinyu-empty">海报生成失败：' + (err && err.message ? err.message : '渲染错误') + '</p>';
+                        body.innerHTML = '<p class="jinyu-empty">Poster generation failed: ' + (err && err.message ? err.message : 'Render error') + '</p>';
                         return;
                     }
                     body.innerHTML = '';
@@ -2435,7 +2435,7 @@
                     // 用真实 <img> 展示：避开 iOS/微信 在 backdrop-filter 祖先里渲染 <canvas> 空白的坑，且支持长按保存
                     var img = doc.createElement('img');
                     img.className = 'jinyu-poster-img';
-                    img.alt = '文章海报';
+                    img.alt = 'Post poster';
 
                     var actions = doc.createElement('div');
                     actions.className = 'jinyu-poster-actions';
@@ -2462,7 +2462,7 @@
                             // 桌面端：原生下载
                             var dl = doc.createElement('a');
                             dl.className = 'jinyu-btn jinyu-btn-primary';
-                            dl.innerHTML = '<i class="fa-solid fa-download" aria-hidden="true"></i> 下载海报';
+                            dl.innerHTML = '<i class="fa-solid fa-download" aria-hidden="true"></i> Download poster';
                             dl.setAttribute('download', 'poster-' + pid + '.png');
                             dl.href = src;
                             actions.appendChild(dl);
@@ -2472,14 +2472,14 @@
                             var save = doc.createElement('button');
                             save.type = 'button';
                             save.className = 'jinyu-btn jinyu-btn-primary';
-                            save.innerHTML = '<i class="fa-solid fa-download" aria-hidden="true"></i> 保存图片';
+                            save.innerHTML = '<i class="fa-solid fa-download" aria-hidden="true"></i> Save image';
                             save.addEventListener('click', function () { showFullscreenPoster(src); });
                             actions.appendChild(save);
                         } else {
                             // 画布被污染无法导出：禁用下载并说明
                             var noDl = doc.createElement('span');
                             noDl.className = 'jinyu-btn jinyu-btn-disabled';
-                            noDl.innerHTML = '<i class="fa-solid fa-ban" aria-hidden="true"></i> 暂不支持下载';
+                            noDl.innerHTML = '<i class="fa-solid fa-ban" aria-hidden="true"></i> Download not supported';
                             actions.appendChild(noDl);
                         }
 
@@ -2487,13 +2487,13 @@
                         close.type = 'button';
                         close.className = 'jinyu-btn';
                         close.setAttribute('data-jinyu-modal-close', '');
-                        close.innerHTML = '<i class="fa-solid fa-xmark" aria-hidden="true"></i> 关闭';
+                        close.innerHTML = '<i class="fa-solid fa-xmark" aria-hidden="true"></i> Close';
                         actions.appendChild(close);
 
                         if (src && isMobile) {
                             var tip = doc.createElement('p');
                             tip.className = 'jinyu-poster-tip';
-                            tip.textContent = _t('saveHint', '点「保存图片」放大后长按图片，即可保存到相册');
+                            tip.textContent = _t('saveHint', 'Tap "Save image" to enlarge it, then press and hold the image to save it to your album');
                             actions.appendChild(tip);
                         }
 
@@ -2515,7 +2515,7 @@
                         startUI(dataUrl);
                     }
                 }).catch(function () {
-                    body.innerHTML = '<p class="jinyu-empty">海报生成失败，请刷新后重试</p>';
+                    body.innerHTML = '<p class="jinyu-empty">Poster generation failed. Refresh and try again</p>';
                 });
             });
         });
@@ -2563,8 +2563,8 @@
             ov.className = 'jinyu-poster-fullscreen';
             ov.innerHTML =
                 '<div class="jinyu-poster-fs-inner">' +
-                    '<img src="' + src + '" alt="文章海报">' +
-                    '<p class="jinyu-poster-fs-tip">长按图片选择「保存图片 / 保存到相册」</p>' +
+                    '<img src="' + src + '" alt="Post poster">' +
+                    '<p class="jinyu-poster-fs-tip">Long-press the image and choose "Save image / Save to album"</p>' +
                 '</div>';
             ov.addEventListener('click', function (e) {
                 if (e.target === ov || (e.target.classList && e.target.classList.contains('jinyu-poster-fs-tip'))) {
@@ -2664,7 +2664,7 @@
                 ctx.fillStyle = 'rgba(0,0,0,.25)';
                 ctx.font = '400 24px ' + FONT;
                 ctx.textAlign = 'center';
-                ctx.fillText(_t('noCover', '暂无封面'), W / 2, coverTop + coverH / 2);
+                ctx.fillText(_t('noCover', 'No cover'), W / 2, coverTop + coverH / 2);
                 ctx.textAlign = 'left';
             }
 
@@ -2716,7 +2716,7 @@
             ctx.textBaseline = 'alphabetic';
             ctx.fillStyle = '#1f2329';
             ctx.font = '700 30px ' + FONT;
-            ctx.fillText(_t('scanToRead', '长按 / 扫码阅读全文'), tx, qrY + 56);
+            ctx.fillText(_t('scanToRead', 'Long-press or scan the QR code to read'), tx, qrY + 56);
             ctx.fillStyle = '#6b7280';
             ctx.font = '400 22px ' + FONT;
             ctx.fillText(CFG.site_name || location.host, tx, qrY + 96);
@@ -2739,7 +2739,7 @@
         $$('[data-jinyu-qr]').forEach(function (btn) {
             btn.addEventListener('click', function () {
                 var url = btn.getAttribute('data-url') || location.href;
-                var m = openModal({ title: '扫码阅读', className: 'jinyu-qr-modal', body: '<div class="jinyu-qr-box" id="jinyu-qr-canvas"></div><p class="jinyu-qr-url">' + url + '</p>' });
+                var m = openModal({ title: 'Scan to read', className: 'jinyu-qr-modal', body: '<div class="jinyu-qr-box" id="jinyu-qr-canvas"></div><p class="jinyu-qr-url">' + url + '</p>' });
                 var box = m.querySelector('#jinyu-qr-canvas');
                 try {
                     if (typeof window.qrcode !== 'function') throw new Error('lib missing');
@@ -2749,7 +2749,7 @@
                     box.innerHTML = qr.createSvgTag({ cellSize: 6, margin: 2, scalable: true });
                 } catch (e) {
                     // 本地方案不可用时只给文本提示：绝不把访问 URL 外发给 api.qrserver.com 这类第三方
-                    box.innerHTML = '<p class="jinyu-qr-url">二维码生成失败，请复制链接分享</p>';
+                    box.innerHTML = '<p class="jinyu-qr-url">Failed to generate the QR code. Copy the link to share instead</p>';
                 }
             });
         });
@@ -2765,11 +2765,11 @@
             var wx  = btn.getAttribute('data-wx') || '';
             var ali = btn.getAttribute('data-ali') || '';
             var body = '';
-            if (wx)  body += '<div class="jinyu-donate-item"><div class="jinyu-donate-name">微信</div><img src="' + wx + '" alt="wechat"><span>微信扫一扫</span></div>';
-            if (ali) body += '<div class="jinyu-donate-item"><div class="jinyu-donate-name">支付宝</div><img src="' + ali + '" alt="alipay"><span>支付宝扫一扫</span></div>';
-            if (!body) body = '<p class="jinyu-empty">暂未配置收款码</p>';
+            if (wx)  body += '<div class="jinyu-donate-item"><div class="jinyu-donate-name">WeChat</div><img src="' + wx + '" alt="wechat"><span>Scan with WeChat</span></div>';
+            if (ali) body += '<div class="jinyu-donate-item"><div class="jinyu-donate-name">Alipay</div><img src="' + ali + '" alt="alipay"><span>Scan with Alipay</span></div>';
+            if (!body) body = '<p class="jinyu-empty">No payment QR code configured yet</p>';
             if (CFG.reward_text) body = '<p class="jinyu-donate-text">' + CFG.reward_text + '</p>' + body;
-            openModal({ title: CFG.reward_title || '赞赏作者', className: 'jinyu-donate-modal', body: body });
+            openModal({ title: CFG.reward_title || 'Reward the author', className: 'jinyu-donate-modal', body: body });
         });
     }
 
@@ -3226,7 +3226,7 @@
             Util.ajax('jinyu_random_post', {}, function (err, res) {
                 btn.classList.remove('jinyu-loading');
                 if (err || !res || !res.success || !res.data || !res.data.url) {
-                    Util.toast(_t('noJumpPost', '没有可跳转的文章'));
+                    Util.toast(_t('noJumpPost', 'No post to jump to'));
                     return;
                 }
                 window.location.href = res.data.url;
@@ -3417,10 +3417,10 @@
                 if (!res || !res.success) { hide(); return; }
                 var html = res.data.html;
                 if (!html) {
-                    panel.innerHTML = '<div class="jinyu-search-suggest-empty">没有找到相关文章</div>';
+                    panel.innerHTML = '<div class="jinyu-search-suggest-empty">No related posts found</div>';
                 } else {
                     panel.innerHTML = html +
-                        '<a class="jinyu-search-sg-more" href="' + (res.data.more || '#') + '">查看全部 ' + (res.data.count || 0) + ' 条结果 ›</a>';
+                        '<a class="jinyu-search-sg-more" href="' + (res.data.more || '#') + '">View all ' + (res.data.count || 0) + ' results ›</a>';
                 }
                 panel.classList.remove('jinyu-search-suggest--up');
                 panel.style.maxHeight = '';
@@ -3640,7 +3640,7 @@
             var list = (res.data && res.data.list) || [];
             if (!list.length) { box.style.display = 'none'; return; }
             box.innerHTML =
-                '<h3 class="jinyu-widget-title">读过这篇的人还读了</h3>' +
+                '<h3 class="jinyu-widget-title">People also read</h3>' +
                 '<div class="jinyu-coview-grid">' + list.map(function (it) {
                     return '<a class="jinyu-coview-card" href="' + encodeURI(it.url) + '">' +
                         '<div class="jinyu-coview-cover">' +
@@ -3684,13 +3684,13 @@
         function vote(dir) {
             if (done) return;
             Util.ajax('jinyu_vote', { post_id: pid, dir: dir }, function (err, res) {
-                if (err || !res || !res.success) { Util.toast(_t('opFailed', '操作失败，请稍后再试')); return; }
+                if (err || !res || !res.success) { Util.toast(_t('opFailed', 'Operation failed. Please try again later.')); return; }
                 if (yesNum) yesNum.textContent = res.data.yes;
                 if (noNum) noNum.textContent = res.data.no;
                 done = dir;
                 try { localStorage.setItem(KEY, dir); } catch (e) {}
                 paint();
-                Util.toast(dir === 'yes' ? _t('thanksSupport', '感谢支持 ♥') : _t('thanksFeedback', '感谢你的反馈'));
+                Util.toast(dir === 'yes' ? _t('thanksSupport', 'Thanks for your support ♥') : _t('thanksFeedback', 'Thanks for your feedback'));
             });
         }
 
@@ -3717,8 +3717,8 @@
 
             var site   = box.getAttribute('data-jinyu-site') || (CFG.site_name || doc.title) || '';
             var author = box.getAttribute('data-jinyu-author') || '';
-            var anno = '\n\n—— 本文出自《' + site + '》：' + location.href +
-                       (author ? '（作者：' + author + '）' : '');
+            var anno = '\n\n—— From "' + site + '": ' + location.href +
+                       (author ? ' (by ' + author + ')' : '');
             var cd = e.clipboardData || window.clipboardData;
             if (!cd) return;
             e.preventDefault();
@@ -3757,7 +3757,7 @@
             var list = [];
             try { list = JSON.parse(localStorage.getItem('jinyu_recent') || '[]'); } catch (e) {}
             if (!list.length) {
-                box.innerHTML = '<div class="jinyu-rv-item--empty">浏览文章后这里会显示你的足迹</div>';
+                box.innerHTML = '<div class="jinyu-rv-item--empty">Your reading history will appear here</div>';
                 return;
             }
             var html = list.map(function (it) {
@@ -3824,7 +3824,7 @@
                 state.lastHm = hm;
                 if (refs.hm) refs.hm.textContent = hm;
                 if (refs.date) refs.date.textContent = d.getUTCFullYear() + '年' + (d.getUTCMonth() + 1) + '月' + d.getUTCDate() + '日';
-                if (refs.week) refs.week.textContent = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'][d.getUTCDay()];
+                if (refs.week) refs.week.textContent = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][d.getUTCDay()];
             }
             if (refs.sec) refs.sec.textContent = ('0' + ss).slice(-2);
             if (refs.bar) refs.bar.style.transform = 'scaleX(' + (ss / 60).toFixed(4) + ')';
@@ -3885,7 +3885,7 @@
             setv('os', vis.os);
             setv('browser', (vis.browser + (vis.version ? ' ' + vis.version : '')).trim());
             var greet = v.querySelector('[data-vis="greet"]');
-            if (greet) greet.textContent = vis.browser ? ('你好，' + vis.browser + '用户') : '你好，朋友';
+            if (greet) greet.textContent = vis.browser ? ('Hello, ' + vis.browser + ' user') : 'Hello, friend';
             var loc = v.querySelector('[data-vis="loc"]');
             if (loc) {
                 if (vis.loc) { loc.textContent = vis.loc; loc.hidden = false; }
@@ -3943,34 +3943,34 @@
             }
             var diff = (c - p) / p * 100;
             if (Math.abs(diff) < 2) {
-                el.textContent = _t('flat', '持平');
+                el.textContent = _t('flat', 'Flat');
                 el.className = 'jinyu-perf-trend';
                 return;
             }
             el.textContent = (diff > 0 ? '▲' : '▼') + Math.abs(Math.round(diff)) + '%';
             el.className = 'jinyu-perf-trend' + (alarm ? (diff > 0 ? ' is-up' : ' is-down') : '');
-            el.setAttribute('title', '上一采样 ' + fmtSec(p) + ' 秒');
+            el.setAttribute('title', 'Last sample: ' + fmtSec(p) + 's');
         }
 
         function fillPerf(p) {
             var el = boxes.perf; if (!el || !p.perf) return;
             var perf = p.perf;
 
-            var ms = el.querySelector('[data-perf="ms"]'); setNumUnit(ms, fmtSec(perf.ms), '秒');
+            var ms = el.querySelector('[data-perf="ms"]'); setNumUnit(ms, fmtSec(perf.ms), 's');
             var q = el.querySelector('[data-perf="q"]'); setNumUnit(q, perf.q, '次');
             var mem = el.querySelector('[data-perf="mem"]'); setNumUnit(mem, perf.mem, 'MB');
-            if (mem && perf.mem_max) mem.title = '占 PHP 上限 ' + perf.mem_max + 'MB 的 ' + perf.mem_pct + '%';
+            if (mem && perf.mem_max) mem.title = 'PHP limit: ' + perf.mem_max + 'MB, ' + perf.mem_pct + '%';
 
             /* 状态：等级由服务端算好（阈值单点维护），前端只做「等级 → 文案」映射 */
             var level = perf.level || 'ok';
             el.setAttribute('data-level', level);
             var status = el.querySelector('[data-perf="status"]');
-            if (status) status.textContent = { fast: '实时', ok: '实时', warn: '偏慢', bad: '拥堵' }[level] || '实时';
+            if (status) status.textContent = { fast: 'Real-time', ok: 'Real-time', warn: 'Slow', bad: 'Busy' }[level] || 'Real-time';
             var dot = el.querySelector('[data-perf="dot"]');
             if (dot) dot.className = 'jinyu-perf-dot';
             var samples = el.querySelector('[data-perf="samples"]');
             if (samples && perf.samples) {
-                samples.textContent = _tFill(_t('nearSamples', '近 %d 次采样'), { '%d': perf.samples });
+                samples.textContent = _tFill(_t('nearSamples', 'Last %d samples'), { '%d': perf.samples });
                 samples.hidden = false;
             }
 
@@ -3995,7 +3995,7 @@
             paintTrend(el.querySelector('[data-perf="ms-trend"]'), perf.ms, prev && prev.ms, alarm);
             paintTrend(el.querySelector('[data-perf="q-trend"]'), perf.q, prev && prev.q, alarm);
             var memPct = el.querySelector('[data-perf="mem-pct"]');
-            if (memPct) memPct.textContent = perf.mem_max ? ('占 ' + perf.mem_pct + '%') : '—';
+            if (memPct) memPct.textContent = perf.mem_max ? ('Mem: ' + perf.mem_pct + '%') : '—';
 
             /* 底部元信息：均值 / 峰值 / 负载（负载取不到时降级为内存占用） */
             var avgEl = el.querySelector('[data-perf="avg"]');
@@ -4007,13 +4007,13 @@
             if (extra) {
                 if (typeof perf.load === 'number') {
                     extra.textContent = perf.load.toFixed(2);
-                    if (extraLabel) extraLabel.textContent = _t('load', '负载');
+                    if (extraLabel) extraLabel.textContent = _t('load', 'Load');
                 } else if (perf.mem_max) {
                     extra.textContent = perf.mem_pct + '%';
-                    if (extraLabel) extraLabel.textContent = _t('memory', '内存占用');
+                    if (extraLabel) extraLabel.textContent = _t('memory', 'Memory');
                 } else {
                     extra.textContent = (perf.samples || 0) + ' 次';
-                    if (extraLabel) extraLabel.textContent = _t('sample', '采样');
+                    if (extraLabel) extraLabel.textContent = _t('sample', 'Sample');
                 }
             }
 
@@ -4069,7 +4069,7 @@
                 peak.hidden = false;
                 peak.style.left = (n === 1 ? 0 : (peakI / (n - 1)) * 100).toFixed(2) + '%';
                 peak.style.top = (yOf(peakV) / H * 100).toFixed(2) + '%';
-                peak.title = '峰值 ' + fmtSec(peakV) + ' 秒';
+                peak.title = 'Peak: ' + fmtSec(peakV) + 's';
             }
             // 均值参考线：线在曲线下方即代表这次比平均快
             if (avgLine) {
@@ -4313,11 +4313,11 @@
                     if (btn) btn.disabled = false;
                     if (!msg) return;
                     if (res && res.success) {
-                        msg.textContent = (res.data && res.data.msg) || '订阅成功';
+                        msg.textContent = (res.data && res.data.msg) || 'Subscribed';
                         msg.setAttribute('data-ok', '1');
                         form.reset();
                     } else {
-                        msg.textContent = (res && res.data && res.data.msg) || '订阅失败，请重试';
+                        msg.textContent = (res && res.data && res.data.msg) || 'Subscription failed. Please retry';
                         msg.setAttribute('data-ok', '0');
                     }
                     msg.hidden = false;
@@ -4362,9 +4362,9 @@ id: btn.dataset.id
                     var icon = btn.querySelector('i');
                     if (btn.dataset.target === 'user') {
                         if (icon) icon.className = 'fa-solid ' + (on ? 'fa-user-check' : 'fa-user-plus');
-                        if (span) span.textContent = on ? '已关注' : '关注';
+                        if (span) span.textContent = on ? 'Following' : 'Follow';
                     } else {
-                        if (span) span.textContent = on ? '已收藏系列' : '收藏系列';
+                        if (span) span.textContent = on ? 'Series saved' : 'Save series';
                     }
                 });
                 return;
@@ -4376,7 +4376,7 @@ id: btn.dataset.id
                 e.preventDefault();
                 if (!CFG.logged_in) return;
                 if (favRemove.classList.contains('jinyu-loading')) return;
-                if (!window.confirm('确定取消收藏这篇文章吗？')) return;
+                if (!window.confirm('Remove this post from favorites?')) return;
                 favRemove.classList.add('jinyu-loading');
                 Util.ajax('jinyu_fav', {
                     post_id: favRemove.dataset.postId,
@@ -4397,7 +4397,7 @@ id: btn.dataset.id
                     // 同步侧栏「收藏」计数
                     var stat = doc.querySelector('[data-stat="favs"]');
                     if (stat) stat.textContent = String(Math.max(0, (parseInt(stat.textContent, 10) || 0) - 1));
-                    Util.toast('已取消收藏');
+                    Util.toast('Removed from favorites');
                 });
                 return;
             }
@@ -4415,7 +4415,7 @@ id: btn.dataset.id
                         for (var i = 0; i < items.length; i++) items[i].classList.add('is-read');
                     }
                     updateNotifBadge(res.data.unread);
-                    Util.toast(_t('allRead', '已全部标记已读'));
+                    Util.toast(_t('allRead', 'All marked as read'));
                 });
                 return;
             }
@@ -4445,7 +4445,7 @@ id: btn.dataset.id
                     if (moreBtn) moreBtn.disabled = false;
                     if (err || !res || !res.success) {
                         if (!append) {
-                            listEl.innerHTML = '<li class="jinyu-empty">' + _t('notifLoadFailed', '加载失败，请刷新重试') + '</li>';
+                            listEl.innerHTML = '<li class="jinyu-empty">' + _t('notifLoadFailed', 'Load failed. Refresh and try again') + '</li>';
                         }
                         return;
                     }
@@ -4681,9 +4681,9 @@ id: btn.dataset.id
                 var label = btn.querySelector('span');
                 var old = label ? label.textContent : '';
                 var done = function (ok) {
-                    if (!ok) { window.prompt('复制此内容：', text); return; }
+                    if (!ok) { window.prompt('Copy this content: ', text); return; }
                     btn.classList.add('is-done');
-                    if (label) label.textContent = _t('copied', '已复制');
+                    if (label) label.textContent = _t('copied', 'Copied');
                     setTimeout(function () {
                         btn.classList.remove('is-done');
                         if (label) label.textContent = old;
@@ -4724,10 +4724,10 @@ id: btn.dataset.id
 
             var name = get('site_name'), url = get('site_url'), email = get('site_email');
             var bad = '';
-            if (name.length < 2 || name.length > 50) bad = '网站名称需 2-50 个字符';
-            else if (!/^https?:\/\/[^\s/$.?#][^\s]*$/i.test(url)) bad = '网站地址需以 http:// 或 https:// 开头';
-            else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) bad = '请填写有效的联系邮箱';
-            else if (capImg && !capImg.hidden && !get('captcha')) bad = '请填写验证码';
+            if (name.length < 2 || name.length > 50) bad = 'Site name must be 2-50 characters';
+            else if (!/^https?:\/\/[^\s/$.?#][^\s]*$/i.test(url)) bad = 'Site URL must start with http:// or https://';
+            else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) bad = 'Please enter a valid contact email';
+            else if (capImg && !capImg.hidden && !get('captcha')) bad = 'Please enter the captcha';
 
             if (bad) { Util.showTip(tip, bad, false); return; }
 
@@ -4736,13 +4736,13 @@ id: btn.dataset.id
                 data[n] = get(n);
             });
 
-            if (btn) { btn.disabled = true; btn.textContent = _t('submitting', '提交中…'); }
+            if (btn) { btn.disabled = true; btn.textContent = _t('submitting', 'Submitting…'); }
             Util.showTip(tip, '');
 
             Util.ajax('jinyu_flink_apply', data, function (err, res) {
                 if (err || !res || !res.success) {
                     if (btn) { btn.disabled = false; btn.textContent = label; }
-                    Util.showTip(tip, (res && res.data) ? res.data : '提交失败，请稍后重试', false);
+                    Util.showTip(tip, (res && res.data) ? res.data : 'Submission failed. Please try again later.', false);
                     loadCaptcha();   // 验证码一次性，失败后必须换一张
                     return;
                 }

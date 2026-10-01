@@ -83,10 +83,10 @@ class Jinyu_Author_Widget extends WP_Widget {
 	public function __construct() {
 		parent::__construct(
 			'jinyu_author',
-			__( '金玉·作者卡', 'jinyu' ),
+			__( 'Jinyu: Author Card', 'jinyu' ),
 			[
 				'classname'   => 'widget_jinyu_author',
-				'description' => __( '作者信息卡片', 'jinyu' ),
+				'description' => __( 'Author info card', 'jinyu' ),
 			]
 		);
 	}
@@ -97,9 +97,9 @@ class Jinyu_Author_Widget extends WP_Widget {
 		echo '<div class="jinyu-author-avatar">' . self::avatar_html( $instance ) . '</div>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		echo '<div class="jinyu-author-info">';
 		echo '<div class="jinyu-author-name">' . esc_html( $instance['name'] ?? get_bloginfo( 'name' ) ) . '</div>';
-		echo '<div class="jinyu-author-desc">' . esc_html( $instance['desc'] ?? __( '欢迎来到我的博客', 'jinyu' ) ) . '</div>';
+		echo '<div class="jinyu-author-desc">' . esc_html( $instance['desc'] ?? __( 'Welcome to my blog', 'jinyu' ) ) . '</div>';
 		if ( ! empty( $instance['url'] ) ) {
-			echo '<a class="jinyu-author-btn" href="' . esc_url( $instance['url'] ) . '">' . esc_html( $instance['btn'] ?? __( '了解更多', 'jinyu' ) ) . '</a>';
+			echo '<a class="jinyu-author-btn" href="' . esc_url( $instance['url'] ) . '">' . esc_html( $instance['btn'] ?? __( 'Learn more', 'jinyu' ) ) . '</a>';
 		}
 		echo '</div></div>';
 		echo $args['after_widget']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
@@ -149,15 +149,15 @@ class Jinyu_Author_Widget extends WP_Widget {
 		$name = $instance['name'] ?? '';
 		$desc = $instance['desc'] ?? '';
 		$url  = $instance['url'] ?? '';
-		$btn  = $instance['btn'] ?? __( '了解更多', 'jinyu' );
+		$btn  = $instance['btn'] ?? __( 'Learn more', 'jinyu' );
 		$img  = $instance['avatar'] ?? '';
-		echo '<p>' . esc_html__( '名称', 'jinyu' ) . ": <input name='{$this->get_field_name('name')}' value='" . esc_attr( $name ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '描述', 'jinyu' ) . ": <textarea name='{$this->get_field_name('desc')}' class='widefat'>" . esc_textarea( $desc ) . '</textarea></p>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Name', 'jinyu' ) . ": <input name='{$this->get_field_name('name')}' value='" . esc_attr( $name ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Description', 'jinyu' ) . ": <textarea name='{$this->get_field_name('desc')}' class='widefat'>" . esc_textarea( $desc ) . '</textarea></p>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报
-		echo '<p>' . esc_html__( '头像图片地址', 'jinyu' ) . ": <input name='{$this->get_field_name('avatar')}' value='" . esc_attr( $img ) . "' class='widefat' placeholder='https://'><br><span class='description'>" . esc_html__( '留空则自动使用站点图标（外观 › 自定义 › 站点身份）；未设置时按全站「头像来源」显示', 'jinyu' ) . '</span></p>';
-		echo '<p>' . esc_html__( '链接', 'jinyu' ) . ": <input name='{$this->get_field_name('url')}' value='" . esc_attr( $url ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '按钮文字', 'jinyu' ) . ": <input name='{$this->get_field_name('btn')}' value='" . esc_attr( $btn ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Avatar image URL', 'jinyu' ) . ": <input name='{$this->get_field_name('avatar')}' value='" . esc_attr( $img ) . "' class='widefat' placeholder='https://'><br><span class='description'>" . esc_html__( 'Leave empty to use the site icon automatically (Appearance › Customize › Site Identity); if not set, the site-wide "Avatar source" setting applies', 'jinyu' ) . '</span></p>';
+		echo '<p>' . esc_html__( 'Link', 'jinyu' ) . ": <input name='{$this->get_field_name('url')}' value='" . esc_attr( $url ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Button text', 'jinyu' ) . ": <input name='{$this->get_field_name('btn')}' value='" . esc_attr( $btn ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 	}
 	public function update( $new, $old ) {
 		return $new; }
@@ -167,26 +167,26 @@ class Jinyu_Notice_Widget extends WP_Widget {
 	public function __construct() {
 		parent::__construct(
 			'jinyu_notice',
-			__( '金玉·公告', 'jinyu' ),
+			__( 'Jinyu: Notice', 'jinyu' ),
 			[
 				'classname'   => 'widget_jinyu_notice',
-				'description' => __( '站点公告', 'jinyu' ),
+				'description' => __( 'Site Notice', 'jinyu' ),
 			]
 		);
 	}
 	public function widget( $args, $instance ) { /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		echo $args['before_widget']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		echo '<div class="jinyu-notice-widget">'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo $args['before_title'] . jinyu_widget_title( $instance['title'] ?? __( '<i class="fa-solid fa-bullhorn"></i> 公告', 'jinyu' ) ) . $args['after_title']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo $args['before_title'] . jinyu_widget_title( $instance['title'] ?? __( '<i class="fa-solid fa-bullhorn"></i> Notice', 'jinyu' ) ) . $args['after_title']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		echo '<div class="jinyu-notice-content">' . wp_kses_post( $instance['content'] ?? '' ) . '</div>';
 		echo '</div>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		echo $args['after_widget']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 	}
 	public function form( $instance ) {
-		$title   = $instance['title'] ?? __( '<i class="fa-solid fa-bullhorn"></i> 公告', 'jinyu' );
+		$title   = $instance['title'] ?? __( '<i class="fa-solid fa-bullhorn"></i> Notice', 'jinyu' );
 		$content = $instance['content'] ?? ''; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '标题', 'jinyu' ) . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr( $title ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '内容', 'jinyu' ) . ": <textarea name='{$this->get_field_name('content')}' rows='4' class='widefat'>" . esc_textarea( $content ) . '</textarea></p>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Title', 'jinyu' ) . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr( $title ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Content', 'jinyu' ) . ": <textarea name='{$this->get_field_name('content')}' rows='4' class='widefat'>" . esc_textarea( $content ) . '</textarea></p>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 	}
 	public function update( $new, $old ) {
 		return $new; }
@@ -196,15 +196,15 @@ class Jinyu_Posts_Hot_Widget extends WP_Widget {
 	public function __construct() {
 		parent::__construct(
 			'jinyu_hot',
-			__( '金玉·热门文章', 'jinyu' ),
+			__( 'Jinyu: Popular Posts', 'jinyu' ),
 			[
 				'classname'   => 'widget_jinyu_hot',
-				'description' => __( '按浏览量排序', 'jinyu' ),
+				'description' => __( 'Sorted by views', 'jinyu' ),
 			]
 		);
 	}
 	public function widget( $args, $instance ) {
-		$title = $instance['title'] ?? __( '<i class="fa-solid fa-fire"></i> 热门', 'jinyu' );
+		$title = $instance['title'] ?? __( '<i class="fa-solid fa-fire"></i> Popular', 'jinyu' );
 		$num   = (int) ( $instance['num'] ?? 5 ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		echo $args['before_widget']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		echo $args['before_title'] . jinyu_widget_title( $title ) . $args['after_title']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
@@ -243,19 +243,19 @@ class Jinyu_Posts_Hot_Widget extends WP_Widget {
 			}
 		} else {
 			echo '<li class="jinyu-hot-item"><span class="jinyu-hot-rank">1</span>';
-			echo '<div class="jinyu-hot-info"><div class="jinyu-hot-title">' . esc_html__( '暂无热门文章', 'jinyu' ) . '</div></div></li>';
+			echo '<div class="jinyu-hot-info"><div class="jinyu-hot-title">' . esc_html__( 'No popular posts yet', 'jinyu' ) . '</div></div></li>';
 		}
 		echo '</ul>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		echo $args['after_widget']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 	}
 	public function form( $instance ) {
-		$title = $instance['title'] ?? __( '<i class="fa-solid fa-fire"></i> 热门', 'jinyu' );
+		$title = $instance['title'] ?? __( '<i class="fa-solid fa-fire"></i> Popular', 'jinyu' );
 		$num   = $instance['num'] ?? 5;
 		// 与运行时一致：未设置（旧实例）按开，后台复选框默认勾选，避免「打开保存即关掉」
 		$show_thumb = ! isset( $instance['show_thumb'] ) || ! empty( $instance['show_thumb'] ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '标题', 'jinyu' ) . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr( $title ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '数量', 'jinyu' ) . ": <input type='number' name='{$this->get_field_name('num')}' value='" . esc_attr( $num ) . "' class='widefat' min='1' max='10'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo "<p><label><input type='checkbox' name='{$this->get_field_name('show_thumb')}' value='1'" . checked( 1, $show_thumb, false ) . '> ' . esc_html__( '显示缩略图（取代圆点名次）', 'jinyu' ) . '</label></p>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Title', 'jinyu' ) . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr( $title ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Count', 'jinyu' ) . ": <input type='number' name='{$this->get_field_name('num')}' value='" . esc_attr( $num ) . "' class='widefat' min='1' max='10'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo "<p><label><input type='checkbox' name='{$this->get_field_name('show_thumb')}' value='1'" . checked( 1, $show_thumb, false ) . '> ' . esc_html__( 'Show thumbnails (replaces ranked dots)', 'jinyu' ) . '</label></p>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 	}
 	public function update( $new, $old ) {
 		$new['show_thumb'] = ! empty( $new['show_thumb'] ) ? 1 : 0;
@@ -267,15 +267,15 @@ class Jinyu_Tag_Cloud_Widget extends WP_Widget {
 	public function __construct() {
 		parent::__construct(
 			'jinyu_tags',
-			__( '金玉·标签云', 'jinyu' ),
+			__( 'Jinyu: Tag Cloud', 'jinyu' ),
 			[
 				'classname'   => 'widget_jinyu_tags',
-				'description' => __( '标签云', 'jinyu' ),
+				'description' => __( 'Tag Cloud', 'jinyu' ),
 			]
 		);
 	}
 	public function widget( $args, $instance ) {
-		$title = $instance['title'] ?? __( '<i class="fa-solid fa-tags"></i> 标签', 'jinyu' );
+		$title = $instance['title'] ?? __( '<i class="fa-solid fa-tags"></i> Tags', 'jinyu' );
 		$html  = jinyu_tag_cloud_html( max( 5, min( 50, (int) ( $instance['num'] ?? 20 ) ) ) );
 		if ( $html === '' ) {
 			return;   // 无标签不输出空卡片
@@ -287,10 +287,10 @@ class Jinyu_Tag_Cloud_Widget extends WP_Widget {
 		echo $args['after_widget']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 	}
 	public function form( $instance ) {
-		$title = $instance['title'] ?? __( '<i class="fa-solid fa-tags"></i> 标签', 'jinyu' );
+		$title = $instance['title'] ?? __( '<i class="fa-solid fa-tags"></i> Tags', 'jinyu' );
 		$num   = $instance['num'] ?? 20; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '标题', 'jinyu' ) . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr( $title ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '数量', 'jinyu' ) . ": <input type='number' name='{$this->get_field_name('num')}' value='" . esc_attr( $num ) . "' class='widefat' min='5' max='50'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Title', 'jinyu' ) . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr( $title ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Count', 'jinyu' ) . ": <input type='number' name='{$this->get_field_name('num')}' value='" . esc_attr( $num ) . "' class='widefat' min='5' max='50'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 	}
 	public function update( $new, $old ) {
 		return $new; }
@@ -300,15 +300,15 @@ class Jinyu_Archive_Widget extends WP_Widget {
 	public function __construct() {
 		parent::__construct(
 			'jinyu_archive',
-			__( '金玉·归档', 'jinyu' ),
+			__( 'Jinyu: Archives', 'jinyu' ),
 			[
 				'classname'   => 'widget_jinyu_archive',
-				'description' => __( '按月归档', 'jinyu' ),
+				'description' => __( 'Monthly archives', 'jinyu' ),
 			]
 		);
 	}
 	public function widget( $args, $instance ) {
-		$title = $instance['title'] ?? __( '<i class="fa-regular fa-calendar-days"></i> 归档', 'jinyu' );
+		$title = $instance['title'] ?? __( '<i class="fa-regular fa-calendar-days"></i> Archives', 'jinyu' );
 		$limit = (int) ( $instance['limit'] ?? 12 ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		echo $args['before_widget']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		echo $args['before_title'] . jinyu_widget_title( $title ) . $args['after_title']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
@@ -324,10 +324,10 @@ class Jinyu_Archive_Widget extends WP_Widget {
 		echo $args['after_widget']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 	}
 	public function form( $instance ) {
-		$title = $instance['title'] ?? __( '<i class="fa-regular fa-calendar-days"></i> 归档', 'jinyu' );
+		$title = $instance['title'] ?? __( '<i class="fa-regular fa-calendar-days"></i> Archives', 'jinyu' );
 		$limit = $instance['limit'] ?? 12; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '标题', 'jinyu' ) . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr( $title ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '数量', 'jinyu' ) . ": <input type='number' name='{$this->get_field_name('limit')}' value='" . esc_attr( $limit ) . "' class='widefat' min='3' max='36'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Title', 'jinyu' ) . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr( $title ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Count', 'jinyu' ) . ": <input type='number' name='{$this->get_field_name('limit')}' value='" . esc_attr( $limit ) . "' class='widefat' min='3' max='36'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 	}
 	public function update( $new, $old ) {
 		return $new; }
@@ -337,15 +337,15 @@ class Jinyu_Recent_Comments_Widget extends WP_Widget {
 	public function __construct() {
 		parent::__construct(
 			'jinyu_recent_comments',
-			__( '金玉·最新评论', 'jinyu' ),
+			__( 'Jinyu: Recent Comments', 'jinyu' ),
 			[
 				'classname'   => 'widget_jinyu_recent_comments',
-				'description' => __( '显示最新评论及对应文章', 'jinyu' ),
+				'description' => __( 'Show recent comments with their posts', 'jinyu' ),
 			]
 		);
 	}
 	public function widget( $args, $instance ) {
-		$title = $instance['title'] ?? __( '<i class="fa-regular fa-comment-dots"></i> 最新评论', 'jinyu' );
+		$title = $instance['title'] ?? __( '<i class="fa-regular fa-comment-dots"></i> Recent Comments', 'jinyu' );
 		$num   = (int) ( $instance['num'] ?? 5 ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		echo $args['before_widget']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		echo $args['before_title'] . jinyu_widget_title( $title ) . $args['after_title']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
@@ -354,15 +354,15 @@ class Jinyu_Recent_Comments_Widget extends WP_Widget {
 		if ( $list ) {
 			echo $list; // phpcs:ignore WordPress.Security.EscapeOutput -- 内部函数已逐字段转义
 		} else {
-			echo '<p class="jinyu-widget-empty">' . esc_html__( '暂无评论', 'jinyu' ) . '</p>';
+			echo '<p class="jinyu-widget-empty">' . esc_html__( 'No comments yet', 'jinyu' ) . '</p>';
 		} /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		echo $args['after_widget']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 	}
 	public function form( $instance ) {
-		$title = $instance['title'] ?? __( '<i class="fa-regular fa-comment-dots"></i> 最新评论', 'jinyu' );
+		$title = $instance['title'] ?? __( '<i class="fa-regular fa-comment-dots"></i> Recent Comments', 'jinyu' );
 		$num   = $instance['num'] ?? 5; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '标题', 'jinyu' ) . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr( $title ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '数量', 'jinyu' ) . ": <input type='number' name='{$this->get_field_name('num')}' value='" . esc_attr( $num ) . "' class='widefat' min='1' max='15'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Title', 'jinyu' ) . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr( $title ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Count', 'jinyu' ) . ": <input type='number' name='{$this->get_field_name('num')}' value='" . esc_attr( $num ) . "' class='widefat' min='1' max='15'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 	}
 	public function update( $new, $old ) {
 		return $new; }
@@ -372,15 +372,15 @@ class Jinyu_Random_Posts_Widget extends WP_Widget {
 	public function __construct() {
 		parent::__construct(
 			'jinyu_random',
-			__( '金玉·随机文章', 'jinyu' ),
+			__( 'Jinyu: Random Posts', 'jinyu' ),
 			[
 				'classname'   => 'widget_jinyu_random',
-				'description' => __( '随机推荐文章', 'jinyu' ),
+				'description' => __( 'Randomly recommended posts', 'jinyu' ),
 			]
 		);
 	}
 	public function widget( $args, $instance ) {
-		$title = $instance['title'] ?? __( '<i class="fa-solid fa-shuffle"></i> 随机文章', 'jinyu' );
+		$title = $instance['title'] ?? __( '<i class="fa-solid fa-shuffle"></i> Random Posts', 'jinyu' );
 		$num   = (int) ( $instance['num'] ?? 5 );
 		// 与热门文章一致：未设置按开
 		$show_thumb = ! isset( $instance['show_thumb'] ) || ! empty( $instance['show_thumb'] ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
@@ -427,12 +427,12 @@ class Jinyu_Random_Posts_Widget extends WP_Widget {
 		echo $args['after_widget']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 	}
 	public function form( $instance ) {
-		$title      = $instance['title'] ?? __( '<i class="fa-solid fa-shuffle"></i> 随机文章', 'jinyu' );
+		$title      = $instance['title'] ?? __( '<i class="fa-solid fa-shuffle"></i> Random Posts', 'jinyu' );
 		$num        = $instance['num'] ?? 5;
 		$show_thumb = ! isset( $instance['show_thumb'] ) || ! empty( $instance['show_thumb'] ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '标题', 'jinyu' ) . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr( $title ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '数量', 'jinyu' ) . ": <input type='number' name='{$this->get_field_name('num')}' value='" . esc_attr( $num ) . "' class='widefat' min='1' max='10'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo "<p><label><input type='checkbox' name='{$this->get_field_name('show_thumb')}' value='1'" . checked( 1, $show_thumb, false ) . '> ' . esc_html__( '显示缩略图', 'jinyu' ) . '</label></p>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Title', 'jinyu' ) . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr( $title ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Count', 'jinyu' ) . ": <input type='number' name='{$this->get_field_name('num')}' value='" . esc_attr( $num ) . "' class='widefat' min='1' max='10'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo "<p><label><input type='checkbox' name='{$this->get_field_name('show_thumb')}' value='1'" . checked( 1, $show_thumb, false ) . '> ' . esc_html__( 'Show thumbnails', 'jinyu' ) . '</label></p>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 	}
 	public function update( $new, $old ) {
 		$new['show_thumb'] = ! empty( $new['show_thumb'] ) ? 1 : 0;
@@ -444,23 +444,23 @@ class Jinyu_Search_Widget extends WP_Widget {
 	public function __construct() {
 		parent::__construct(
 			'jinyu_search',
-			__( '金玉·搜索', 'jinyu' ),
+			__( 'Jinyu: Search', 'jinyu' ),
 			[
 				'classname'   => 'widget_jinyu_search',
-				'description' => __( '站内搜索框', 'jinyu' ),
+				'description' => __( 'On-site search box', 'jinyu' ),
 			]
 		);
 	}
 	public function widget( $args, $instance ) {
-		$title = $instance['title'] ?? __( '<i class="fa-solid fa-magnifying-glass"></i> 搜索', 'jinyu' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		$title = $instance['title'] ?? __( '<i class="fa-solid fa-magnifying-glass"></i> Search', 'jinyu' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		echo $args['before_widget']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		echo $args['before_title'] . jinyu_widget_title( $title ) . $args['after_title']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		get_search_form(); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		echo $args['after_widget']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 	}
 	public function form( $instance ) {
-		$title = $instance['title'] ?? __( '<i class="fa-solid fa-magnifying-glass"></i> 搜索', 'jinyu' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '标题', 'jinyu' ) . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr( $title ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		$title = $instance['title'] ?? __( '<i class="fa-solid fa-magnifying-glass"></i> Search', 'jinyu' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Title', 'jinyu' ) . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr( $title ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 	}
 	public function update( $new, $old ) {
 		return $new; }
@@ -470,15 +470,15 @@ class Jinyu_Categories_Widget extends WP_Widget {
 	public function __construct() {
 		parent::__construct(
 			'jinyu_categories',
-			__( '金玉·分类目录', 'jinyu' ),
+			__( 'Jinyu: Categories', 'jinyu' ),
 			[
 				'classname'   => 'widget_jinyu_categories',
-				'description' => __( '文章分类列表', 'jinyu' ),
+				'description' => __( 'List of post categories', 'jinyu' ),
 			]
 		);
 	}
 	public function widget( $args, $instance ) {
-		$title = $instance['title'] ?? __( '<i class="fa-regular fa-folder-open"></i> 分类', 'jinyu' );
+		$title = $instance['title'] ?? __( '<i class="fa-regular fa-folder-open"></i> Categories', 'jinyu' );
 		$hide  = ! empty( $instance['hide_empty'] ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		echo $args['before_widget']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		echo $args['before_title'] . jinyu_widget_title( $title ) . $args['after_title']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
@@ -494,10 +494,10 @@ class Jinyu_Categories_Widget extends WP_Widget {
 		echo $args['after_widget']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 	}
 	public function form( $instance ) {
-		$title = $instance['title'] ?? __( '<i class="fa-regular fa-folder-open"></i> 分类', 'jinyu' );
+		$title = $instance['title'] ?? __( '<i class="fa-regular fa-folder-open"></i> Categories', 'jinyu' );
 		$hide  = $instance['hide_empty'] ?? 1; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '标题', 'jinyu' ) . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr( $title ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo "<p><label><input type='checkbox' name='{$this->get_field_name('hide_empty')}' value='1'" . checked( $hide, 1, false ) . '> ' . esc_html_e( '隐藏空分类', 'jinyu' ) . '</label></p>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Title', 'jinyu' ) . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr( $title ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo "<p><label><input type='checkbox' name='{$this->get_field_name('hide_empty')}' value='1'" . checked( $hide, 1, false ) . '> ' . esc_html_e( 'Hide empty categories', 'jinyu' ) . '</label></p>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 	}
 	public function update( $new, $old ) {
 		return $new; }
@@ -507,15 +507,15 @@ class Jinyu_Links_Widget extends WP_Widget {
 	public function __construct() {
 		parent::__construct(
 			'jinyu_links',
-			__( '金玉·友情链接', 'jinyu' ),
+			__( 'Jinyu: Friend Links', 'jinyu' ),
 			[
 				'classname'   => 'widget_jinyu_links',
-				'description' => __( '展示站点的友情链接', 'jinyu' ),
+				'description' => __( 'Display the site\'s friend links', 'jinyu' ),
 			]
 		);
 	}
 	public function widget( $args, $instance ) {
-		$title = $instance['title'] ?? __( '<i class="fa-solid fa-link"></i> 友情链接', 'jinyu' );
+		$title = $instance['title'] ?? __( '<i class="fa-solid fa-link"></i> Friend Links', 'jinyu' );
 		$num   = (int) ( $instance['num'] ?? 10 ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		echo $args['before_widget']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		echo $args['before_title'] . jinyu_widget_title( $title ) . $args['after_title']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
@@ -531,15 +531,15 @@ class Jinyu_Links_Widget extends WP_Widget {
 			}
 			echo '</ul>';
 		} else {
-			echo '<p class="jinyu-widget-empty">' . esc_html__( '暂无友情链接', 'jinyu' ) . '</p>';
+			echo '<p class="jinyu-widget-empty">' . esc_html__( 'No friend links yet', 'jinyu' ) . '</p>';
 		} /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		echo $args['after_widget']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 	}
 	public function form( $instance ) {
-		$title = $instance['title'] ?? __( '<i class="fa-solid fa-link"></i> 友情链接', 'jinyu' );
+		$title = $instance['title'] ?? __( '<i class="fa-solid fa-link"></i> Friend Links', 'jinyu' );
 		$num   = $instance['num'] ?? 10; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '标题', 'jinyu' ) . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr( $title ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '数量', 'jinyu' ) . ": <input type='number' name='{$this->get_field_name('num')}' value='" . esc_attr( $num ) . "' class='widefat' min='1' max='30'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Title', 'jinyu' ) . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr( $title ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Count', 'jinyu' ) . ": <input type='number' name='{$this->get_field_name('num')}' value='" . esc_attr( $num ) . "' class='widefat' min='1' max='30'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 	}
 	public function update( $new, $old ) {
 		return $new; }
@@ -549,15 +549,15 @@ class Jinyu_Stats_Widget extends WP_Widget {
 	public function __construct() {
 		parent::__construct(
 			'jinyu_stats',
-			__( '金玉·站点统计', 'jinyu' ),
+			__( 'Jinyu: Site Stats', 'jinyu' ),
 			[
 				'classname'   => 'widget_jinyu_stats',
-				'description' => __( '文章/页面/评论/分类/标签统计', 'jinyu' ),
+				'description' => __( 'Stats for posts / pages / comments / categories / tags', 'jinyu' ),
 			]
 		);
 	}
 	public function widget( $args, $instance ) {
-		$title = $instance['title'] ?? __( '<i class="fa-solid fa-chart-simple"></i> 站点统计', 'jinyu' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		$title = $instance['title'] ?? __( '<i class="fa-solid fa-chart-simple"></i> Site Stats', 'jinyu' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		echo $args['before_widget']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		echo $args['before_title'] . jinyu_widget_title( $title ) . $args['after_title']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 
@@ -566,11 +566,11 @@ class Jinyu_Stats_Widget extends WP_Widget {
 		$stats = jinyu_cache_get( 'stats_counts' );
 		if ( ! is_array( $stats ) || empty( $stats ) ) {
 			$stats = [
-				__( '文章', 'jinyu' ) => (int) wp_count_posts( 'post' )->publish,
-				__( '页面', 'jinyu' ) => (int) wp_count_posts( 'page' )->publish,
-				__( '评论', 'jinyu' ) => (int) wp_count_comments()->approved,
-				__( '分类', 'jinyu' ) => (int) wp_count_terms( 'category' ),
-				__( '标签', 'jinyu' ) => (int) wp_count_terms( 'post_tag' ),
+				__( 'Posts', 'jinyu' ) => (int) wp_count_posts( 'post' )->publish,
+				__( 'Pages', 'jinyu' ) => (int) wp_count_posts( 'page' )->publish,
+				__( 'Comments', 'jinyu' ) => (int) wp_count_comments()->approved,
+				__( 'Categories', 'jinyu' ) => (int) wp_count_terms( 'category' ),
+				__( 'Tags', 'jinyu' ) => (int) wp_count_terms( 'post_tag' ),
 			];
 			jinyu_cache_set( 'stats_counts', $stats, DAY_IN_SECONDS );
 		}
@@ -582,8 +582,8 @@ class Jinyu_Stats_Widget extends WP_Widget {
 		echo $args['after_widget']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 	}
 	public function form( $instance ) {
-		$title = $instance['title'] ?? __( '<i class="fa-solid fa-chart-simple"></i> 站点统计', 'jinyu' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '标题', 'jinyu' ) . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr( $title ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		$title = $instance['title'] ?? __( '<i class="fa-solid fa-chart-simple"></i> Site Stats', 'jinyu' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Title', 'jinyu' ) . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr( $title ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 	}
 	public function update( $new, $old ) {
 		return $new; }
@@ -604,10 +604,10 @@ class Jinyu_Related_Widget extends WP_Widget {
 	public function __construct() {
 		parent::__construct(
 			'jinyu_related',
-			__( '金玉·相关文章', 'jinyu' ),
+			__( 'Jinyu: Related Posts', 'jinyu' ),
 			[
 				'classname'   => 'widget_jinyu_related',
-				'description' => __( '当前文章的相关推荐（仅在文章页显示）', 'jinyu' ),
+				'description' => __( 'Related recommendations for the current post (shown on single posts only)', 'jinyu' ),
 			]
 		);
 	}
@@ -619,7 +619,7 @@ class Jinyu_Related_Widget extends WP_Widget {
 		if ( ! $post_id ) {
 			return;
 		}
-		$title = $instance['title'] ?? __( '<i class="fa-solid fa-thumbs-up"></i> 相关文章', 'jinyu' );
+		$title = $instance['title'] ?? __( '<i class="fa-solid fa-thumbs-up"></i> Related Posts', 'jinyu' );
 		$num   = (int) ( $instance['num'] ?? 5 );
 		// 与热门文章一致：未设置按开
 		$show_thumb = ! isset( $instance['show_thumb'] ) || ! empty( $instance['show_thumb'] );
@@ -651,12 +651,12 @@ class Jinyu_Related_Widget extends WP_Widget {
 		echo $args['after_widget']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 	}
 	public function form( $instance ) {
-		$title      = $instance['title'] ?? __( '<i class="fa-solid fa-thumbs-up"></i> 相关文章', 'jinyu' );
+		$title      = $instance['title'] ?? __( '<i class="fa-solid fa-thumbs-up"></i> Related Posts', 'jinyu' );
 		$num        = $instance['num'] ?? 5;
 		$show_thumb = ! isset( $instance['show_thumb'] ) || ! empty( $instance['show_thumb'] ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '标题', 'jinyu' ) . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr( $title ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '数量', 'jinyu' ) . ": <input type='number' name='{$this->get_field_name('num')}' value='" . esc_attr( $num ) . "' class='widefat' min='1' max='10'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo "<p><label><input type='checkbox' name='{$this->get_field_name('show_thumb')}' value='1'" . checked( 1, $show_thumb, false ) . '> ' . esc_html__( '显示缩略图', 'jinyu' ) . '</label></p>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Title', 'jinyu' ) . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr( $title ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Count', 'jinyu' ) . ": <input type='number' name='{$this->get_field_name('num')}' value='" . esc_attr( $num ) . "' class='widefat' min='1' max='10'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo "<p><label><input type='checkbox' name='{$this->get_field_name('show_thumb')}' value='1'" . checked( 1, $show_thumb, false ) . '> ' . esc_html__( 'Show thumbnails', 'jinyu' ) . '</label></p>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 	}
 	public function update( $new, $old ) {
 		$new['show_thumb'] = ! empty( $new['show_thumb'] ) ? 1 : 0;
@@ -668,10 +668,10 @@ class Jinyu_Menu_Widget extends WP_Widget {
 	public function __construct() {
 		parent::__construct(
 			'jinyu_menu',
-			__( '金玉·自定义菜单', 'jinyu' ),
+			__( 'Jinyu: Custom Menu', 'jinyu' ),
 			[
 				'classname'   => 'widget_jinyu_menu',
-				'description' => __( '渲染指定的导航菜单', 'jinyu' ),
+				'description' => __( 'Render a selected navigation menu', 'jinyu' ),
 			]
 		);
 	}
@@ -701,9 +701,9 @@ class Jinyu_Menu_Widget extends WP_Widget {
 		$title = $instance['title'] ?? '';
 		$menu  = $instance['nav_menu'] ?? '';
 		$menus = wp_get_nav_menus(); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '标题', 'jinyu' ) . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr( $title ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '菜单', 'jinyu' ) . ": <select name='{$this->get_field_name('nav_menu')}' class='widefat'>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<option value="">' . esc_html__( '— 选择菜单 —', 'jinyu' ) . '</option>';
+		echo '<p>' . esc_html__( 'Title', 'jinyu' ) . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr( $title ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Menu', 'jinyu' ) . ": <select name='{$this->get_field_name('nav_menu')}' class='widefat'>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<option value="">' . esc_html__( '— Select a menu —', 'jinyu' ) . '</option>';
 		foreach ( $menus as $m ) { /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 			echo '<option value="' . $m->term_id . '"' . selected( $menu, $m->term_id, false ) . '>' . esc_html( $m->name ) . '</option>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		}
@@ -717,15 +717,15 @@ class Jinyu_Hot_Comment_Widget extends WP_Widget {
 	public function __construct() {
 		parent::__construct(
 			'jinyu_hot_comment',
-			__( '金玉·热评文章', 'jinyu' ),
+			__( 'Jinyu: Most Commented', 'jinyu' ),
 			[
 				'classname'   => 'widget_jinyu_hot_comment',
-				'description' => __( '按评论数排序的热门文章', 'jinyu' ),
+				'description' => __( 'Popular posts sorted by comment count', 'jinyu' ),
 			]
 		);
 	}
 	public function widget( $args, $instance ) {
-		$title = $instance['title'] ?? __( '<i class="fa-regular fa-comment-dots"></i> 热评文章', 'jinyu' );
+		$title = $instance['title'] ?? __( '<i class="fa-regular fa-comment-dots"></i> Most Commented', 'jinyu' );
 		$num   = (int) ( $instance['num'] ?? 5 );
 		$days  = (int) ( $instance['days'] ?? 0 );
 		// 与热门文章一致：未设置按开
@@ -777,20 +777,20 @@ class Jinyu_Hot_Comment_Widget extends WP_Widget {
 			}
 		} else {
 			echo '<li class="jinyu-hot-item"><span class="jinyu-hot-rank">1</span>';
-			echo '<div class="jinyu-hot-info"><div class="jinyu-hot-title">' . esc_html__( '暂无评论', 'jinyu' ) . '</div></div></li>';
+			echo '<div class="jinyu-hot-info"><div class="jinyu-hot-title">' . esc_html__( 'No comments yet', 'jinyu' ) . '</div></div></li>';
 		}
 		echo '</ul>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		echo $args['after_widget']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 	}
 	public function form( $instance ) {
-		$title      = $instance['title'] ?? __( '<i class="fa-regular fa-comment-dots"></i> 热评文章', 'jinyu' );
+		$title      = $instance['title'] ?? __( '<i class="fa-regular fa-comment-dots"></i> Most Commented', 'jinyu' );
 		$num        = $instance['num'] ?? 5;
 		$days       = $instance['days'] ?? 0;
 		$show_thumb = ! isset( $instance['show_thumb'] ) || ! empty( $instance['show_thumb'] ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '标题', 'jinyu' ) . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr( $title ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '数量', 'jinyu' ) . ": <input type='number' name='{$this->get_field_name('num')}' value='" . esc_attr( $num ) . "' class='widefat' min='1' max='10'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '仅近 N 天（0 = 不限）', 'jinyu' ) . ": <input type='number' name='{$this->get_field_name('days')}' value='" . esc_attr( $days ) . "' class='widefat' min='0' max='365'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo "<p><label><input type='checkbox' name='{$this->get_field_name('show_thumb')}' value='1'" . checked( 1, $show_thumb, false ) . '> ' . esc_html__( '显示缩略图（取代圆点名次）', 'jinyu' ) . '</label></p>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Title', 'jinyu' ) . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr( $title ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Count', 'jinyu' ) . ": <input type='number' name='{$this->get_field_name('num')}' value='" . esc_attr( $num ) . "' class='widefat' min='1' max='10'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Only within the last N days (0 = no limit)', 'jinyu' ) . ": <input type='number' name='{$this->get_field_name('days')}' value='" . esc_attr( $days ) . "' class='widefat' min='0' max='365'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo "<p><label><input type='checkbox' name='{$this->get_field_name('show_thumb')}' value='1'" . checked( 1, $show_thumb, false ) . '> ' . esc_html__( 'Show thumbnails (replaces ranked dots)', 'jinyu' ) . '</label></p>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 	}
 	public function update( $new, $old ) {
 		$new['show_thumb'] = ! empty( $new['show_thumb'] ) ? 1 : 0;
@@ -802,15 +802,15 @@ class Jinyu_Reader_Wall_Widget extends WP_Widget {
 	public function __construct() {
 		parent::__construct(
 			'jinyu_reader_wall',
-			__( '金玉·读者墙', 'jinyu' ),
+			__( 'Jinyu: Readers Wall', 'jinyu' ),
 			[
 				'classname'   => 'widget_jinyu_reader_wall',
-				'description' => __( '展示近期评论读者的头像墙', 'jinyu' ),
+				'description' => __( 'Display an avatar wall of recent commenters', 'jinyu' ),
 			]
 		);
 	}
 	public function widget( $args, $instance ) {
-		$title = $instance['title'] ?? __( '<i class="fa-solid fa-users"></i> 读者墙', 'jinyu' );
+		$title = $instance['title'] ?? __( '<i class="fa-solid fa-users"></i> Readers Wall', 'jinyu' );
 		$num   = (int) ( $instance['num'] ?? 20 ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		echo $args['before_widget']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		echo $args['before_title'] . jinyu_widget_title( $title ) . $args['after_title']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
@@ -851,15 +851,15 @@ class Jinyu_Reader_Wall_Widget extends WP_Widget {
 			}
 			echo '</div>';
 		} else {
-			echo '<p class="jinyu-widget-empty">' . esc_html__( '暂无读者', 'jinyu' ) . '</p>';
+			echo '<p class="jinyu-widget-empty">' . esc_html__( 'No readers yet', 'jinyu' ) . '</p>';
 		} /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		echo $args['after_widget']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 	}
 	public function form( $instance ) {
-		$title = $instance['title'] ?? __( '<i class="fa-solid fa-users"></i> 读者墙', 'jinyu' );
+		$title = $instance['title'] ?? __( '<i class="fa-solid fa-users"></i> Readers Wall', 'jinyu' );
 		$num   = $instance['num'] ?? 20; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '标题', 'jinyu' ) . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr( $title ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '数量', 'jinyu' ) . ": <input type='number' name='{$this->get_field_name('num')}' value='" . esc_attr( $num ) . "' class='widefat' min='1' max='60'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Title', 'jinyu' ) . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr( $title ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Count', 'jinyu' ) . ": <input type='number' name='{$this->get_field_name('num')}' value='" . esc_attr( $num ) . "' class='widefat' min='1' max='60'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 	}
 	public function update( $new, $old ) {
 		return $new; }
@@ -869,15 +869,15 @@ class Jinyu_Recent_Viewed_Widget extends WP_Widget {
 	public function __construct() {
 		parent::__construct(
 			'jinyu_recent_viewed',
-			__( '金玉·最近浏览', 'jinyu' ),
+			__( 'Jinyu: Recently Viewed', 'jinyu' ),
 			[
 				'classname'   => 'widget_jinyu_recent_viewed',
-				'description' => __( '基于本地存储的浏览足迹（匿名可用）', 'jinyu' ),
+				'description' => __( 'Based on locally stored browsing history (works for anonymous visitors)', 'jinyu' ),
 			]
 		);
 	}
 	public function widget( $args, $instance ) {
-		$title = $instance['title'] ?? __( '<i class="fa-regular fa-clock"></i> 最近浏览', 'jinyu' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		$title = $instance['title'] ?? __( '<i class="fa-regular fa-clock"></i> Recently Viewed', 'jinyu' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		echo $args['before_widget']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		echo $args['before_title'] . jinyu_widget_title( $title ) . $args['after_title']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		// 内容由 jinyu.js 的 recentViewed 模块按 localStorage 填充
@@ -885,8 +885,8 @@ class Jinyu_Recent_Viewed_Widget extends WP_Widget {
 		echo $args['after_widget']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 	}
 	public function form( $instance ) {
-		$title = $instance['title'] ?? __( '<i class="fa-regular fa-clock"></i> 最近浏览', 'jinyu' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '标题', 'jinyu' ) . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr( $title ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		$title = $instance['title'] ?? __( '<i class="fa-regular fa-clock"></i> Recently Viewed', 'jinyu' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Title', 'jinyu' ) . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr( $title ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 	}
 	public function update( $new, $old ) {
 		return $new; }
@@ -917,16 +917,16 @@ class Jinyu_Gallery_Widget extends WP_Widget {
 	public function __construct() {
 		parent::__construct(
 			'jinyu_gallery',
-			__( '金玉·图文推荐位', 'jinyu' ),
+			__( 'Jinyu: Image-Text Recommendations', 'jinyu' ),
 			[
 				'classname'   => 'widget_jinyu_gallery',
-				'description' => __( '图文推荐；手动填图或自动取分类缩略图', 'jinyu' ),
+				'description' => __( 'Image-text recommendations; fill in images manually or use category thumbnails automatically', 'jinyu' ),
 			]
 		);
 	}
 
 	public function widget( $args, $instance ) {
-		$title  = $instance['title'] ?? __( '<i class="fa-regular fa-images"></i> 推荐', 'jinyu' );
+		$title  = $instance['title'] ?? __( '<i class="fa-regular fa-images"></i> Featured', 'jinyu' );
 		$source = ( $instance['source'] ?? 'manual' ) === 'cat' ? 'cat' : 'manual';
 		$cols   = max( 1, min( 2, (int) ( $instance['cols'] ?? 1 ) ) );
 		$items  = $source === 'cat'
@@ -998,27 +998,27 @@ class Jinyu_Gallery_Widget extends WP_Widget {
 	}
 
 	public function form( $instance ) {
-		$title  = $instance['title'] ?? __( '<i class="fa-regular fa-images"></i> 推荐', 'jinyu' );
+		$title  = $instance['title'] ?? __( '<i class="fa-regular fa-images"></i> Featured', 'jinyu' );
 		$source = $instance['source'] ?? 'manual';
 		$items  = $instance['items'] ?? '';
 		$cat    = (int) ( $instance['cat'] ?? 0 );
 		$num    = $instance['num'] ?? 4;
 		$cols   = $instance['cols'] ?? 1; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '标题', 'jinyu' ) . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr( $title ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '图片来源', 'jinyu' ) . ':<br>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo "<label><input type='radio' name='{$this->get_field_name('source')}' value='manual'" . checked( $source, 'manual', false ) . '> ' . esc_html__( '手动填写', 'jinyu' ) . '</label> '; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo "<label><input type='radio' name='{$this->get_field_name('source')}' value='cat'" . checked( $source, 'cat', false ) . '> ' . esc_html__( '自动取分类缩略图', 'jinyu' ) . '</label></p>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '手动列表（每行：图片地址|跳转链接|标题）', 'jinyu' ) . ':<br>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Title', 'jinyu' ) . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr( $title ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Image source', 'jinyu' ) . ':<br>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo "<label><input type='radio' name='{$this->get_field_name('source')}' value='manual'" . checked( $source, 'manual', false ) . '> ' . esc_html__( 'Manual entry', 'jinyu' ) . '</label> '; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo "<label><input type='radio' name='{$this->get_field_name('source')}' value='cat'" . checked( $source, 'cat', false ) . '> ' . esc_html__( 'Auto category thumbnails', 'jinyu' ) . '</label></p>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Manual list (one per line: image URL|link|title)', 'jinyu' ) . ':<br>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报
 		echo "<textarea name='{$this->get_field_name('items')}' rows='5' class='widefat' placeholder='https://a.com/1.jpg|https://a.com|活动入口'>" . esc_textarea( $items ) . '</textarea></p>';
-		echo '<p>' . esc_html__( '自动模式：分类', 'jinyu' ) . ": <select name='{$this->get_field_name('cat')}' class='widefat'>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<option value="0">' . esc_html__( '— 全部分类（按最新）—', 'jinyu' ) . '</option>';
+		echo '<p>' . esc_html__( 'Auto mode: category', 'jinyu' ) . ": <select name='{$this->get_field_name('cat')}' class='widefat'>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<option value="0">' . esc_html__( '— All categories (newest first) —', 'jinyu' ) . '</option>';
 		foreach ( get_categories( [ 'hide_empty' => false ] ) as $c ) {
 			echo '<option value="' . (int) $c->term_id . '"' . selected( $cat, $c->term_id, false ) . '>' . esc_html( $c->name ) . '</option>';
 		} /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		echo '</select></p>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '自动模式：数量', 'jinyu' ) . ": <input type='number' name='{$this->get_field_name('num')}' value='" . esc_attr( $num ) . "' class='widefat' min='1' max='8'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '每行几张', 'jinyu' ) . ": <input type='number' name='{$this->get_field_name('cols')}' value='" . esc_attr( $cols ) . "' class='widefat' min='1' max='2'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Auto mode: count', 'jinyu' ) . ": <input type='number' name='{$this->get_field_name('num')}' value='" . esc_attr( $num ) . "' class='widefat' min='1' max='8'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Images per row', 'jinyu' ) . ": <input type='number' name='{$this->get_field_name('cols')}' value='" . esc_attr( $cols ) . "' class='widefat' min='1' max='2'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 	}
 
 	public function update( $new, $old ) {
@@ -1038,16 +1038,16 @@ class Jinyu_Hitokoto_Widget extends WP_Widget {
 	public function __construct() {
 		parent::__construct(
 			'jinyu_hitokoto',
-			__( '金玉·每日一句', 'jinyu' ),
+			__( 'Jinyu: Daily Quote', 'jinyu' ),
 			[
 				'classname'   => 'widget_jinyu_hitokoto',
-				'description' => __( '随机显示一条语录；不依赖外部 API', 'jinyu' ),
+				'description' => __( 'Randomly display a quote; no external API required', 'jinyu' ),
 			]
 		);
 	}
 
 	public function widget( $args, $instance ) {
-		$title = $instance['title'] ?? __( '<i class="fa-solid fa-quote-left"></i> 每日一句', 'jinyu' );
+		$title = $instance['title'] ?? __( '<i class="fa-solid fa-quote-left"></i> Daily Quote', 'jinyu' );
 		$raw   = trim( (string) ( $instance['quotes'] ?? '' ) );
 		// 后台自定义语录优先；留空则按分类取内置语料库（默认 200 条·积极向上）
 		$rows = $raw !== ''
@@ -1102,7 +1102,7 @@ class Jinyu_Hitokoto_Widget extends WP_Widget {
 		}
 		// 「换一句」只在 random 模式出现：daily 模式全天固定一条，给按钮反而误导访客
 		if ( $rand && $n > 1 ) {
-			echo '<button type="button" class="jinyu-hitokoto-next" data-hitokoto-next aria-label="' . esc_attr__( '换一句', 'jinyu' ) . '" title="' . esc_attr__( '换一句', 'jinyu' ) . '">';
+			echo '<button type="button" class="jinyu-hitokoto-next" data-hitokoto-next aria-label="' . esc_attr__( 'Next quote', 'jinyu' ) . '" title="' . esc_attr__( 'Next quote', 'jinyu' ) . '">';
 			echo '<i class="fa-solid fa-shuffle" aria-hidden="true"></i></button>';
 		}
 		echo '</div>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
@@ -1111,22 +1111,22 @@ class Jinyu_Hitokoto_Widget extends WP_Widget {
 	}
 
 	public function form( $instance ) {
-		$title  = $instance['title'] ?? __( '<i class="fa-solid fa-quote-left"></i> 每日一句', 'jinyu' );
+		$title  = $instance['title'] ?? __( '<i class="fa-solid fa-quote-left"></i> Daily Quote', 'jinyu' );
 		$quotes = $instance['quotes'] ?? ''; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		$mode   = $instance['mode'] ?? 'daily';
-		echo '<p>' . esc_html__( '标题', 'jinyu' ) . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr( $title ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '切换方式', 'jinyu' ) . ':<br>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo "<label><input type='radio' name='{$this->get_field_name('mode')}' value='daily'" . checked( $mode, 'daily', false ) . '> ' . esc_html__( '每天固定一条', 'jinyu' ) . '</label> '; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo "<label><input type='radio' name='{$this->get_field_name('mode')}' value='random'" . checked( $mode, 'random', false ) . '> ' . esc_html__( '每次刷新随机', 'jinyu' ) . '</label></p>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Title', 'jinyu' ) . ": <input name='{$this->get_field_name('title')}' value='" . esc_attr( $title ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo '<p>' . esc_html__( 'Switch mode', 'jinyu' ) . ':<br>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo "<label><input type='radio' name='{$this->get_field_name('mode')}' value='daily'" . checked( $mode, 'daily', false ) . '> ' . esc_html__( 'One fixed quote per day', 'jinyu' ) . '</label> '; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo "<label><input type='radio' name='{$this->get_field_name('mode')}' value='random'" . checked( $mode, 'random', false ) . '> ' . esc_html__( 'Random on each refresh', 'jinyu' ) . '</label></p>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		$cat = $instance['category'] ?? 'all'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		echo '<p>' . esc_html__( '语录分类', 'jinyu' ) . ': ';
+		echo '<p>' . esc_html__( 'Quote category', 'jinyu' ) . ': ';
 		echo "<select name='{$this->get_field_name('category')}' class='widefat'>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		foreach ( jinyu_hitokoto_categories() as $k => $label ) {
 			echo "<option value='" . esc_attr( $k ) . "'" . selected( $cat, $k, false ) . '>' . esc_html( $label ) . '</option>';
 		}
 		echo '</select></p>';
-		echo '<p>' . esc_html__( '语录（每行：内容|出处；出处可省。留空用内置语料库）', 'jinyu' ) . ':<br>';
-		echo '<textarea name="' . esc_attr( $this->get_field_name( 'quotes' ) ) . '" rows="6" class="widefat" placeholder="' . esc_attr__( '静水流深。|佚名', 'jinyu' ) . '">' . esc_textarea( $quotes ) . '</textarea></p>';
+		echo '<p>' . esc_html__( 'Quotes (one per line: content|source; source optional. Leave empty to use the built-in corpus)', 'jinyu' ) . ':<br>';
+		echo '<textarea name="' . esc_attr( $this->get_field_name( 'quotes' ) ) . '" rows="6" class="widefat" placeholder="' . esc_attr__( 'Still waters run deep.|Anonymous', 'jinyu' ) . '">' . esc_textarea( $quotes ) . '</textarea></p>';
 	}
 
 	public function update( $new, $old ) {
@@ -1146,16 +1146,16 @@ if ( ! class_exists( 'Jinyu_Visitor_Widget' ) ) {
 		public function __construct() {
 			parent::__construct(
 				'jinyu_visitor',
-				__( '金玉·访客信息', 'jinyu' ),
+				__( 'Jinyu: Visitor Info', 'jinyu' ),
 				[
 					'classname'   => 'widget_jinyu_visitor',
-					'description' => __( '实时展示当前访客的 IP / 系统 / 浏览器 / 归属地（经 Ajax 取回，不进缓存）', 'jinyu' ),
+					'description' => __( 'Show the current visitor\'s IP / OS / browser / location in real time (fetched via Ajax, not cached)', 'jinyu' ),
 				]
 			);
 		}
 
 		public function widget( $args, $instance ) { /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-			$title = $instance['title'] ?? __( '<i class="fa-solid fa-user-astronaut"></i> 访客信息', 'jinyu' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+			$title = $instance['title'] ?? __( '<i class="fa-solid fa-user-astronaut"></i> Visitor Info', 'jinyu' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 			echo $args['before_widget']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 			echo $args['before_title'] . jinyu_widget_title( $title ) . $args['after_title']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 			?>
@@ -1168,16 +1168,16 @@ if ( ! class_exists( 'Jinyu_Visitor_Widget' ) ) {
 						</svg>
 					</span>
 					<span class="jinyu-visitor-id">
-						<span class="jinyu-visitor-hello" data-vis="greet"><?php esc_html_e( '你好，朋友', 'jinyu' ); ?></span>
+						<span class="jinyu-visitor-hello" data-vis="greet"><?php esc_html_e( 'Hello, friend', 'jinyu' ); ?></span>
 						<span class="jinyu-visitor-loc" data-vis="loc" hidden></span>
 					</span>
 				</div>
 				<dl class="jinyu-visitor-rows">
 					<div class="jinyu-visitor-row"><dt><i class="fa-solid fa-globe" aria-hidden="true"></i><?php esc_html_e( 'IP', 'jinyu' ); ?></dt><dd data-vis="ip">—</dd></div>
-					<div class="jinyu-visitor-row"><dt><i class="fa-solid fa-display" aria-hidden="true"></i><?php esc_html_e( '系统', 'jinyu' ); ?></dt><dd data-vis="os">—</dd></div>
-					<div class="jinyu-visitor-row"><dt><i class="fa-solid fa-window-maximize" aria-hidden="true"></i><?php esc_html_e( '浏览器', 'jinyu' ); ?></dt><dd data-vis="browser">—</dd></div>
+					<div class="jinyu-visitor-row"><dt><i class="fa-solid fa-display" aria-hidden="true"></i><?php esc_html_e( 'System', 'jinyu' ); ?></dt><dd data-vis="os">—</dd></div>
+					<div class="jinyu-visitor-row"><dt><i class="fa-solid fa-window-maximize" aria-hidden="true"></i><?php esc_html_e( 'Browser', 'jinyu' ); ?></dt><dd data-vis="browser">—</dd></div>
 				</dl>
-				<p class="jinyu-visitor-tip"><?php esc_html_e( '以上为本次访问的信息，仅你可见', 'jinyu' ); ?></p>
+				<p class="jinyu-visitor-tip"><?php esc_html_e( 'The above is info about this visit, visible only to you', 'jinyu' ); ?></p>
 			</div>
 			<?php
 			echo $args['after_widget']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
@@ -1187,7 +1187,7 @@ if ( ! class_exists( 'Jinyu_Visitor_Widget' ) ) {
 			$title = $instance['title'] ?? '';
 			?>
 			<p>
-				<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php esc_html_e( '标题', 'jinyu' ); ?></label>
+				<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php esc_html_e( 'Title', 'jinyu' ); ?></label>
 				<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>">
 			</p>
 			<?php
@@ -1206,19 +1206,19 @@ if ( ! class_exists( 'Jinyu_Newcomers_Widget' ) ) {
 		public function __construct() {
 			parent::__construct(
 				'jinyu_newcomers',
-				__( '金玉·最近加入', 'jinyu' ),
+				__( 'Jinyu: Recently Joined', 'jinyu' ),
 				[
 					'classname'   => 'widget_jinyu_newcomers',
-					'description' => __( '展示最近注册会员或近期评论者', 'jinyu' ),
+					'description' => __( 'Show recently registered members or recent commenters', 'jinyu' ),
 				]
 			);
 		}
 
 		public function widget( $args, $instance ) {
-			$title  = $instance['title'] ?? __( '<i class="fa-solid fa-user-plus"></i> 最近加入', 'jinyu' );
+			$title  = $instance['title'] ?? __( '<i class="fa-solid fa-user-plus"></i> Recently Joined', 'jinyu' );
 			$source = $instance['source'] ?? 'commenters';
 			$num    = max( 1, min( 20, (int) ( $instance['num'] ?? 5 ) ) ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-			$tpl    = $instance['tpl'] ?? esc_html__( '{name} 加入了网站', 'jinyu' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+			$tpl    = $instance['tpl'] ?? esc_html__( '{name} joined the site', 'jinyu' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 			echo $args['before_widget']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 			echo $args['before_title'] . jinyu_widget_title( $title ) . $args['after_title']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 
@@ -1285,7 +1285,7 @@ if ( ! class_exists( 'Jinyu_Newcomers_Widget' ) ) {
 				}
 				echo '</ul>';
 			} else {
-				echo '<p class="jinyu-widget-empty">' . esc_html__( '暂无数据', 'jinyu' ) . '</p>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+				echo '<p class="jinyu-widget-empty">' . esc_html__( 'No data yet', 'jinyu' ) . '</p>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 			}
 			echo $args['after_widget']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		}
@@ -1294,27 +1294,27 @@ if ( ! class_exists( 'Jinyu_Newcomers_Widget' ) ) {
 			$title  = $instance['title'] ?? '';
 			$source = $instance['source'] ?? 'commenters';
 			$num    = (int) ( $instance['num'] ?? 5 );
-			$tpl    = $instance['tpl'] ?? esc_html__( '{name} 加入了网站', 'jinyu' );
+			$tpl    = $instance['tpl'] ?? esc_html__( '{name} joined the site', 'jinyu' );
 			?>
 			<p>
-				<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php esc_html_e( '标题', 'jinyu' ); ?></label>
+				<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php esc_html_e( 'Title', 'jinyu' ); ?></label>
 				<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>">
 			</p>
 			<p>
-				<label for="<?php echo esc_attr( $this->get_field_id( 'source' ) ); ?>"><?php esc_html_e( '数据来源', 'jinyu' ); ?></label>
+				<label for="<?php echo esc_attr( $this->get_field_id( 'source' ) ); ?>"><?php esc_html_e( 'Data source', 'jinyu' ); ?></label>
 				<select class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'source' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'source' ) ); ?>">
-					<option value="commenters" <?php selected( $source, 'commenters' ); ?>><?php esc_html_e( '近期评论者', 'jinyu' ); ?></option>
-					<option value="users" <?php selected( $source, 'users' ); ?>><?php esc_html_e( '注册会员', 'jinyu' ); ?></option>
+					<option value="commenters" <?php selected( $source, 'commenters' ); ?>><?php esc_html_e( 'Recent commenters', 'jinyu' ); ?></option>
+					<option value="users" <?php selected( $source, 'users' ); ?>><?php esc_html_e( 'Registered members', 'jinyu' ); ?></option>
 				</select>
 			</p>
 			<p>
-				<label for="<?php echo esc_attr( $this->get_field_id( 'num' ) ); ?>"><?php esc_html_e( '显示数量', 'jinyu' ); ?></label>
+				<label for="<?php echo esc_attr( $this->get_field_id( 'num' ) ); ?>"><?php esc_html_e( 'Number to show', 'jinyu' ); ?></label>
 				<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'num' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'num' ) ); ?>" type="number" min="1" max="20" value="<?php echo esc_attr( $num ); ?>">
 			</p>
 			<p>
-				<label for="<?php echo esc_attr( $this->get_field_id( 'tpl' ) ); ?>"><?php esc_html_e( '文案模板', 'jinyu' ); ?></label>
+				<label for="<?php echo esc_attr( $this->get_field_id( 'tpl' ) ); ?>"><?php esc_html_e( 'Text template', 'jinyu' ); ?></label>
 				<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'tpl' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'tpl' ) ); ?>" type="text" value="<?php echo esc_attr( $tpl ); ?>">
-				<span class="jinyu-widget-hint"><?php esc_html_e( '可用占位符：{name} 名称、{date} 日期', 'jinyu' ); ?></span>
+				<span class="jinyu-widget-hint"><?php esc_html_e( 'Available placeholders: {name} name, {date} date', 'jinyu' ); ?></span>
 			</p>
 			<?php
 		}
@@ -1324,7 +1324,7 @@ if ( ! class_exists( 'Jinyu_Newcomers_Widget' ) ) {
 				'title'  => jinyu_widget_title( $new['title'] ?? '' ),
 				'source' => ( $new['source'] ?? 'commenters' ) === 'users' ? 'users' : 'commenters',
 				'num'    => max( 1, min( 20, (int) ( $new['num'] ?? 5 ) ) ),
-				'tpl'    => sanitize_text_field( $new['tpl'] ?? esc_html__( '{name} 加入了网站', 'jinyu' ) ),
+				'tpl'    => sanitize_text_field( $new['tpl'] ?? esc_html__( '{name} joined the site', 'jinyu' ) ),
 			];
 		}
 	}
@@ -1337,16 +1337,16 @@ if ( ! class_exists( 'Jinyu_Uptime_Widget' ) ) {
 		public function __construct() {
 			parent::__construct(
 				'jinyu_uptime',
-				__( '金玉·网站概况', 'jinyu' ),
+				__( 'Jinyu: Site Overview', 'jinyu' ),
 				[
 					'classname'   => 'widget_jinyu_uptime',
-					'description' => __( '展示站点已稳定运行的天 / 时 / 分 / 秒', 'jinyu' ),
+					'description' => __( 'Show how long the site has been running (days / hours / min / sec)', 'jinyu' ),
 				]
 			);
 		}
 
 		public function widget( $args, $instance ) {
-			$title = $instance['title'] ?? __( '<i class="fa-solid fa-server"></i> 网站概况', 'jinyu' );
+			$title = $instance['title'] ?? __( '<i class="fa-solid fa-server"></i> Site Overview', 'jinyu' );
 			$since = (int) ( $instance['since'] ?? 0 );
 			if ( $since <= 0 ) {
 				$since = jinyu_site_since(); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
@@ -1357,17 +1357,17 @@ if ( ! class_exists( 'Jinyu_Uptime_Widget' ) ) {
 				?>
 				<div class="jinyu-uptime" data-since="<?php echo esc_attr( $since ); ?>">
 					<div class="jinyu-uptime-grid">
-						<div class="jinyu-uptime-cell"><b class="jinyu-uptime-num" data-up="d">0</b><span class="jinyu-uptime-label"><?php esc_html_e( '天', 'jinyu' ); ?></span></div>
-						<div class="jinyu-uptime-cell"><b class="jinyu-uptime-num" data-up="h">0</b><span class="jinyu-uptime-label"><?php esc_html_e( '时', 'jinyu' ); ?></span></div>
-						<div class="jinyu-uptime-cell"><b class="jinyu-uptime-num" data-up="m">0</b><span class="jinyu-uptime-label"><?php esc_html_e( '分', 'jinyu' ); ?></span></div>
-						<div class="jinyu-uptime-cell"><b class="jinyu-uptime-num" data-up="s">0</b><span class="jinyu-uptime-label"><?php esc_html_e( '秒', 'jinyu' ); ?></span></div>
+						<div class="jinyu-uptime-cell"><b class="jinyu-uptime-num" data-up="d">0</b><span class="jinyu-uptime-label"><?php esc_html_e( 'days', 'jinyu' ); ?></span></div>
+						<div class="jinyu-uptime-cell"><b class="jinyu-uptime-num" data-up="h">0</b><span class="jinyu-uptime-label"><?php esc_html_e( 'hrs', 'jinyu' ); ?></span></div>
+						<div class="jinyu-uptime-cell"><b class="jinyu-uptime-num" data-up="m">0</b><span class="jinyu-uptime-label"><?php esc_html_e( 'min', 'jinyu' ); ?></span></div>
+						<div class="jinyu-uptime-cell"><b class="jinyu-uptime-num" data-up="s">0</b><span class="jinyu-uptime-label"><?php esc_html_e( 'sec', 'jinyu' ); ?></span></div>
 					</div>
 					<?php /* translators: %s: 占位符 */ ?>
-					<p class="jinyu-uptime-foot"><?php echo esc_html( sprintf( __( '自 %s 已稳定运行', 'jinyu' ), wp_date( 'Y-m-d', $since ) ) ); ?></p>
+					<p class="jinyu-uptime-foot"><?php echo esc_html( sprintf( __( 'Running steadily since %s', 'jinyu' ), wp_date( 'Y-m-d', $since ) ) ); ?></p>
 				</div>
 				<?php
 			} else {
-				echo '<p class="jinyu-widget-empty">' . esc_html__( '暂无建站时间数据', 'jinyu' ) . '</p>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+				echo '<p class="jinyu-widget-empty">' . esc_html__( 'No site founding date available', 'jinyu' ) . '</p>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 			}
 			echo $args['after_widget']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		}
@@ -1377,11 +1377,11 @@ if ( ! class_exists( 'Jinyu_Uptime_Widget' ) ) {
 			$since = $instance['since'] ?? '';
 			?>
 			<p>
-				<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php esc_html_e( '标题', 'jinyu' ); ?></label>
+				<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php esc_html_e( 'Title', 'jinyu' ); ?></label>
 				<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>">
 			</p>
 			<p>
-				<label for="<?php echo esc_attr( $this->get_field_id( 'since' ) ); ?>"><?php esc_html_e( '建站日期（留空自动取最早文章）', 'jinyu' ); ?></label>
+				<label for="<?php echo esc_attr( $this->get_field_id( 'since' ) ); ?>"><?php esc_html_e( 'Site founding date (leave empty to use the earliest post)', 'jinyu' ); ?></label>
 				<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'since' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'since' ) ); ?>" type="date" value="<?php echo esc_attr( $since ); ?>">
 			</p>
 			<?php
@@ -1404,16 +1404,16 @@ if ( ! class_exists( 'Jinyu_Perf_Widget' ) ) {
 		public function __construct() {
 			parent::__construct(
 				'jinyu_perf',
-				__( '金玉·站点性能', 'jinyu' ),
+				__( 'Jinyu: Site Performance', 'jinyu' ),
 				[
 					'classname'   => 'widget_jinyu_perf',
-					'description' => __( '实时展示站点响应耗时 / 数据库查询 / 内存占用心跳', 'jinyu' ),
+					'description' => __( 'Show site response time / database queries / memory usage in real time', 'jinyu' ),
 				]
 			);
 		}
 
 		public function widget( $args, $instance ) {
-			$title = $instance['title'] ?? __( '<i class="fa-solid fa-gauge-high"></i> 站点性能', 'jinyu' );
+			$title = $instance['title'] ?? __( '<i class="fa-solid fa-gauge-high"></i> Site Performance', 'jinyu' );
 			// 渐变 id 必须逐实例唯一：同一页可能同时挂侧栏与页脚两份，
 			// 重名 id 在部分浏览器上会让后一份的填充直接失效（整块面积消失）。
 			static $seq = 0; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
@@ -1425,10 +1425,10 @@ if ( ! class_exists( 'Jinyu_Perf_Widget' ) ) {
 				<div class="jinyu-perf-top">
 					<span class="jinyu-perf-state">
 						<i class="jinyu-perf-dot" data-perf="dot" aria-hidden="true"></i>
-						<span class="jinyu-perf-status" data-perf="status"><?php esc_html_e( '采集中', 'jinyu' ); ?></span>
+						<span class="jinyu-perf-status" data-perf="status"><?php esc_html_e( 'Collecting', 'jinyu' ); ?></span>
 						<span class="jinyu-perf-samples" data-perf="samples" hidden></span>
 					</span>
-					<span class="jinyu-perf-score" data-perf="scorebox" title="<?php esc_attr_e( '综合耗时 / 查询 / 内存 / 负载的健康分', 'jinyu' ); ?>" hidden>
+					<span class="jinyu-perf-score" data-perf="scorebox" title="<?php esc_attr_e( 'Health score based on response time / queries / memory / load', 'jinyu' ); ?>" hidden>
 						<svg viewBox="0 0 40 40" aria-hidden="true" focusable="false">
 							<circle class="jinyu-perf-ring-bg" cx="20" cy="20" r="17" />
 							<circle class="jinyu-perf-ring" data-perf="ring" cx="20" cy="20" r="17" />
@@ -1454,26 +1454,26 @@ if ( ! class_exists( 'Jinyu_Perf_Widget' ) ) {
 					<div class="jinyu-perf-cell" data-perf-cell="ms">
 						<i class="jinyu-perf-ico fa-solid fa-bolt" aria-hidden="true"></i>
 						<b data-perf="ms">—</b>
-						<span class="jinyu-perf-name"><?php esc_html_e( '响应耗时', 'jinyu' ); ?></span>
+						<span class="jinyu-perf-name"><?php esc_html_e( 'Response time', 'jinyu' ); ?></span>
 						<span class="jinyu-perf-trend" data-perf="ms-trend">—</span>
 					</div>
 					<div class="jinyu-perf-cell" data-perf-cell="q">
 						<i class="jinyu-perf-ico fa-solid fa-database" aria-hidden="true"></i>
 						<b data-perf="q">—</b>
-						<span class="jinyu-perf-name"><?php esc_html_e( '查询', 'jinyu' ); ?></span>
+						<span class="jinyu-perf-name"><?php esc_html_e( 'Queries', 'jinyu' ); ?></span>
 						<span class="jinyu-perf-trend" data-perf="q-trend">—</span>
 					</div>
 					<div class="jinyu-perf-cell" data-perf-cell="mem">
 						<i class="jinyu-perf-ico fa-solid fa-microchip" aria-hidden="true"></i>
 						<b data-perf="mem">—</b>
-						<span class="jinyu-perf-name"><?php esc_html_e( '内存', 'jinyu' ); ?></span>
+						<span class="jinyu-perf-name"><?php esc_html_e( 'Memory', 'jinyu' ); ?></span>
 						<span class="jinyu-perf-pct" data-perf="mem-pct">—</span>
 					</div>
 				</div>
 				<div class="jinyu-perf-meta">
-					<span><i><?php esc_html_e( '均值', 'jinyu' ); ?></i><b data-perf="avg">—</b></span>
-					<span><i><?php esc_html_e( '峰值', 'jinyu' ); ?></i><b data-perf="max">—</b></span>
-					<span><i data-perf="extra-label"><?php esc_html_e( '负载', 'jinyu' ); ?></i><b data-perf="extra">—</b></span>
+					<span><i><?php esc_html_e( 'Average', 'jinyu' ); ?></i><b data-perf="avg">—</b></span>
+					<span><i><?php esc_html_e( 'Peak', 'jinyu' ); ?></i><b data-perf="max">—</b></span>
+					<span><i data-perf="extra-label"><?php esc_html_e( 'Load', 'jinyu' ); ?></i><b data-perf="extra">—</b></span>
 				</div>
 			</div>
 			<?php
@@ -1484,7 +1484,7 @@ if ( ! class_exists( 'Jinyu_Perf_Widget' ) ) {
 			$title = $instance['title'] ?? '';
 			?>
 			<p>
-				<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php esc_html_e( '标题', 'jinyu' ); ?></label>
+				<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php esc_html_e( 'Title', 'jinyu' ); ?></label>
 				<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>">
 			</p>
 			<?php
@@ -1503,16 +1503,16 @@ if ( ! class_exists( 'Jinyu_Clock_Widget' ) ) {
 		public function __construct() {
 			parent::__construct(
 				'jinyu_clock',
-				__( '金玉·时钟', 'jinyu' ),
+				__( 'Jinyu: Clock', 'jinyu' ),
 				[
 					'classname'   => 'widget_jinyu_clock',
-					'description' => __( '显示站点本地时间的可爱时钟', 'jinyu' ),
+					'description' => __( 'A cute clock showing the site\'s local time', 'jinyu' ),
 				]
 			);
 		}
 
 		public function widget( $args, $instance ) { /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-			$title = $instance['title'] ?? __( '<i class="fa-regular fa-clock"></i> 本站时间', 'jinyu' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+			$title = $instance['title'] ?? __( '<i class="fa-regular fa-clock"></i> Site Time', 'jinyu' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 			echo $args['before_widget']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 			echo $args['before_title'] . jinyu_widget_title( $title ) . $args['after_title']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 			?>
@@ -1542,7 +1542,7 @@ if ( ! class_exists( 'Jinyu_Clock_Widget' ) ) {
 			$title = $instance['title'] ?? '';
 			?>
 			<p>
-				<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php esc_html_e( '标题', 'jinyu' ); ?></label>
+				<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php esc_html_e( 'Title', 'jinyu' ); ?></label>
 				<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>">
 			</p>
 			<?php
@@ -1562,7 +1562,7 @@ if ( ! class_exists( 'Jinyu_Subscribe_Widget' ) ) {
 			parent::__construct(
 				'jinyu_subscribe_widget',
 				'金玉 · 邮件订阅',
-				[ 'description' => __( '渲染邮件订阅表单（依赖「销售与变现 › 邮件订阅」开关）', 'jinyu' ) ]
+				[ 'description' => __( 'Render a newsletter subscription form (depends on the "Sales & Monetization › Newsletter" toggle)', 'jinyu' ) ]
 			);
 		}
 
@@ -1584,7 +1584,7 @@ if ( ! class_exists( 'Jinyu_Subscribe_Widget' ) ) {
 			$title = $instance['title'] ?? '';
 			?>
 			<p>
-				<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php esc_html_e( '标题（留空用后台设置）', 'jinyu' ); ?></label>
+				<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php esc_html_e( 'Title (leave empty to use the admin setting)', 'jinyu' ); ?></label>
 				<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>">
 			</p>
 			<?php

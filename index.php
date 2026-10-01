@@ -42,7 +42,7 @@ $jinyu_car_seq = 0;
 			$car_id   = 'jinyu-carousel-' . ( isset( $jinyu_car_seq ) ? $jinyu_car_seq++ : 0 );
 			?>
 		<div class="jinyu-carousel" id="<?php echo esc_attr( $car_id ); ?>" data-jinyu-carousel
-			role="region" aria-roledescription="轮播" aria-label="<?php echo esc_attr__( '精选文章轮播', 'jinyu' ); ?>"
+			role="region" aria-roledescription="轮播" aria-label="<?php echo esc_attr__( 'Featured posts slider', 'jinyu' ); ?>"
 			data-autoplay="<?php echo esc_attr( $autoplay ); ?>"
 			data-loop="<?php echo esc_attr( $loop ); ?>"
 			data-effect="<?php echo esc_attr( $effect ); ?>"
@@ -58,7 +58,7 @@ $jinyu_car_seq = 0;
 				*/
 				$slide_prio = ( $si === 0 ) ? ' fetchpriority="high"' : '';
 				?>
-			<div class="jinyu-carousel-slide" role="group" aria-roledescription="幻灯片" aria-label="<?php echo esc_attr( sprintf( __( '第 %1$d 张，共 %2$d 张', 'jinyu' ), $si + 1, count( $slides ) ) ); /* phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment */ ?>">
+			<div class="jinyu-carousel-slide" role="group" aria-roledescription="幻灯片" aria-label="<?php echo esc_attr( sprintf( __( 'Slide %1$d of %2$d', 'jinyu' ), $si + 1, count( $slides ) ) ); /* phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment */ ?>">
 				<a class="jinyu-carousel-link" href="<?php echo esc_url( $s['url'] ?: '#' ); ?>">
 				<img class="jinyu-blur-img" src="<?php echo esc_url( $s['image'] ); ?>" alt=""
 				<?php
@@ -84,7 +84,7 @@ $jinyu_car_seq = 0;
 			<?php if ( count( $slides ) > 1 ) : ?>
 			<div class="jinyu-carousel-dots">
 				<?php foreach ( $slides as $di => $ds ) : ?>
-			<button type="button" class="jinyu-carousel-dot<?php echo $di === 0 ? ' is-active' : ''; ?>" aria-label="<?php echo esc_attr( sprintf( __( '跳转到第 %d 张', 'jinyu' ), $di + 1 ) ); /* phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment */ ?>"<?php echo $di === 0 ? ' aria-current="true"' : ''; ?>></button>
+			<button type="button" class="jinyu-carousel-dot<?php echo $di === 0 ? ' is-active' : ''; ?>" aria-label="<?php echo esc_attr( sprintf( __( 'Go to slide %d', 'jinyu' ), $di + 1 ) ); /* phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment */ ?>"<?php echo $di === 0 ? ' aria-current="true"' : ''; ?>></button>
 			<?php endforeach; ?>
 			</div>
 			<p class="jinyu-sr-only" aria-live="polite" data-jinyu-carousel-status></p>

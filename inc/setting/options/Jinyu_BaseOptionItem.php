@@ -35,7 +35,7 @@ abstract class Jinyu_BaseOptionItem {
 	protected function all_pages(): array {
 		$list = [
 			[
-				'label' => __( '无', 'jinyu' ),
+				'label' => __( 'None', 'jinyu' ),
 				'value' => '',
 			],
 		];

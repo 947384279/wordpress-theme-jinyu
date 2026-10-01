@@ -16,7 +16,7 @@
             };
         });
         editor.addButton('jinyu_shortcodes', {
-            text: '金玉短码',
+            text: 'Jinyu Shortcodes',
             type: 'menubutton',
             icon: false,
             menu: menu

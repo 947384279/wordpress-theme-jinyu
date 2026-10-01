@@ -34,8 +34,8 @@ class Jinyu_Setting {
 	 */
 	public function register_menu(): void {
 		add_menu_page(
-			__( '金玉主题配置', 'jinyu' ),
-			__( '金玉主题配置', 'jinyu' ),
+			__( 'Jinyu Theme Settings', 'jinyu' ),
+			__( 'Jinyu Theme Settings', 'jinyu' ),
 			'edit_theme_options',
 			'jinyu-options',
 			[ $this, 'render_page' ],
@@ -131,16 +131,16 @@ class Jinyu_Setting {
 		return [
 			[
 				'key'    => 'tools',
-				'title'  => __( '维护工具', 'jinyu' ),
-				'desc'   => __( '封面缩略图重建、配置导出导入与运行信息开关等主题侧运维操作。邮件 SMTP / 缓存清理 / 数据库优化 / 对象存储请用「金玉增强」插件面板。', 'jinyu' ),
+				'title'  => __( 'Maintenance Tools', 'jinyu' ),
+				'desc'   => __( 'Theme-side maintenance: cover thumbnail regeneration, config export/import, and runtime info toggles. For SMTP mail / cache clearing / database optimization / object storage, use the "Jinyu Enhancements" plugin panel.', 'jinyu' ),
 				'custom' => 'tools',
 				'fields' => [
 					[
 						'id'    => 'footer_runinfo',
-						'title' => __( '页脚显示运行信息', 'jinyu' ),
+						'title' => __( 'Show runtime info in the footer', 'jinyu' ),
 						'type'  => 'switch',
 						'sdt'   => 0,
-						'desc'  => __( '在前台页脚输出一行实时运行信息：查询数 / 内存 / 渲染耗时。数值由 JS 实时拉取，不会被整页缓存冻结。开启后到「金玉增强」清理一次缓存即可生效', 'jinyu' ),
+						'desc'  => __( 'Output a live runtime info line in the front-end footer: queries / memory / render time. Values are fetched by JS in real time and will not be frozen by full-page cache. After enabling, clear the cache once in "Jinyu Enhancements" to take effect', 'jinyu' ),
 					],
 				],
 			],
@@ -300,11 +300,11 @@ class Jinyu_Setting {
 	public function ajax_save(): void {
 		check_ajax_referer( 'jinyu_save_options', 'nonce' );
 		if ( ! current_user_can( 'edit_theme_options' ) ) {
-			wp_send_json_error( __( '权限不足', 'jinyu' ) );
+			wp_send_json_error( __( 'Insufficient permissions', 'jinyu' ) );
 		}
 		$input = json_decode( file_get_contents( 'php://input' ), true );
 		if ( ! is_array( $input ) ) {
-			wp_send_json_error( __( '数据格式错误', 'jinyu' ) );
+			wp_send_json_error( __( 'Invalid data format', 'jinyu' ) );
 		}
 		// 服务端按字段 schema 校验/钳制，并与现有选项合并（避免前端漏字段造成配置丢失）
 		$current = get_option( JINYU_OPT, [] );
@@ -314,16 +314,16 @@ class Jinyu_Setting {
 		$current = $this->drop_orphan_keys( $current );
 		$clean   = $this->sanitize_fields( $input );
 		jinyu_save_options( array_merge( $current, $clean ) );
-		wp_send_json_success( [ 'msg' => __( '保存成功', 'jinyu' ) ] );
+		wp_send_json_success( [ 'msg' => __( 'Saved successfully', 'jinyu' ) ] );
 	}
 
 	public function ajax_reset(): void {
 		check_ajax_referer( 'jinyu_save_options', 'nonce' );
 		if ( ! current_user_can( 'edit_theme_options' ) ) {
-			wp_send_json_error( __( '权限不足', 'jinyu' ) );
+			wp_send_json_error( __( 'Insufficient permissions', 'jinyu' ) );
 		}
 		delete_option( JINYU_OPT );
-		wp_send_json_success( [ 'msg' => __( '已重置', 'jinyu' ) ] );
+		wp_send_json_success( [ 'msg' => __( 'Reset', 'jinyu' ) ] );
 	}
 
 	/**
@@ -332,12 +332,12 @@ class Jinyu_Setting {
 	public function ajax_export(): void {
 		check_ajax_referer( 'jinyu_save_options', 'nonce' );
 		if ( ! current_user_can( 'edit_theme_options' ) ) {
-			wp_send_json_error( __( '权限不足', 'jinyu' ) );
+			wp_send_json_error( __( 'Insufficient permissions', 'jinyu' ) );
 		}
 		$data = get_option( JINYU_OPT, [] );
 		wp_send_json_success(
 			[
-				'msg'  => __( '导出成功', 'jinyu' ),
+				'msg'  => __( 'Export successful', 'jinyu' ),
 				'data' => $data,
 			]
 		);
@@ -349,11 +349,11 @@ class Jinyu_Setting {
 	public function ajax_import(): void {
 		check_ajax_referer( 'jinyu_save_options', 'nonce' );
 		if ( ! current_user_can( 'edit_theme_options' ) ) {
-			wp_send_json_error( __( '权限不足', 'jinyu' ) );
+			wp_send_json_error( __( 'Insufficient permissions', 'jinyu' ) );
 		}
 		$body = json_decode( file_get_contents( 'php://input' ), true );
 		if ( ! is_array( $body ) || ! isset( $body['data'] ) || ! is_array( $body['data'] ) ) {
-			wp_send_json_error( __( '数据格式错误', 'jinyu' ) );
+			wp_send_json_error( __( 'Invalid data format', 'jinyu' ) );
 		}
 		$incoming = $body['data'];
 		// 白名单过滤：只接受已注册字段的键，避免注入无关数据
@@ -376,7 +376,7 @@ class Jinyu_Setting {
 		$current  = get_option( JINYU_OPT, [] );
 		$merged   = array_merge( $current, $filtered );
 		jinyu_save_options( $merged );
-		$msg = __( '导入成功', 'jinyu' );
+		$msg = __( 'Import successful', 'jinyu' );
 		if ( $skipped_secret > 0 ) {
 			/* translators: %s: 占位符 */
 			$msg .= sprintf( __( '；%d 个加密字段（API Key / 密码等）无法跨站解密，已跳过，请重新填写', 'jinyu' ), $skipped_secret );
@@ -399,7 +399,7 @@ class Jinyu_Setting {
 	public function ajax_regenerate_thumbs(): void {
 		// 先能力后 nonce：避免向未授权访客暴露 nonce 有效性
 		if ( ! current_user_can( 'edit_theme_options' ) ) {
-			wp_send_json_error( __( '权限不足', 'jinyu' ) );
+			wp_send_json_error( __( 'Insufficient permissions', 'jinyu' ) );
 		}
 		check_ajax_referer( 'jinyu_save_options' );
 		// 裁剪函数随 wp-admin/includes/image.php 注册，前台请求里并不存在，显式兜底加载
@@ -407,7 +407,7 @@ class Jinyu_Setting {
 			require_once ABSPATH . 'wp-admin/includes/image.php';
 		}
 		if ( ! function_exists( 'wp_generate_attachment_metadata' ) || ! function_exists( 'wp_get_registered_image_subsizes' ) ) {
-			wp_send_json_error( __( '当前服务器环境不支持缩略图重建（缺少 GD 或 WordPress 版本过旧）', 'jinyu' ) );
+			wp_send_json_error( __( 'The current server environment does not support thumbnail regeneration (missing GD or an outdated WordPress version)', 'jinyu' ) );
 		}
 
 		$st_key = 'jinyu_thumbs_regen_state';
@@ -422,7 +422,7 @@ class Jinyu_Setting {
 			$tot  = is_array( $stopped ) ? (int) $stopped['total'] : 0;
 			wp_send_json_success(
 				[
-					'msg'     => __( '已停止，下次点击将重新扫描', 'jinyu' ),
+					'msg'     => __( 'Stopped. Clicking again will rescan', 'jinyu' ),
 					'more'    => false,
 					'done'    => $done,
 					'total'   => $tot,
@@ -455,7 +455,7 @@ class Jinyu_Setting {
 			wp_send_json_error(
 				[
 					'code' => 'busy',
-					'msg'  => __( '已有重建任务正在进行，请稍候再试', 'jinyu' ),
+					'msg'  => __( 'A regeneration task is already running. Please try again later.', 'jinyu' ),
 				]
 			);
 		}
@@ -543,7 +543,7 @@ class Jinyu_Setting {
 		$percent = $total > 0 ? min( 100, (int) round( $done * 100 / $total ) ) : 100;
 		$msg     = sprintf(
 			/* translators: 1: 已处理数, 2: 总数, 3: 新生成, 4: 跳过, 5: 失败 */
-			__( '已处理 %1$d/%2$d，新生成 %3$d，跳过 %4$d，失败 %5$d', 'jinyu' ),
+			__( 'Processed %1$d/%2$d, generated %3$d, skipped %4$d, failed %5$d', 'jinyu' ),
 			number_format_i18n( $done ),
 			number_format_i18n( $total ),
 			number_format_i18n( (int) $s['gen'] ),
@@ -578,7 +578,7 @@ class Jinyu_Setting {
 	 */
 	public function ajax_regen_status(): void {
 		if ( ! current_user_can( 'edit_theme_options' ) ) {
-			wp_send_json_error( __( '权限不足', 'jinyu' ) );
+			wp_send_json_error( __( 'Insufficient permissions', 'jinyu' ) );
 		}
 		check_ajax_referer( 'jinyu_save_options' );
 
@@ -639,7 +639,7 @@ class Jinyu_Setting {
 			[
 				'msg'     => sprintf(
 					/* translators: %s: 占位符 */
-					__( '重建完成：新生成 %1$d 张，已齐全跳过 %2$d 张，失败 %3$d 张', 'jinyu' ),
+					__( 'Regeneration complete: %1$d generated, %2$d skipped (already complete), %3$d failed', 'jinyu' ),
 					number_format_i18n( (int) $s['gen'] ),
 					number_format_i18n( (int) $s['skip'] ),
 					number_format_i18n( (int) $s['fail'] )
@@ -661,12 +661,12 @@ class Jinyu_Setting {
 	public function ajax_reset_section(): void {
 		check_ajax_referer( 'jinyu_save_options', 'nonce' );
 		if ( ! current_user_can( 'edit_theme_options' ) ) {
-			wp_send_json_error( __( '权限不足', 'jinyu' ) );
+			wp_send_json_error( __( 'Insufficient permissions', 'jinyu' ) );
 		}
 		$body = json_decode( file_get_contents( 'php://input' ), true );
 		$key  = isset( $body['key'] ) ? $body['key'] : '';
 		if ( ! $key ) {
-			wp_send_json_error( __( '参数错误', 'jinyu' ) );
+			wp_send_json_error( __( 'Invalid parameters', 'jinyu' ) );
 		}
 
 		$target = null;
@@ -676,7 +676,7 @@ class Jinyu_Setting {
 				break; }
 		}
 		if ( ! $target ) {
-			wp_send_json_error( __( '分组不存在', 'jinyu' ) );
+			wp_send_json_error( __( 'Group not found', 'jinyu' ) );
 		}
 
 		$ids  = array_column( $target['fields'] ?? [], 'id' );
@@ -687,7 +687,7 @@ class Jinyu_Setting {
 		foreach ( $ids as $id ) {
 			unset( $opts[ $id ] ); }
 		update_option( JINYU_OPT, $opts );
-		wp_send_json_success( [ 'msg' => __( '已重置本组', 'jinyu' ) ] );
+		wp_send_json_success( [ 'msg' => __( 'This group has been reset', 'jinyu' ) ] );
 	}
 
 	/* ── 后台提醒：历史封面缺主题尺寸 ───────────────────────────────── */
@@ -733,7 +733,7 @@ class Jinyu_Setting {
 		/* translators: 1: 缺派生尺寸的封面张数 */
 		$summary = sprintf(
 			/* translators: %s: 占位符 */
-			__( '有 %1$d 张历史封面图缺少主题尺寸', 'jinyu' ),
+			__( '%1$d historical cover images are missing the theme size', 'jinyu' ),
 			number_format_i18n( $missing )
 		);
 		// 完整说明收进浮层与 aria-label：按钮本身只承担"这里有报警"的入口职责，

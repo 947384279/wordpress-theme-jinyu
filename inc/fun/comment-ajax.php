@@ -65,8 +65,8 @@ function jinyu_ajax_comment() {
 		[
 			'html'    => $html,
 			'message' => $approved
-				? __( '评论已发布', 'jinyu' )
-				: __( '评论已提交，等待审核', 'jinyu' ),
+				? __( 'Comment published', 'jinyu' )
+				: __( 'Comment submitted and pending approval', 'jinyu' ),
 		]
 	);
 }

@@ -20,13 +20,13 @@ get_header();
 		<?php
 		if ( is_day() ) {
 			/* translators: %s: 占位符 */
-			printf( __( '每日归档：%s', 'jinyu' ), get_the_date( 'Y-m-d' ) ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+			printf( __( 'Daily Archive: %s', 'jinyu' ), get_the_date( 'Y-m-d' ) ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		} elseif ( is_month() ) {
 			/* translators: %s: 占位符 */
-			printf( __( '每月归档：%s', 'jinyu' ), get_the_date( 'Y-m' ) ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+			printf( __( 'Monthly Archive: %s', 'jinyu' ), get_the_date( 'Y-m' ) ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		} else {
 			/* translators: %s: 占位符 */
-			printf( __( '每年归档：%s', 'jinyu' ), get_the_date( 'Y' ) ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+			printf( __( 'Yearly Archive: %s', 'jinyu' ), get_the_date( 'Y' ) ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		}
 		?>
 		</h1>

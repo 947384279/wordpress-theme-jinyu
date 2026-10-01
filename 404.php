@@ -21,8 +21,8 @@ get_header(); ?>
 					<span class="jinyu-404-digit jinyu-404-zero" aria-hidden="true">0</span>
 					<span class="jinyu-404-digit" aria-hidden="true">4</span>
 				</div>
-				<h1 class="jinyu-404-title"><?php esc_html_e( '页面走丢了', 'jinyu' ); ?></h1>
-				<p class="jinyu-404-desc"><?php esc_html_e( '你要访问的页面不存在、已被移动或链接已过期，从下面重新出发吧。', 'jinyu' ); ?></p>
+				<h1 class="jinyu-404-title"><?php esc_html_e( 'Page not found', 'jinyu' ); ?></h1>
+				<p class="jinyu-404-desc"><?php esc_html_e( 'The page you are looking for does not exist, has been moved, or the link has expired. Start again from below.', 'jinyu' ); ?></p>
 			</div>
 
 			<?php
@@ -37,12 +37,12 @@ get_header(); ?>
 			</div>
 
 			<div class="jinyu-404-actions">
-				<a class="jinyu-btn jinyu-btn-primary" href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php esc_html_e( '返回首页', 'jinyu' ); ?></a>
-				<a class="jinyu-btn" href="<?php echo esc_url( wp_get_referer() ?: home_url( '/' ) ); ?>"><?php esc_html_e( '返回上一页', 'jinyu' ); ?></a>
+				<a class="jinyu-btn jinyu-btn-primary" href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php esc_html_e( 'Back to home', 'jinyu' ); ?></a>
+				<a class="jinyu-btn" href="<?php echo esc_url( wp_get_referer() ?: home_url( '/' ) ); ?>"><?php esc_html_e( 'Go back', 'jinyu' ); ?></a>
 			</div>
 
 			<div class="jinyu-404-hot">
-				<h2 class="jinyu-404-hot-title"><i class="fa-solid fa-fire" aria-hidden="true"></i> <?php esc_html_e( '热门文章', 'jinyu' ); ?></h2>
+				<h2 class="jinyu-404-hot-title"><i class="fa-solid fa-fire" aria-hidden="true"></i> <?php esc_html_e( 'Popular Posts', 'jinyu' ); ?></h2>
 				<?php
 				$q = new WP_Query(
 					[

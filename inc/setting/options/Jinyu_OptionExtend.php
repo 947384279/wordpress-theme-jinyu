@@ -23,30 +23,30 @@ class Jinyu_OptionExtend extends Jinyu_BaseOptionItem {
 	public function get_fields(): array {
 		return [
 			'key'    => 'extend',
-			'title'  => __( '高级设置', 'jinyu' ),
-			'desc'   => __( '第三方服务接入、兼容性开关、AI 对话与主题更新等非常规配置。', 'jinyu' ),
+			'title'  => __( 'Advanced Settings', 'jinyu' ),
+			'desc'   => __( 'Third-party integrations, compatibility toggles, AI chat, theme updates, and other advanced configurations.', 'jinyu' ),
 			'icon'   => 'fa-solid fa-puzzle-piece',
 			'fields' => [
 				[
 					'id'    => 'close_rest_api',
-					'title' => __( '关闭 REST API', 'jinyu' ),
+					'title' => __( 'Disable REST API', 'jinyu' ),
 					'type'  => 'switch',
 					'sdt'   => false,
-					'desc'  => __( '⚠️ 仅对未登录访客关闭 REST API；已登录用户在后台使用古登堡编辑器不受影响。依赖公开 REST 的第三方应用/接口可能失效，请确认无依赖后再关闭', 'jinyu' ),
+					'desc'  => __( '⚠️ Disables the REST API for logged-out visitors only; logged-in users can still use the Gutenberg editor in the admin. Third-party apps/APIs relying on the public REST API may break — make sure nothing depends on it before disabling', 'jinyu' ),
 				],
 				[
 					'id'    => 'enable_pjax',
-					'title' => __( '启用 PJAX 无刷新导航', 'jinyu' ),
+					'title' => __( 'Enable PJAX navigation', 'jinyu' ),
 					'type'  => 'switch',
 					'sdt'   => false,
-					'desc'  => __( '站内链接无刷新切换内容（实验性，建议先小流量验证）', 'jinyu' ),
+					'desc'  => __( 'Switch content via internal links without page reloads (experimental; test with a small traffic sample first)', 'jinyu' ),
 				],
 				[
 					'id'    => 'live_ip_location',
-					'title' => __( '侧栏访客归属地查询', 'jinyu' ),
+					'title' => __( 'Sidebar visitor location lookup', 'jinyu' ),
 					'type'  => 'switch',
 					'sdt'   => false,
-					'desc'  => __( '⚠️ 隐私提示：开启后侧栏实时数据会把访客 IP 发往第三方服务（whois.pconline.com.cn）查询归属地。默认关闭，仅显示访客本机可得的 IP/系统/浏览器信息。结果缓存 12 小时，关闭后立即停止外发', 'jinyu' ),
+					'desc'  => __( '⚠️ Privacy note: when enabled, sidebar real-time data sends the visitor\'s IP to a third-party service (whois.pconline.com.cn) for location lookup. Off by default; only locally available IP/OS/browser info is shown. Results are cached for 12 hours; sending stops immediately when disabled', 'jinyu' ),
 				],
 			],
 		];

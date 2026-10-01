@@ -19,14 +19,14 @@ if ( ! comments_open() && get_comments_number() < 1 ) {
 
 $comment_smiley_html = '';
 if ( jinyu_is_checked( 'comment_smiley' ) ) {
-	$comment_smiley_html = '<button type="button" class="jinyu-comment-smiley-btn" aria-label="' . esc_attr__( '插入表情', 'jinyu' ) . '" aria-expanded="false" aria-controls="jinyu-smiley-panel"><i class="fa-regular fa-face-smile" aria-hidden="true"></i></button>'
+	$comment_smiley_html = '<button type="button" class="jinyu-comment-smiley-btn" aria-label="' . esc_attr__( 'Insert emoji', 'jinyu' ) . '" aria-expanded="false" aria-controls="jinyu-smiley-panel"><i class="fa-regular fa-face-smile" aria-hidden="true"></i></button>'
 		. '<div class="jinyu-smiley-panel" id="jinyu-smiley-panel" hidden></div>';
 }
 ?>
 <section class="comments-area" id="comments">
 	<h3 class="jinyu-widget-title">
 		<?php /* translators: %s: 占位符 */ ?>
-		<?php printf( __( '评论 (%d)', 'jinyu' ), get_comments_number() );  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?>
+		<?php printf( __( 'Comments (%d)', 'jinyu' ), get_comments_number() );  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?>
 	</h3>
 	<?php if ( have_comments() ) : ?>
 		<ol class="comment-list jinyu-comment-list" data-post-id="<?php the_ID(); ?>">
@@ -47,7 +47,7 @@ if ( jinyu_is_checked( 'comment_smiley' ) ) {
 			?>
 		<style>.jinyu-comments-more{display:block;margin:16px auto 4px;padding:9px 24px;border:1px solid var(--j-line,#e5e7eb);background:var(--j-bg,#fff);color:var(--j-accent,#4f46e5);border-radius:999px;cursor:pointer;font-size:14px;transition:transform .12s ease,box-shadow .12s ease}.jinyu-comments-more:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(79,70,229,.16)}.jinyu-comments-more:active{transform:translateY(0)}</style>
 		<button type="button" class="jinyu-comments-more" data-post-id="<?php the_ID(); ?>" data-page="2" data-max="<?php echo $jinyu_cm_max; ?>" data-ajax="<?php echo esc_url( admin_url( 'admin-ajax.php' ) );  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?>">
-			<span class="jinyu-comments-more-txt"><?php esc_html_e( '加载更多评论', 'jinyu' ); ?></span>
+			<span class="jinyu-comments-more-txt"><?php esc_html_e( 'Load more comments', 'jinyu' ); ?></span>
 		</button>
 		<?php endif; ?>
 		<?php
@@ -79,16 +79,16 @@ if ( jinyu_is_checked( 'comment_smiley' ) ) {
 			}
 			if ( '' !== $jinyu_greet_name ) {
 				/* translators: %s: 占位符 */
-				$jinyu_greet_main = sprintf( wp_kses( __( '欢迎回来，<em>%s</em>，感谢参与互动！', 'jinyu' ), [ 'em' => [] ] ), esc_html( $jinyu_greet_name ) );
+				$jinyu_greet_main = sprintf( wp_kses( __( 'Welcome back, <em>%s</em>. Thanks for joining the discussion!', 'jinyu' ), [ 'em' => [] ] ), esc_html( $jinyu_greet_name ) );
 			} else {
-				$jinyu_greet_main = wp_kses( __( '欢迎你，<em>新朋友</em>，感谢参与互动！', 'jinyu' ), [ 'em' => [] ] );
+				$jinyu_greet_main = wp_kses( __( 'Welcome, <em>new friend</em>. Thanks for joining the discussion!', 'jinyu' ), [ 'em' => [] ] );
 			}
 			?>
 			<div class="jinyu-comment-greet">
                 <span class="jinyu-comment-greet-avatar" aria-hidden="true"><?php echo $jinyu_greet_avatar; // phpcs:ignore -- get_avatar 输出已转义 ?></span>
 				<div class="jinyu-comment-greet-txt">
                     <span class="jinyu-comment-greet-main"><?php echo $jinyu_greet_main; // phpcs:ignore -- 仅含白名单 em 标签 ?></span>
-					<span class="jinyu-comment-greet-sub"><?php esc_html_e( '文明发言，理性交流 · 首次评论将在审核后展示', 'jinyu' ); ?></span>
+					<span class="jinyu-comment-greet-sub"><?php esc_html_e( 'Be respectful and constructive. First-time comments will appear after approval', 'jinyu' ); ?></span>
 				</div>
 			</div>
 			<?php
@@ -109,11 +109,11 @@ if ( jinyu_is_checked( 'comment_smiley' ) ) {
 			// 「键不存在」告警刷爆日志，且回访者的邮箱与网址永远无法预填。
 			$fields = [
 				'author' => '<div class="jinyu-cf-row"><div class="jinyu-cf-field">'
-					. '<input id="author" name="author" type="text" value="' . esc_attr( $commenter['comment_author'] ?? '' ) . '" placeholder="' . esc_attr__( '称呼', 'jinyu' ) . '" aria-label="' . esc_attr__( '称呼', 'jinyu' ) . '"' . $aria_req . '></div>',
+					. '<input id="author" name="author" type="text" value="' . esc_attr( $commenter['comment_author'] ?? '' ) . '" placeholder="' . esc_attr__( 'Name', 'jinyu' ) . '" aria-label="' . esc_attr__( 'Name', 'jinyu' ) . '"' . $aria_req . '></div>',
 				'email'  => '<div class="jinyu-cf-field">'
-					. '<input id="email" name="email" type="email" value="' . esc_attr( $commenter['comment_author_email'] ?? '' ) . '" placeholder="' . esc_attr__( '邮箱（仅站长可见）', 'jinyu' ) . '" aria-label="' . esc_attr__( '邮箱', 'jinyu' ) . '"' . $aria_req . '></div>',
+					. '<input id="email" name="email" type="email" value="' . esc_attr( $commenter['comment_author_email'] ?? '' ) . '" placeholder="' . esc_attr__( 'Email (visible to admins only)', 'jinyu' ) . '" aria-label="' . esc_attr__( 'Email', 'jinyu' ) . '"' . $aria_req . '></div>',
 				'url'    => '<div class="jinyu-cf-field">'
-					. '<input id="url" name="url" type="url" value="' . esc_attr( $commenter['comment_author_url'] ?? '' ) . '" placeholder="' . esc_attr__( '网址（可选）', 'jinyu' ) . '" aria-label="' . esc_attr__( '网址', 'jinyu' ) . '"></div></div>',
+					. '<input id="url" name="url" type="url" value="' . esc_attr( $commenter['comment_author_url'] ?? '' ) . '" placeholder="' . esc_attr__( 'Website (optional)', 'jinyu' ) . '" aria-label="' . esc_attr__( 'Website', 'jinyu' ) . '"></div></div>',
 			];
 			comment_form(
 				[
@@ -123,8 +123,8 @@ if ( jinyu_is_checked( 'comment_smiley' ) ) {
 					'title_reply_before'   => '',
 					'title_reply_after'    => '',
 					'fields'               => $fields,
-					'comment_field'        => '<div class="jinyu-comment-editor"><p class="comment-form-comment"><textarea id="comment" name="comment" rows="4" placeholder="' . esc_attr__( '说说你的看法…', 'jinyu' ) . '" aria-label="' . esc_attr__( '评论内容', 'jinyu' ) . '" required></textarea></p></div>',
-					'label_submit'         => __( '提交评论', 'jinyu' ),
+					'comment_field'        => '<div class="jinyu-comment-editor"><p class="comment-form-comment"><textarea id="comment" name="comment" rows="4" placeholder="' . esc_attr__( 'Share your thoughts…', 'jinyu' ) . '" aria-label="' . esc_attr__( 'Comment', 'jinyu' ) . '" required></textarea></p></div>',
+					'label_submit'         => __( 'Submit comment', 'jinyu' ),
 					'submit_button'        => '<input name="%1$s" type="submit" id="%2$s" class="%3$s" value="%4$s">',
 					// 底部工具栏：表情按钮 + 字数计数 + 提交（隐藏的评论元字段 %2$s 一并收进工具栏）.
 					'submit_field'         => '<div class="jinyu-comment-toolbar">' . $comment_smiley_html . '<span class="jinyu-comment-counter" data-jinyu-counter>0 / 1000</span>%1$s %2$s</div>',

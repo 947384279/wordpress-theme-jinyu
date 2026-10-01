@@ -23,176 +23,176 @@ class Jinyu_OptionGlobal extends Jinyu_BaseOptionItem {
 	public function get_fields(): array {
 		return [
 			'key'    => 'global',
-			'title'  => __( '全局设置', 'jinyu' ),
-			'desc'   => __( '维护模式、登录页外观、社交账号与 Cookie 提示等全站行为。', 'jinyu' ),
+			'title'  => __( 'Global Settings', 'jinyu' ),
+			'desc'   => __( 'Site-wide behavior: maintenance mode, login page appearance, social accounts, cookie notice, etc.', 'jinyu' ),
 			'icon'   => 'fa-solid fa-layer-group',
 			'fields' => [
 				[
 					'type'  => 'subhead',
-					'title' => __( '文章列表', 'jinyu' ),
+					'title' => __( 'Post Lists', 'jinyu' ),
 				],
 				[
 					'id'      => 'post_style',
-					'title'   => __( '文章列表风格', 'jinyu' ),
+					'title'   => __( 'Post list style', 'jinyu' ),
 					'type'    => 'select',
 					'sdt'     => 'card',
 					'options' => [
 						[
-							'label' => __( '标准列表', 'jinyu' ),
+							'label' => __( 'Standard list', 'jinyu' ),
 							'value' => 'list',
 						],
 						[
-							'label' => ( __( '卡片风格', 'jinyu' ) ),
+							'label' => ( __( 'Card style', 'jinyu' ) ),
 							'value' => 'card',
 						],
 						[
-							'label' => ( __( '大图通栏', 'jinyu' ) ),
+							'label' => ( __( 'Full-width large image', 'jinyu' ) ),
 							'value' => 'big',
 						],
 						[
-							'label' => ( __( '杂志混排', 'jinyu' ) ),
+							'label' => ( __( 'Magazine mixed', 'jinyu' ) ),
 							'value' => 'cms',
 						],
 					],
 				],
 				[
 					'id'    => 'blog_show_load_more',
-					'title' => __( '博客模式显示加载更多', 'jinyu' ),
+					'title' => __( 'Show "Load more" in blog mode', 'jinyu' ),
 					'type'  => 'switch',
 					'sdt'   => false,
 				],
 
 				[
 					'type'  => 'subhead',
-					'title' => __( '兼容性与小工具', 'jinyu' ),
+					'title' => __( 'Compatibility & Widgets', 'jinyu' ),
 				],
 				/* ─── 兼容性 / 杂项开关 ─── */
 				[
 					'id'    => 'use_widgets_block',
-					'title' => __( '使用区块小工具', 'jinyu' ),
+					'title' => __( 'Use block widgets', 'jinyu' ),
 					'type'  => 'switch',
 					'sdt'   => false,
-					'desc'  => __( '关闭时强制经典小工具（默认），开启后使用 WordPress 区块小工具编辑器', 'jinyu' ),
+					'desc'  => __( 'When off, classic widgets are forced (default); when on, the WordPress block widget editor is used', 'jinyu' ),
 				],
 				[
 					'id'    => 'disable_gutenberg_editor',
-					'title' => __( '禁用古腾堡编辑器', 'jinyu' ),
+					'title' => __( 'Disable the Gutenberg editor', 'jinyu' ),
 					'type'  => 'switch',
 					'sdt'   => false,
-					'desc'  => __( '后台文章/页面改用经典编辑器撰写，关闭区块（Gutenberg）编辑器。仅影响撰写界面，不影响已发布内容', 'jinyu' ),
+					'desc'  => __( 'Use the classic editor for posts / pages in the admin and disable the block (Gutenberg) editor. Only affects the writing screen, not published content', 'jinyu' ),
 				],
 				[
 					'id'    => 'hide_post_views',
-					'title' => __( '隐藏文章浏览量', 'jinyu' ),
+					'title' => __( 'Hide post view counts', 'jinyu' ),
 					'type'  => 'switch',
 					'sdt'   => false,
 				],
 
 				[
 					'type'  => 'subhead',
-					'title' => __( '维护模式', 'jinyu' ),
+					'title' => __( 'Maintenance Mode', 'jinyu' ),
 				],
 				[
 					'id'    => 'maintenance_mode',
-					'title' => __( '维护模式', 'jinyu' ),
+					'title' => __( 'Maintenance Mode', 'jinyu' ),
 					'type'  => 'switch',
 					'sdt'   => false,
-					'desc'  => __( '开启后非管理员访问站点将看到「网站维护中」页（HTTP 503）', 'jinyu' ),
+					'desc'  => __( 'When enabled, non-admin visitors see the "Site under maintenance" page (HTTP 503)', 'jinyu' ),
 				],
 				[
 					'id'    => 'maintenance_text',
-					'title' => __( '维护提示文案', 'jinyu' ),
+					'title' => __( 'Maintenance message text', 'jinyu' ),
 					'type'  => 'textarea',
-					'sdt'   => __( '网站维护中，敬请期待恢复。给您带来的不便，我们深表歉意。', 'jinyu' ),
+					'sdt'   => __( 'The site is under maintenance. We will be back soon. We apologize for the inconvenience.', 'jinyu' ),
 					'rows'  => 3,
-					'desc'  => __( '留空使用默认文案', 'jinyu' ),
+					'desc'  => __( 'Leave empty to use the default text', 'jinyu' ),
 				],
 
 				[
 					'type'  => 'subhead',
-					'title' => __( 'Cookie 合规', 'jinyu' ),
+					'title' => __( 'Cookie Compliance', 'jinyu' ),
 				],
 				/* ─── Cookie 合规 ─── */
 				[
 					'id'    => 'cookie_consent',
-					'title' => __( 'Cookie 合规提示条', 'jinyu' ),
+					'title' => __( 'Cookie compliance notice bar', 'jinyu' ),
 					'type'  => 'switch',
 					'sdt'   => false,
-					'desc'  => __( '向访客展示 Cookie/隐私提示，点击「同意」后不再显示（30 天）', 'jinyu' ),
+					'desc'  => __( 'Show visitors a cookie / privacy notice; hidden for 30 days after clicking "Agree"', 'jinyu' ),
 				],
 				[
 					'id'    => 'cookie_consent_text',
-					'title' => __( '提示文案', 'jinyu' ),
+					'title' => __( 'Notice text', 'jinyu' ),
 					'type'  => 'textarea',
-					'sdt'   => __( '我们使用 Cookie 来提升您的浏览体验。继续浏览即表示您同意我们使用 Cookie。', 'jinyu' ),
+					'sdt'   => __( 'We use cookies to improve your browsing experience. By continuing to browse, you agree to our use of cookies.', 'jinyu' ),
 					'rows'  => 2,
-					'desc'  => __( '留空使用默认文案', 'jinyu' ),
+					'desc'  => __( 'Leave empty to use the default text', 'jinyu' ),
 				],
 
 				[
 					'type'  => 'subhead',
-					'title' => __( '布局与展示', 'jinyu' ),
+					'title' => __( 'Layout & Display', 'jinyu' ),
 				],
 				/* ─── 其他布局与杂项 ─── */
 				[
 					'id'      => 'post_card_cols',
-					'title'   => __( '文章列表列数', 'jinyu' ),
+					'title'   => __( 'Post list columns', 'jinyu' ),
 					'type'    => 'select',
 					'sdt'     => '2',
-					'desc'    => __( '作用于全站文章列表网格，有侧边栏时建议 2 列', 'jinyu' ),
+					'desc'    => __( 'Applies to the site-wide post list grid; 2 columns recommended with a sidebar', 'jinyu' ),
 					'options' => [
 						[
-							'label' => __( '2 列', 'jinyu' ),
+							'label' => __( '2 columns', 'jinyu' ),
 							'value' => '2',
 						],
 						[
-							'label' => __( '3 列', 'jinyu' ),
+							'label' => __( '3 columns', 'jinyu' ),
 							'value' => '3',
 						],
 						[
-							'label' => __( '4 列', 'jinyu' ),
+							'label' => __( '4 columns', 'jinyu' ),
 							'value' => '4',
 						],
 					],
 				],
 				[
 					'id'      => 'sidebar_pos',
-					'title'   => __( '侧边栏位置', 'jinyu' ),
+					'title'   => __( 'Sidebar position', 'jinyu' ),
 					'type'    => 'select',
 					'sdt'     => 'right',
 					'options' => [
 						[
-							'label' => __( '右侧', 'jinyu' ),
+							'label' => __( 'Right', 'jinyu' ),
 							'value' => 'right',
 						],
 						[
-							'label' => ( __( '左侧', 'jinyu' ) ),
+							'label' => ( __( 'Left', 'jinyu' ) ),
 							'value' => 'left',
 						],
 						[
-							'label' => ( __( '不显示', 'jinyu' ) ),
+							'label' => ( __( 'Hidden', 'jinyu' ) ),
 							'value' => 'none',
 						],
 					],
 				],
 				[
 					'id'    => 'grey',
-					'title' => __( '全站灰度 (哀悼模式)', 'jinyu' ),
+					'title' => __( 'Site-wide grayscale (mourning mode)', 'jinyu' ),
 					'type'  => 'switch',
 					'sdt'   => false,
 				],
 				[
 					'id'    => 'load_more_infinite',
-					'title' => __( '滚动到底部自动加载', 'jinyu' ),
+					'title' => __( 'Auto-load on scroll to bottom', 'jinyu' ),
 					'type'  => 'switch',
 					'sdt'   => false,
 				],
 				[
 					'id'    => 'views_wait_seconds',
-					'title' => __( '同一 IP 浏览量冷却秒数', 'jinyu' ),
+					'title' => __( 'View count cooldown per IP (seconds)', 'jinyu' ),
 					'type'  => 'number',
 					'sdt'   => 10,
-					'desc'  => __( '防止狂刷', 'jinyu' ),
+					'desc'  => __( 'Prevents view-count spamming', 'jinyu' ),
 				],
 			],
 		];

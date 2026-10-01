@@ -36,7 +36,7 @@ if ( ! function_exists( 'jinyu_pagination' ) ) {
 				'<div class="jinyu-load-more-wrap"><button type="button" class="jinyu-load-more" data-page="%d" data-target=".jinyu-post-grid" data-total="%d">%s</button></div>',
 				$current, /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 				$total, /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-				esc_html__( '加载更多', 'jinyu' )
+				esc_html__( 'Load more', 'jinyu' )
 			);
 			return;
 		}
@@ -99,9 +99,9 @@ if ( ! function_exists( 'jinyu_pagination' ) ) {
 			esc_html__( '跳转', 'jinyu' ),
 			$chev_single, /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 			$total, /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-			esc_attr__( '页码', 'jinyu' ),
+			esc_attr__( 'Page number', 'jinyu' ),
 			/* translators: %s: 占位符 */
-			esc_attr( sprintf( __( '输入 1 到 %d 之间的页码后跳转', 'jinyu' ), $total ) ),
+			esc_attr( sprintf( __( 'Enter a page number between 1 and %d to jump', 'jinyu' ), $total ) ),
 			esc_attr__( '跳转', 'jinyu' ),
 			$chev_double /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		);
@@ -132,7 +132,7 @@ if ( ! function_exists( 'jinyu_read_time' ) ) {
 	 */
 	function jinyu_read_time( $post_id = 0 ) {
 		/* translators: %s: 占位符 */
-		return sprintf( esc_html__( '%d 分钟阅读', 'jinyu' ), jinyu_read_minutes( $post_id ) );
+		return sprintf( esc_html__( '%d min read', 'jinyu' ), jinyu_read_minutes( $post_id ) );
 	}
 }
 
@@ -146,7 +146,7 @@ if ( ! function_exists( 'jinyu_post_word_count' ) ) {
 		$post_id = $post_id ?: get_the_ID();
 		$content = get_post_field( 'post_content', $post_id );
 		$count   = mb_strlen( preg_replace( '/\s+/', '', strip_tags( (string) $content ) ), 'UTF-8' ); /* phpcs:ignore WordPress.WP.AlternativeFunctions.strip_tags_strip_tags -- 已知安全字符串裁剪，wp_strip_all_tags 会改变保留标签语义 */
-		return number_format( $count, 0, '.', ',' ) . ' ' . esc_html__( '字', 'jinyu' );
+		return number_format( $count, 0, '.', ',' ) . ' ' . esc_html__( 'words', 'jinyu' );
 	}
 }
 
@@ -184,8 +184,8 @@ if ( ! function_exists( 'jinyu_breadcrumbs' ) ) {
 	function jinyu_breadcrumbs() {
 		$sep   = '<span class="jinyu-bread-sep" aria-hidden="true"><i class="fa-solid fa-angle-right"></i></span>';
 		$cur   = 'class="jinyu-bread-current" aria-current="page"';
-		$html  = '<nav class="jinyu-breadcrumbs" aria-label="' . esc_attr__( '面包屑导航', 'jinyu' ) . '">';
-		$html .= '<a class="jinyu-bread-home" href="' . esc_url( home_url( '/' ) ) . '"><i class="fa-solid fa-house" aria-hidden="true"></i>' . esc_html__( '首页', 'jinyu' ) . '</a>';
+		$html  = '<nav class="jinyu-breadcrumbs" aria-label="' . esc_attr__( 'Breadcrumbs', 'jinyu' ) . '">';
+		$html .= '<a class="jinyu-bread-home" href="' . esc_url( home_url( '/' ) ) . '"><i class="fa-solid fa-house" aria-hidden="true"></i>' . esc_html__( 'Home', 'jinyu' ) . '</a>';
 
 		if ( is_single() ) {
 			$cats = get_the_category();
@@ -198,7 +198,7 @@ if ( ! function_exists( 'jinyu_breadcrumbs' ) ) {
 		} elseif ( is_tag() ) {
 			$html .= $sep . '<span ' . $cur . '>#' . esc_html( single_tag_title( '', false ) ) . '</span>';
 		} elseif ( is_search() ) {
-			$html .= $sep . '<span ' . $cur . '>' . esc_html__( '搜索:', 'jinyu' ) . ' ' . esc_html( get_search_query() ) . '</span>';
+			$html .= $sep . '<span ' . $cur . '>' . esc_html__( 'Search:', 'jinyu' ) . ' ' . esc_html( get_search_query() ) . '</span>';
 		} elseif ( is_author() ) {
 			$html .= $sep . '<span ' . $cur . '>' . esc_html( get_the_author() ) . '</span>';
 		} elseif ( is_page() ) {
@@ -222,7 +222,7 @@ if ( ! function_exists( 'jinyu_archive_meta_html' ) ) {
 			return '';
 		}
 		$count = (int) $q->found_posts;
-		$html  = '<p class="jinyu-term-meta"><b>' . esc_html( number_format_i18n( $count ) ) . '</b> ' . esc_html__( '篇文章', 'jinyu' );
+		$html  = '<p class="jinyu-term-meta"><b>' . esc_html( number_format_i18n( $count ) ) . '</b> ' . esc_html__( 'posts', 'jinyu' );
 		if ( ! empty( $q->posts[0]->post_date ) ) {
 			$html .= ' · ' . esc_html__( '最后更新于', 'jinyu' ) . ' ' . esc_html( mysql2date( get_option( 'date_format' ), $q->posts[0]->post_date ) );
 		}
@@ -373,8 +373,8 @@ if ( ! function_exists( 'jinyu_default_nav' ) ) {
 	 */
 	function jinyu_default_nav() {
 		$items = [
-			home_url( '/' )          => __( '首页', 'jinyu' ),
-			home_url( '/archives/' ) => __( '文章归档', 'jinyu' ),
+			home_url( '/' )          => __( 'Home', 'jinyu' ),
+			home_url( '/archives/' ) => __( 'Post Archives', 'jinyu' ),
 		];
 
 		$cats = get_categories(

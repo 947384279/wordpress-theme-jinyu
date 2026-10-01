@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 <body <?php body_class(); ?>>
 <?php wp_body_open(); ?>
 
-<a href="#jinyu-content" class="jinyu-skip-link"><?php esc_html_e( '跳到主内容', 'jinyu' ); ?></a>
+<a href="#jinyu-content" class="jinyu-skip-link"><?php esc_html_e( 'Skip to content', 'jinyu' ); ?></a>
 
 <div class="jinyu-skeleton" id="jinyu-skeleton" aria-hidden="true">
 	<div class="jinyu-skeleton-bar is-title"></div>
@@ -52,9 +52,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<div class="jinyu-container jinyu-header-inner">
 
 	<button type="button" class="jinyu-nav-toggle" data-jinyu-nav-toggle
-			data-label-open="<?php esc_attr_e( '展开菜单', 'jinyu' ); ?>"
-			data-label-close="<?php esc_attr_e( '关闭菜单', 'jinyu' ); ?>"
-			aria-label="<?php esc_attr_e( '展开菜单', 'jinyu' ); ?>" aria-expanded="false" aria-controls="jinyu-primary-nav">
+			data-label-open="<?php esc_attr_e( 'Expand menu', 'jinyu' ); ?>"
+			data-label-close="<?php esc_attr_e( 'Close menu', 'jinyu' ); ?>"
+			aria-label="<?php esc_attr_e( 'Expand menu', 'jinyu' ); ?>" aria-expanded="false" aria-controls="jinyu-primary-nav">
 		<span class="jinyu-burger" aria-hidden="true"><span></span><span></span><span></span></span>
 	</button>
 
@@ -154,19 +154,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<?php endif; ?>
 
 		<button type="button" class="jinyu-icon-btn" data-jinyu-search-toggle
-				aria-label="<?php esc_attr_e( '搜索', 'jinyu' ); ?>">
+				aria-label="<?php esc_attr_e( 'Search', 'jinyu' ); ?>">
 		<i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
 		</button>
 
 		<button type="button" class="jinyu-icon-btn" data-jinyu-theme-toggle
-				aria-label="<?php esc_attr_e( '切换明暗模式', 'jinyu' ); ?>" aria-pressed="false">
+				aria-label="<?php esc_attr_e( 'Toggle light/dark mode', 'jinyu' ); ?>" aria-pressed="false">
 		<i class="fa-solid fa-moon" aria-hidden="true"></i>
 		</button>
 
 		<?php if ( is_user_logged_in() ) : ?>
 		<div class="jinyu-user-menu" data-jinyu-user-menu>
 			<button type="button" class="jinyu-user-btn" data-jinyu-user-toggle
-					title="<?php esc_attr_e( '用户菜单', 'jinyu' ); ?>"
+					title="<?php esc_attr_e( 'User menu', 'jinyu' ); ?>"
 					aria-expanded="false" aria-label="<?php echo esc_attr( wp_get_current_user()->display_name ); ?>">
 			<img class="jinyu-user-avatar"
 				src="
@@ -198,7 +198,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</div>
 			<div class="jinyu-user-drop-sep"></div>
 			<?php if ( jinyu_is_checked( 'user_center_enable' ) ) : ?>
-				<a href="<?php echo esc_url( jinyu_user_page_url() ); ?>"><i class="fa-solid fa-gauge-high" aria-hidden="true"></i><?php esc_html_e( '用户中心', 'jinyu' ); ?></a>
+				<a href="<?php echo esc_url( jinyu_user_page_url() ); ?>"><i class="fa-solid fa-gauge-high" aria-hidden="true"></i><?php esc_html_e( 'User Center', 'jinyu' ); ?></a>
 			<?php endif; ?>
 			<?php if ( jinyu_is_checked( 'user_can_submit' ) ) : ?>
 				<a href="
@@ -213,11 +213,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 					)
 				);
 				?>
-							"><i class="fa-solid fa-pen-to-square" aria-hidden="true"></i><?php esc_html_e( '投稿', 'jinyu' ); ?></a>
+							"><i class="fa-solid fa-pen-to-square" aria-hidden="true"></i><?php esc_html_e( 'Submit Post', 'jinyu' ); ?></a>
 			<?php endif; ?>
-			<a href="<?php echo esc_url( jinyu_user_page_url( 'profile' ) ); ?>"><i class="fa-solid fa-user-gear" aria-hidden="true"></i><?php esc_html_e( '账号设置', 'jinyu' ); ?></a>
+			<a href="<?php echo esc_url( jinyu_user_page_url( 'profile' ) ); ?>"><i class="fa-solid fa-user-gear" aria-hidden="true"></i><?php esc_html_e( 'Account Settings', 'jinyu' ); ?></a>
 			<a href="<?php echo esc_url( jinyu_user_page_url( 'notifications' ) ); ?>" class="jinyu-user-notif-link">
-				<i class="fa-solid fa-bell" aria-hidden="true"></i><?php esc_html_e( '消息中心', 'jinyu' ); ?>
+				<i class="fa-solid fa-bell" aria-hidden="true"></i><?php esc_html_e( 'Messages', 'jinyu' ); ?>
 				<?php $jinyu_unread = function_exists( 'jinyu_get_unread_count' ) ? jinyu_get_unread_count( get_current_user_id() ) : 0; ?>
 				<?php
 				if ( $jinyu_unread > 0 ) :
@@ -225,11 +225,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<span class="jinyu-badge"><?php echo $jinyu_unread > 99 ? '99+' : (int) $jinyu_unread; ?></span><?php endif; ?>
 			</a>
 			<div class="jinyu-user-drop-sep"></div>
-			<a href="<?php echo esc_url( wp_logout_url( home_url() ) ); ?>" class="jinyu-user-drop-warn" data-jinyu-confirm="<?php esc_attr_e( '确定退出登录吗？', 'jinyu' ); ?>"><i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i><?php esc_html_e( '退出登录', 'jinyu' ); ?></a>
+			<a href="<?php echo esc_url( wp_logout_url( home_url() ) ); ?>" class="jinyu-user-drop-warn" data-jinyu-confirm="<?php esc_attr_e( 'Are you sure you want to log out?', 'jinyu' ); ?>"><i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i><?php esc_html_e( 'Log out', 'jinyu' ); ?></a>
 			</div>
 		</div>
 		<?php elseif ( jinyu_is_checked( 'user_center_enable' ) ) : ?>
-		<button type="button" class="jinyu-login-btn" data-jinyu-auth-open="login"><?php esc_html_e( '登录', 'jinyu' ); ?></button>
+		<button type="button" class="jinyu-login-btn" data-jinyu-auth-open="login"><?php esc_html_e( 'Log in', 'jinyu' ); ?></button>
 		<?php endif; ?>
 	</div><!-- /.jinyu-header-tools -->
 
@@ -238,7 +238,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <?php $notice = trim( (string) jinyu_get_option( 'top_notice', '' ) ); ?>
 <?php if ( $notice ) : ?>
-	<aside class="jinyu-top-notice" aria-label="<?php esc_attr_e( '站点公告', 'jinyu' ); ?>">
+	<aside class="jinyu-top-notice" aria-label="<?php esc_attr_e( 'Site Notice', 'jinyu' ); ?>">
 	<div class="jinyu-container">
 		<div class="jinyu-top-notice-card">
 		<i class="fa-solid fa-bullhorn" aria-hidden="true"></i>
@@ -248,9 +248,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	</aside>
 <?php endif; ?>
 
-<div class="jinyu-mask jinyu-search-mask" hidden role="dialog" aria-modal="true" aria-label="<?php esc_attr_e( '站内搜索', 'jinyu' ); ?>">
+<div class="jinyu-mask jinyu-search-mask" hidden role="dialog" aria-modal="true" aria-label="<?php esc_attr_e( 'Site search', 'jinyu' ); ?>">
 	<div class="jinyu-search-panel">
 	<?php get_search_form(); ?>
-	<p class="jinyu-search-tip"><?php esc_html_e( '按 Esc 关闭', 'jinyu' ); ?></p>
+	<p class="jinyu-search-tip"><?php esc_html_e( 'Press Esc to close', 'jinyu' ); ?></p>
 	</div>
 </div>

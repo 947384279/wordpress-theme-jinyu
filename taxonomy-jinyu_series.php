@@ -21,7 +21,7 @@ get_header(); ?>
 				<div class="jinyu-term-badge" aria-hidden="true"><?php echo esc_html( $jinyu_deco ); ?></div>
 				<div class="jinyu-term-body">
 					<h1><?php single_term_title(); ?></h1>
-					<div class="jinyu-term-desc"><?php esc_html_e( '文章系列', 'jinyu' ); ?></div>
+					<div class="jinyu-term-desc"><?php esc_html_e( 'Post Series', 'jinyu' ); ?></div>
 					<?php echo jinyu_archive_meta_html();  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?>
 					<?php
 					if ( is_user_logged_in() ) :
@@ -31,7 +31,7 @@ get_header(); ?>
 						<button type="button" class="jinyu-follow-btn<?php echo $jinyu_following_t ? ' is-following' : ''; ?>"
 								data-jinyu-follow data-target="term" data-id="<?php echo $jinyu_term_id;  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?>">
 							<i class="fa-solid fa-star" aria-hidden="true"></i>
-							<span><?php echo $jinyu_following_t ? esc_html__( '已收藏系列', 'jinyu' ) : esc_html__( '收藏系列', 'jinyu' ); ?></span>
+							<span><?php echo $jinyu_following_t ? esc_html__( 'Favorited series', 'jinyu' ) : esc_html__( 'Favorite series', 'jinyu' ); ?></span>
 						</button>
 					<?php endif; ?>
 				</div>

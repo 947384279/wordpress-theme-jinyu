@@ -23,120 +23,120 @@ class Jinyu_OptionUser extends Jinyu_BaseOptionItem {
 	public function get_fields(): array {
 		return [
 			'key'    => 'user',
-			'title'  => __( '用户与登录', 'jinyu' ),
-			'desc'   => __( '评论头像、UA 徽标、登录注册与用户互动。', 'jinyu' ),
+			'title'  => __( 'Users & Login', 'jinyu' ),
+			'desc'   => __( 'Comment avatars, UA badges, login / registration, and user interactions.', 'jinyu' ),
 			'icon'   => 'fa-solid fa-user-shield',
 			'fields' => [
 				[
 					'id'    => 'user_center_enable',
-					'title' => __( '启用用户中心', 'jinyu' ),
+					'title' => __( 'Enable user center', 'jinyu' ),
 					'type'  => 'switch',
 					'sdt'   => true,
-					'desc'  => __( '关闭后将不再显示登录/注册入口', 'jinyu' ),
+					'desc'  => __( 'When off, login / registration entries are hidden', 'jinyu' ),
 				],
 				[
 					'id'      => 'user_center_page',
-					'title'   => __( '用户中心页面', 'jinyu' ),
+					'title'   => __( 'User center page', 'jinyu' ),
 					'type'    => 'select',
 					'sdt'     => '',
 					'options' => $this->all_pages(),
-					'desc'    => __( '选择一个「用户中心」页面模板，未选则跳转后台个人资料', 'jinyu' ),
+					'desc'    => __( 'Select a "User Center" page template; if none is selected, redirects to the admin profile page', 'jinyu' ),
 				],
 
 				[
 					'id'    => 'login_logo',
-					'title' => __( '登录页 Logo', 'jinyu' ),
+					'title' => __( 'Login page logo', 'jinyu' ),
 					'type'  => 'upload',
 					'sdt'   => '',
-					'desc'  => __( '自定义 WP 登录页 Logo 图片', 'jinyu' ),
+					'desc'  => __( 'Custom logo image for the WP login page', 'jinyu' ),
 				],
 				[
 					'id'    => 'login_bg',
-					'title' => __( '登录页背景图', 'jinyu' ),
+					'title' => __( 'Login page background image', 'jinyu' ),
 					'type'  => 'upload',
 					'sdt'   => '',
-					'desc'  => __( '自定义 WP 登录页背景图', 'jinyu' ),
+					'desc'  => __( 'Custom background image for the WP login page', 'jinyu' ),
 				],
 
 				[
 					'id'      => 'captcha_policy',
-					'title'   => __( '验证码策略', 'jinyu' ),
+					'title'   => __( 'CAPTCHA policy', 'jinyu' ),
 					'type'    => 'select',
 					'sdt'     => 'smart',
-					'desc'    => __( '统一控制登录 / 注册 / 找回密码 / 友链申请的验证码：智能=除登录外（注册、找回、友链申请）始终要求、登录仅失败 3 次后要求（推荐）；始终=全部场景都始终要求；关闭=全部不验证。', 'jinyu' ),
+					'desc'    => __( 'Controls CAPTCHA for login / registration / password reset / friend link application: Smart = always required except for login (registration, reset, friend link application), where it is required only after 3 failed attempts (recommended); Always = required in all cases; Off = never required.', 'jinyu' ),
 					'options' => [
 						[
-							'label' => __( '智能（推荐）', 'jinyu' ),
+							'label' => __( 'Smart (recommended)', 'jinyu' ),
 							'value' => 'smart',
 						],
 						[
-							'label' => __( '始终要求', 'jinyu' ),
+							'label' => __( 'Always required', 'jinyu' ),
 							'value' => 'always',
 						],
 						[
-							'label' => __( '关闭', 'jinyu' ),
+							'label' => __( 'Close', 'jinyu' ),
 							'value' => 'off',
 						],
 					],
 				],
 				[
 					'id'    => 'reg_notify_admin',
-					'title' => __( '注册时通知管理员', 'jinyu' ),
+					'title' => __( 'Notify the admin on registration', 'jinyu' ),
 					'type'  => 'switch',
 					'sdt'   => false,
 				],
 
 				[
 					'id'    => 'author_box_enable',
-					'title' => __( '文末作者信息卡', 'jinyu' ),
+					'title' => __( 'Author card at the end of posts', 'jinyu' ),
 					'type'  => 'switch',
 					'sdt'   => true,
-					'desc'  => __( '文章底部展示作者头像、简介与文章/评论数', 'jinyu' ),
+					'desc'  => __( 'Show the author\'s avatar, bio, and post / comment counts at the bottom of posts', 'jinyu' ),
 				],
 				[
 					'id'      => 'comment_avatar_src',
-					'title'   => __( '头像来源', 'jinyu' ),
+					'title'   => __( 'Avatar source', 'jinyu' ),
 					'type'    => 'select',
 					'sdt'     => 'gravatar',
 					'options' => [
 						[
-							'label' => __( 'Gravatar（默认）', 'jinyu' ),
+							'label' => __( 'Gravatar (default)', 'jinyu' ),
 							'value' => 'gravatar',
 						],
 						[
-							'label' => __( 'Cravatar（国内）', 'jinyu' ),
+							'label' => __( 'Cravatar (China)', 'jinyu' ),
 							'value' => 'cravatar',
 						],
 						[
-							'label' => __( 'WeAvatar（国内）', 'jinyu' ),
+							'label' => __( 'WeAvatar (China)', 'jinyu' ),
 							'value' => 'weavatar',
 						],
 						[
-							'label' => __( 'V2EX（国内）', 'jinyu' ),
+							'label' => __( 'V2EX (China)', 'jinyu' ),
 							'value' => 'v2ex',
 						],
 						[
-							'label' => __( 'Loli（国内）', 'jinyu' ),
+							'label' => __( 'Loli (China)', 'jinyu' ),
 							'value' => 'loli',
 						],
 						[
-							'label' => __( 'WebP.se（国内）', 'jinyu' ),
+							'label' => __( 'WebP.se (China)', 'jinyu' ),
 							'value' => 'webpse',
 						],
 						[
-							'label' => __( '首字母占位图', 'jinyu' ),
+							'label' => __( 'Letter avatar placeholder', 'jinyu' ),
 							'value' => 'letter',
 						],
 					],
-					'desc'    => __( '国内源（Cravatar / WeAvatar / V2EX / Loli / WebP.se 等）兼容 Gravatar 协议、国内访问更快，评论与作者头像均生效；letter 模式不依赖任何头像服务器，离线也能显示', 'jinyu' ),
+					'desc'    => __( 'China-based sources (Cravatar / WeAvatar / V2EX / Loli / WebP.se, etc.) are Gravatar-compatible and faster in China, for both comment and author avatars; letter mode needs no avatar server and works offline', 'jinyu' ),
 				],
 
 				[
 					'id'    => 'user_can_submit',
-					'title' => __( '允许前台投稿', 'jinyu' ),
+					'title' => __( 'Allow front-end post submission', 'jinyu' ),
 					'type'  => 'switch',
 					'sdt'   => false,
-					'desc'  => __( '开启后登录用户可在用户中心投稿，文章进入待审核队列', 'jinyu' ),
+					'desc'  => __( 'When enabled, logged-in users can submit posts in the user center; submissions enter the review queue', 'jinyu' ),
 				],
 
 				// 第三方登录（QQ / GitHub / Gitee / Apple）逻辑已迁至「金玉增强插件」，.
