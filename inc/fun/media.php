@@ -161,7 +161,7 @@ if ( ! function_exists( 'jinyu_generate_webp_file' ) ) {
 						imagesavealpha( $img, true );
 					}
 					$ok = (bool) @imagewebp( $img, $dst, 80 ); /* phpcs:ignore WordPress.WP.AlternativeFunctions,WordPress.PHP.NoSilencedErrors.Discouraged -- 预期可能失败的操作（反序列化/JSON），静默处理 */
-					imagedestroy( $img );
+					// 不调 imagedestroy()：PHP 7.0 起它是空操作，GD 资源随作用域结束自动释放.
 					// GD 偶发产出 0 字节文件，视为失败并清除.
 					if ( $ok && (int) @filesize( $dst ) < 64 ) { /* phpcs:ignore WordPress.WP.AlternativeFunctions,WordPress.PHP.NoSilencedErrors.Discouraged -- 预期可能失败的操作（反序列化/JSON），静默处理 */
 						@unlink( $dst ); /* phpcs:ignore WordPress.WP.AlternativeFunctions,WordPress.PHP.NoSilencedErrors.Discouraged -- 预期可能失败的操作（反序列化/JSON），静默处理 */

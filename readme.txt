@@ -4,7 +4,7 @@ Tags: blog, custom-colors, custom-logo, custom-menu, editor-style, featured-imag
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.2.3
+Stable tag: 1.2.7
 License: GPL v3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -74,6 +74,14 @@ License URI: https://www.gnu.org/licenses/gpl-3.0.html
 每个设置分组面板头部都有「重置本组」按钮，仅清空该分组、回退默认值，不影响其它设置。
 
 == Changelog ==
+
+= 1.2.7 =
+* RSS 订阅增强：feed 输出文章缩略图，取图优先级为「特色图 → 正文首图 → 子附件」；RSS 2.0 注入 enclosure、Atom 注入 rel=enclosure，摘要与正文自动前置封面图。
+* 页脚社交图标支持 RSS 条目：后台未填写链接时自动兜底指向全站 feed 地址。
+* 全站界面文案国际化：界面原文统一为英文，附 zh_CN 翻译包（901 条），覆盖前台与后台设置页。
+* 修复 WP 7.x 下主题内置语言目录不被加载的问题：翻译包文件名由 jinyu-zh_CN.mo 改为 zh_CN.mo，与 WP 的 {locale}.mo 查找约定一致。
+* 编码规范全量归零：WPCS 校验 0 error / 0 warning，补齐 translators 注释。
+* 移除已废弃的 imagedestroy() 调用（PHP 7.0 起为空操作），小工具统计数组对齐规范化。
 
 = 1.2.3 =
 * 缓存失效机制重构：保存设置或切换主题后前台立即生效，无需等待缓存过期（缓存 key 统一拼入版本号盐值，版本号 bump 后旧 key 立即失效，并由每日任务回收孤儿 transient）。

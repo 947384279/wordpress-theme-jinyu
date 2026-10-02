@@ -345,6 +345,7 @@ require_once JINYU_ABS_DIR . '/inc/fun/crypto.php';
 require_once JINYU_ABS_DIR . '/inc/fun/core.php';
 require_once JINYU_ABS_DIR . '/inc/fun/patterns.php';
 require_once JINYU_ABS_DIR . '/inc/fun/maintenance.php';
+require_once JINYU_ABS_DIR . '/inc/fun/feed.php';
 // SMTP 发信已迁至配套插件 jinyu-theme-companion（邮件 SMTP 分区）：主题保持纯呈现层，.
 // 避免两处重复注册 wp_ajax_jinyu_test_smtp（nonce 不同源，跨插件调用必被 check_ajax_referer 打回 403）.
 // 性能优化中心已迁至配套插件 jinyu-theme-companion（perf-center.php）.

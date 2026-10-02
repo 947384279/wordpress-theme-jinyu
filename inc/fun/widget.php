@@ -566,11 +566,11 @@ class Jinyu_Stats_Widget extends WP_Widget {
 		$stats = jinyu_cache_get( 'stats_counts' );
 		if ( ! is_array( $stats ) || empty( $stats ) ) {
 			$stats = [
-				__( 'Posts', 'jinyu' ) => (int) wp_count_posts( 'post' )->publish,
-				__( 'Pages', 'jinyu' ) => (int) wp_count_posts( 'page' )->publish,
-				__( 'Comments', 'jinyu' ) => (int) wp_count_comments()->approved,
+				__( 'Posts', 'jinyu' )      => (int) wp_count_posts( 'post' )->publish,
+				__( 'Pages', 'jinyu' )      => (int) wp_count_posts( 'page' )->publish,
+				__( 'Comments', 'jinyu' )   => (int) wp_count_comments()->approved,
 				__( 'Categories', 'jinyu' ) => (int) wp_count_terms( 'category' ),
-				__( 'Tags', 'jinyu' ) => (int) wp_count_terms( 'post_tag' ),
+				__( 'Tags', 'jinyu' )       => (int) wp_count_terms( 'post_tag' ),
 			];
 			jinyu_cache_set( 'stats_counts', $stats, DAY_IN_SECONDS );
 		}

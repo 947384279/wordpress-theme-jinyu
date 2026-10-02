@@ -316,7 +316,49 @@ if ( ! function_exists( 'jinyu_parse_social' ) ) {
 
 if ( ! function_exists( 'jinyu_footer_social' ) ) {
 	function jinyu_footer_social(): array {
-		return jinyu_parse_social( (string) jinyu_get_option( 'footer_social', '' ) );
+		$list = jinyu_parse_social( (string) jinyu_get_option( 'footer_social', '' ) );
+
+		// 后台没手动填 RSS 也可订阅：补一条指向全站 feed 的入口，.
+		// 避免前台完全没有可见的订阅入口（<head> 里的 <link> 普通读者看不到）.
+		foreach ( $list as $item ) {
+			$exist = jinyu_is_rss_item( $item );
+			if ( $exist ) {
+				return $list;
+			}
+		}
+
+		$list[] = jinyu_rss_feed_item();
+		return $list;
+	}
+}
+
+if ( ! function_exists( 'jinyu_rss_feed_item' ) ) {
+	/**
+	 * 生成一条指向全站 feed 的社交项。
+	 *
+	 * @return array{icon: string, title: string, url: string}
+	 */
+	function jinyu_rss_feed_item(): array {
+		return [
+			'icon'  => 'fa-solid fa-rss',
+			'title' => __( 'RSS', 'jinyu' ),
+			'url'   => get_bloginfo( 'rss_url' ),
+		];
+	}
+}
+
+if ( ! function_exists( 'jinyu_is_rss_item' ) ) {
+	/**
+	 * 判断某条社交项是不是 RSS（按标题/图标名匹配，大小写不敏感）.
+	 *
+	 * @param array $item 单条社交项。
+	 * @return bool
+	 */
+	function jinyu_is_rss_item( array $item ): bool {
+		$title = strtolower( (string) ( $item['title'] ?? '' ) );
+		$icon  = strtolower( (string) ( $item['icon'] ?? '' ) );
+
+		return 'rss' === $title || false !== strpos( $icon, 'fa-rss' );
 	}
 }
 
