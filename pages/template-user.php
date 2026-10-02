@@ -72,8 +72,8 @@ $stats = is_user_logged_in() ? jinyu_user_stats( $uid ) : [];
 				<i class="<?php echo esc_attr( $t['icon'] ); ?>" aria-hidden="true"></i>
 				<span><?php echo esc_html( $t['label'] ); ?></span>
 				<?php
-				if ( 'notifications' === $slug && function_exists( 'jinyu_get_unread_count' ) ) :
-					$jinyu_side_unread = (int) jinyu_get_unread_count( $uid );
+				if ( 'notifications' === $slug ) :
+					$jinyu_side_unread = (int) jinyu_ext_value( 'unread_count', 0, $uid );
 					if ( $jinyu_side_unread > 0 ) :
 						?>
 						<span class="jinyu-badge"><?php echo $jinyu_side_unread > 99 ? '99+' : $jinyu_side_unread;  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?></span>

@@ -2503,7 +2503,7 @@ html.jinyu-tools-compact {
 
 .jinyu-jump-panel .jinyu-page-jump-input {
     width: 64px;
-    height: 30px;
+    height: 38px;
     padding: 0;
     border: 0;
     background: transparent;
@@ -2525,8 +2525,8 @@ html.jinyu-tools-compact {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 30px;
-    height: 30px;
+    width: 34px;
+    height: 38px;
     padding: 0;
     border: 0;
     border-radius: @radius-sm;
@@ -4385,7 +4385,13 @@ html.jinyu-tools-compact {
     &:hover { border-color: @primary-text; color: @primary-text; }
     &:active { transform: scale(.97); }
     &:disabled { cursor: default; }
+    /* 请求在途：用 aria-busy + 图标旋转表达「处理中」，不用 disabled 以免焦点丢失 */
+    &.is-loading { pointer-events: none; opacity: .7; cursor: wait; }
+    &.is-loading i { animation: jinyu-vote-spin .9s linear infinite; }
     i { font-size: @fs-md; }
+}
+@keyframes jinyu-vote-spin {
+    to { transform: rotate(360deg); }
 }
 .jinyu-vote-count {
     min-width: 1.6em;

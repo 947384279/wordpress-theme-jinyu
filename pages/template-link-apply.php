@@ -168,10 +168,10 @@ $jinyu_profile_rows = [
 						</div>
 						<input type="text" name="jy_hp" class="jinyu-fa-hp" tabindex="-1" autocomplete="off" aria-hidden="true">
 						<div class="jinyu-fa-foot">
-							<?php echo function_exists( 'jinyu_captcha_markup' ) ? jinyu_captcha_markup( 'flink_apply' ) : '';  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?>
+							<?php echo jinyu_ext_markup( 'captcha', 'flink_apply' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 扩展插槽 HTML 由插件自行转义输出 ?>
 							<button type="submit" class="jinyu-btn jinyu-btn-primary"><?php esc_html_e( '提交申请', 'jinyu' ); ?></button>
 						</div>
-						<p class="jinyu-auth-tip" data-jinyu-flink-tip></p>
+						<p class="jinyu-auth-tip" data-jinyu-flink-tip aria-live="polite"></p>
 					</form>
 					<div class="jinyu-fa-done" data-jinyu-flink-done hidden>
 						<i class="fa-solid fa-circle-check" aria-hidden="true"></i>

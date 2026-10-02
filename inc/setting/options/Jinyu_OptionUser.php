@@ -98,37 +98,47 @@ class Jinyu_OptionUser extends Jinyu_BaseOptionItem {
 					'title'   => __( 'Avatar source', 'jinyu' ),
 					'type'    => 'select',
 					'sdt'     => 'gravatar',
-					'options' => [
+					// 选项表由 jinyu_avatar_mirror_map() 生成，保证与实际可用源永远一致。
+					// 发行变体该函数只返回官方 gravatar.com，故这里自动只剩官方源 + 字母头像
+					//（不会出现「后台能选、运行时却被门控拦掉」的错位）。
+					'options' => array_merge(
 						[
-							'label' => __( 'Gravatar (default)', 'jinyu' ),
-							'value' => 'gravatar',
+							[
+								'label' => __( 'Gravatar (default)', 'jinyu' ),
+								'value' => 'gravatar',
+							],
 						],
+						array_values(
+							array_filter(
+								array_map(
+									static function ( $id, $prefix ) {
+										// 发行变体下 jinyu_avatar_mirror_map() 只返回官方 gravatar.com，
+										// 它已在上一段单独渲染；这里必须跳过，否则会产出**两个 value=gravatar
+										// 的 <option>**（w.org 审核会直接看到重复项）。
+										return [
+											/* translators: %s: 头像镜像服务名称 */
+											'label' => sprintf( __( '%s (China)', 'jinyu' ), $id ),
+											'value' => $id,
+										];
+									},
+									array_keys( jinyu_avatar_mirror_map() ),
+									array_values( jinyu_avatar_mirror_map() )
+								),
+								static function ( $opt ) {
+									return 'gravatar' !== $opt['value'];
+								}
+							)
+						),
 						[
-							'label' => __( 'Cravatar (China)', 'jinyu' ),
-							'value' => 'cravatar',
-						],
-						[
-							'label' => __( 'WeAvatar (China)', 'jinyu' ),
-							'value' => 'weavatar',
-						],
-						[
-							'label' => __( 'V2EX (China)', 'jinyu' ),
-							'value' => 'v2ex',
-						],
-						[
-							'label' => __( 'Loli (China)', 'jinyu' ),
-							'value' => 'loli',
-						],
-						[
-							'label' => __( 'WebP.se (China)', 'jinyu' ),
-							'value' => 'webpse',
-						],
-						[
-							'label' => __( 'Letter avatar placeholder', 'jinyu' ),
-							'value' => 'letter',
-						],
-					],
-					'desc'    => __( 'China-based sources (Cravatar / WeAvatar / V2EX / Loli / WebP.se, etc.) are Gravatar-compatible and faster in China, for both comment and author avatars; letter mode needs no avatar server and works offline', 'jinyu' ),
+							[
+								'label' => __( 'Letter avatar placeholder', 'jinyu' ),
+								'value' => 'letter',
+							],
+						]
+					),
+					'desc'    => jinyu_is_wporg()
+						? __( 'Uses the official Gravatar service. To avoid sending comment authors\' email hashes to third-party servers, this build ships with the official source only', 'jinyu' )
+						: __( 'China-based sources (Cravatar / WeAvatar / V2EX / Loli / WebP.se, etc.) are Gravatar-compatible and faster in China, for both comment and author avatars; letter mode needs no avatar server and works offline', 'jinyu' ),
 				],
 
 				[

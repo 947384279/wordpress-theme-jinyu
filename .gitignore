@@ -70,3 +70,7 @@ _design_audit/
 /assets/fonts/fa/icons.all.raw.txt
 /assets/fonts/fa/icons.raw.txt
 /assets/fonts/fa/icons.map.json
+
+# w.org / wpcom 主题目录 RSS 抓取样本（tag 校验用，可重新下载，非主题源）
+wporg_feed.xml
+wpcom_feed.xml

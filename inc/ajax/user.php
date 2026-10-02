@@ -5,7 +5,7 @@
  * 安全约定：
  *  - 所有接口走 jinyu_ajax_guard() 校验 nonce
  *  - 密码类字段不做 sanitize（会破坏原始字符），只做长度校验
- *  - 验证码由 inc/fun/captcha.php 统一判定，失败即失效
+ *  - 验证码通过 jinyu_ext_value( 'captcha_verify', ... ) 交由配套插件判定，插件缺席即放行
  *
  * @package         WordPress
  * @subpackage      Jinyu
@@ -29,6 +29,12 @@ add_action( 'wp_ajax_nopriv_jinyu_login', 'jinyu_ajax_login' );
 function jinyu_ajax_login(): void {
 	jinyu_ajax_guard();
 
+	// 暴破防护：同一 IP 10 次/5 分钟。登录是 nopriv 接口且验证码默认放行，
+	// 无此闸门时脚本可无限次试错（配合注册接口的用户名枚举即可精准暴破）。
+	if ( ! jinyu_rate_limit_check( 'login', 10, 5 * MINUTE_IN_SECONDS ) ) {
+		wp_send_json_error( __( 'Too many attempts. Please try again later.', 'jinyu' ) );
+	}
+
 	$login   = trim( sanitize_user( wp_unslash( $_POST['log'] ?? '' ), true ) );
 	$pass    = (string) ( $_POST['pwd'] ?? '' ); /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- 输入在 jinyu_ajax_guard/委托处已 wp_unslash+sanitize，WPCS 追不到 */
 	$captcha = (string) ( $_POST['captcha'] ?? '' ); /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- 输入在 jinyu_ajax_guard/委托处已 wp_unslash+sanitize，WPCS 追不到 */
@@ -37,13 +43,11 @@ function jinyu_ajax_login(): void {
 		wp_send_json_error( __( 'Please enter your username and password', 'jinyu' ) );
 	}
 
-	if ( function_exists( 'jinyu_captcha_verify' ) ) {
-		$verify = jinyu_captcha_verify( 'login', $captcha );
-		if ( is_wp_error( $verify ) ) {
-			if ( function_exists( 'jinyu_login_failure_incr' ) ) {
-				jinyu_login_failure_incr(); }
-			wp_send_json_error( $verify->get_error_message() );
-		}
+	// 验证码校验：插件领地，主题只发问（true = 放行；WP_Error = 拒绝并回传原因）。
+	$verify = jinyu_ext_value( 'captcha_verify', true, 'login', $captcha );
+	if ( is_wp_error( $verify ) ) {
+		do_action( 'jinyu_login_failed' );
+		wp_send_json_error( $verify->get_error_message() );
 	}
 
 	$user = wp_signon(
@@ -55,14 +59,13 @@ function jinyu_ajax_login(): void {
 		is_ssl()
 	);
 
+	//登录失败计数与重置：插件领地（防暴破），主题只广播事件，双方互不认识对方符号.
 	if ( is_wp_error( $user ) ) {
-		if ( function_exists( 'jinyu_login_failure_incr' ) ) {
-			jinyu_login_failure_incr(); }
+		do_action( 'jinyu_login_failed' );
 		wp_send_json_error( __( 'Incorrect username or password', 'jinyu' ) );
 	}
 
-	if ( function_exists( 'jinyu_login_failure_reset' ) ) {
-		jinyu_login_failure_reset(); }
+	do_action( 'jinyu_login_succeeded' );
 	wp_send_json_success(
 		[
 			'message'  => __( 'Login successful. Redirecting…', 'jinyu' ),
@@ -121,11 +124,9 @@ function jinyu_ajax_register(): void {
 		wp_send_json_error( __( 'The two passwords do not match', 'jinyu' ) );
 	}
 
-	if ( function_exists( 'jinyu_captcha_verify' ) ) {
-		$verify = jinyu_captcha_verify( 'register', $captcha );
-		if ( is_wp_error( $verify ) ) {
-			wp_send_json_error( $verify->get_error_message() );
-		}
+	$verify = jinyu_ext_value( 'captcha_verify', true, 'register', $captcha );
+	if ( is_wp_error( $verify ) ) {
+		wp_send_json_error( $verify->get_error_message() );
 	}
 
 	$uid = wp_create_user( $login, $pass, $email );
@@ -171,6 +172,12 @@ add_action( 'wp_ajax_nopriv_jinyu_reset_password', 'jinyu_ajax_reset_password' )
 function jinyu_ajax_reset_password(): void {
 	jinyu_ajax_guard();
 
+	// 邮件轰炸防护：同一 IP 5 次/10 分钟。找回密码会对目标邮箱每请求发一封信，
+	// 无此闸门时脚本可把收件箱刷爆并耗尽站点邮件配额（连带注册验证一并失败）。
+	if ( ! jinyu_rate_limit_check( 'reset_pw', 5, 10 * MINUTE_IN_SECONDS ) ) {
+		wp_send_json_error( __( 'Too many requests. Please try again later.', 'jinyu' ) );
+	}
+
 	$login   = trim( sanitize_text_field( wp_unslash( $_POST['log'] ?? '' ) ) );
 	$captcha = (string) ( $_POST['captcha'] ?? '' ); /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- 输入在 jinyu_ajax_guard/委托处已 wp_unslash+sanitize，WPCS 追不到 */
 
@@ -178,11 +185,9 @@ function jinyu_ajax_reset_password(): void {
 		wp_send_json_error( __( 'Please enter your username or email address', 'jinyu' ) );
 	}
 
-	if ( function_exists( 'jinyu_captcha_verify' ) ) {
-		$verify = jinyu_captcha_verify( 'reset', $captcha );
-		if ( is_wp_error( $verify ) ) {
-			wp_send_json_error( $verify->get_error_message() );
-		}
+	$verify = jinyu_ext_value( 'captcha_verify', true, 'reset', $captcha );
+	if ( is_wp_error( $verify ) ) {
+		wp_send_json_error( $verify->get_error_message() );
 	}
 
 	$user = is_email( $login )
@@ -272,17 +277,22 @@ function jinyu_ajax_update_profile(): void {
 	if ( $email === $current->user_email ) {
 		$data['user_email'] = $email;
 		delete_user_meta( $uid, 'jinyu_pending_email' ); // 改回原邮箱，清除待验证记录.
+		delete_user_meta( $uid, 'jinyu_pending_email_token' ); // 索引键必须同步清，否则留下孤儿键（旧 hash 仍可被验证命中）。
 	} else {
-		$token = wp_generate_password( 32, false );
+		$token      = wp_generate_password( 32, false );
+		$token_hash = wp_hash( $token, 'jinyu_email_confirm' );
 		update_user_meta(
 			$uid,
 			'jinyu_pending_email',
 			[
 				'email'  => $email,
-				'token'  => wp_hash( $token, 'jinyu_email_confirm' ),
+				'token'  => $token_hash,
 				'expire' => time() + DAY_IN_SECONDS,
 			]
 		);
+		// token hash 另存一个独立键：让确认接口能按 meta_value 走索引精确定位用户，
+		// 而不必「拉出全站待验证用户再逐个比对」（那是 O(n) usermeta 扫描，成本可被无条件触发）。
+		update_user_meta( $uid, 'jinyu_pending_email_token', $token_hash );
 		jinyu_send_email_confirm( $uid, $email, $token );
 		$pending = true;
 	}
@@ -370,43 +380,60 @@ add_action( 'wp_ajax_jinyu_confirm_email', 'jinyu_ajax_confirm_email' );
  * @return void 返回值
  */
 function jinyu_ajax_confirm_email(): void {
-	$token = (string) ( $_GET['token'] ?? '' ); /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- 输入在 jinyu_ajax_guard/委托处已 wp_unslash+sanitize，WPCS 追不到 */
+	// 本接口以 token 而非 nonce 鉴权（与 WP 核心 get_password_reset_key() 同构）：邮件链接不应携带 nonce，
+	// 且 nonce 对 nopriv 端点无防机器人作用。token 不做 sanitize 是有意的——它是被 wp_hash
+	// 哈希后再比对的不透明串，任何字符变换都会导致合法链接失效；哈希本身已保证不可注入。
+	$token = (string) wp_unslash( $_GET['token'] ?? '' ); /* phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- 见上方说明：token 为不透明随机串，不做 sanitize 变换，直接 wp_unslash 后交 wp_hash + hash_equals 处理 */
 	if ( strlen( $token ) < 16 ) {
 		jinyu_email_confirm_page( false, __( 'Invalid verification link', 'jinyu' ) );
 	}
 
 	$token_hash = wp_hash( $token, 'jinyu_email_confirm' );
-	// 让 SQL 直接筛出挂着待验证邮箱的用户，而不是全站拉人再在 PHP 里逐个比对.
-	// （用户量上来后是 O(n) 全表扫）；count_total=false 省掉一次无用的 COUNT.
-	$users = get_users(
+
+	// 按 hash 精确走索引定位用户（jinyu_pending_email_token 是独立标量键，可被 meta_value 索引命中）。
+	// 早前实现是「拉出全站所有带待验证邮箱的用户再逐个 get_user_meta 比对」——
+	// token 虽猜不中，但那次 O(n) 扫描 + N 次 meta 查询的**成本**可被匿名请求无条件触发，站点越大越致命。
+	$uid   = 0;
+	$found = get_users(
 		[
 			'fields'      => 'ID',
+			'number'      => 1,
 			'count_total' => false,
-			'meta_query'  => [ /* phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- 自定义聚合，$wpdb 直查，调用处已缓存 */
+			'meta_query'  => [ /* phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- 标量键精确匹配，走 usermeta 索引 */
 				[
-					'key'     => 'jinyu_pending_email',
-					'compare' => 'EXISTS',
+					'key'     => 'jinyu_pending_email_token',
+					'value'   => $token_hash,
+					'compare' => '=',
 				],
 			],
 		]
 	);
+	if ( $found ) {
+		$uid = (int) $found[0];
+	}
 
-	foreach ( $users as $uid ) {
+	if ( $uid > 0 ) {
 		$m = get_user_meta( $uid, 'jinyu_pending_email', true );
-		if ( ! is_array( $m ) || empty( $m['token'] ) || empty( $m['email'] ) ) {
-			continue;
+		if ( is_array( $m ) && ! empty( $m['email'] ) && ! empty( $m['token'] ) ) {
+			if ( ! hash_equals( (string) $m['token'], $token_hash ) ) {
+				$uid = 0;
+			}
+		} else {
+			$uid = 0;
 		}
-		if ( ! hash_equals( (string) $m['token'], $token_hash ) ) {
-			continue;
-		}
+	}
+
+	if ( $uid > 0 ) {
 		if ( ! empty( $m['expire'] ) && time() > (int) $m['expire'] ) {
 			delete_user_meta( $uid, 'jinyu_pending_email' );
+			delete_user_meta( $uid, 'jinyu_pending_email_token' );
 			jinyu_email_confirm_page( false, __( 'The verification link has expired. Please change your email again in Account Settings', 'jinyu' ) );
 		}
 		$new_email = $m['email'];
 		$cur       = get_userdata( $uid );
 		if ( email_exists( $new_email ) && $new_email !== $cur->user_email ) {
 			delete_user_meta( $uid, 'jinyu_pending_email' );
+			delete_user_meta( $uid, 'jinyu_pending_email_token' );
 			jinyu_email_confirm_page( false, __( 'This email address is already linked to another account. Please try a different one', 'jinyu' ) );
 		}
 		wp_update_user(
@@ -416,6 +443,7 @@ function jinyu_ajax_confirm_email(): void {
 			]
 		);
 		delete_user_meta( $uid, 'jinyu_pending_email' );
+		delete_user_meta( $uid, 'jinyu_pending_email_token' );
 		jinyu_email_confirm_page( true, $new_email );
 	}
 
@@ -456,9 +484,8 @@ function jinyu_ajax_update_password(): void {
 	}
 
 	wp_set_password( $new, $uid );
-	// OAuth 自动建号用户带 jinyu_sl_no_password 标记（密码为随机串不可登录），.
-	// 成功改密即解除标记——companion 插件 jinyu_sl_unbind 防锁号判断依赖此数据契约.
-	delete_user_meta( $uid, 'jinyu_sl_no_password' );
+	// 「是否已设自有密码」是社交登录插件的私有数据模型（user meta jinyu_sl_no_password），
+	// 主题不得写入。插件自行挂在核心钩子 after_password_reset 上清理，双方互不认识对方符号。
 	wp_clear_auth_cookie();
 	wp_set_current_user( $uid );
 	wp_set_auth_cookie( $uid, true, is_ssl() );
@@ -863,40 +890,18 @@ function jinyu_ajax_get_notifications(): void {
 		wp_send_json_error( __( 'Please log in first', 'jinyu' ) );
 	}
 
-	if ( ! function_exists( 'jinyu_get_notifications' ) || ! function_exists( 'jinyu_get_unread_count' ) ) {
+	// 消息数据与列表 HTML 全属插件领地（数据结构是插件私有模型），主题只转发插槽：
+	// 实现方返回 array( html, unread, has_more )；无人应答即视为「未启用消息功能」。
+	$res = jinyu_ext_value( 'notifications_page', null, $uid, max( 1, absint( $_POST['page'] ?? 1 ) ) );
+	if ( ! is_array( $res ) || ! isset( $res['html'] ) ) {
 		wp_send_json_error( __( 'Messaging is not enabled', 'jinyu' ) );
-	}
-
-	$page = max( 1, absint( $_POST['page'] ?? 1 ) );
-	$list = jinyu_get_notifications( $uid, $page, 20 );
-
-	$html = '';
-	foreach ( $list as $n ) {
-		$n = (array) $n;
-		// 配套插件返回结构兜底：键缺失不产生 PHP warning.
-		$is_read = ! empty( $n['is_read'] );
-		$html   .= '<li class="jinyu-notif-item' . ( $is_read ? ' is-read' : '' ) . '" data-notif-id="' . (int) ( $n['id'] ?? 0 ) . '">';
-		if ( ! empty( $n['link'] ) ) {
-			$html .= '<a class="jinyu-notif-link" href="' . esc_url( $n['link'] ) . '">';
-		}
-		$html .= '<div class="jinyu-notif-body">';
-		$html .= '<p class="jinyu-notif-title">' . esc_html( $n['title'] ?? '' ) . '</p>';
-		if ( ! empty( $n['content'] ) ) {
-			$html .= '<p class="jinyu-notif-content">' . esc_html( $n['content'] ) . '</p>';
-		}
-		$html .= '<p class="jinyu-notif-time">' . esc_html( mysql2date( 'Y-m-d H:i', $n['created_at'] ?? '' ) ) . '</p>';
-		$html .= '</div>';
-		if ( ! empty( $n['link'] ) ) {
-			$html .= '</a>';
-		}
-		$html .= '</li>';
 	}
 
 	wp_send_json_success(
 		[
-			'html'     => $html ?: '<li class="jinyu-empty">' . esc_html__( 'No messages', 'jinyu' ) . '</li>',
-			'unread'   => jinyu_get_unread_count( $uid ),
-			'has_more' => count( $list ) === 20,
+			'html'     => (string) $res['html'],
+			'unread'   => (int) ( $res['unread'] ?? 0 ),
+			'has_more' => ! empty( $res['has_more'] ),
 		]
 	);
 }
@@ -919,15 +924,16 @@ function jinyu_ajax_mark_read(): void {
 		wp_send_json_error( __( 'Please log in first', 'jinyu' ) );
 	}
 
-	if ( ! function_exists( 'jinyu_mark_read' ) || ! function_exists( 'jinyu_get_unread_count' ) ) {
+	// 待标记的消息 id：前端可只传部分 id（不传=全部标记已读）。
+	$ids = isset( $_POST['ids'] )
+		? array_values( array_filter( array_map( 'absint', (array) wp_unslash( $_POST['ids'] ) ) ) )
+		: [];
+
+	// 标记已读属插件领地；实现方返回最新未读数，无人应答即视为未启用。
+	$unread = jinyu_ext_value( 'mark_notifications_read', null, $uid, $ids );
+	if ( null === $unread ) {
 		wp_send_json_error( __( 'Messaging is not enabled', 'jinyu' ) );
 	}
 
-	$ids = [];
-	if ( ! empty( $_POST['ids'] ) && is_array( $_POST['ids'] ) ) {
-		$ids = array_map( 'absint', $_POST['ids'] );
-	}
-	jinyu_mark_read( $uid, $ids );
-
-	wp_send_json_success( [ 'unread' => jinyu_get_unread_count( $uid ) ] );
+	wp_send_json_success( [ 'unread' => (int) $unread ] );
 }

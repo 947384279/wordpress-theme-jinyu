@@ -46,10 +46,21 @@
         <exclude name="WordPress.PHP.YodaConditions"/>
 
         <!-- Nonce verification is centralized in jinyu_ajax_guard()
-             (inc/ajax/index.php) which every public AJAX handler calls,
-             and in capability checks for admin settings. WPCS cannot see
-             the delegation, so the per-handler "missing nonce" flags are
-             false positives. -->
+             (inc/ajax/index.php). WPCS cannot see the delegation through
+             the wrapper, so the per-handler "missing nonce" flags are false
+             positives.
+
+             准确口径（别照抄旧说法「every handler calls jinyu_ajax_guard」，
+             那不成立）：24 个前台 handler 中
+               · 22 个走 jinyu_ajax_guard()（集中式校验，成立）
+               · 1 个 jinyu_ajax_comment 直调 check_ajax_referer()，与 guard 等价
+               · 1 个 jinyu_ajax_confirm_email 完全没有 nonce —— 它用
+                 wp_hash + hash_equals 的 token 鉴权，与 WP 核心
+                 get_password_reset_key() 同构，是**有意的正确豁免**
+                 （邮件链接不应携带 nonce；且 nonce 对 nopriv 端点无防机器人作用）。
+
+             故排除本身是合理的，但维护者须知：**新增 handler 不会自动被此排除覆盖**，
+             仍需自行调用 jinyu_ajax_guard() 或在调用行就地 phpcs:ignore。 -->
         <exclude name="WordPress.Security.NonceVerification"/>
 
         <!-- PrefixAllGlobals would flag every WP core global ($wpdb, $post, …)

@@ -111,19 +111,17 @@ function jinyu_content_filter( $content ) {
 		return $content;
 	}
 
-	// 外部链接统一由「外链新窗口 + nofollow」(ext_link_target) 单一开关控制；.
-	// 原 ext_link_blank / ext_link_nofollow 为重复声明，已移除，避免关闭主开关仍被旧键强制开启.
-	$ext_enabled  = jinyu_is_checked( 'ext_link_target' );
-	$ext_blank    = $ext_enabled;
-	$ext_nofollow = $ext_enabled;
-	$go           = jinyu_is_checked( 'go_link_enable' );
-	$alt          = true; // 自动补 alt：主题图片缺 alt 一律补标题，利于 SEO（内置常开）.
-	$webp         = true; // WebP 替换：封面/卡片等主题图片输出自动替换为 WebP（内置常开）.
+	// 外部链接统一由「外链新窗口 + nofollow」(ext_link_target) 单一开关控制。
+	// 原 ext_link_blank / ext_link_nofollow 为重复声明，已移除，避免关闭主开关仍被旧键强制开启。
+	$ext_enabled = jinyu_is_checked( 'ext_link_target' );
+	$go          = jinyu_is_checked( 'go_link_enable' );
+	$alt         = true; // 自动补 alt：主题图片缺 alt 一律补标题，利于 SEO（内置常开）.
+	$webp        = true; // WebP 替换：封面/卡片等主题图片输出自动替换为 WebP（内置常开）.
 
 	// 快速路径：正文里既无 <img> 又无需处理外链（go/新窗口/nofollow 全关）时，.
 	// 直接返回原文，避免每次渲染都对整段正文跑 DOMDocument 解析+重序列化.
 	// （DOM 重序列化会改写 HTML 实体/属性顺序/自闭合标签，纯文本正文完全没必要承担此开销）.
-	$need_links = $ext_blank || $ext_nofollow || $go;
+	$need_links = $ext_enabled || $go;
 	$has_img    = stripos( $content, '<img' ) !== false;
 	$has_link   = $need_links && stripos( $content, '<a ' ) !== false;
 	if ( ! $has_img && ! $has_link ) {
@@ -139,7 +137,7 @@ function jinyu_content_filter( $content ) {
 	libxml_use_internal_errors( $prev );
 
 	// 外链处理（短链跳转 go 可独立生效，不依赖外链新窗口/nofollow 开关）.
-	if ( $ext_blank || $ext_nofollow || $go ) {
+	if ( $ext_enabled || $go ) {
 		foreach ( $doc->getElementsByTagName( 'a' ) as $a ) {
 			$href = $a->getAttribute( 'href' );
 			if ( ! $href ) {
@@ -154,15 +152,15 @@ function jinyu_content_filter( $content ) {
 						$a->setAttribute( 'href', $redirect );
 					}
 				}
-				if ( $ext_blank && $a->getAttribute( 'target' ) !== '_blank' ) {
+				if ( $ext_enabled && $a->getAttribute( 'target' ) !== '_blank' ) {
 					$a->setAttribute( 'target', '_blank' );
 				}
 				$rel  = $a->getAttribute( 'rel' );
 				$rels = array_filter( array_map( 'trim', explode( ' ', $rel ) ) );
-				if ( $ext_nofollow && ! in_array( 'nofollow', $rels, true ) ) {
+				if ( $ext_enabled && ! in_array( 'nofollow', $rels, true ) ) {
 					$rels[] = 'nofollow';
 				}
-				if ( $ext_blank && ! in_array( 'noopener', $rels, true ) ) {
+				if ( $ext_enabled && ! in_array( 'noopener', $rels, true ) ) {
 					$rels[] = 'noopener';
 				}
 				$a->setAttribute( 'rel', implode( ' ', $rels ) );

@@ -1126,8 +1126,9 @@ msgid "Back to top"
 msgstr "回到顶部"
 
 #: footer.php:105
+#, no-patch
 msgid "MB"
-msgstr ""
+msgstr "MB"
 
 #: footer.php:84
 msgid "Official WordPress website"
@@ -2101,8 +2102,9 @@ msgid "Images per row"
 msgstr "每行几张"
 
 #: inc/fun/widget.php:1176
+#, no-patch
 msgid "IP"
-msgstr ""
+msgstr "IP"
 
 #: inc/fun/widget.php:303
 msgid "Jinyu: Archives"
@@ -2950,12 +2952,14 @@ msgid "H2 only"
 msgstr "仅 H2"
 
 #: inc/setting/options/Jinyu_OptionContent.php:53
+#, no-patch
 msgid "H2–H3"
-msgstr ""
+msgstr "H2–H3"
 
 #: inc/setting/options/Jinyu_OptionContent.php:57
+#, no-patch
 msgid "H2–H4"
-msgstr ""
+msgstr "H2–H4"
 
 #: inc/setting/options/Jinyu_OptionContent.php:184
 #: templates/post-actions.php:30
@@ -2999,8 +3003,9 @@ msgid "Previous / Next"
 msgstr "上一篇 / 下一篇"
 
 #: inc/setting/options/Jinyu_OptionContent.php:211
+#, no-patch
 msgid "QQ"
-msgstr ""
+msgstr "QQ"
 
 #: inc/setting/options/Jinyu_OptionContent.php:237
 #: templates/post-actions.php:63
@@ -3148,16 +3153,18 @@ msgid "SMTP server"
 msgstr "SMTP 服务器"
 
 #: inc/setting/options/Jinyu_OptionEmail.php:66
+#, no-patch
 msgid "SSL"
-msgstr ""
+msgstr "SSL"
 
 #: inc/setting/options/Jinyu_OptionEmail.php:53
 msgid "SSL usually uses 465; STARTTLS usually uses 587."
 msgstr "SSL 通常 465，STARTTLS 通常 587。"
 
 #: inc/setting/options/Jinyu_OptionEmail.php:70
+#, no-patch
 msgid "STARTTLS"
-msgstr ""
+msgstr "STARTTLS"
 
 #: inc/setting/options/Jinyu_OptionEmail.php:86
 msgid "The full email address; most providers require it to match the sender."
@@ -3719,6 +3726,17 @@ msgstr ""
 "国内源（Cravatar / WeAvatar / V2EX / Loli / WebP.se 等）兼容 Gravatar "
 "协议、国内访问更快，评论与作者头像均生效；letter 模式不依赖任何头像服务器，离线也能显示"
 
+#: inc/setting/options/Jinyu_OptionUser.php:107
+msgid "%s (China)"
+msgstr "%s（国内）"
+
+#: inc/setting/options/Jinyu_OptionUser.php:129
+msgid ""
+"Uses the official Gravatar service. To avoid sending comment authors' email "
+"hashes to third-party servers, this build ships with the official source "
+"only"
+msgstr "使用官方 Gravatar 服务。为避免把评论者邮箱哈希发送给第三方服务器，此发行版仅内置官方源"
+
 #: inc/setting/options/Jinyu_OptionUser.php:77 templates/auth-modal.php:26
 msgid "Close"
 msgstr "关闭"
@@ -3837,8 +3855,9 @@ msgid "Discard changes"
 msgstr "放弃更改"
 
 #: inc/setting/template.php:26
+#, no-patch
 msgid "PHP 8.0+ · WordPress 6.0+"
-msgstr ""
+msgstr "PHP 8.0+ · WordPress 6.0+"
 
 #: inc/setting/template.php:48
 msgid "Restore defaults"
@@ -3860,6 +3879,10 @@ msgstr "有未保存的更改"
 msgid "Featured posts slider"
 msgstr "精选文章轮播"
 
+#: index.php:45
+msgid "carousel"
+msgstr "轮播"
+
 #: index.php:87
 msgid "Go to slide %d"
 msgstr "跳转到第 %d 张"
@@ -3867,6 +3890,10 @@ msgstr "跳转到第 %d 张"
 #: index.php:61
 msgid "Slide %1$d of %2$d"
 msgstr "第 %1$d 张，共 %2$d 张"
+
+#: index.php:61
+msgid "slide"
+msgstr "幻灯片"
 
 #. Pending manual decision: original string is still Chinese (see
 #. .workbuddy/i18n/reverse_report.md section 2).
@@ -4057,3 +4084,125 @@ msgstr "本文由 %1$s 创作，转载请注明来源：%2$s（%3$s）"
 #: templates/post-nav.php:21
 msgid "上一篇下一篇"
 msgstr "上一篇下一篇"
+
+msgid "Too many attempts. Please try again later."
+msgstr "尝试次数过多，请稍后再试。"
+
+#, no-patch
+msgid "RSS"
+msgstr "RSS"
+
+msgid "Add item"
+msgstr "添加项"
+
+msgid "Up to %d items"
+msgstr "最多 %d 项"
+
+msgid "Item %d"
+msgstr "第 %d 项"
+
+msgid "Drag to sort"
+msgstr "拖拽排序"
+
+msgid "Move up"
+msgstr "上移"
+
+msgid "Move down"
+msgstr "下移"
+
+msgid "Remove"
+msgstr "移除"
+
+msgid "Selected: %d items"
+msgstr "已选 %d 项"
+
+msgid "Click the button on the right to select, or enter a URL"
+msgstr "点击右侧按钮选择，或直接输入网址"
+
+msgid "Settings groups"
+msgstr "设置分组"
+
+msgid "Collapse / expand sidebar"
+msgstr "折叠 / 展开侧栏"
+
+msgid "No matching settings. Try a different keyword"
+msgstr "没有匹配的设置，换个关键词试试"
+
+msgid "Saved at %s"
+msgstr "保存于 %s"
+
+msgid "Processed %1$s / %2$s images"
+msgstr "已处理 %1$s / %2$s 张"
+
+msgid "Generated %s images"
+msgstr "已生成 %s 张"
+
+msgid "Skipped %s images"
+msgstr "已跳过 %s 张"
+
+msgid "Failed %s images"
+msgstr "失败 %s 张"
+
+msgid "New version v%s"
+msgstr "发现新版本 v%s"
+
+msgid "Already up to date: v%s"
+msgstr "已是最新版本：v%s"
+
+msgid "Current v%s"
+msgstr "当前 v%s"
+
+msgid "No changelog yet."
+msgstr "暂无更新日志。"
+
+msgid "Download update package"
+msgstr "下载更新包"
+
+msgid "Download it from the About panel"
+msgstr "请前往「关于」面板下载"
+
+msgid "View details"
+msgstr "查看详情"
+
+msgid "Stop"
+msgstr "停止"
+
+msgid ""
+"Reset the \"%s\" group to defaults? Customized settings in this group will "
+"be cleared."
+msgstr "确定将「%s」分组恢复为默认值？该分组的自定义配置将被清空。"
+
+msgid ""
+"API request failed (HTTP %s). Make sure the Jinyu theme companion plugin is "
+"enabled"
+msgstr "接口请求失败（HTTP %s）。请确认金玉配套插件已启用"
+
+msgid "Could not parse the API response (HTTP %s)"
+msgstr "无法解析接口响应（HTTP %s）"
+
+msgid "Network error: %s"
+msgstr "网络错误：%s"
+
+msgid "Request failed: %s"
+msgstr "请求失败：%s"
+
+msgid "Imported successfully"
+msgstr "导入成功"
+
+msgid "Search…"
+msgstr "搜索…"
+
+msgid "Click to select or enter a URL"
+msgstr "点击选择或输入网址"
+
+msgid "Select"
+msgstr "选择"
+
+msgid "Preparing…"
+msgstr "准备中…"
+
+msgid "Preparing"
+msgstr "准备中"
+
+msgid "Clear"
+msgstr "清除"

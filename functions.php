@@ -38,297 +38,10 @@ if ( ! function_exists( 'jinyu_is_wporg' ) ) {
 /**
  * 垃圾评论关键词内置库（出厂默认，英文逗号分隔）。
  * 作为后台「垃圾评论关键词」文本框的默认值与运行期回退值的单一事实来源。
- * 匹配为大小写不敏感子串命中（stripos），故词条尽量用“有区分度的短语”，
- * 避免单字/极短词误伤正常评论（例如用「加微信」而非「微信」）。
+ * 词库数据在 inc/data/spam-words.php（与每日一句语料同级，纯数据不含逻辑）；
+ * 可经 jinyu_default_spam_words 过滤器追加 / 替换词条（子主题或 mu-plugin 扩展点）。
  */
-$jinyu_builtin_spam = [
-	// 博彩 / 赌博.
-	'彩票',
-	'博彩',
-	'赌博',
-	'赌球',
-	'赌场',
-	'外围赌博',
-	'私彩',
-	'时时彩',
-	'六合彩',
-	'百家乐',
-	'老虎机',
-	'押注',
-	'盘口',
-	'投注',
-	'网投',
-	'葡京',
-	'威尼斯人',
-	'永利',
-	'开元棋牌',
-	'棋牌游戏',
-	'德州扑克',
-	'抢庄牛牛',
-	'龙虎斗',
-	'彩票预测',
-	'博彩公司',
-	'賭博',
-	'賭場',
-	'賭球',
-	// 色情 / 成人.
-	'色情',
-	'性爱',
-	'成人',
-	'裸聊',
-	'约炮',
-	'一夜情',
-	'小姐',
-	'按摩会所',
-	'上门服务',
-	'做爱',
-	'黄色网站',
-	'春药',
-	'伟哥',
-	'壮阳',
-	'同城交友',
-	'外围女',
-	'福利姬',
-	'援交',
-	'成人电影',
-	'成人小说',
-	'激情聊天',
-	'性感少妇',
-	'包养',
-	// 诈骗 / 杀猪盘 / 网赚.
-	'诈骗',
-	'杀猪盘',
-	'刷单',
-	'刷信誉',
-	'刷销量',
-	'返利',
-	'兼职刷单',
-	'日赚',
-	'月入过万',
-	'稳赚不赔',
-	'高收益',
-	'投资理财',
-	'荐股',
-	'内幕消息',
-	'割韭菜',
-	'资金盘',
-	'庞氏骗局',
-	'互助盘',
-	'跑路',
-	'黑平台',
-	'解冻民族资产',
-	'精准扶贫骗局',
-	'充值返现',
-	'博彩骗局',
-	'冒充客服',
-	'公检法诈骗',
-	'刷单返佣',
-	// 贷款 / 金融.
-	'贷款',
-	'放贷',
-	'小额贷款',
-	'网贷',
-	'黑户贷款',
-	'白户贷款',
-	'套现',
-	'信用卡套现',
-	'花呗套现',
-	'借呗',
-	'提额',
-	'征信修复',
-	'黑征信',
-	'秒到账',
-	'下款',
-	'口子',
-	'714高炮',
-	'套路贷',
-	'空放',
-	'无视黑白户',
-	'貸款',
-	// 发票 / 证件.
-	'发票',
-	'代开发票',
-	'办证',
-	'刻章',
-	'假证',
-	'毕业证',
-	'学位证',
-	'资格证代办',
-	'办银行卡',
-	'对公账户',
-	'手机卡实名',
-	'实名卡',
-	'發票',
-	'辦證',
-	// 代写 / 灰产.
-	'代写',
-	'代写论文',
-	'代孕',
-	'代考',
-	'枪手',
-	'论文代写',
-	'代做',
-	'刷量',
-	'刷粉',
-	'刷赞',
-	'刷屏',
-	'地推',
-	'接码',
-	'养号',
-	'引流工作室',
-	'刷播放量',
-	'刷阅读量',
-	'代寫',
-	// 微商 / 广告.
-	'加微信',
-	'微信号',
-	'微信同号',
-	'加我微信',
-	'加V',
-	'扫一扫加',
-	'二维码名片',
-	'招代理',
-	'代理加盟',
-	'一件代发',
-	'微商',
-	'代购',
-	'厂家直销',
-	'免费送',
-	'扫码关注',
-	'关注公众号',
-	'转发朋友圈',
-	'集赞',
-	'砍价',
-	'砍一刀',
-	'拼团',
-	'助力',
-	'点赞有礼',
-	'免费领取',
-	'复制打开',
-	// 兼职 / 网赚.
-	'兼职',
-	'网赚',
-	'在家赚钱',
-	'手机赚钱',
-	'宝妈副业',
-	'副业',
-	'日结',
-	'佣金',
-	'淘客',
-	'返佣',
-	'拉人头',
-	'多级分销',
-	'传销',
-	'直销',
-	'创业项目',
-	// 虚拟币 / 区块链.
-	'比特币',
-	'虚拟币',
-	'数字货币',
-	'区块链',
-	'挖矿',
-	'矿机',
-	'ico',
-	'币圈',
-	'代币',
-	'空气币',
-	'钱包',
-	'usdt',
-	'泰达币',
-	// 灰产医疗 / 药品.
-	'减肥产品',
-	'丰胸',
-	'美白祛斑',
-	'治百病',
-	'老中医',
-	'偏方',
-	'根治',
-	'包治',
-	'抗癌神药',
-	'进口药代购',
-	'违禁药',
-	'迷药',
-	'听话水',
-	'特效药',
-	// 仿牌 / 私服 / 外挂.
-	'高仿',
-	'精仿',
-	'A货',
-	'原单',
-	'私服',
-	'游戏外挂',
-	'辅助脚本',
-	'破解版',
-	'激活码',
-	'注册机',
-	'刷钻',
-	'刷会员',
-	'代充',
-	// 引流 / 加群.
-	'加QQ群',
-	'加群',
-	'进群',
-	'扣扣',
-	'企鹅号',
-	'快手引流',
-	'抖音引流',
-	'小红书引流',
-	'涨粉',
-	'代运营',
-	'刷播放',
-	'刷阅读',
-	'加好友',
-	// 通用垃圾话术.
-	'限时特惠',
-	'名额有限',
-	'内部名额',
-	'速联系',
-	'点击链接',
-	'私聊',
-	'一对一指导',
-	'稳赚',
-	'日结兼职',
-	// 英文垃圾词（大小写不敏感子串命中）.
-	'casino',
-	'viagra',
-	'cialis',
-	'levitra',
-	'porn',
-	'xxx',
-	'sex',
-	'nude',
-	'free money',
-	'make money',
-	'earn money',
-	'work from home',
-	'click here',
-	'buy now',
-	'cheap',
-	'discount',
-	'order now',
-	'bitcoin',
-	'forex',
-	'trading signals',
-	'weight loss',
-	'hot girls',
-	'follow me',
-	'payday loan',
-	'online pharmacy',
-	'replica',
-	'rolex',
-	'wholesale',
-	'factory price',
-	'free shipping',
-	'limited offer',
-	'act now',
-	'click below',
-	'visit my',
-	'congratulations you',
-	'best price',
-	'pharmacy',
-];
-define( 'JINYU_DEFAULT_SPAM_WORDS', implode( ',', $jinyu_builtin_spam ) );
-unset( $jinyu_builtin_spam );
+define( 'JINYU_DEFAULT_SPAM_WORDS', implode( ',', (array) apply_filters( 'jinyu_default_spam_words', require JINYU_ABS_DIR . '/inc/data/spam-words.php' ) ) );
 
 if ( version_compare( PHP_VERSION, '8.0', '<' ) ) {
 	add_action(
@@ -348,22 +61,23 @@ require_once JINYU_ABS_DIR . '/inc/fun/maintenance.php';
 require_once JINYU_ABS_DIR . '/inc/fun/feed.php';
 // SMTP 发信已迁至配套插件 jinyu-theme-companion（邮件 SMTP 分区）：主题保持纯呈现层，.
 // 避免两处重复注册 wp_ajax_jinyu_test_smtp（nonce 不同源，跨插件调用必被 check_ajax_referer 打回 403）.
-// 性能优化中心已迁至配套插件 jinyu-theme-companion（perf-center.php）.
-// 主题仅在呈现层按需读取开关值（HTML 压缩 / 评论懒加载），插件缺席时按 $default 降级.
+// 性能优化中心已迁至配套插件 jinyu-theme-companion（perf-center.php），
+// 主题纯呈现层只按需「问」开关值，不认识任何 option 键、不读插件私有数据。
+// 契约：主题 apply_filters( 'jinyu_perf_options', [] ) 广播需求 → 插件 add_filter 注入自己的开关表；
+// 双方互不引用对方符号，插件缺席时自动落到 $default（零行为变更）。
+// 历史数据（主题时代的 jinyu_perf_options 等旧键）由插件侧一次性接管，主题不参与迁移。
 function jinyu_perf_opt( string $key, bool $default = false ): bool {
-	// 唯一真源：配套插件 jinyu-theme-companion 的 jyc_perf_options；.
-	// 兼容主题时代旧键 jinyu_perf_options（插件接管前保存过的历史配置）.
-	// 同一次请求内只读取一次（静态缓存），避免被 wp_enqueue_scripts / template_redirect.
-	// 等多处高频调用时反复 get_option + 冗长的降级查询.
+	// 同一次请求内只解析一次（静态缓存），避免 wp_enqueue_scripts / template_redirect
+	// 等多处高频调用时反复跑过滤器链。
 	static $opts_cache = null;
 	if ( null === $opts_cache ) {
-		$opts_cache = get_option( 'jyc_perf_options', get_option( 'jinyu_perf_options', [] ) );
+		$injected   = apply_filters( 'jinyu_perf_options', [] );
+		$opts_cache = is_array( $injected ) ? $injected : [];
 	}
-	$opts = $opts_cache;
-	if ( ! is_array( $opts ) || ! array_key_exists( $key, $opts ) ) {
+	if ( ! array_key_exists( $key, $opts_cache ) ) {
 		return $default;
 	}
-	return ! empty( $opts[ $key ] );
+	return ! empty( $opts_cache[ $key ] );
 }
 // Customizer 注册必须在「后台」与「前台实时预览」两侧同时进行。
 // Customizer 打开时，前台预览页会回传 activePanels/activeSections/activeControls，
@@ -388,6 +102,9 @@ add_action(
 		wp_enqueue_media(); // 设置页「上传/选择」字段依赖 wp.media，缺则点击无反应.
 		wp_enqueue_style( 'jinyu-admin', JINYU_ABS_URI . '/assets/dist/style/admin.min.css', [], filemtime( JINYU_ABS_DIR . '/assets/dist/style/admin.min.css' ) );
 		wp_enqueue_script( 'jinyu-admin', JINYU_ABS_URI . '/assets/dist/js/admin.min.js', [ 'jquery' ], filemtime( JINYU_ABS_DIR . '/assets/dist/js/admin.min.js' ), true );
+		// 后台配置页界面文案：整页由 admin.js 动态拼装，走不到 PHP 的 __()，
+		// 故单独注入一份词条表（词条本身在 inc/fun/admin-i18n.php，那里是数据而非逻辑）。
+		jinyu_admin_l10n();
 	}
 );
 
@@ -637,6 +354,9 @@ add_action(
 				'processing'     => __( 'Processing…', 'jinyu' ),
 				'saveHint'       => __( 'Tap "Save image" to enlarge it, then press and hold the image to save it to your album', 'jinyu' ),
 				'flat'           => __( 'Stable', 'jinyu' ),
+				'perfRealtime'   => __( 'Real-time', 'jinyu' ),
+				'perfSlow'       => __( 'Slow', 'jinyu' ),
+				'perfBusy'       => __( 'Busy', 'jinyu' ),
 				/* translators: %s: 占位符 */
 				'nearSamples'    => __( 'Last %d samples', 'jinyu' ),
 				'load'           => __( 'Load', 'jinyu' ),

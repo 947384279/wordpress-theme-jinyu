@@ -494,15 +494,42 @@ if ( ! function_exists( 'jinyu_meta_ids' ) ) {
 	}
 }
 
+if ( ! function_exists( 'jinyu_meta_ids_cap' ) ) {
+	/**
+	 * 「ID 列表」类 user meta 的写入封顶：追加后裁到最多 $cap 条，淘汰最旧的。
+	 *
+	 * ⚠️ 为什么需要：jinyu_meta_ids() 只做去重/去 0，没有上限。虽有「只能加 publish 文章」
+	 * 这一层间接约束，但用户可脚本化遍历全站文章 ID 批量写入，user meta 会被撑到很大；
+	 * 而读取侧（jinyu_get_user_favs() → post__in）会据此生成同等长度的 IN (...) SQL，
+	 * 单次请求就能拖垮数据库。2000 条已远超正常用户使用量。
+	 *
+	 * @param int[]  $ids 追加后的完整列表（新的在前）。
+	 * @param string $key  user meta 键（用于日志与调试定位）。
+	 * @param int    $cap 上限条数。
+	 * @return int[] 裁剪后的列表，可直接交给 update_user_meta()。
+	 */
+	function jinyu_meta_ids_cap( array $ids, string $key, int $cap = 2000 ): array {
+		$ids = array_values( array_unique( array_filter( array_map( 'intval', $ids ) ) ) );
+		if ( count( $ids ) <= $cap ) {
+			return $ids;
+		}
+		return array_slice( $ids, 0, $cap );
+	}
+}
+
 if ( ! function_exists( 'jinyu_get_user_favs' ) ) {
 	/**
 	 * 用户收藏的文章 ID 列表
 	 *
-	 * @param int $user_id 默认当前用户；0 且未登录时返回空数组
+	 * 读取侧同样封顶：写入已限流，但上线前的历史数据可能已很大，
+	 * 而调用方会把它直接塞进 post__in 生成 IN (...) SQL。
+	 *
+	 * @param int $user_id 默认当前用户；0 且未登录时返回空数组。
+	 * @return int[]
 	 */
 	function jinyu_get_user_favs( $user_id = 0 ) {
 		$uid = $user_id ? (int) $user_id : get_current_user_id();
-		return jinyu_meta_ids( $uid, 'jinyu_fav_posts' );
+		return array_slice( jinyu_meta_ids( $uid, 'jinyu_fav_posts' ), 0, 2000 );
 	}
 }
 

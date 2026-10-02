@@ -50,7 +50,7 @@ function jinyu_ajax_like() {
 				wp_send_json_error( __( 'Liked', 'jinyu' ) );
 			}
 			$liked[] = $pid;
-			update_user_meta( $uid, 'jinyu_liked_posts', $liked );
+			update_user_meta( $uid, 'jinyu_liked_posts', jinyu_meta_ids_cap( $liked, 'jinyu_liked_posts' ) );
 		} else {
 			if ( ! $has ) {
 				wp_send_json_error( __( 'Not liked yet', 'jinyu' ) );
@@ -80,6 +80,17 @@ function jinyu_ajax_like() {
 		}
 	}
 
+	/*
+	 * 点赞计数：read-modify-write，**非原子**。
+	 *
+	 * 已知取舍（刻意不修）：并发请求同时读到同一旧值时，后写者覆盖前者，会丢失若干次更新。
+	 * 这里选择保留现状，因为：
+	 *   1) 点赞是展示性计数，不是库存/财务数据，个位数误差不影响业务语义；
+	 *   2) 改 $wpdb 条件更新（WHERE meta_value = 旧值）需处理 meta 缓存失效、重试与边界，
+	 *      复杂度和收益不成比例；
+	 *   3) 更激进的方案（add_post_meta 记明细后聚合）会让明细表持续膨胀。
+	 * 若将来该计数需要精确，改用条件更新，勿直接沿用这段写法。
+	 */
 	$count = (int) get_post_meta( $pid, 'jinyu_likes', true );
 	$count = $is_like ? ( $count + 1 ) : max( 0, $count - 1 );
 	update_post_meta( $pid, 'jinyu_likes', $count );
@@ -93,11 +104,19 @@ add_action( 'wp_ajax_nopriv_jinyu_like_state', 'jinyu_ajax_like_state' );
 function jinyu_ajax_like_state() {
 	jinyu_ajax_guard();
 
+	if ( ! jinyu_rate_limit_check( 'like_state', 60, MINUTE_IN_SECONDS ) ) {
+		wp_send_json_error( __( 'Too many requests. Please try again later.', 'jinyu' ) );
+	}
+
 	$raw = isset( $_POST['ids'] ) ? (string) $_POST['ids'] : ''; /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- 输入在 jinyu_ajax_guard/委托处已 wp_unslash+sanitize，WPCS 追不到 */
 	$ids = array_filter( array_map( 'absint', explode( ',', $raw ) ) );
 	if ( empty( $ids ) ) {
 		wp_send_json_success( [] );
 	}
+
+	// 每个 ID 都要读 post meta（登录态再读一次 user meta），故必须封顶：
+	// 否则一次请求传 5 万个 ID 就能打出 5 万次查询，把 DB 直接打满。
+	$ids = array_slice( $ids, 0, 100 );
 
 	$out = [];
 	foreach ( $ids as $pid ) {
@@ -138,7 +157,7 @@ function jinyu_ajax_fav() {
 		array_splice( $favs, $idx, 1 );
 	}
 
-	update_user_meta( $uid, 'jinyu_fav_posts', array_values( $favs ) );
+	update_user_meta( $uid, 'jinyu_fav_posts', jinyu_meta_ids_cap( $favs, 'jinyu_fav_posts' ) );
 
 	wp_send_json_success( $fav );
 }
@@ -151,6 +170,11 @@ add_action( 'wp_ajax_jinyu_search', 'jinyu_ajax_search' );
 add_action( 'wp_ajax_nopriv_jinyu_search', 'jinyu_ajax_search' );
 function jinyu_ajax_search() {
 	jinyu_ajax_guard();
+
+	// 全文检索直打 DB，且对游客开放：限流防脚本高频刷查询拖垮站点。
+	if ( ! jinyu_rate_limit_check( 'search', 30, MINUTE_IN_SECONDS ) ) {
+		wp_send_json_error( __( 'Too many requests. Please try again later.', 'jinyu' ) );
+	}
 
 	$q = isset( $_POST['q'] ) ? sanitize_text_field( wp_unslash( $_POST['q'] ) ) : '';
 	if ( mb_strlen( $q ) < 1 ) {
@@ -214,6 +238,10 @@ add_action( 'wp_ajax_jinyu_load_more', 'jinyu_ajax_load_more' );
 add_action( 'wp_ajax_nopriv_jinyu_load_more', 'jinyu_ajax_load_more' );
 function jinyu_ajax_load_more() {
 	jinyu_ajax_guard();
+
+	if ( ! jinyu_rate_limit_check( 'load_more', 60, MINUTE_IN_SECONDS ) ) {
+		wp_send_json_error( __( 'Too many requests. Please try again later.', 'jinyu' ) );
+	}
 
 	$current = isset( $_POST['page'] ) ? absint( $_POST['page'] ) : 1;
 	$next    = max( 2, $current + 1 );
@@ -355,7 +383,7 @@ function jinyu_ajax_coview() {
 	}
 
 	// 协同数据不足时用「热门相关」补足，保证区域始终有内容.
-	if ( count( $list ) < $num && function_exists( 'jinyu_get_related_posts' ) ) {
+	if ( count( $list ) < $num ) {
 		$rel = jinyu_get_related_posts( $pid, $num - count( $list ), 'views' );
 		if ( $rel && $rel->have_posts() ) {
 			while ( $rel->have_posts() ) {
@@ -393,20 +421,30 @@ function jinyu_ajax_vote() {
 		wp_send_json_error( __( 'Invalid parameter', 'jinyu' ) );
 	}
 
-	// 游客端原本无任何防重复，可无限刷。叠加 IP 去重（每 IP 每文一票）+ 限流.
-	if ( ! is_user_logged_in() ) {
+	// 去重 + 限流：游客按 IP，登录用户按 uid。
+	// ⚠️ 早前整块包在 `if ( ! is_user_logged_in() )` 里，导致任何登录用户（含最低权限订阅者）
+	// 可对同一篇文章无限重复投票、计数完全失真。故两种身份都必须拦。
+	$uid = get_current_user_id();
+	if ( $uid ) {
+		if ( ! jinyu_rate_limit_check( 'vote', 30, MINUTE_IN_SECONDS ) ) {
+			wp_send_json_error( __( 'Too many requests. Please try again later.', 'jinyu' ) );
+		}
+		$dedupe = 'jinyu_vote_' . md5( 'u' . $uid . '|' . $pid );
+	} else {
 		if ( ! jinyu_rate_limit_check( 'vote', 20, MINUTE_IN_SECONDS ) ) {
 			wp_send_json_error( __( 'Too many requests. Please try again later.', 'jinyu' ) );
 		}
 		$ip     = function_exists( 'jinyu_client_ip' ) ? jinyu_client_ip() : ( isset( $_SERVER['REMOTE_ADDR'] ) ? trim( (string) $_SERVER['REMOTE_ADDR'] ) : '0.0.0.0' ); /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- 输入在 jinyu_ajax_guard/委托处已 wp_unslash+sanitize，WPCS 追不到 */
-		$dedupe = 'jinyu_vote_' . md5( $ip . '|' . $pid );
-		if ( get_transient( $dedupe ) ) {
-			wp_send_json_error( __( 'Voted', 'jinyu' ) );
-		}
-		set_transient( $dedupe, 1, DAY_IN_SECONDS * 30 );
+		$dedupe = 'jinyu_vote_' . md5( 'i' . $ip . '|' . $pid );
 	}
+	if ( get_transient( $dedupe ) ) {
+		wp_send_json_error( __( 'Voted', 'jinyu' ) );
+	}
+	set_transient( $dedupe, 1, DAY_IN_SECONDS * 30 );
 
-	$key   = $dir === 'yes' ? '_jinyu_helpful_yes' : '_jinyu_helpful_no';
+	$key = $dir === 'yes' ? '_jinyu_helpful_yes' : '_jinyu_helpful_no';
+	/* 同 jinyu_ajax_like 的计数：read-modify-write 非原子，并发下会丢更新。
+		投票是展示性计数，刻意保留此取舍（理由同上），勿直接"优化"成条件更新。 */
 	$count = (int) get_post_meta( $pid, $key, true ) + 1;
 	update_post_meta( $pid, $key, $count );
 

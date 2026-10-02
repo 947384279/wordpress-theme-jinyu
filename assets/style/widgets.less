@@ -706,7 +706,7 @@
 .jinyu-uptime {
     &-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: @s-2;
         text-align: center;
     }
@@ -1347,7 +1347,7 @@
 
     /* 时钟在深色底上的适配：数字渐变 / 眼睛 / 秒条 / 元信息统一换深底配色。
        数字是 background-clip:text 的渐变（color 为 transparent），所以必须覆写 --jc-num 而非 color。 */
-    .jinyu-clock { --jc-num: linear-gradient(176deg, #fff 6%, @primary 100%); }
+    .jinyu-clock { --jc-num: linear-gradient(176deg, @text-invert 6%, @primary 100%); }
     .jinyu-clock-hm { color: @text-invert; } /* 渐变文字不可用时的兜底实色；可用时仍由 -webkit-text-fill-color:transparent 透出渐变，无副作用 */
     .jinyu-clock-eye { background: @text-invert; }
     .jinyu-clock-pupil { background: @bg-footer; } /* 深底上眼睛转白，瞳孔必须转深，否则隐形 */

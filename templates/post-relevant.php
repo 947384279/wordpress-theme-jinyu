@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( jinyu_is_checked( 'related_enable' ) ) {
 	$num  = (int) jinyu_get_option( 'related_num', 4 );
 	$type = jinyu_get_option( 'related_type', 'tags' ); /* phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- 模板按需在局部覆盖全局，已 wp_reset_postdata */
-	$q    = function_exists( 'jinyu_get_related_posts' ) ? jinyu_get_related_posts( 0, $num, $type ) : false;
+	$q    = jinyu_get_related_posts( 0, $num, $type );
 	if ( $q ) {
 		if ( $q->have_posts() ) {
 			?>

@@ -365,7 +365,7 @@ class Jinyu_Setting {
 				continue;
 			}
 			// 跨站导入的密文由源站密钥加密，本机解不开 → 直接丢弃，不写入不可用的垃圾值
-			if ( is_string( $v ) && str_starts_with( $v, 'jinyu_enc::' ) && jinyu_decrypt( $v ) === '' ) {
+			if ( jinyu_is_encrypted( $v ) && jinyu_decrypt( $v ) === '' ) {
 				++$skipped_secret;
 				continue;
 			}

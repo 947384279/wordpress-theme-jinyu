@@ -218,7 +218,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<a href="<?php echo esc_url( jinyu_user_page_url( 'profile' ) ); ?>"><i class="fa-solid fa-user-gear" aria-hidden="true"></i><?php esc_html_e( 'Account Settings', 'jinyu' ); ?></a>
 			<a href="<?php echo esc_url( jinyu_user_page_url( 'notifications' ) ); ?>" class="jinyu-user-notif-link">
 				<i class="fa-solid fa-bell" aria-hidden="true"></i><?php esc_html_e( 'Messages', 'jinyu' ); ?>
-				<?php $jinyu_unread = function_exists( 'jinyu_get_unread_count' ) ? jinyu_get_unread_count( get_current_user_id() ) : 0; ?>
+				<?php $jinyu_unread = (int) jinyu_ext_value( 'unread_count', 0, get_current_user_id() ); ?>
 				<?php
 				if ( $jinyu_unread > 0 ) :
 					?>

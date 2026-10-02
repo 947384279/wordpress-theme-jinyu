@@ -1067,8 +1067,9 @@ msgid "Back to top"
 msgstr ""
 
 #: footer.php:105
+#, no-patch
 msgid "MB"
-msgstr ""
+msgstr "MB"
 
 #: footer.php:84
 msgid "Official WordPress website"
@@ -2008,8 +2009,9 @@ msgid "Images per row"
 msgstr ""
 
 #: inc/fun/widget.php:1176
+#, no-patch
 msgid "IP"
-msgstr ""
+msgstr "IP"
 
 #: inc/fun/widget.php:303
 msgid "Jinyu: Archives"
@@ -2842,12 +2844,14 @@ msgid "H2 only"
 msgstr ""
 
 #: inc/setting/options/Jinyu_OptionContent.php:53
+#, no-patch
 msgid "H2–H3"
-msgstr ""
+msgstr "H2–H3"
 
 #: inc/setting/options/Jinyu_OptionContent.php:57
+#, no-patch
 msgid "H2–H4"
-msgstr ""
+msgstr "H2–H4"
 
 #: inc/setting/options/Jinyu_OptionContent.php:184
 #: templates/post-actions.php:30
@@ -2891,8 +2895,9 @@ msgid "Previous / Next"
 msgstr ""
 
 #: inc/setting/options/Jinyu_OptionContent.php:211
+#, no-patch
 msgid "QQ"
-msgstr ""
+msgstr "QQ"
 
 #: inc/setting/options/Jinyu_OptionContent.php:237
 #: templates/post-actions.php:63
@@ -3040,16 +3045,18 @@ msgid "SMTP server"
 msgstr ""
 
 #: inc/setting/options/Jinyu_OptionEmail.php:66
+#, no-patch
 msgid "SSL"
-msgstr ""
+msgstr "SSL"
 
 #: inc/setting/options/Jinyu_OptionEmail.php:53
 msgid "SSL usually uses 465; STARTTLS usually uses 587."
 msgstr ""
 
 #: inc/setting/options/Jinyu_OptionEmail.php:70
+#, no-patch
 msgid "STARTTLS"
-msgstr ""
+msgstr "STARTTLS"
 
 #: inc/setting/options/Jinyu_OptionEmail.php:86
 msgid "The full email address; most providers require it to match the sender."
@@ -3597,6 +3604,17 @@ msgid ""
 "avatars; letter mode needs no avatar server and works offline"
 msgstr ""
 
+#: inc/setting/options/Jinyu_OptionUser.php:107
+msgid "%s (China)"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionUser.php:129
+msgid ""
+"Uses the official Gravatar service. To avoid sending comment authors' email "
+"hashes to third-party servers, this build ships with the official source "
+"only"
+msgstr ""
+
 #: inc/setting/options/Jinyu_OptionUser.php:77 templates/auth-modal.php:26
 msgid "Close"
 msgstr ""
@@ -3713,8 +3731,9 @@ msgid "Discard changes"
 msgstr ""
 
 #: inc/setting/template.php:26
+#, no-patch
 msgid "PHP 8.0+ · WordPress 6.0+"
-msgstr ""
+msgstr "PHP 8.0+ · WordPress 6.0+"
 
 #: inc/setting/template.php:48
 msgid "Restore defaults"
@@ -3736,12 +3755,20 @@ msgstr ""
 msgid "Featured posts slider"
 msgstr ""
 
+#: index.php:45
+msgid "carousel"
+msgstr ""
+
 #: index.php:87
 msgid "Go to slide %d"
 msgstr ""
 
 #: index.php:61
 msgid "Slide %1$d of %2$d"
+msgstr ""
+
+#: index.php:61
+msgid "slide"
 msgstr ""
 
 #: index.php:77
@@ -3918,4 +3945,126 @@ msgstr ""
 
 #: templates/post-nav.php:21
 msgid "上一篇下一篇"
+msgstr ""
+
+msgid "Too many attempts. Please try again later."
+msgstr ""
+
+#, no-patch
+msgid "RSS"
+msgstr ""
+
+msgid "Add item"
+msgstr ""
+
+msgid "Up to %d items"
+msgstr ""
+
+msgid "Item %d"
+msgstr ""
+
+msgid "Drag to sort"
+msgstr ""
+
+msgid "Move up"
+msgstr ""
+
+msgid "Move down"
+msgstr ""
+
+msgid "Remove"
+msgstr ""
+
+msgid "Selected: %d items"
+msgstr ""
+
+msgid "Click the button on the right to select, or enter a URL"
+msgstr ""
+
+msgid "Settings groups"
+msgstr ""
+
+msgid "Collapse / expand sidebar"
+msgstr ""
+
+msgid "No matching settings. Try a different keyword"
+msgstr ""
+
+msgid "Saved at %s"
+msgstr ""
+
+msgid "Processed %1$s / %2$s images"
+msgstr ""
+
+msgid "Generated %s images"
+msgstr ""
+
+msgid "Skipped %s images"
+msgstr ""
+
+msgid "Failed %s images"
+msgstr ""
+
+msgid "New version v%s"
+msgstr ""
+
+msgid "Already up to date: v%s"
+msgstr ""
+
+msgid "Current v%s"
+msgstr ""
+
+msgid "No changelog yet."
+msgstr ""
+
+msgid "Download update package"
+msgstr ""
+
+msgid "Download it from the About panel"
+msgstr ""
+
+msgid "View details"
+msgstr ""
+
+msgid "Stop"
+msgstr ""
+
+msgid ""
+"Reset the \"%s\" group to defaults? Customized settings in this group will "
+"be cleared."
+msgstr ""
+
+msgid ""
+"API request failed (HTTP %s). Make sure the Jinyu theme companion plugin is "
+"enabled"
+msgstr ""
+
+msgid "Could not parse the API response (HTTP %s)"
+msgstr ""
+
+msgid "Network error: %s"
+msgstr ""
+
+msgid "Request failed: %s"
+msgstr ""
+
+msgid "Imported successfully"
+msgstr ""
+
+msgid "Search…"
+msgstr ""
+
+msgid "Click to select or enter a URL"
+msgstr ""
+
+msgid "Select"
+msgstr ""
+
+msgid "Preparing…"
+msgstr ""
+
+msgid "Preparing"
+msgstr ""
+
+msgid "Clear"
 msgstr ""

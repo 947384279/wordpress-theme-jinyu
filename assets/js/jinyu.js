@@ -851,7 +851,7 @@
         function apply(img) {
             var m = img.getAttribute(MIRROR);
             if (m) {
-                // 国内头像镜像单点故障很常见（cn.cravatar.com 已停止服务），
+                // 国内头像镜像单点故障很常见（weavatar 回 500、v2ex 跨境连接超时），
                 // 逐个消耗备用源；链走完后属性为空，下次失败自然落到首字母占位图。
                 var list = m.split('|').filter(Boolean);
                 if (list.length > 1) {
@@ -1614,9 +1614,23 @@
         });
 
         // Tab 切换
-        $$('[data-jinyu-auth-tab]', modal).forEach(function (t) {
+        var authTabButtons = $$('[data-jinyu-auth-tab]', modal);
+        authTabButtons.forEach(function (t, i) {
             t.addEventListener('click', function () {
                 switchAuthTab(modal, t.getAttribute('data-jinyu-auth-tab'));
+            });
+            // 方向键导航（ARIA tablist 键盘模式：←/→ 循环，Home/End 跳首尾）。
+            // 非选中 tab 用 tabindex="-1"，故这里需手动把焦点带过去。
+            t.addEventListener('keydown', function (e) {
+                var k = e.key, n = null;
+                if (k === 'ArrowRight' || k === 'ArrowDown') { n = authTabButtons[(i + 1) % authTabButtons.length]; }
+                else if (k === 'ArrowLeft' || k === 'ArrowUp') { n = authTabButtons[(i - 1 + authTabButtons.length) % authTabButtons.length]; }
+                else if (k === 'Home') { n = authTabButtons[0]; }
+                else if (k === 'End') { n = authTabButtons[authTabButtons.length - 1]; }
+                if (!n) return;
+                e.preventDefault();
+                switchAuthTab(modal, n.getAttribute('data-jinyu-auth-tab'));
+                n.focus();
             });
         });
 
@@ -1730,7 +1744,11 @@
         });
         function switchAuthTab(m, tab) {
             $$('[data-jinyu-auth-tab]', m).forEach(function (t) {
-                t.classList.toggle('is-active', t.getAttribute('data-jinyu-auth-tab') === tab);
+                var on = t.getAttribute('data-jinyu-auth-tab') === tab;
+                t.classList.toggle('is-active', on);
+                // 同步 ARIA 状态：选中项可 Tab 聚焦（tabindex 缺省即 0），其余移出 Tab 序列。
+                t.setAttribute('aria-selected', on ? 'true' : 'false');
+                t.setAttribute('tabindex', on ? '0' : '-1');
             });
             $$('.jinyu-auth-form', m).forEach(function (f) {
                 f.hidden = f.getAttribute('data-jinyu-auth-pane') !== tab;
@@ -3673,17 +3691,37 @@
         try { done = localStorage.getItem(KEY) || ''; } catch (e) {}
 
         function paint() {
+            // aria-pressed 表达「投过没投过」给读屏；disabled 阻止二次提交。
+            // 两者都要：只有 disabled 时读屏用户不知道当前状态（WCAG 4.1.2）。
             if (done === 'yes') {
-                yesBtn.classList.add('is-active'); yesBtn.disabled = true; noBtn.disabled = true;
+                yesBtn.classList.add('is-active'); noBtn.classList.remove('is-active');
+                yesBtn.setAttribute('aria-pressed', 'true'); noBtn.setAttribute('aria-pressed', 'false');
+                yesBtn.disabled = true; noBtn.disabled = true;
             } else if (done === 'no') {
-                noBtn.classList.add('is-active'); noBtn.disabled = true; yesBtn.disabled = true;
+                noBtn.classList.add('is-active'); yesBtn.classList.remove('is-active');
+                noBtn.setAttribute('aria-pressed', 'true'); yesBtn.setAttribute('aria-pressed', 'false');
+                noBtn.disabled = true; yesBtn.disabled = true;
             }
         }
         paint();
 
+        var sending = false;
+
         function vote(dir) {
-            if (done) return;
+            // 双闸：done 防「已投过」，sending 防「请求未回时连点」——
+            // 后者缺了会让每次点击都发出一个并发请求（done 只在回调成功后才赋值）。
+            if (done || sending) return;
+            sending = true;
+            // 用 aria-busy 而非 disabled：disabled 会把按钮移出焦点序列，
+            // 请求返回后焦点丢失（WCAG 2.4.3），读屏也感知不到「处理中」。
+            box.setAttribute('aria-busy', 'true');
+            yesBtn.classList.add('is-loading');
+            noBtn.classList.add('is-loading');
             Util.ajax('jinyu_vote', { post_id: pid, dir: dir }, function (err, res) {
+                sending = false;
+                box.removeAttribute('aria-busy');
+                yesBtn.classList.remove('is-loading');
+                noBtn.classList.remove('is-loading');
                 if (err || !res || !res.success) { Util.toast(_t('opFailed', 'Operation failed. Please try again later.')); return; }
                 if (yesNum) yesNum.textContent = res.data.yes;
                 if (noNum) noNum.textContent = res.data.no;
@@ -3965,7 +4003,9 @@
             var level = perf.level || 'ok';
             el.setAttribute('data-level', level);
             var status = el.querySelector('[data-perf="status"]');
-            if (status) status.textContent = { fast: 'Real-time', ok: 'Real-time', warn: 'Slow', bad: 'Busy' }[level] || 'Real-time';
+            var statusMap = { fast: ['perfRealtime', 'Real-time'], ok: ['perfRealtime', 'Real-time'], warn: ['perfSlow', 'Slow'], bad: ['perfBusy', 'Busy'] };
+            var st = statusMap[level] || statusMap.ok;
+            if (status) status.textContent = _t(st[0], st[1]);
             var dot = el.querySelector('[data-perf="dot"]');
             if (dot) dot.className = 'jinyu-perf-dot';
             var samples = el.querySelector('[data-perf="samples"]');

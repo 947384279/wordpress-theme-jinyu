@@ -616,32 +616,87 @@ if ( ! function_exists( 'jinyu_webp_replace_html_imgs' ) ) {
 	}
 }
 
-if ( ! function_exists( 'jinyu_logo_image_size' ) ) {
+if ( ! function_exists( 'jinyu_is_safe_remote_image_url' ) ) {
 	/**
-	 * 取 Logo 图的原始宽高，供 <img> 输出 width/height。
+	 * 判断一个 URL 是否可以安全地发起远程图片请求（SSRF 门禁）。
 	 *
-	 * 不写尺寸时，图片加载完成前占位宽度为 0，加载后突然撑开头部，产生 CLS；
+	 * 背景：主题里有两条路径会对「图片 URL」发起服务端请求 ——
+	 *   1. jinyu_external_cover_dead_probe()（post-meta.php）探测外链封面是否失效
+	 *   2. jinyu_image_size()（本文件）取原始宽高以输出 <img width/height>
+	 * 而这些 URL 的来源包括**文章正文第一张 <img>**（见 jinyu_resolve_cover_source()），
+	 * 也就是**作者/投稿人可控**。作者在正文里写
+	 * `<img src="http://169.254.169.254/latest/meta-data/iam/">`，
+	 * 访客打开文章即会让服务端去打云元数据端点或内网地址。
+	 *
+	 * 为什么必须在这里统一拦：getimagesize() 走 PHP stream，
+	 * **不受 WP 的 wp_http_validate_url() / http_request_host_is_external() 约束**，
+	 * 也无法被 WP_HTTP_BLOCK_EXTERNAL 拦截 —— 主题层不拦就等于没有防护。
+	 *
+	 * 判定：仅允许 http/https；主机解析到内网/保留段（127.0.0.1、10.x、192.168.x、
+	 * 169.254.x 等）一律拒绝。域名用 gethostbyname() 解析后校验（仅 IPv4；
+	 * 纯 IPv6 主机解析不到 A 记录时按拒绝处理 —— 对探测失败从严，不冒内网风险）。
+	 *
+	 * @param string $url 待校验的 URL。
+	 * @return bool true=可安全请求；false=必须拒绝。
+	 */
+	function jinyu_is_safe_remote_image_url( string $url ): bool {
+		$url = trim( $url );
+		if ( '' === $url ) {
+			return false;
+		}
+
+		$parts  = wp_parse_url( $url );
+		$scheme = strtolower( (string) ( $parts['scheme'] ?? '' ) );
+		$host   = (string) ( $parts['host'] ?? '' );
+		if ( ! in_array( $scheme, [ 'http', 'https' ], true ) || '' === $host ) {
+			return false;
+		}
+
+		// 主机为字面 IP 时直接校验；域名解析后校验。
+		$ip = filter_var( $host, FILTER_VALIDATE_IP ) ? $host : gethostbyname( $host );
+		if ( ! filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) ) {
+			return false;
+		}
+
+		// 解析到公网 IP 后仍需确认原始 host 不是被 CNAME 到内网的伪装
+		// （gethostbyname 已跟随 CNAME，这里再比对一次 host 字面量以防歧义）。
+		if ( filter_var( $host, FILTER_VALIDATE_IP ) && $host !== $ip ) {
+			return false;
+		}
+
+		return true;
+	}
+}
+
+if ( ! function_exists( 'jinyu_image_size' ) ) {
+	/**
+	 * 取图片的原始宽高，供 <img> 输出 width/height。
+	 *
+	 * 不写尺寸时，图片加载完成前占位宽度为 0，加载后突然撑开容器，产生 CLS
+	 * （Core Web Vitals 的累积布局偏移，直接影响 SEO 与移动端体验）；
 	 * 补上原始宽高后浏览器按 aspect-ratio 预留空间，加载期间不再跳动
-	 * （显示尺寸仍由 CSS 的 height:32px;width:auto 决定，这里只补"原始比例"信息）。
+	 * （显示尺寸仍由 CSS 决定，这里只补「原始比例」信息）。
+	 *
+	 * 取值顺序：附件元数据（零额外 IO）→ 远程图头（外链 / CDN 场景）。
 	 * 结果按 URL 缓存 12 小时，避免每个请求都查一次库。
 	 *
-	 * @param string $url Logo 图 URL（本地上传或 CDN 地址均可）
-	 * @return array{0:int,1:int} 宽高；取不到时 [0, 0]，调用方据此省略属性、保持原行为
+	 * @param string $url 图片 URL（本地上传或 CDN 地址均可）。
+	 * @return array{0:int,1:int} 宽高；取不到时 [0, 0]，调用方据此省略属性、保持原行为。
 	 */
-	function jinyu_logo_image_size( $url ) {
+	function jinyu_image_size( $url ) {
 		$url  = (string) $url;
 		$size = array( 0, 0 );
 		if ( '' === $url ) {
 			return $size;
 		}
 
-		$cache_key = 'logo_img_size_' . md5( $url );
+		$cache_key = 'img_size_' . md5( $url );
 		$cached    = jinyu_cache_get( $cache_key );
 		if ( is_array( $cached ) && isset( $cached[0], $cached[1] ) ) {
 			return array( (int) $cached[0], (int) $cached[1] );
 		}
 
-		// 优先读附件元数据（零额外 IO）；未命中再退化为直读图片头（外链 / CDN 场景）.
+		// 优先读附件元数据（零额外 IO）；未命中再退化为直读图片头（外链 / CDN 场景）。
 		$attach_id = function_exists( 'attachment_url_to_postid' ) ? attachment_url_to_postid( $url ) : 0;
 		if ( $attach_id ) {
 			$meta = wp_get_attachment_image_src( $attach_id, 'full' );
@@ -650,7 +705,13 @@ if ( ! function_exists( 'jinyu_logo_image_size' ) ) {
 			}
 		}
 		if ( ! $size[0] ) {
-			$info = @getimagesize( $url ); /* phpcs:ignore WordPress.WP.AlternativeFunctions,WordPress.PHP.NoSilencedErrors.Discouraged -- 预期可能失败的操作（反序列化/JSON），静默处理 */
+			// SSRF 门禁：$url 可能来自文章正文首图（作者级可写），getimagesize() 走 PHP stream
+			// 不受 WP 的 http 校验约束，必须自己挡内网 / 云元数据端点。
+			// 挡下后 fail-open（返回 [0,0]）—— 调用方据此省略 width/height，行为与取不到尺寸一致。
+			if ( ! jinyu_is_safe_remote_image_url( $url ) ) {
+				return $size;
+			}
+			$info = @getimagesize( $url ); /* phpcs:ignore WordPress.WP.AlternativeFunctions,WordPress.PHP.NoSilencedErrors.Discouraged -- 预期可能失败的操作（取远程图头），静默处理 */
 			if ( ! empty( $info[0] ) && ! empty( $info[1] ) ) {
 				$size = array( (int) $info[0], (int) $info[1] );
 			}
@@ -658,5 +719,17 @@ if ( ! function_exists( 'jinyu_logo_image_size' ) ) {
 
 		jinyu_cache_set( $cache_key, $size, 12 * HOUR_IN_SECONDS );
 		return $size;
+	}
+}
+
+if ( ! function_exists( 'jinyu_logo_image_size' ) ) {
+	/**
+	 * Logo 图尺寸（jinyu_image_size 的语义别名，保留以维持既有调用点不变）。
+	 *
+	 * @param string $url Logo 图 URL。
+	 * @return array{0:int,1:int} 宽高；取不到时 [0, 0]。
+	 */
+	function jinyu_logo_image_size( $url ) {
+		return jinyu_image_size( $url );
 	}
 }

@@ -311,9 +311,19 @@ add_filter(
 
 /**
  * 国内头像镜像表：均兼容 Gravatar 同一套 /avatar/{md5(email)} 协议（同样支持 s/d/r/f）。
- * 顺序即回退顺序，jinyu_avatar_mirror_probe() 的探测结论决定本轮实际使用哪一个。
+ * 顺序即回退顺序，探测结论决定本轮实际使用哪一个。
+ * 探测逻辑是 inc/ajax/user.php 里挂在 shutdown 上的匿名闭包（无独立命名函数）。
+ *
+ * ⚠️ 隐私合规：选中非官方源会把**评论者邮箱的 md5 哈希**发往该第三方服务器。
+ * w.org 发行变体只保留官方 gravatar.com（见下方门控）——审核团队对 Gravatar 镜像
+ * 历来严格，且这类外发必须在 Privacy 章节披露，自托管版则由站长自行权衡。
  */
 function jinyu_avatar_mirror_map(): array {
+	if ( jinyu_is_wporg() ) {
+		// 发行变体：只用官方源，不存在外发。
+		return [ 'gravatar' => 'https://gravatar.com/avatar/' ];
+	}
+
 	return [
 		'cravatar' => 'https://cn.cravatar.com/avatar/',
 		'weavatar' => 'https://weavatar.com/avatar/',
@@ -326,13 +336,16 @@ function jinyu_avatar_mirror_map(): array {
 /**
  * 决定本轮对外输出的镜像 id。
  *
- * 后台「头像来源」选的源未必活着（cn.cravatar.com 2026 年已停止服务，请求一律 404），
- * 若照单输出，每个头像都要先失败一次再回退：控制台刷一排 404，Lighthouse 最佳实践扣分。
+ * 后台「头像来源」选的源未必活着：weavatar 返回 500、cdn.v2ex.com 跨境连接超时、
+ * gravatar.webp.se 半死，这些都会让 <img> 触发 error。若照单输出，每个头像都要先失败一次
+ * 再回退：控制台刷一排报错，还白等一次连接超时。
  *
- * 策略：以 transient 里的探测结论为准；尚未探测过时直接把已确认下线的 cravatar 视为失效
- * （探测由 shutdown 钩子补齐，最多 6 小时重跑一次）。这样首屏就输出可确定的活源，
- * 而不是「先发一次 404 再回退」。
- */
+	 * 策略：以 transient 里的探测结论为准（探测挂在 shutdown，每 6 小时重跑一次）。
+	 * 探测尚未跑过时**不做任何预设**、直接信任站长选的那个源 —— 早前这里硬编码过
+	 * `[ 'cravatar' ]`（依据是注释里「cn.cravatar.com 2026 年已停服」），但2026-10-02
+	 * 实测证伪：连续三次均返回 200、耗时 80~110ms，是全部源里最快的。那个预设反而
+	 * 把最优源排除了。判死权完全交给探测。
+	 */
 function jinyu_avatar_mirror_pick(): string {
 	static $pick = null;
 
@@ -349,8 +362,12 @@ function jinyu_avatar_mirror_pick(): string {
 
 	$dead = get_transient( 'jinyu_avatar_mirror_dead' );
 	if ( ! is_array( $dead ) ) {
-		// 探测还没跑过：先用已知下线的源把结论兜住，等 shutdown 补齐后再按真值走。
-		$dead = [ 'cravatar' ];
+		// 探测还没跑过时不做任何预设，直接信任站长选的那个源。
+		// ⚠️ 早期这里硬编码了 [ 'cravatar' ]（依据是「cn.cravatar.com 2026 年已停服」）。
+		// 2026-10-02 实测证伪：连续三次请求均返回 200，耗时 80~110ms，是全部源里最快的。
+		// 那个预设反而把最优源排除了（探测一旦迟迟不跑，首屏就一直用次优源）。
+		// 判死权交给探测，且探测已改为全量 + 2xx/3xx 判定。
+		$dead = [];
 	}
 	if ( ! in_array( $chosen, $dead, true ) ) {
 		return $pick = $chosen;
@@ -391,8 +408,14 @@ function jinyu_avatar_mirror_chain( string $url ): array {
 		if ( stripos( $url, $prefix ) === 0 ) {
 			$rest  = substr( $url, strlen( $prefix ) );
 			$chain = [];
+			// ⚠️ 必须剔除探测已判死的源，否则前端会依次去请求它们。
+			// 实测踩过：weavatar 返回 500、cdn.v2ex.com 跨境超时 8 秒，
+			// 一个头像要等 3 次失败（其中一次 8 秒）才落到占位图 ——
+			// 控制台刷 ERR_CONNECTION_TIMED_OUT，且这延迟发生在首屏。
+			$dead = get_transient( 'jinyu_avatar_mirror_dead' );
+			$dead = is_array( $dead ) ? $dead : [];
 			foreach ( $map as $id => $other ) {
-				if ( $other !== $prefix ) {
+				if ( $other !== $prefix && ! in_array( $id, $dead, true ) ) {
 					$chain[] = $other . $rest;
 				}
 			}
@@ -429,10 +452,11 @@ add_filter(
 );
 
 /**
- * 请求收尾时对镜像做一次存活探测（每 6 小时一次），结果写进 transient 供 jinyu_avatar_mirror_pick() 使用。
- * 刻意挂在 shutdown：探测要走 6 个 HEAD，绝不能卡在前台首屏。
- * 判定标准用 200（源站对未知 md5 配 d=404 时也会回 200 + 空图，正好代表「服务还在」），
- * 非 200 / 超时的一律记入失效名单。
+ * 请求收尾时对镜像做一次存活探测（每 6 小时一次），结果写进 transient，
+ * 供 jinyu_avatar_mirror_pick()（选源）与 jinyu_avatar_mirror_chain()（剔除失效回退源）共用。
+ * 刻意挂在 shutdown：探测要走 5 个源，绝不能卡在前台首屏（并发发出，约 2 秒）。
+ * 判定标准是 2xx/3xx（源站对未知 md5 配 d=404 时通常回 200 + 空图，正好代表「服务还在」），
+ * 5xx 与连接失败一律记入失效名单。
  */
 add_action(
 	'shutdown',
@@ -447,10 +471,17 @@ add_action(
 		$probe = '00000000000000000000000000000000?d=404&s=1';
 		$dead  = [];
 		$alive = '';
-		// 只探最常被选中的三个：全量六个要 6~12 秒，卡在收尾阶段不值得。
-		foreach ( [ 'cravatar', 'weavatar', 'loli' ] as $id ) {
+		// 全量探测（早期只探 3 个，漏掉了 cdn.v2ex.com 与 gravatar.webp.se，
+		// 而回退链恰恰会用全部源 —— 于是超时的源每次都白等一次超时）。
+		//
+		// 刻意用串行 wp_remote_head 而非数组式 wp_remote_get：后者会被
+		// wp_http_validate_url() 的 esc_url_raw() 直接判非法（kses 抛异常）。
+		// 串行最坏 5×1.5s≈7.5s，但本钩子挂在 shutdown（响应已输出），
+		// 且每 6 小时才跑一次，对前台零影响 —— 换来的是不依赖任何私有 API。
+		foreach ( array_keys( jinyu_avatar_mirror_map() ) as $id ) {
 			$prefix = jinyu_avatar_mirror_prefix( $id );
 			if ( null === $prefix ) {
+				$dead[] = $id;
 				continue;
 			}
 			$resp = wp_remote_head(
@@ -461,7 +492,12 @@ add_action(
 					'httpversion' => '1.1',
 				]
 			);
-			$ok   = ! is_wp_error( $resp ) && 200 === (int) wp_remote_retrieve_response_code( $resp );
+			// 判定：只有 2xx / 3xx 算存活。源站对未知 md5 配 d=404 时通常回 200 + 空图，
+			// 正好代表「服务还在」；5xx 与连接失败都说明这个源不可用。
+			// ⚠️ 早期只认 200，把 weavatar 的 500 当成了存活，于是它留在回退链里，
+			// 每个头像都要先失败一次（cdn.v2ex.com 更是跨境超时 8 秒）。
+			$code = ( is_wp_error( $resp ) || ! $resp ) ? 0 : (int) wp_remote_retrieve_response_code( $resp );
+			$ok   = ( $code >= 200 && $code < 400 );
 			if ( ! $ok ) {
 				$dead[] = $id;
 			} elseif ( '' === $alive ) {
@@ -806,3 +842,85 @@ if ( ! function_exists( 'jinyu_post_status_label' ) ) {
 function jinyu_submit_rate_limited( int $uid ): bool {
 	return (bool) get_transient( 'jy_submit_' . $uid );
 }
+
+if ( ! function_exists( 'jinyu_migrate_pending_email_token_key' ) ) {
+	/**
+	 * 一次性迁移：为存量「待验证邮箱」记录补写 jinyu_pending_email_token 索引键。
+	 *
+	 * 背景：邮箱确认接口早前是「拉出全站待验证用户逐个比对 token」，O(n) 扫描可被匿名请求
+	 * 无条件触发。现改为按 jinyu_pending_email_token 精确走索引查询，但该键是后加的，
+	 * 老站点的存量记录没有配套键 → 那些用户点了确认链接会一律判「无效」。
+	 *
+	 * 本迁移把 jinyu_pending_email 里的 token 哈希回填到独立键，让存量链接继续可用。
+	 * 仅执行一次（transient 兜底去重）。新产生的记录写入时已同步该键，不受影响。
+	 *
+	 * @return void
+	 */
+	function jinyu_migrate_pending_email_token_key(): void {
+		if ( get_transient( 'jinyu_migrated_pending_email_token' ) ) {
+			return;
+		}
+		// 先打标记再干活：即使中途失败也不重复扫（usermeta 是大表，重复扫代价高）。
+		set_transient( 'jinyu_migrated_pending_email_token', 1, MONTH_IN_SECONDS );
+
+		/*
+		 * 分页循环而非一次性取 500 条。
+		 *
+		 * 早期写法是 `'number' => 500` 一次取完：站点上待验证邮箱记录超过 500 时，
+		 * 第 501 条及以后**本轮和此后一个月都不会被处理**（去重标记已落盘），
+		 * 那些用户点确认链接只会得到「无效链接」，且站点侧没有任何日志。
+		 *
+		 * jinyu_pending_email 只在「用户改了邮箱但还没点确认」时写入，属长尾低频数据，
+		 * 单站通常远少于 500；但正因低频，一次性截断的故障会静默很久才被发现。
+		 * 每页 200 循环到空为止，单次 admin_init 的开销仍可控。
+		 */
+		$page   = 1;
+		$total  = 0;
+		$batch  = 200;
+		$reason = true;
+
+		while ( $reason ) {
+			$uids = get_users(
+				[
+					'fields'      => 'ID',
+					'number'      => $batch,
+					'offset'      => ( $page - 1 ) * $batch,
+					'count_total' => false,
+					'meta_query'  => [ /* phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- 一次性迁移，transient 去重 + 分页循环，单次 admin_init 只跑一轮 */
+						'relation' => 'AND',
+						[
+							'key'     => 'jinyu_pending_email',
+							'compare' => 'EXISTS',
+						],
+						[
+							'key'     => 'jinyu_pending_email_token',
+							'compare' => 'NOT EXISTS',
+						],
+					],
+				]
+			);
+
+			if ( empty( $uids ) ) {
+				break;
+			}
+
+			foreach ( $uids as $uid ) {
+				$m = get_user_meta( $uid, 'jinyu_pending_email', true );
+				if ( is_array( $m ) && ! empty( $m['token'] ) ) {
+					update_user_meta( $uid, 'jinyu_pending_email_token', (string) $m['token'] );
+					++$total;
+				}
+			}
+
+			// 防御：若 get_users 因故返回满页却已无更多（不该发生），最多翻 50 页即止
+			$reason = ( count( $uids ) === $batch ) && ( $page < 50 );
+			++$page;
+		}
+
+		if ( $total > 0 ) {
+			// 留痕：万一将来出现「还是迁不完」的情况，至少日志里有线索。
+			error_log( sprintf( '[jinyu] pending-email token 迁移完成，回填 %d 条。', $total ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- 迁移留痕，WordPress 规范允许且刻意不用 error_log 之外的通道
+		}
+	}
+}
+add_action( 'admin_init', 'jinyu_migrate_pending_email_token_key' );

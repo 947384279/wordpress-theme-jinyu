@@ -277,21 +277,18 @@ if ( ! function_exists( 'jinyu_get_post_cover' ) ) {
 		}
 
 		function jinyu_external_cover_dead_probe( $url, $key ) {
-			// SSRF 防护：URL 来自文章自定义字段（作者级可写），探测前必须校验。
-			// 仅允许 http/https 公网地址；主机解析到内网/保留段（127.0.0.1、10.x、192.168.x、169.254.x 等）
-			// 一律不发起请求（fail-open 视为活图，不误杀）。
-			$parts  = wp_parse_url( $url );
-			$scheme = strtolower( (string) ( $parts['scheme'] ?? '' ) );
-			$host   = (string) ( $parts['host'] ?? '' );
-			if ( ! in_array( $scheme, [ 'http', 'https' ], true ) || $host === '' ) {
+			// 隐私合规：探测会对「文章内容里的外链图片」发起请求，等于把访客正在读的
+			// 外部地址回传给其来源服务器。w.org 发行变体整体不做探测（不外联），
+			// 缺图时直接走本地占位图，视觉降级但零外发。
+			if ( jinyu_is_wporg() ) {
 				return;
 			}
-			// 主机为字面 IP 时直接校验；域名则解析后校验（gethostbyname 仅 IPv4，
-			// 纯 IPv6 主机解析不到 A 记录时按失败处理 → fail-open 不误杀）。
-			$ip = filter_var( $host, FILTER_VALIDATE_IP )
-				? $host
-				: gethostbyname( $host );
-			if ( ! filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) ) {
+
+			// SSRF 防护：URL 来自文章自定义字段（作者级可写），探测前必须校验。
+			// 校验逻辑与 jinyu_image_size() 共用 jinyu_is_safe_remote_image_url()（inc/fun/media.php），
+			// 不再各写一份 —— 同一份威胁模型下，两处防护必须一致，否则改一处忘另一处就是漏洞。
+			// fail-open 视为活图，不误杀。
+			if ( ! jinyu_is_safe_remote_image_url( $url ) ) {
 				return;
 			}
 
@@ -510,13 +507,6 @@ add_action(
 	1
 );
 
-if ( ! function_exists( 'jinyu_placeholder' ) ) {
-	function jinyu_placeholder( $w = 400, $h = 250 ) {
-		$primary = esc_attr( jinyu_get_option( 'style_color_primary', '#FF6B35' ) );
-		return "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='{$w}' height='{$h}'><rect width='100%25' height='100%25' fill='{$primary}' fill-opacity='0.12'/><text x='50%25' y='50%25' font-family='sans-serif' font-size='20' fill='{$primary}' fill-opacity='0.55' text-anchor='middle' dominant-baseline='middle'>JINYU</text></svg>";
-	}
-}
-
 if ( ! function_exists( 'jinyu_get_post_views' ) ) {
 	function jinyu_get_post_views( $post_id = 0 ) {
 		global $post;
@@ -540,7 +530,7 @@ if ( ! function_exists( 'jinyu_show_views' ) ) {
 }
 
 /**
- * 浏览量自增（写入 post meta）已迁至配套插件 jinyu-theme-companion
- * （inc/fun/theme-compat.php 的 jinyu_companion_auto_increment_views，挂在 wp_head）。
+ * 浏览量自增（写入 post meta）已迁至配套插件 jinyu-theme-companion。
  * 主题仅保留读取壳 jinyu_get_post_views()，不再承担数据采集写入。
+ * ⚠️ 插件侧实现不在本仓库内，改动此处前请先到插件仓库核对实际函数名与挂载点。
  */

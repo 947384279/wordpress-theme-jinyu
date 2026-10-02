@@ -20,24 +20,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 <h2 class="wp-block-heading">常见问答</h2>
 <!-- /wp:heading -->
 
-<!-- wp:heading {"level":4} -->
-<h4 class="wp-block-heading">主题支持 PHP 多少版本？</h4>
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">主题支持 PHP 多少版本？</h3>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
 <p>支持 PHP 8.0 及以上版本，推荐使用 8.2 及以上以获得最佳性能。</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:heading {"level":4} -->
-<h4 class="wp-block-heading">可以商用吗？</h4>
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">可以商用吗？</h3>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
 <p>采用 GPL v3 许可发布，允许商用与二次开发。</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:heading {"level":4} -->
-<h4 class="wp-block-heading">遇到问题如何反馈？</h4>
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">遇到问题如何反馈？</h3>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->

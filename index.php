@@ -42,7 +42,7 @@ $jinyu_car_seq = 0;
 			$car_id   = 'jinyu-carousel-' . ( isset( $jinyu_car_seq ) ? $jinyu_car_seq++ : 0 );
 			?>
 		<div class="jinyu-carousel" id="<?php echo esc_attr( $car_id ); ?>" data-jinyu-carousel
-			role="region" aria-roledescription="轮播" aria-label="<?php echo esc_attr__( 'Featured posts slider', 'jinyu' ); ?>"
+			role="region" aria-roledescription="<?php esc_attr_e( 'carousel', 'jinyu' ); ?>" aria-label="<?php echo esc_attr__( 'Featured posts slider', 'jinyu' ); ?>"
 			data-autoplay="<?php echo esc_attr( $autoplay ); ?>"
 			data-loop="<?php echo esc_attr( $loop ); ?>"
 			data-effect="<?php echo esc_attr( $effect ); ?>"
@@ -58,9 +58,15 @@ $jinyu_car_seq = 0;
 				*/
 				$slide_prio = ( $si === 0 ) ? ' fetchpriority="high"' : '';
 				?>
-			<div class="jinyu-carousel-slide" role="group" aria-roledescription="幻灯片" aria-label="<?php echo esc_attr( sprintf( __( 'Slide %1$d of %2$d', 'jinyu' ), $si + 1, count( $slides ) ) ); /* phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment */ ?>">
+			<div class="jinyu-carousel-slide" role="group" aria-roledescription="<?php esc_attr_e( 'slide', 'jinyu' ); ?>" aria-label="<?php echo esc_attr( sprintf( __( 'Slide %1$d of %2$d', 'jinyu' ), $si + 1, count( $slides ) ) ); /* phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment */ ?>">
 				<a class="jinyu-carousel-link" href="<?php echo esc_url( $s['url'] ?: '#' ); ?>">
+				<?php
+				// 轮播图通常是首页 LCP 元素，必须带 width/height：否则图片到达时撑开容器产生 CLS。
+				// 取不到尺寸（自定义 URL 且图头探测失败）时省略属性，行为与原来一致。
+				$slide_size = jinyu_image_size( $s['image'] );
+				?>
 				<img class="jinyu-blur-img" src="<?php echo esc_url( $s['image'] ); ?>" alt=""
+				<?php echo $slide_size[0] ? ' width="' . (int) $slide_size[0] . '" height="' . (int) $slide_size[1] . '"' : ''; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 已 intval 强转 */ ?>
 				<?php
 				if ( ! empty( $s['srcset'] ) ) :
 					?>
@@ -111,14 +117,26 @@ $jinyu_car_seq = 0;
 			<a class="jinyu-cms-grid-item" href="<?php echo esc_url( $jinyu_g['link'] ?: '#' ); ?>"<?php echo $jinyu_g['blank'] ? ' target="_blank" rel="noopener noreferrer"' : ''; ?>>
 					<?php
 					$ph_g  = '';
+					$dim_g = array( 0, 0 );
 					$aid_g = jinyu_url_to_postid( $jinyu_g['img'] );
 					if ( $aid_g ) {
 						$tg = wp_get_attachment_image_src( $aid_g, 'thumbnail' );
 						if ( $tg && ! empty( $tg[0] ) ) {
-							$ph_g = jinyu_lqip_url( $tg[0] );}
+							$ph_g = jinyu_lqip_url( $tg[0] );
+						}
+						$fg = wp_get_attachment_image_src( $aid_g, 'full' );
+						if ( $fg && ! empty( $fg[1] ) && ! empty( $fg[2] ) ) {
+							$dim_g = array( (int) $fg[1], (int) $fg[2] );
+						}
+					}
+					// 附件元数据没给（如自定义 URL）时回退到通用 helper；仍取不到就省略尺寸属性。
+					if ( ! $dim_g[0] ) {
+						$dim_g = jinyu_image_size( $jinyu_g['img'] );
 					}
 					?>
-			<img class="jinyu-blur-img" src="<?php echo esc_url( jinyu_img_to_webp_url( $jinyu_g['img'] ) ); ?>" alt="" loading="lazy" decoding="async"<?php echo $ph_g ? ' data-ph="' . esc_url( $ph_g ) . '"' : ''; ?>>
+			<img class="jinyu-blur-img" src="<?php echo esc_url( jinyu_img_to_webp_url( $jinyu_g['img'] ) ); ?>" alt=""
+					<?php echo $dim_g[0] ? ' width="' . (int) $dim_g[0] . '" height="' . (int) $dim_g[1] . '"' : ''; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 已 intval 强转 */ ?>
+			loading="lazy" decoding="async"<?php echo $ph_g ? ' data-ph="' . esc_url( $ph_g ) . '"' : ''; ?>>
 			<span class="jinyu-cms-grid-cap"><?php echo esc_html( $jinyu_g['title'] ); ?></span>
 			</a>
 		<?php endforeach; ?>

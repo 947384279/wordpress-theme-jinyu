@@ -1,12 +1,16 @@
 <?php
 /**
- * 敏感字段加密（兼容壳）
+ * 敏感字段加密（纯呈现层的「需求广播方」）
  *
- * 真实加密实现已迁至配套插件 jinyu-theme-companion（inc/fun/crypto.php，
- * 函数 jinyu_companion_encrypt / jinyu_companion_decrypt：算法同源、可透明解密历史密文）。
+ * 主题不实现任何加密算法，只声明需求 + 提供最保守的降级值（原样返回明文）：
+ * 真实加密实现由配套插件 jinyu-theme-companion（inc/fun/crypto.php）经
+ * jinyu_encrypt / jinyu_decrypt 两个过滤器提供，算法同源、可透明解密历史密文。
  *
- * 主题自 1.x 起为纯呈现层，此处仅保留委托壳；插件缺失时回落为明文（不致命）。
- * 敏感字段清单（jinyu_sensitive_keys）为静态配置，仍由主题提供。
+ * 契约方向：主题 apply_filters 广播 → 实现方 add_filter 响应，双方互不引用对方符号。
+ * 插件缺席时敏感字段以明文入库（与原先「插件缺失」降级一致，不致命，但安全性降低——
+ * 故文档与后台设置页应提示「安装配套插件以启用敏感字段加密」）。
+ *
+ * 敏感字段清单（jinyu_sensitive_keys）为静态配置，仍由主题提供（属呈现层的表单定义）。
  *
  * @package         WordPress
  * @subpackage      Jinyu
@@ -30,24 +34,44 @@ if ( ! function_exists( 'jinyu_sensitive_keys' ) ) {
 
 if ( ! function_exists( 'jinyu_encrypt' ) ) {
 	/**
-	 * 加密（委托给配套插件；缺失时原样返回）。
+	 * 加密。默认原样返回；实现方可经 jinyu_encrypt 过滤器返回密文。
 	 *
 	 * @param mixed $plain 明文
 	 * @return mixed
 	 */
 	function jinyu_encrypt( $plain ) {
-		return function_exists( 'jinyu_companion_encrypt' ) ? jinyu_companion_encrypt( $plain ) : $plain;
+		return apply_filters( 'jinyu_encrypt', $plain );
 	}
 }
 
 if ( ! function_exists( 'jinyu_decrypt' ) ) {
 	/**
-	 * 解密（委托给配套插件；缺失时原样返回）。
+	 * 解密。默认原样返回；实现方可经 jinyu_decrypt 过滤器返回明文。
 	 *
 	 * @param mixed $val 密文
 	 * @return mixed
 	 */
 	function jinyu_decrypt( $val ) {
-		return function_exists( 'jinyu_companion_decrypt' ) ? jinyu_companion_decrypt( $val ) : $val;
+		return apply_filters( 'jinyu_decrypt', $val );
+	}
+}
+
+if ( ! function_exists( 'jinyu_is_encrypted' ) ) {
+	/**
+	 * 判断一个值是否为密文（覆盖两代格式前缀）。
+	 *
+	 * 前缀是数据契约的一部分，会随加密实现方演进：
+	 *   - jinyu_enc2:: 当前格式（encrypt-then-MAC）
+	 *   - jinyu_enc::  历史格式（无 MAC），仍需识别以免旧密文被二次加密
+	 * 因此这里集中判定，调用方不得再各自硬编码单一前缀。
+	 *
+	 * @param mixed $val 待判断的值。
+	 * @return bool
+	 */
+	function jinyu_is_encrypted( $val ): bool {
+		if ( ! is_string( $val ) ) {
+			return false;
+		}
+		return str_starts_with( $val, 'jinyu_enc2::' ) || str_starts_with( $val, 'jinyu_enc::' );
 	}
 }

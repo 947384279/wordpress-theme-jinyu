@@ -28,20 +28,7 @@ get_header(); ?>
 				</div>
 			</div>
 		</div>
-		<?php if ( have_posts() ) : ?>
-			<div class="jinyu-post-grid">
-				<?php
-				while ( have_posts() ) :
-					the_post();
-					get_template_part( 'templates/module', 'post' );
-endwhile;
-				?>
-			</div>
-			<?php jinyu_pagination( [ 'load_more' => false ] ); ?>
-			<?php get_template_part( 'templates/flinks' ); ?>
-		<?php else : ?>
-			<?php get_template_part( 'templates/content', 'none' ); ?>
-		<?php endif; ?>
+		<?php get_template_part( 'templates', 'archive-loop' ); ?>
 	</main>
 	<?php get_sidebar(); ?>
 </div>

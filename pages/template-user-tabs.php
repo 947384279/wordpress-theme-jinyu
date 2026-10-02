@@ -38,7 +38,7 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 	: ( $jinyu_hour < 12
 		? __( '早上好', 'jinyu' )
 		: ( $jinyu_hour < 18 ? __( '下午好', 'jinyu' ) : __( '晚上好', 'jinyu' ) ) );
-	$jinyu_unread_dash = function_exists( 'jinyu_get_unread_count' ) ? (int) jinyu_get_unread_count( $uid ) : 0;
+	$jinyu_unread_dash = (int) jinyu_ext_value( 'unread_count', 0, $uid );
 	?>
 	<div class="jinyu-user-welcome">
 	<div>
@@ -243,13 +243,13 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 			</div>
 		</div>
 		</div>
-		<textarea name="post_content" rows="10"
+		<textarea name="post_content" rows="10" aria-label="<?php esc_attr_e( '正文内容', 'jinyu' ); ?>"
 				placeholder="<?php esc_attr_e( '正文内容（至少 20 字）', 'jinyu' ); ?>"></textarea>
 		<span class="jinyu-char-count" data-jinyu-count="post_content" data-min="20" aria-live="polite"></span>
 		<input type="text" class="jinyu-field" name="post_tags"
 			placeholder="<?php esc_attr_e( '标签，逗号分隔', 'jinyu' ); ?>">
 		<button type="submit" class="jinyu-btn jinyu-btn-primary"><?php esc_html_e( '提交投稿', 'jinyu' ); ?></button>
-		<p class="jinyu-auth-tip" data-jinyu-submit-tip></p>
+		<p class="jinyu-auth-tip" data-jinyu-submit-tip aria-live="polite"></p>
 	</form>
 	<?php else : ?>
 		<?php
@@ -373,8 +373,8 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 
 	<?php else : ?>
 		<?php
-		$jinyu_follow_users = function_exists( 'jinyu_get_following_users' ) ? jinyu_get_following_users( $uid ) : [];
-		$jinyu_follow_terms = function_exists( 'jinyu_get_following_terms' ) ? jinyu_get_following_terms( $uid ) : [];
+		$jinyu_follow_users = (array) jinyu_ext_value( 'following_users', [], $uid );
+		$jinyu_follow_terms = (array) jinyu_ext_value( 'following_terms', [], $uid );
 		?>
 	<h3 class="jinyu-user-subtitle"><?php esc_html_e( '关注的用户', 'jinyu' ); ?></h3>
 		<?php if ( $jinyu_follow_users ) : ?>
@@ -485,10 +485,10 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 		<input type="url" name="user_url" value="<?php echo esc_attr( $user->user_url ); ?>"
 			placeholder="<?php esc_attr_e( '个人网站', 'jinyu' ); ?>">
 	</label>
-	<textarea name="description" rows="3"
+	<textarea name="description" rows="3" aria-label="<?php esc_attr_e( '个人简介', 'jinyu' ); ?>"
 				placeholder="<?php esc_attr_e( '个人简介', 'jinyu' ); ?>"><?php echo esc_textarea( $user->description ); ?></textarea>
 	<button type="submit" class="jinyu-btn jinyu-btn-primary"><?php esc_html_e( '保存资料', 'jinyu' ); ?></button>
-	<p class="jinyu-auth-tip" data-jinyu-profile-tip></p>
+	<p class="jinyu-auth-tip" data-jinyu-profile-tip aria-live="polite"></p>
 	</form>
 
 	<h3 class="jinyu-user-subtitle"><?php esc_html_e( '修改密码', 'jinyu' ); ?></h3>
@@ -507,42 +507,20 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 			placeholder="<?php esc_attr_e( '确认新密码', 'jinyu' ); ?>">
 	</label>
 	<button type="submit" class="jinyu-btn jinyu-btn-primary"><?php esc_html_e( '更新密码', 'jinyu' ); ?></button>
-	<p class="jinyu-auth-tip" data-jinyu-password-tip></p>
+	<p class="jinyu-auth-tip" data-jinyu-password-tip aria-live="polite"></p>
 	</form>
 
 	<?php
-	// 第三方绑定整块由插件提供，四个接口须同时可用才渲染（缺任一则本块静默跳过）.
-	$jinyu_oauth_ready = function_exists( 'jinyu_oauth_enabled' )
-		&& function_exists( 'jinyu_oauth_bindings' )
-		&& function_exists( 'jinyu_oauth_platforms' )
-		&& function_exists( 'jinyu_oauth_bind_url' )
-		&& jinyu_oauth_enabled();
+	// 第三方账号绑定整块属插件领地（平台列表 / 绑定状态 / 解绑 nonce 全是插件私有数据模型），
+	// 主题只留一个插槽并传入「当前用户 + 回跳地址」，不认识任何插件符号。无人应答则整块不渲染。
+	$jinyu_bind_html = jinyu_ext_markup(
+		'oauth_bindings',
+		$uid,
+		function_exists( 'jinyu_user_page_url' ) ? jinyu_user_page_url( 'profile' ) : home_url()
+	);
 	?>
-	<?php if ( $jinyu_oauth_ready ) : ?>
-		<?php $bindings = jinyu_oauth_bindings( $uid ); ?>
-		<?php $uc_url = function_exists( 'jinyu_user_page_url' ) ? jinyu_user_page_url( 'profile' ) : home_url(); ?>
-	<h3 class="jinyu-user-subtitle"><?php esc_html_e( '第三方账号绑定', 'jinyu' ); ?></h3>
-	<ul class="jinyu-bind-list">
-		<?php foreach ( jinyu_oauth_platforms() as $p => $info ) : ?>
-		<li>
-			<span class="jinyu-bind-ico jinyu-bind-ico-<?php echo esc_attr( $p ); ?>" aria-hidden="true"><?php echo 0 === strpos( (string) $info['icon'], '<svg' ) ? $info['icon'] : esc_html( $info['icon'] );  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?></span>
-			<?php echo esc_html( $info['label'] ); ?>
-			<?php if ( ! empty( $bindings[ $p ] ) ) : ?>
-			<button type="button" class="jinyu-bind-off"
-					data-jinyu-unbind="<?php echo esc_attr( $p ); ?>"
-					data-nonce="<?php echo esc_attr( wp_create_nonce( 'jinyu_sl_unbind' ) ); ?>"
-					data-bind-url="<?php echo esc_url( jinyu_oauth_bind_url( $p, $uc_url ) ); ?>"
-					<?php /* translators: %s: 占位符 */ ?>
-					data-bind-label="<?php echo esc_attr( sprintf( __( '确定解除与「%s」的绑定吗？解绑后将无法再使用该平台一键登录。', 'jinyu' ), $info['label'] ) ); ?>">
-				<?php esc_html_e( '解除绑定', 'jinyu' ); ?>
-			</button>
-			<?php else : ?>
-			<a class="jinyu-bind-go" href="<?php echo esc_url( jinyu_oauth_bind_url( $p, $uc_url ) ); ?>"><?php esc_html_e( '去绑定', 'jinyu' ); ?></a>
-			<?php endif; ?>
-		</li>
-		<?php endforeach; ?>
-	</ul>
-	<p class="jinyu-field-hint"><?php esc_html_e( '绑定后可使用该平台一键登录，并关联到当前账号。', 'jinyu' ); ?></p>
+	<?php if ( '' !== $jinyu_bind_html ) : ?>
+		<?php echo $jinyu_bind_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 扩展插槽 HTML 由插件自行转义输出 ?>
 	<?php endif; ?>
 	<?php
 endif;

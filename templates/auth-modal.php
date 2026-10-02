@@ -42,24 +42,26 @@ $nonce = wp_create_nonce( 'jinyu_front' );
 			data-jinyu-fallback-remove data-jinyu-fallback-unset="has-img">
 		<i class="fa-solid fa-fire" aria-hidden="true"></i>
 		</div>
-		<h3><?php bloginfo( 'name' ); ?></h3>
+		<h2><?php bloginfo( 'name' ); ?></h2>
 	</header>
 
-	<nav class="jinyu-auth-tabs" data-jinyu-auth-tabs>
-		<button type="button" class="is-active" data-jinyu-auth-tab="login"><?php esc_html_e( 'Log in', 'jinyu' ); ?></button>
-		<button type="button" data-jinyu-auth-tab="register"><?php esc_html_e( 'Register', 'jinyu' ); ?></button>
-		<button type="button" data-jinyu-auth-tab="reset"><?php esc_html_e( 'Forgot password?', 'jinyu' ); ?></button>
-	</nav>
+	<div class="jinyu-auth-tabs" role="tablist" aria-label="<?php esc_attr_e( 'Log in or register', 'jinyu' ); ?>" data-jinyu-auth-tabs>
+		<button type="button" role="tab" id="jinyu-auth-tab-login" aria-controls="jinyu-auth-pane-login" aria-selected="true" class="is-active" data-jinyu-auth-tab="login"><?php esc_html_e( 'Log in', 'jinyu' ); ?></button>
+		<button type="button" role="tab" id="jinyu-auth-tab-register" aria-controls="jinyu-auth-pane-register" aria-selected="false" tabindex="-1" data-jinyu-auth-tab="register"><?php esc_html_e( 'Register', 'jinyu' ); ?></button>
+		<button type="button" role="tab" id="jinyu-auth-tab-reset" aria-controls="jinyu-auth-pane-reset" aria-selected="false" tabindex="-1" data-jinyu-auth-tab="reset"><?php esc_html_e( 'Forgot password?', 'jinyu' ); ?></button>
+	</div>
 
 	<!-- 登录 -->
-	<form class="jinyu-auth-form" data-jinyu-auth-pane="login" method="post" novalidate>
+	<form class="jinyu-auth-form" id="jinyu-auth-pane-login" role="tabpanel" aria-labelledby="jinyu-auth-tab-login" data-jinyu-auth-pane="login" method="post" novalidate>
 		<input type="hidden" name="_ajax_nonce" value="<?php echo esc_attr( $nonce ); ?>">
 		<label class="jinyu-field">
 		<i class="fa-solid fa-user" aria-hidden="true"></i>
+		<span class="jinyu-sr-only"><?php esc_html_e( 'Username or email address', 'jinyu' ); ?></span>
 		<input type="text" name="log" autocomplete="username" enterkeyhint="next" placeholder="<?php esc_attr_e( 'Username or email address', 'jinyu' ); ?>">
 		</label>
 		<label class="jinyu-field">
 		<i class="fa-solid fa-lock" aria-hidden="true"></i>
+		<span class="jinyu-sr-only"><?php esc_html_e( 'Password', 'jinyu' ); ?></span>
 		<input type="password" name="pwd" autocomplete="current-password" enterkeyhint="go" placeholder="<?php esc_attr_e( 'Password', 'jinyu' ); ?>">
 		<button type="button" class="jinyu-pw-toggle" data-jinyu-pw-toggle aria-label="<?php esc_attr_e( 'Show password', 'jinyu' ); ?>" aria-pressed="false">
 			<i class="fa-solid fa-eye" aria-hidden="true"></i>
@@ -72,24 +74,27 @@ $nonce = wp_create_nonce( 'jinyu_front' );
 		</label>
 		<button type="button" class="jinyu-auth-forgot" data-jinyu-auth-goto="reset"><?php esc_html_e( 'Forgot password?', 'jinyu' ); ?></button>
 		</div>
-		<?php echo function_exists( 'jinyu_captcha_markup' ) ? jinyu_captcha_markup( 'login' ) : '';  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?>
+		<?php echo jinyu_ext_markup( 'captcha', 'login' );  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 扩展插槽 HTML 由插件自行转义输出 */ ?>
 		<button type="submit" class="jinyu-btn jinyu-btn-primary jinyu-auth-submit"><?php esc_html_e( 'Log in', 'jinyu' ); ?></button>
 		<p class="jinyu-auth-tip" data-jinyu-auth-tip aria-live="polite"></p>
 	</form>
 
 	<!-- 注册 -->
-	<form class="jinyu-auth-form" data-jinyu-auth-pane="register" method="post" hidden novalidate>
+	<form class="jinyu-auth-form" id="jinyu-auth-pane-register" role="tabpanel" aria-labelledby="jinyu-auth-tab-register" data-jinyu-auth-pane="register" method="post" hidden novalidate>
 		<input type="hidden" name="_ajax_nonce" value="<?php echo esc_attr( $nonce ); ?>">
 		<label class="jinyu-field">
 		<i class="fa-solid fa-user" aria-hidden="true"></i>
+		<span class="jinyu-sr-only"><?php esc_html_e( 'Username (3-30 characters)', 'jinyu' ); ?></span>
 		<input type="text" name="log" autocomplete="username" enterkeyhint="next" placeholder="<?php esc_attr_e( 'Username (3-30 characters)', 'jinyu' ); ?>">
 		</label>
 		<label class="jinyu-field">
 		<i class="fa-solid fa-envelope" aria-hidden="true"></i>
+		<span class="jinyu-sr-only"><?php esc_html_e( 'Email', 'jinyu' ); ?></span>
 		<input type="email" name="email" autocomplete="email" enterkeyhint="next" placeholder="<?php esc_attr_e( 'Email', 'jinyu' ); ?>">
 		</label>
 		<label class="jinyu-field">
 		<i class="fa-solid fa-lock" aria-hidden="true"></i>
+		<span class="jinyu-sr-only"><?php esc_html_e( 'Password (at least 6 characters)', 'jinyu' ); ?></span>
 		<input type="password" name="pwd" autocomplete="new-password" enterkeyhint="next" placeholder="<?php esc_attr_e( 'Password (at least 6 characters)', 'jinyu' ); ?>">
 		<button type="button" class="jinyu-pw-toggle" data-jinyu-pw-toggle aria-label="<?php esc_attr_e( 'Show password', 'jinyu' ); ?>" aria-pressed="false">
 			<i class="fa-solid fa-eye" aria-hidden="true"></i>
@@ -97,32 +102,38 @@ $nonce = wp_create_nonce( 'jinyu_front' );
 		</label>
 		<label class="jinyu-field">
 		<i class="fa-solid fa-lock" aria-hidden="true"></i>
+		<span class="jinyu-sr-only"><?php esc_html_e( 'Confirm password', 'jinyu' ); ?></span>
 		<input type="password" name="pwd2" autocomplete="new-password" enterkeyhint="go" placeholder="<?php esc_attr_e( 'Confirm password', 'jinyu' ); ?>">
 		<button type="button" class="jinyu-pw-toggle" data-jinyu-pw-toggle aria-label="<?php esc_attr_e( 'Show password', 'jinyu' ); ?>" aria-pressed="false">
 			<i class="fa-solid fa-eye" aria-hidden="true"></i>
 		</button>
 		</label>
-		<?php echo function_exists( 'jinyu_captcha_markup' ) ? jinyu_captcha_markup( 'register' ) : '';  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?>
+		<?php echo jinyu_ext_markup( 'captcha', 'register' );  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 扩展插槽 HTML 由插件自行转义输出 */ ?>
 		<button type="submit" class="jinyu-btn jinyu-btn-primary jinyu-auth-submit"><?php esc_html_e( 'Register', 'jinyu' ); ?></button>
 		<p class="jinyu-auth-tip" data-jinyu-auth-tip aria-live="polite"></p>
 	</form>
 
 	<!-- 找回密码 -->
-	<form class="jinyu-auth-form" data-jinyu-auth-pane="reset" method="post" hidden novalidate>
+	<form class="jinyu-auth-form" id="jinyu-auth-pane-reset" role="tabpanel" aria-labelledby="jinyu-auth-tab-reset" data-jinyu-auth-pane="reset" method="post" hidden novalidate>
 		<input type="hidden" name="_ajax_nonce" value="<?php echo esc_attr( $nonce ); ?>">
 		<p class="jinyu-auth-hint"><?php esc_html_e( 'Enter your username or email address and a reset link will be sent to your inbox.', 'jinyu' ); ?></p>
 		<label class="jinyu-field">
 		<i class="fa-solid fa-user" aria-hidden="true"></i>
+		<span class="jinyu-sr-only"><?php esc_html_e( 'Username or email address', 'jinyu' ); ?></span>
 		<input type="text" name="log" autocomplete="username" enterkeyhint="next" placeholder="<?php esc_attr_e( 'Username or email address', 'jinyu' ); ?>">
 		</label>
-		<?php echo function_exists( 'jinyu_captcha_markup' ) ? jinyu_captcha_markup( 'reset' ) : '';  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?>
+		<?php echo jinyu_ext_markup( 'captcha', 'reset' );  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 扩展插槽 HTML 由插件自行转义输出 */ ?>
 		<button type="submit" class="jinyu-btn jinyu-btn-primary jinyu-auth-submit"><?php esc_html_e( 'Send reset link', 'jinyu' ); ?></button>
 		<p class="jinyu-auth-tip" data-jinyu-auth-tip aria-live="polite"></p>
 	</form>
 
-	<?php if ( function_exists( 'jinyu_oauth_enabled' ) && jinyu_oauth_enabled() ) : ?>
+	<?php
+	// 第三方登录入口：插件领地，主题只留插槽（jinyu_ext_markup 内部 apply_filters 广播），不认识任何插件符号。
+	$jinyu_oauth_html = jinyu_ext_markup( 'oauth_login' );
+	if ( '' !== $jinyu_oauth_html ) :
+		?>
 		<div class="jinyu-auth-divider"><span><?php esc_html_e( 'Quick login', 'jinyu' ); ?></span></div>
-		<?php echo function_exists( 'jinyu_oauth_shortcode' ) ? jinyu_oauth_shortcode() : '';  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?>
+		<?php echo $jinyu_oauth_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 扩展插槽 HTML 由插件自行转义输出 ?>
 	<?php endif; ?>
 	</div>
 </div>

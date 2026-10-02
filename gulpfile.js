@@ -97,7 +97,16 @@ function buildZip() {
         // （主题更新由配套插件请求远端 update.qicaiyun.top/jinyu-update.json 完成，与本文件无关）
         '!jinyu-update.json',
         // FontAwesome 子集化中间产物（.gitignore 已列，tools/fa-collect.py 可重新生成）
-        '!assets/fonts/fa/icons.all.raw.txt', '!assets/fonts/fa/icons.raw.txt', '!assets/fonts/fa/icons.map.json'
+        '!assets/fonts/fa/icons.all.raw.txt', '!assets/fonts/fa/icons.raw.txt', '!assets/fonts/fa/icons.map.json',
+        // —— 以下三项 copyWporg 已排除，自托管版曾漏掉，白带 1.5MB 死副本 ——
+        // 未子集的完整 FA 样式（102KB）：运行期只加载 subset.min.css，全仓库无引用
+        '!assets/fonts/fa/all.min.css',
+        // 死副本：assets/dist/img 与 assets/img 内容逐字节相同，而代码只走 assets/img/
+        // （post-meta.php 的类目封面用 get_theme_file_uri('assets/img/cat-cover/…')）
+        '!assets/dist/img/**',
+        // 死副本：编译后 CSS 里的 url(../fonts/jinyu-text/…) 相对 assets/dist/style/ 解析，
+        // 落在 assets/dist/fonts/；assets/fonts/jinyu-text/ 这份无任何引用
+        '!assets/fonts/jinyu-text/**'
     ], { base: '.' })
         .pipe(rename((p) => { p.dirname = path.posix.join('jinyu', p.dirname || ''); }))
         .pipe(zip(`jinyu-theme-${version}.zip`))
@@ -165,6 +174,14 @@ function copyWporg() {
 		'!.DS_Store', '!Thumbs.db', '!*.tmp', '!*.swp', '!*~',
 		// 独立设置页文件在 w.org 变体中整体剔除（逻辑已由 JINYU_WPORG 门控跳过，此处一并移除文件）。
 		'!inc/setting/Jinyu_Setting.php',
+		// —— 隐私合规：以下文件含「把访客数据发往第三方」的代码路径，发行变体整体剔除 ——
+		// inc/fun/live.php：IP 归属地查询会把访客 IP 发往 whois.pconline.com.cn。
+		//   代码里已加 jinyu_is_wporg() 硬门控（option 被写成 true 也不发请求），
+		//   这里再把文件整体移除，确保提交包内 grep 不到任何远程 IP 查询。
+		'!inc/fun/live.php',
+		// 头部 5 个国内头像镜像在 inc/fun/user.php 的 jinyu_avatar_mirror_map() 里，
+		//   选中非官方源会把评论者邮箱 md5 发往第三方。该函数已加 wporg 门控
+		//   （发行变体只返回官方 gravatar.com），无需剔除整个 user.php。
 		// —— 以下为「开发源文件」：运行期只加载编译产物，绝不该进提交包（用户要求：不要打包不相干的）——
 		// .less 源（assets/dist/style/*.min.css 才是运行期样式，WP.org 不读 less）
 		'!assets/style/**/*.less',
@@ -220,6 +237,31 @@ function renameWporg(done) {
 		}
 		if (s !== before) fs.writeFileSync(file, s);
 	});
+
+	// 隐私合规（物理移除）：发行变体运行时虽已被 jinyu_is_wporg() 门控成只用官方
+	// gravatar.com，但 5 个国内镜像的域名**字符串仍留在源码里**——审核团队会直接 grep
+	// 远程域名，看到就会追问「这些外发是干什么的、Privacy 里有没有交代」。
+	// 故在构建期把整个镜像表字面量替换掉，做到 grep 不到。
+	// 自托管版（主仓库）不受影响，镜像功能完整保留。
+	const userPhp = path.join(WPORG_DIR, 'inc', 'fun', 'user.php');
+	if (fs.existsSync(userPhp)) {
+		let s = fs.readFileSync(userPhp, 'utf8');
+		// 锚点：从 wporg 门控的 return 到镜像表结尾的 ];（非贪婪 + 明确闭合）
+		const MIRROR_BLOCK = /if \( jinyu_is_wporg\(\) \) \{[\s\S]*?\n\t\}\n\n\treturn \[\n(?:\t\t'[a-z0-9]+'\s*=>\s*'https:\/\/[^']*\/',\n)+\t\];/;
+		const STUB =
+			"if ( jinyu_is_wporg() ) {\n\t\treturn [ 'gravatar' => 'https://gravatar.com/avatar/' ];\n\t}\n\n" +
+			"\t// w.org 发行构建：国内镜像域名已在构建期物理移除（见 gulpfile.js renameWporg）。\n" +
+			"\treturn [ 'gravatar' => 'https://gravatar.com/avatar/' ];";
+		const replaced0 = s.replace(MIRROR_BLOCK, STUB);
+		if (replaced0 === s) {
+			return done(new Error('renameWporg: 未能替换 jinyu_avatar_mirror_map() 镜像表，镜像域名会残留在提交包内'));
+		}
+		// 上方 docblock 里提到具体镜像的失效与探测细节，同样含域名/冗余，一并精简。
+		const replaced = replaced0
+			.replace(/ \* 国内头像镜像表：[\s\S]*?\*\/\nfunction jinyu_avatar_mirror_map/, ' * 可用的头像源表。w.org 发行构建只保留官方 gravatar.com。\n */\nfunction jinyu_avatar_mirror_map')
+			.replace(/ \* 后台「头像来源」选的源未必活着[\s\S]*?\* 而非「先发一次 404 再回退」。/, ' * 探测由 shutdown 钩子补齐，最多 6 小时重跑一次，避免首屏先发一次失败请求。');
+		fs.writeFileSync(userPhp, replaced);
+	}
 	// 翻译文件的 domain 由文件名决定，同步重命名（.mo 为二进制，只改名不读内容）
 	const langDir = path.join(WPORG_DIR, 'languages');
 	if (fs.existsSync(langDir)) {

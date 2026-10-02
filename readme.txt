@@ -4,7 +4,7 @@ Tags: blog, custom-colors, custom-logo, custom-menu, editor-style, featured-imag
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.2.7
+Stable tag: 1.2.8
 License: GPL v3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -74,6 +74,9 @@ License URI: https://www.gnu.org/licenses/gpl-3.0.html
 每个设置分组面板头部都有「重置本组」按钮，仅清空该分组、回退默认值，不影响其它设置。
 
 == Changelog ==
+
+= 1.2.8 =
+* 常规维护与缺陷修复。；code style: WPCS 全量合规治理
 
 = 1.2.7 =
 * RSS 订阅增强：feed 输出文章缩略图，取图优先级为「特色图 → 正文首图 → 子附件」；RSS 2.0 注入 enclosure、Atom 注入 rel=enclosure，摘要与正文自动前置封面图。

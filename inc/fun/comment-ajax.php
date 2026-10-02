@@ -29,12 +29,10 @@ function jinyu_ajax_comment() {
 
 	// 访客评论服务端校验图形验证码：杜绝匿名刷评（登录用户免验证）.
 	if ( ! is_user_logged_in() ) {
-		if ( function_exists( 'jinyu_captcha_verify' ) ) {
-			$captcha = (string) ( $_POST['captcha'] ?? '' ); /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- 输入在 jinyu_ajax_guard/委托处已 wp_unslash+sanitize，WPCS 追不到 */
-			$verify  = jinyu_captcha_verify( 'comment', $captcha );
-			if ( is_wp_error( $verify ) ) {
-				wp_send_json_error( $verify->get_error_message(), 400 );
-			}
+		$captcha = (string) ( $_POST['captcha'] ?? '' ); /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- 输入在 jinyu_ajax_guard/委托处已 wp_unslash+sanitize，WPCS 追不到 */
+		$verify  = jinyu_ext_value( 'captcha_verify', true, 'comment', $captcha );
+		if ( is_wp_error( $verify ) ) {
+			wp_send_json_error( $verify->get_error_message(), 400 );
 		}
 	}
 

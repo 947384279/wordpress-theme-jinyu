@@ -97,7 +97,7 @@ if ( jinyu_is_checked( 'comment_smiley' ) ) {
 			add_action(
 				'comment_form_after_fields',
 				function () {
-					echo function_exists( 'jinyu_captcha_markup' ) ? jinyu_captcha_markup( 'comment' ) : ''; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+					echo jinyu_ext_markup( 'captcha', 'comment' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 扩展插槽 HTML 由插件自行转义输出
 				}
 			);
 			$commenter = wp_get_current_commenter();

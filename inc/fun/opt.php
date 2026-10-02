@@ -171,8 +171,8 @@ function jinyu_save_options( array $data ): bool {
 			$data[ $k ] = $current[ $k ] ?? '';
 			continue;
 		}
-		// 已是密文则不再二次包装
-		if ( strpos( (string) $val, 'jinyu_enc::' ) !== 0 ) {
+		// 已是密文则不再二次包装（前缀判定统一走 jinyu_is_encrypted，覆盖两代格式）
+		if ( ! jinyu_is_encrypted( $val ) ) {
 			$data[ $k ] = jinyu_encrypt( $val );
 		}
 	}

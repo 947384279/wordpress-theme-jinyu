@@ -84,9 +84,11 @@ if ( ! function_exists( 'jinyu_ip_location' ) ) {
 			return '';
 		}
 
-		// 隐私合规：外部归属地查询会把访客 IP 发往第三方服务（whois.pconline.com.cn），.
-		// 必须由站长在后台显式开启（默认关闭），未开启时永不发起外部请求.
-		if ( ! jinyu_get_option( 'live_ip_location', false ) ) {
+		// 隐私合规：外部归属地查询会把访客 IP 发往第三方服务（whois.pconline.com.cn），
+		// 必须由站长在后台显式开启（默认关闭），未开启时永不发起外部请求。
+		// w.org 发行变体额外硬门控：即使 option 被写成 true 也不发请求——
+		// 提交包内不应存在任何把访客 IP 发往第三方的代码路径（审核团队会直接 grep 远程调用）。
+		if ( jinyu_is_wporg() || ! jinyu_get_option( 'live_ip_location', false ) ) {
 			return '';
 		}
 

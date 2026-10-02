@@ -37,8 +37,10 @@ if ( jinyu_get_option( 'sidebar_pos', 'right' ) === 'none' ) {
 			</div>
 		</section>
 
-		<!-- 热门文章（数据源与「金玉·热门文章」小工具共用：inc/fun/related.php） -->
-		<?php $hot_posts = function_exists( 'jinyu_get_hot_posts' ) ? jinyu_get_hot_posts( 5 ) : []; ?>
+		<?php
+		// 热门文章：数据源与「金玉·热门文章」小工具共用 jinyu_get_hot_posts()（inc/fun/related.php）。
+		$hot_posts = jinyu_get_hot_posts( 5 );
+		?>
 		<section class="jinyu-widget">
 			<h3 class="jinyu-widget-title"><i class="fa-solid fa-fire"></i> <?php esc_html_e( 'Popular Posts', 'jinyu' ); ?></h3>
 			<ul class="jinyu-hot-list">

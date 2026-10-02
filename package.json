@@ -7,7 +7,7 @@
     "dev": "gulp dev",
     "build": "gulp build",
     "zip": "gulp zip",
-    "test": "node tests/check-html-textarea-contract.js",
+    "test": "node tests/check-html-textarea-contract.js && node tests/check-decoupling-contract.js && node tests/check-i18n-contract.js && node tests/check-admin-js-i18n-contract.js",
     "version:sync": "node tools/sync-version.js",
     "version:check": "node tools/sync-version.js --check",
     "release": "node tools/release.js"
