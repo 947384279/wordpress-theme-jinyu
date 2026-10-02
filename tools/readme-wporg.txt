@@ -4,7 +4,7 @@ Tags: blog, custom-colors, custom-logo, custom-menu, editor-style, featured-imag
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.2.7
+Stable tag: 1.2.8
 License: GPL v3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -112,6 +112,8 @@ License URI: https://www.gnu.org/licenses/gpl-3.0.html
 其余脚本与样式（首页轮播、目录、点赞、阅读进度等）均为本主题自研实现，无第三方代码与许可义务。
 
 == Changelog ==
+
+= 1.2.8 =
 
 = 1.2.7 =
 
