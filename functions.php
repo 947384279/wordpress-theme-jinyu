@@ -396,6 +396,13 @@ add_action(
 		// 加载主题翻译文件（/languages），让 __()/_e() 等可被翻译.
 		load_theme_textdomain( 'jinyu', get_template_directory() . '/languages' );
 
+		// 清掉 jinyu_option_sdt() 在“翻译加载过早”场景垫入的 NOOP_Translations 垫片：
+		// 正式翻译域就绪后若仍残留 NOOP，__() 会原样返回英文原文（i18n 反转后前台漏英文）。
+		// 未垫时 unset 无害；若确需兜底，__()/JIT 会在此后按需正确加载。
+		if ( isset( $GLOBALS['l10n']['jinyu'] ) && $GLOBALS['l10n']['jinyu'] instanceof NOOP_Translations ) {
+			unset( $GLOBALS['l10n']['jinyu'] );
+		}
+
 		add_theme_support( 'title-tag' );
 		add_theme_support( 'post-thumbnails' );
 		// WP 7.0 已废弃并移除 HTML5 的 'style'/'script' 主题支持(Trac #64442)，声明会触发 _doing_it_wrong.

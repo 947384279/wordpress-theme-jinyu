@@ -58,9 +58,11 @@ function jinyu_option_sdt( string $key ): mixed {
 			}
 			if ( class_exists( 'Jinyu_Setting', false ) ) {
 				// 预注册空翻译域：get_fields() 内的 __() 在 WP 文本域就绪前被调用时，
-				// 直接返回原文（中文主题原文即中文），不再触发 WP 6.7 的
+				// 直接返回原文（i18n 反转后原文即英文），不再触发 WP 6.7 的
 				// load_textdomain_just_in_time “翻译加载过早” Notice，且 sdt 默认值照常生效。
-				if ( ! isset( $GLOBALS['l10n']['jinyu'] ) && class_exists( 'NOOP_Translations', false ) ) {
+				// 仅在 after_setup_theme 尚未触发（真正的“过早”场景）时垫 NOOP；
+				// 正常时序绝不垫——否则正式翻译域加载后仍可能残留 NOOP，导致前台漏出英文原文。
+				if ( ! did_action( 'after_setup_theme' ) && ! isset( $GLOBALS['l10n']['jinyu'] ) && class_exists( 'NOOP_Translations', false ) ) {
 					$GLOBALS['l10n']['jinyu'] = new NOOP_Translations(); /* phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- 模板按需在局部覆盖全局，已 wp_reset_postdata */
 				}
 				$map = Jinyu_Setting::sdt_defaults();
