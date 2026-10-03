@@ -8,6 +8,7 @@ const zip = require('gulp-zip');
 const { spawnSync } = require('child_process');
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 
 /**
  * 版本一致性闸门：style.css 的 Version / readme.txt 的 Stable tag 必须由 package.json 派生。
@@ -82,9 +83,59 @@ function watch() {
  * 文件名同样带版本，与 releases 附件的命名对齐（jinyu-theme-1.2.2.zip）。
  * 版本取自 package.json，与 versionCheck 同一真源，避免附件名与包内版本漂移。
  */
-function buildZip() {
-    const version = require('./package.json').version;
-    return gulp.src([
+/**
+ * 打包前合规闸门（wp.org 上传铁律，勿撤）：
+ * 每次打包都必须先跑 tools/precheck-dist.js，对「将要进包的全部文件」做内容级扫描
+ * —— ① 不得夹带私密信息（凭证 / 密钥对 / 明文密码 / 各类 token）；
+ *     ② 不得夹带测试与调试文件（tests/、*.log、probe/debug 脚本、开发配置如 phpcs.xml.dist）；
+ *     ③ 结构合规（单一顶层目录、无中文路径、style.css / readme.txt / Tested up to 格式）。
+ * 闸门不通过就拒绝产出 zip，绝不生成「先打了再说」的包。
+ */
+function precheckGate(dir, slug, flat, list) {
+    const script = path.join(__dirname, 'tools', 'precheck-dist.js');
+    const argv = [script, dir, '--slug=' + slug].concat(flat ? ['--flat'] : []);
+    // list 非空＝清单模式：只检查真正会进包的文件。
+    // 否则闸门扫磁盘会把已被 glob 排除的东西（tests/ 等）也算进去，闸门自己把自己锁死。
+    if (list && list.length) {
+        // Windows 下 spawnSync 的 stdin 传参不稳（子进程输出常被吞），改用临时文件喂清单
+        const tmp = path.join(os.tmpdir(), 'jinyu-gate-' + process.pid + '.lst');
+        fs.writeFileSync(tmp, list.join('\n'));
+        argv.push('--list=' + tmp);
+        console.log('[闸门] 待检文件 ' + list.length + ' 个（与打包同一份入包清单）');
+        var listFile = tmp;
+    } else {
+        console.log('[闸门] 警告：入包清单为空，退回全目录扫描');
+        var listFile = null;
+    }
+    const r = require('child_process').spawnSync(process.execPath, argv, { stdio: 'inherit' });
+    if (listFile) {
+        try {
+            fs.unlinkSync(listFile);
+        } catch (e) { /* 临时文件删不掉不影响，放 tmpdir 由系统回收 */ }
+    }
+    if (r.status !== 0) {
+        throw new Error('打包前合规闸门未通过（' + dir + '）。修掉泄露/调试文件再打包，不要绕过闸门。');
+    }
+    return Promise.resolve();
+}
+
+// 按同一份 glob 取「将进包的文件清单」：闸门与打包必须用完全相同的口径
+function collectFiles(globList) {
+    return new Promise((resolve, reject) => {
+        const out = [];
+        gulp.src(globList, { base: '.', read: false })
+            .on('data', (f) => out.push(path.relative(f.base, f.path).split(path.sep).join('/')))
+            .on('end', () => resolve(out))
+            .on('error', reject);
+    });
+}
+
+/**
+ * 自托管完整版的入包清单，闸门与打包共用同一份（口径必须一致）。
+ * package.json 必须随包发布：tools/ 里的 release.js / sync-version.js 依赖它读取 version。
+ */
+function buildZipGlob() {
+    return [
         // package.json 必须随包发布：tools/ 里的 release.js / sync-version.js 依赖它读取 version。
         '**/*', '!node_modules/**', '!package-lock.json',
         '!gulpfile.js', '!.git/**', '!.git*',
@@ -106,8 +157,20 @@ function buildZip() {
         '!assets/dist/img/**',
         // 死副本：编译后 CSS 里的 url(../fonts/jinyu-text/…) 相对 assets/dist/style/ 解析，
         // 落在 assets/dist/fonts/；assets/fonts/jinyu-text/ 这份无任何引用
-        '!assets/fonts/jinyu-text/**'
-    ], { base: '.' })
+        '!assets/fonts/jinyu-text/**',
+        // 契约检查脚本是开发期资产，不是主题运行期文件（打包铁律：测试文件不得进包）
+        '!tests/**',
+        // 中文说明文件：随包发布会造成非 ASCII 路径，wp.org 不收（且是本地恢复说明，非主题文档）
+        '!_先读我-恢复说明.md'
+    ];
+}
+
+async function buildZip() {
+    const version = require('./package.json').version;
+    const files = buildZipGlob();
+    // 源目录自检：zip 会把整体 rename 成 jinyu/，故用 flat（跳过顶层结构检查）
+    await precheckGate('.', 'jinyu', true, await collectFiles(files));
+    return gulp.src(files)
         .pipe(rename((p) => { p.dirname = path.posix.join('jinyu', p.dirname || ''); }))
         .pipe(zip(`jinyu-theme-${version}.zip`))
         // 输出到仓库内的 release/（.gitignore 已排除），与 gulp wporg 的产物同目录。
@@ -283,8 +346,10 @@ function renameWporg(done) {
 	done();
 }
 
-function zipWporg() {
+async function zipWporg() {
 	const version = require('./package.json').version;
+	// 产物目录自检（严格模式）：顶层必须已是单一 <slug>/ 目录，这里下钻检查
+	await precheckGate(path.join(__dirname, 'dist-wporg'), WPORG_SLUG);
 	return gulp.src(`${WPORG_DIR}/**/*`, { base: 'dist-wporg' })
 		.pipe(zip(`${WPORG_SLUG}-${version}.zip`))
 		.pipe(gulp.dest('release'));
