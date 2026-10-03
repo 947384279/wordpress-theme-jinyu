@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<ruleset name="Jinyu Raw Audit">
+    <description>
+        全量 raw 审计尺子：包含 WPCS 3.4.1 的<b>全部</b> sniff，不含任何 &lt;exclude&gt;。
+
+        用途（别当日常门禁用，它是「取全集」用的）：
+        1. 一次性跑出当前版本所有静态可判定的问题全集，导出成 issue 列表；
+        2. 与 .workbuddy/audit/baseline.json 相减，得到「真新增」而不是「又一片新面」。
+
+        日常门禁请用 phpcs.xml.dist（已含维护者确认过的豁免）。
+        本文件里**只允许**出现排除「非主题源」的目录模式，禁止排除任何 sniff——
+        那正是「每次扫描都扫出新问题」的根：排除项是由上一轮结果长出来的，
+        规则集一变，结果集就变，永远收敛不了。
+
+        口径与打包一致：只扫会进 wp.org 包的 .php 源文件，
+        产物/开发资产（node_modules、dist-wporg、release、tests、tools、.workbuddy）不扫。
+    </description>
+
+    <arg name="extensions" value="php"/>
+    <arg value="p"/>
+    <arg name="colors"/>
+    <arg name="encoding" value="utf-8"/>
+    <arg name="basepath" value="."/>
+
+    <file>.</file>
+
+    <!-- 非主题源：产物与开发资产，不进 wp.org 包，也不该进审计 -->
+    <exclude-pattern>*/node_modules/*</exclude-pattern>
+    <exclude-pattern>*/dist-wporg/*</exclude-pattern>
+    <exclude-pattern>*/release/*</exclude-pattern>
+    <exclude-pattern>*/tests/*</exclude-pattern>
+    <exclude-pattern>*/tools/*</exclude-pattern>
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+    <exclude-pattern>*/.workbuddy/*</exclude-pattern>
+    <exclude-pattern>*/.git/*</exclude-pattern>
+
+    <rule ref="WordPress"/>
+</ruleset>

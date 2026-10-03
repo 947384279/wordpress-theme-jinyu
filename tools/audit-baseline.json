@@ -1,0 +1,51 @@
+{
+	"_doc": "审计基线：扫描结果只有 raw − baseline 才算「真问题」。生成后不要手改，用 tools/audit.js 维护。",
+	"_invariant": [
+		"whole 只允许收录「官方标准本身反对 / 纯文档风格 / 刻意架构」的 sniff，绝不能收 Security、Escaping、Sanitization、DB、Crypto 类——那正是「修完还会再冒出来」的根源。",
+		"scoped 只锁具体文件 + 具体消息 + 理由；新文件天然不在其中，新代码里同样的写法会被抓出来。",
+		"whole 名单每改动一次，必须同步 phpcs.xml.dist 的 <exclude> 列表（tools/audit.js --check 会拦不一致）。",
+		"whole 条目可带 files 白名单（合法落点）：命中文件不在名单内 → 判为新增而非豁免。安全相关族必须配，防新功能蹭豁免被吞。"
+	],
+	"meta": {
+		"ruleset": "phpcs-all.xml.dist",
+		"source_snapshot": ".workbuddy/audit/raw-2026-10-03.csv",
+		"php_files": 98,
+		"raw_total": 1941
+	},
+	"whole": {
+		"Universal.Arrays.DisallowShortArraySyntax": "WP 官方编码标准明确推荐短数组 []，该 sniff 与官方指引直接冲突（phpcs.xml.dist 已同步 exclude）。",
+		"Universal.Operators.DisallowShortTernary": "$a ?: $b 合法且 WP 核心自身大量使用，禁止它纯属风格洁癖。",
+		"Universal.NamingConventions.NoReservedKeywordParameterNames": "$array / $class 等是 PHP 合法参数名，也是 WP 钩子回调的惯用写法；改名纯 churn、零收益。",
+		"Universal.Files.SeparateFunctionsFromOO": "主题按职责把若干小 helper/类合并在一个文件里，是刻意的结构选择，拆开只增加加载开销。",
+		"Generic.Files.OneObjectStructurePerFile": "同上，拆文件不改任何行为。",
+		"Generic.CodeAnalysis.UnusedFunctionParameter": "WP 钩子回调节定死了固定参数列表，多余参数是正常的。",
+		"Squiz.Commenting": "纯文档注释类（缺文件头/函数注释、注释结尾标点、param 句号、块注释位置等），wp.org 主题审核不查这些，零运行期价值。",
+		"Generic.Commenting": "同上。",
+		"Squiz.PHP.DisallowMultipleAssignments": "$a = $b = $c 等价写法，风格偏好。",
+		"Squiz.ControlStructures.ControlSignature": "控制结构签名空格，风格偏好。",
+		"WordPress.NamingConventions.ValidVariableName": "主题自有符号统一 jinyu_ 前缀与驼峰 helper（如 $jinyu_options、jinyu_get_option），强制 snake_case 纯属形式（含 UsedPropertyNotSnakeCase 子项）。",
+		"WordPress.NamingConventions.PrefixAllGlobals": "WP 核心全局（$wpdb、$post…）本就无法加 jinyu_ 前缀，主题自己的符号已全部 jinyu_ 化。",
+		"WordPress.Files.FileName": "类文件用 PascalCase（Jinyu_OptionBasic.php）由加载器依赖决定，非命名违规。",
+		"WordPress.PHP.YodaConditions": "Yoda 写法是风格建议，不是审核门禁。",
+		"WordPress.Security.NonceVerification": {
+			"files": ["inc/ajax/", "inc/fun/", "inc/setting/", "pages/"],
+			"reason": "24 个前台 ajax handler 中 22 个走集中式 jinyu_ajax_guard()（inc/ajax/index.php），WPCS 看不穿包装故逐条误报；jinyu_ajax_confirm_email 用 wp_hash + hash_equals 的 token 鉴权，与 WP 核心 get_password_reset_key() 同构，是**有意的正确豁免**（邮件链接不该带 nonce，且 nonce 对 nopriv 端点无防机器人作用）。⚠️ files 是豁免的合法落点白名单：新代码若把未走 guard 的 handler 放在这 4 个目录之外，tools/audit.js 会判为新增并拦下——别随手扩白名单，先自调 jinyu_ajax_guard() 或就地 phpcs:ignore。"
+		}
+	},
+	"scoped": {
+		"inc/fun/related.php": {
+			"WordPress.WP.PostsPerPage.posts_per_page_posts_per_page": {
+				"reason": "$base 是「全站随机相关文章」的候选池（配合 no_found_rows + fields=ids 只取 ID，随后按 $num 截断展示），200 是候选池上限而非真实分页量；降到 100 只会缩小推荐多样性，属可优化非缺陷。",
+				"msgs": ["Detected high pagination limit, `posts_per_page` is set to `200`"]
+			},
+			"WordPress.DB.SlowDBQuery.slow_db_query_tax_query": {
+				"reason": "「相关文章」必须按同标签/同分类过滤，tax_query 是该功能的语义刚需；去掉就不是相关推荐了。",
+				"msgs": ["Detected usage of tax_query, possible slow query."]
+			},
+			"WordPress.DB.SlowDBQuery.slow_db_query_meta_key": {
+				"reason": "热门文章按自维护的 jinyu_views 计数排序，meta_key 是唯一数据源；已配 date_query 限定近 1 年缩小候选集。",
+				"msgs": ["Detected usage of meta_key, possible slow query."]
+			}
+		}
+	}
+}

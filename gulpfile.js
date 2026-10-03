@@ -161,7 +161,11 @@ function buildZipGlob() {
         // 契约检查脚本是开发期资产，不是主题运行期文件（打包铁律：测试文件不得进包）
         '!tests/**',
         // 中文说明文件：随包发布会造成非 ASCII 路径，wp.org 不收（且是本地恢复说明，非主题文档）
-        '!_先读我-恢复说明.md'
+        '!_先读我-恢复说明.md',
+        // 审计门禁的开发期资产（全量 raw 规则集 / 减法门禁 / 基线 / 刷新链路）——注意本仓库 glob 是
+        // 白名单之外的「**/*」兜底，新增文件默认会进包，必须逐条排除（2026-10-03 审计门禁上线后补）：
+        // 包里已有 phpcs.xml.dist 一份开发配置，再带 phpcs-all.xml.dist 会出现第二份规则集。
+        '!phpcs-all.xml.dist', '!tools/audit*', '!tools/refresh-raw.sh', '!tools/remote-run-raw.sh'
     ];
 }
 
