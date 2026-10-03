@@ -76,9 +76,9 @@ if ( ! function_exists( 'jinyu_ext_enabled' ) ) {
 	/**
 	 * 扩展插槽是否启用（布尔语义糖）。
 	 *
-	 * 主题自身目前无调用点，但它是 tests/check-decoupling-contract.js 守护的契约 API 之一，
+	 * 主题自身目前无调用点，但它是面向配套插件的解耦契约 API，
 	 * 对实现方（插件 / mu-plugin）而言是更清晰的接入姿势：想要布尔开关时不必自己
-	 * 写 `false !== jinyu_ext_value( $slot, false )`。删除会破坏解耦契约校验，故保留。
+	 * 写 `false !== jinyu_ext_value( $slot, false )`。删除会破坏插件侧的兼容性契约，故保留。
 	 *
 	 * @param string $slot 插槽名。
 	 * @return bool

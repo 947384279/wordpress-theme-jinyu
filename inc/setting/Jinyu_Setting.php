@@ -185,7 +185,7 @@ class Jinyu_Setting {
 				// 保存侧见 sanitize_fields() 的 textarea / string 分支——html 字段走 wp_kses_post
 				// 而非 sanitize_textarea_field / sanitize_text_field。二者必须同步：任一侧改回
 				// 「去标签」都会让页脚与顶部公告的 HTML 在保存时丢失。
-				// 改动此契约前，先跑 tests/check-html-textarea-contract.js 回归校验。
+				// 改动此契约前，务必人工回归页脚 HTML 保存（确认 wp_kses_post 未被改回去标签）。
 				'html'    => ! empty( $f['html'] ),
 			];
 		}
