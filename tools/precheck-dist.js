@@ -18,6 +18,13 @@
  * - 本地凭证 / 签名密钥对（wp-creds.json、jinyu-update.key|pub）与 wpcss-*.csv 一类
  *   调试扫描产物一度散在仓库里。
  * glob 排除清单是「人写的」，会漏；本脚本对内容做全量扫描，漏不漏只取决于规则本身。
+ *
+ * 附：解耦契约（项目铁律「主题 = 纯呈现层」）。主题对配套插件（jinyu-theme-companion）
+ * 的所有能力需求，必须走 apply_filters 广播，不得直调插件私有符号。本脚本守两条：
+ *   ① 主题源码不得出现插件私有符号（jinyu_companion_*() / jyc_* / jinyu_sl_* / jinyu_oauth_*()）；
+ *   ② 五个关键能力点必须保留对应的 apply_filters 广播，缺一即阻断。
+ * 规则只针对 .php，且先剔除注释；符号名必须紧邻左括号才算「直调」，
+ * 因此 ajax action / user meta 一类的**字符串**用法不会误伤。
  */
 'use strict';
 
@@ -105,6 +112,33 @@ const NAME_DEVCONF = [
 // E. 路径合规
 const NAME_ASCII = [[/[^\x00-\x7F]/, '非 ASCII 名称（wp.org 上传包路径一律 ASCII）']];
 
+/* ─────────────── F. 解耦契约（项目铁律「主题 = 纯呈现层」） ───────────────
+ * ① 主题源码不得直调配套插件（jinyu-theme-companion）私有符号；
+ * ② 五个关键能力点必须保留 apply_filters 广播，插件才能接管。
+ * 规则用字符串拼接构造，避免本文件里的规则字面量自我命中；
+ * 且要求符号紧邻左括号才算「直调」，ajax action / user meta 一类的**字符串**用法不误伤。
+ */
+const LP = String.fromCharCode(40); // (
+const DECOUPLE_CALL = [
+	['配套插件函数 jinyu_companion_*()', 'jinyu_companion_' + '[A-Za-z0-9_]+'],
+	['插件私有前缀 jyc_*', 'jyc_' + '[A-Za-z0-9_]+'],
+	['插件短链前缀 jinyu_sl_*', 'jinyu_sl_' + '[A-Za-z0-9_]+'],
+	['插件 OAuth 函数 jinyu_oauth_*()', 'jinyu_oauth_' + '[A-Za-z0-9_]*'],
+].map(([why, body]) => [new RegExp('\\b' + body + '\\s*\\' + LP), why]);
+
+// 插件必须能接管的五个广播点；删其一即解耦契约破损（改这条前先确认插件侧读取的是同名 filter）
+const REQUIRED_FILTERS = [
+	['functions.php', 'jinyu_perf_options'],
+	['inc/fun/security.php', 'jinyu_client_ip'],
+	['inc/fun/security.php', 'jinyu_rate_limit_check'],
+	['inc/fun/crypto.php', 'jinyu_encrypt'],
+	['inc/fun/crypto.php', 'jinyu_decrypt'],
+];
+
+// 剔除注释后再判符号，避免文档/注释里提到插件函数名就误报
+const stripComments = (code) =>
+	code.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^[ \t]*(\/\/|#).*$/gm, '');
+
 /* ───────────────────────── 报告容器 ───────────────────────── */
 
 const blockers = [];
@@ -165,6 +199,16 @@ function scanFile(rel, abs) {
 			if (re.test(lines[i])) {
 				add(blockers, rel, '疑似私密信息：' + why + '（第 ' + (i + 1) + ' 行）');
 				break;
+			}
+		}
+	}
+
+	if (rel !== SELF && path.extname(rel).toLowerCase() === '.php') {
+		const code = stripComments(buf.toString('utf8'));
+		for (const [re, why] of DECOUPLE_CALL) {
+			const m = code.match(re);
+			if (m) {
+				add(blockers, rel, '主题直调配套插件私有符号（违背「主题＝纯呈现层」铁律）：' + why + ' ← ' + m[0]);
 			}
 		}
 	}
@@ -248,6 +292,34 @@ if (readmeRel) {
 		}
 	} else {
 		add(warns, readmeRel, 'readme.txt 在清单里但磁盘上取不到，跳过 Tested up to 校验');
+	}
+}
+
+/* ───────────────────────── 解耦契约：插件接管点必须仍在 ───────────────────────── */
+
+for (const [rel, filter] of REQUIRED_FILTERS) {
+	// 边界必须卡在「顶层目录名」上：只写 endsWith('/'+rel) 会把构建输出副本
+	// （dist-wporg/jinyu-lite/inc/fun/crypto.php）当成源码命中，扫的是没改过的那份副本。
+	const hit = entries.find((e) => {
+		if (e.rel === rel) return true;
+		return e.rel.startsWith(SLUG + '/') && e.rel.endsWith('/' + rel);
+	});
+	if (!hit) {
+		// 文件不在「入包清单」里 → 广播无从校验。gate 口径＝打包口径，这里给警告而非阻断：
+		// 该文件可能是文件名变了（此时上面的符号规则仍会照常拦），不是必然破损。
+		add(warns, rel, '未进入待检清单，' + filter + ' 的 apply_filters 广播无从校验');
+		continue;
+	}
+	if (!TEXT_EXT.has(path.extname(hit.rel).toLowerCase())) continue;
+	let code;
+	try {
+		code = fs.readFileSync(hit.abs, 'utf8');
+	} catch (e) {
+		add(warns, hit.rel, '读不到文件，跳过 ' + filter + ' 广播校验');
+		continue;
+	}
+	if (!new RegExp("apply_filters\\(\\s*['\"]" + filter + "['\"]").test(code)) {
+		add(blockers, hit.rel, '缺少 apply_filters 广播 ' + filter + '（插件据此接管该能力，删掉即解耦契约破损）');
 	}
 }
 
