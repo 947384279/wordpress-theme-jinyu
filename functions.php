@@ -93,15 +93,15 @@ add_action(
 		// 顶栏报警图标样式：无条件加载（文件很小），保证提醒在任何页面都有样式.
 		$alert_css = JINYU_ABS_DIR . '/assets/dist/style/admin-alert.min.css';
 		if ( file_exists( $alert_css ) ) {
-			wp_enqueue_style( 'jinyu-admin-alert', JINYU_ABS_URI . '/assets/dist/style/admin-alert.min.css', [], filemtime( $alert_css ) );
+			wp_enqueue_style( 'jinyu-admin-alert', JINYU_ABS_URI . '/assets/dist/style/admin-alert.min.css', [], substr( (string) md5_file( $alert_css ), 0, 12 ) );
 		}
 
 		if ( strpos( $hook, 'jinyu-options' ) === false ) {
 			return;
 		}
 		wp_enqueue_media(); // 设置页「上传/选择」字段依赖 wp.media，缺则点击无反应.
-		wp_enqueue_style( 'jinyu-admin', JINYU_ABS_URI . '/assets/dist/style/admin.min.css', [], filemtime( JINYU_ABS_DIR . '/assets/dist/style/admin.min.css' ) );
-		wp_enqueue_script( 'jinyu-admin', JINYU_ABS_URI . '/assets/dist/js/admin.min.js', [ 'jquery' ], filemtime( JINYU_ABS_DIR . '/assets/dist/js/admin.min.js' ), true );
+		wp_enqueue_style( 'jinyu-admin', JINYU_ABS_URI . '/assets/dist/style/admin.min.css', [], substr( (string) md5_file( JINYU_ABS_DIR . '/assets/dist/style/admin.min.css' ), 0, 12 ) );
+		wp_enqueue_script( 'jinyu-admin', JINYU_ABS_URI . '/assets/dist/js/admin.min.js', [ 'jquery' ], substr( (string) md5_file( JINYU_ABS_DIR . '/assets/dist/js/admin.min.js' ), 0, 12 ), true );
 		// 后台配置页界面文案：整页由 admin.js 动态拼装，走不到 PHP 的 __()，
 		// 故单独注入一份词条表（词条本身在 inc/fun/admin-i18n.php，那里是数据而非逻辑）。
 		jinyu_admin_l10n();
@@ -231,16 +231,19 @@ add_action(
 add_action(
 	'wp_enqueue_scripts',
 	function () {
-		// 用文件修改时间做版本号：文件内容一变，版本号就变，浏览器必定重新拉取，杜绝缓存到旧/失败的 CSS/JS.
+		// 用文件内容 hash(md5_file)做版本号:内容一变,URL 必变,浏览器必定重新拉取.
+		// 不能用 filemtime()——assets/dist 下是 immutable(max-age=31536000)缓存,
+		// 一旦部署保留了旧 mtime(cp -p / rsync -a / git clone),就会『内容变、URL 不变』
+		// 把坏文件缓存一整年且线上极难定位.md5_file 由内容本身决定,无此前提依赖.
 		$css_path = JINYU_ABS_DIR . '/assets/dist/style/style.min.css';
 		$js_path  = JINYU_ABS_DIR . '/assets/dist/js/jinyu.min.js';
-		$css_ver  = file_exists( $css_path ) ? filemtime( $css_path ) : JINYU_CUR_VER;
-		$js_ver   = file_exists( $js_path ) ? filemtime( $js_path ) : JINYU_CUR_VER;
-		// 各 vendor 资源用各自文件的 filemtime 做版本号（而非主 CSS 的版本号），.
-		// 保证单个 vendor 文件改动时只刷新它自己，缓存破坏语义才正确.
+		$css_ver  = file_exists( $css_path ) ? substr( (string) md5_file( $css_path ), 0, 12 ) : JINYU_CUR_VER;
+		$js_ver   = file_exists( $js_path ) ? substr( (string) md5_file( $js_path ), 0, 12 ) : JINYU_CUR_VER;
+		// 各 vendor 资源用各自文件的内容 hash 做版本号(而非主 CSS 的版本号),
+		// 保证单个 vendor 文件改动时只刷新它自己,缓存破坏语义才正确.
 		$ver = function ( $rel ) {
 			$p = JINYU_ABS_DIR . '/assets/' . ltrim( $rel, '/' );
-			return file_exists( $p ) ? filemtime( $p ) : JINYU_CUR_VER;
+			return file_exists( $p ) ? substr( (string) md5_file( $p ), 0, 12 ) : JINYU_CUR_VER;
 		};
 
 		// 图标样式为按白名单裁剪后的子集版本（tools/fa-subset.py 生成），.
@@ -277,7 +280,7 @@ add_action(
 				'jinyu-ai-chat',
 				JINYU_ABS_URI . '/assets/dist/js/ai-chat.min.js',
 				[ 'jinyu-main' ],
-				file_exists( $ai_js ) ? filemtime( $ai_js ) : JINYU_CUR_VER,
+				file_exists( $ai_js ) ? substr( (string) md5_file( $ai_js ), 0, 12 ) : JINYU_CUR_VER,
 				true
 			);
 		}
@@ -371,9 +374,10 @@ add_action(
 				'thanksFeedback' => __( 'Thanks for your feedback', 'jinyu' ),
 				'allRead'        => __( 'All marked as read', 'jinyu' ),
 				'scanToRead'     => __( 'Press and hold or scan the QR code to read the full post', 'jinyu' ),
-				'readDone'       => __( 'Finished ✓', 'jinyu' ),
-				/* translators: %s: 占位符 */
-				'readProgress'   => __( '已读 %1$d% · 还需 %2$s', 'jinyu' ),
+			'readDone'       => __( 'Finished ✓', 'jinyu' ),
+			/* translators: %s: 占位符 */
+			'readProgress'   => __( '已读 %1$d% · 还需 %2$s', 'jinyu' ),
+			'tocHeading'     => __( 'Table of Contents', 'jinyu' ),
 			]
 		);
 		// 若已生成 JS 翻译 JSON（wp i18n 提取 + 编译），自动加载；不存在则静默忽略.
@@ -394,7 +398,8 @@ add_action(
 	以降低 FCP，但首屏关键 CSS 内联(critical.min.css)仅覆盖布局骨架，未能
 	覆盖全部首屏样式，导致强制刷新时先渲染约 1 秒无样式页面(FOUC)。现恢复
 	WP 默认阻塞加载(rel=stylesheet media='all')，样式在首屏绘制前就绪，
-	彻底消除闪烁；主 CSS 经 CDN(header.php 已 preconnect)加载，速度充足。
+	彻底消除闪烁；主 CSS 由 WordPress 默认 <link rel="stylesheet" media="all"> 同源加载
+	（自建 CDN 加速属可选外部配置，主题不预连接任何外域，故此处无 preconnect）。
 	首屏关键 CSS 内联保留为渐进增强，不影响正确性。
 	====================================================================== */
 

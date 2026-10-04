@@ -665,7 +665,7 @@
         var wrap = doc.createElement('div');
         wrap.className = 'jinyu-toc';
         wrap.innerHTML = '<div class="jinyu-toc-title">' +
-            '<span class="jinyu-toc-heading"><i class="fa-solid fa-list-ul jinyu-toc-ico" aria-hidden="true"></i>Table of Contents</span>' +
+            '<span class="jinyu-toc-heading"><i class="fa-solid fa-list-ul jinyu-toc-ico" aria-hidden="true"></i>' + _t('tocHeading', '目录') + '</span>' +
             '<span class="jinyu-toc-meta"><span class="jinyu-toc-cur"></span><span class="jinyu-toc-count"></span>' +
             '<button type="button" class="jinyu-toc-toggle" aria-label="Toggle table of contents" aria-expanded="false"><i class="fa-solid fa-chevron-down"></i></button></span>' +
             '</div>' +
@@ -683,12 +683,18 @@
             ids.push(h.id);
             var li = doc.createElement('li');
             if (h.tagName === 'H3') li.className = 'jinyu-toc-sub';
-            var dot = doc.createElement('span');
-            dot.className = 'jinyu-toc-dot';
             var a = doc.createElement('a');
             a.href = '#' + h.id;
-            a.textContent = h.textContent;
-            li.appendChild(dot);
+            // 全文标题挂到 title：条目最多显示 2 行，被截断时悬停可看完整
+            a.title = h.textContent;
+            var dot = doc.createElement('span');
+            dot.className = 'jinyu-toc-dot';
+            var txt = doc.createElement('span');
+            txt.className = 'jinyu-toc-text';
+            txt.textContent = h.textContent;
+            // 圆点与文字同在链接内部，悬停/选中底色可完整包住整行
+            a.appendChild(dot);
+            a.appendChild(txt);
             li.appendChild(a);
             list.appendChild(li);
         });
@@ -911,6 +917,21 @@
     function blurImg() {
         var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         if (reduce) return; // 减少动效：不做模糊淡入（CSS 也不隐藏，图直接显示）
+
+        // 给首屏（视口内及紧随其后一屏）的图打「豁免 blur」标记：它们本来就是 LCP 候选，
+        // 若先隐藏再淡入，LCP 要等到 load 事件 + 过渡结束才记账，凭空多扣一段 JS 依赖。
+        // 视口外的图照旧走 blur-up 懒加载，视觉策略不变。
+        function markViewportEager() {
+            var vh = window.innerHeight || 0;
+            var list = $$('img.jinyu-blur-img');
+            for (var i = 0; i < list.length; i++) {
+                var box = list[i].getBoundingClientRect();
+                if (box.bottom > 0 && box.top < vh * 1.5) {
+                    list[i].classList.add('jinyu-blur-eager');
+                }
+            }
+        }
+        markViewportEager();
 
         doc.documentElement.classList.add('jinyu-blur-ready');
 

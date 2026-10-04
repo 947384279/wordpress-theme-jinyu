@@ -4,7 +4,7 @@ Tags: blog, custom-colors, custom-logo, custom-menu, editor-style, featured-imag
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.2.8
+Stable tag: 1.2.9
 License: GPL v3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -74,6 +74,9 @@ License URI: https://www.gnu.org/licenses/gpl-3.0.html
 每个设置分组面板头部都有「重置本组」按钮，仅清空该分组、回退默认值，不影响其它设置。
 
 == Changelog ==
+
+= 1.2.9 =
+* 修复分类/标签/搜索/作者等归档页因 get_template_part 调用写法错误导致文章列表不显示的问题（v1.2.8 抽离循环模板时引入）；并收尾主题侧解耦契约与打包合规闸门的未提交改动。
 
 = 1.2.8 =
 * 常规维护与缺陷修复。；code style: WPCS 全量合规治理

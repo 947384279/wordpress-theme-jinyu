@@ -2155,20 +2155,20 @@ input.jinyu-search { min-height: 38px; }
     to   { opacity: 1; transform: translateY(0); }
 }
 
-/* 手机竖屏：文案与操作各占一行，主按钮撑满剩余宽度，命中区 ≥40px */
+/* 手机竖屏：强制单行，文案省略号收缩，操作组靠右内联，命中区 ≥36px */
 @media (max-width: 480px) {
-    .jinyu-dirtybar { flex-wrap: wrap; gap: 10px; padding: 10px; border-radius: var(--ja-r-lg); }
-    .jinyu-dirty-text { font-size: 12.5px; }
+    .jinyu-dirtybar { flex-wrap: nowrap; gap: 10px; padding: 8px 8px 8px 14px; border-radius: var(--ja-r-lg); }
+    .jinyu-dirty-text { font-size: 12.5px; min-width: 0; overflow: hidden; text-overflow: ellipsis; flex: 1 1 auto; }
     .jinyu-dirty-actions {
-        width: 100%;
-        margin-left: 0;
-        padding-left: 0;
-        border-left: 0;
-        gap: 8px;
+        width: auto;
+        margin-left: auto;
+        padding-left: 10px;
+        border-left: 1px solid var(--jdb-line);
+        gap: 6px;
     }
-    .jinyu-dirty-btn { min-height: 40px; border-radius: var(--ja-r-sm); }
-    .jinyu-dirty-btn--ghost { flex: none; width: 40px; }
-    .jinyu-dirty-btn--primary { flex: 1 1 auto; }
+    .jinyu-dirty-btn { min-height: 36px; border-radius: var(--ja-r-pill); }
+    .jinyu-dirty-btn--ghost { flex: none; width: 36px; }
+    .jinyu-dirty-btn--primary { flex: none; padding: 0 16px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

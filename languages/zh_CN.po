@@ -702,13 +702,9 @@ msgstr "<p>您的文章已进入审核队列，通过后将自动发布。期间
 msgid "<span class=\"jinyu-modal-title\">Scan with WeChat to open</span>"
 msgstr "<span class=\"jinyu-modal-title\">微信扫码打开</span>"
 
-#: assets/js/jinyu.js
-msgid ""
-"<span class=\"jinyu-toc-heading\"><i class=\"fa-solid fa-list-ul jinyu-toc-"
-"ico\" aria-hidden=\"true\"></i>Table of Contents</span>"
-msgstr ""
-"<span class=\"jinyu-toc-heading\"><i class=\"fa-solid fa-list-ul jinyu-toc-"
-"ico\" aria-hidden=\"true\"></i>文章目录</span>"
+#: assets/js/jinyu.js functions.php
+msgid "Table of Contents"
+msgstr "目录"
 
 #: assets/js/jinyu.js functions.php:644
 msgid "All marked as read"

@@ -209,13 +209,28 @@ if ( ! function_exists( 'jinyu_dark_override_css' ) ) {
  */
 add_action( 'wp_head', 'jinyu_dynamic_style', 8 );
 function jinyu_dynamic_style() {
-	$vars = jinyu_build_dynamic_vars();
-	$root = '';
-	foreach ( $vars as $k => $v ) {
-		$root .= $k . ':' . $v . ';';
-	}
+	// 缓存签名取自参与计算的原始设置（主色 / 圆角 / 卡列数 / 暗色调色板）。
+	// 任一值变动即换 key，无需额外挂「设置保存」失效钩子；过期时间只用于回收历史 key 的残留 transient。
+	$sig = md5(
+		(string) jinyu_get_option( 'style_color_primary', '#FF6B35' ) . '|' .
+		(int) jinyu_get_option( 'style_radius', 6 ) . '|' .
+		(int) jinyu_get_option( 'post_card_cols', 2 ) . '|' .
+		(string) jinyu_get_option( 'dark_palette', 'default' )
+	);
+	$ck  = 'dynamic_css_' . $sig;
 
-	$css = ':root{' . $root . '}' . jinyu_dark_override_css();
+	$css = jinyu_cache_get( $ck );
+	if ( false === $css ) {
+		$vars = jinyu_build_dynamic_vars();
+		$root = '';
+		foreach ( $vars as $k => $v ) {
+			$root .= $k . ':' . $v . ';';
+		}
+
+		$css = ':root{' . $root . '}' . jinyu_dark_override_css();
+
+		jinyu_cache_set( $ck, $css, DAY_IN_SECONDS );
+	}
 
 	echo '<style id="jinyu-dynamic-style"' . jinyu_csp_nonce_attr() . '>' . wp_strip_all_tags( $css ) . '</style>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 }

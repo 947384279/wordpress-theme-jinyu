@@ -160,7 +160,11 @@ if ( ! function_exists( 'jinyu_generate_webp_file' ) ) {
 						imagealphablending( $img, true );
 						imagesavealpha( $img, true );
 					}
-					$ok = (bool) @imagewebp( $img, $dst, 80 ); /* phpcs:ignore WordPress.WP.AlternativeFunctions,WordPress.PHP.NoSilencedErrors.Discouraged -- 预期可能失败的操作（反序列化/JSON），静默处理 */
+					$webp_quality = (int) jinyu_get_option( 'webp_quality', 80 );
+					if ( $webp_quality < 1 || $webp_quality > 100 ) {
+						$webp_quality = 80;
+					}
+					$ok = (bool) @imagewebp( $img, $dst, $webp_quality ); /* phpcs:ignore WordPress.WP.AlternativeFunctions,WordPress.PHP.NoSilencedErrors.Discouraged -- 预期可能失败的操作（反序列化/JSON），静默处理 */
 					// 不调 imagedestroy()：PHP 7.0 起它是空操作，GD 资源随作用域结束自动释放.
 					// GD 偶发产出 0 字节文件，视为失败并清除.
 					if ( $ok && (int) @filesize( $dst ) < 64 ) { /* phpcs:ignore WordPress.WP.AlternativeFunctions,WordPress.PHP.NoSilencedErrors.Discouraged -- 预期可能失败的操作（反序列化/JSON），静默处理 */
@@ -417,6 +421,19 @@ if ( ! function_exists( 'jinyu_webp_onthefly_confirmed' ) ) {
 	}
 }
 
+if ( ! function_exists( 'jinyu_webp_enabled' ) ) {
+	/**
+	 * 是否启用主题自带 WebP 转换（后台「启用 WebP 自动转换」开关）。
+	 * 默认开启；用户关闭后不再生成新 WebP、URL 改写全部回退原图。
+	 *
+	 * @return bool
+	 */
+	function jinyu_webp_enabled() {
+		$v = jinyu_get_option( 'enable_webp', 1 );
+		return ! empty( $v ) && '0' !== (string) $v;
+	}
+}
+
 if ( ! function_exists( 'jinyu_img_to_webp_url' ) ) {
 	/**
 	 * 将本站 uploads 内的 jpg/png URL 映射为 WebP 交付 URL。
@@ -426,6 +443,9 @@ if ( ! function_exists( 'jinyu_img_to_webp_url' ) ) {
 	 * @return string WebP 交付 URL 或原 URL
 	 */
 	function jinyu_img_to_webp_url( $url ) {
+		if ( ! jinyu_webp_enabled() ) {
+			return $url;
+		}
 		if ( empty( $url ) || ! is_string( $url ) ) {
 			return $url;
 		}
@@ -508,7 +528,7 @@ if ( ! function_exists( 'jinyu_img_to_webp_url' ) ) {
 add_filter(
 	'wp_handle_upload',
 	function ( $result ) {
-		if ( empty( $result['file'] ) || ! extension_loaded( 'gd' ) || ! function_exists( 'imagewebp' ) ) {
+		if ( empty( $result['file'] ) || ! jinyu_webp_enabled() || ! extension_loaded( 'gd' ) || ! function_exists( 'imagewebp' ) ) {
 			return $result;
 		}
 		if ( ! preg_match( '/\.(jpe?g|png)$/i', $result['file'] ) ) {

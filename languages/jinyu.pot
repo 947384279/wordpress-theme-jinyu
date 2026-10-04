@@ -653,10 +653,8 @@ msgstr ""
 msgid "<span class=\"jinyu-modal-title\">Scan with WeChat to open</span>"
 msgstr ""
 
-#: assets/js/jinyu.js
-msgid ""
-"<span class=\"jinyu-toc-heading\"><i class=\"fa-solid fa-list-ul jinyu-toc-"
-"ico\" aria-hidden=\"true\"></i>Table of Contents</span>"
+#: assets/js/jinyu.js functions.php
+msgid "Table of Contents"
 msgstr ""
 
 #: assets/js/jinyu.js functions.php:644

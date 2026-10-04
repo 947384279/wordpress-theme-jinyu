@@ -18,6 +18,31 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<meta name="theme-color" content="#f5f6f8" media="(prefers-color-scheme: light)">
 	<meta name="theme-color" content="#16181c" media="(prefers-color-scheme: dark)">
 	<?php wp_head(); ?>
+	<?php
+	// 首页 LCP 图预加载：让浏览器在 CSSOM 建立前就发现并请求首屏最大图，压低 LCP。
+	// href 必须与真实 <img> 的 src 完全一致（轮播首图直接输出 $s['image']，不套 webp 转换），
+	// 否则预加载 URL 对不上、Chrome 报 "preload not used" 且零收益。
+	if ( is_front_page() ) {
+		$jinyu_lcp        = '';
+		$jinyu_lcp_srcset = '';
+		if ( function_exists( 'jinyu_is_checked' ) && jinyu_is_checked( 'home_carousel' )
+			&& function_exists( 'jinyu_get_carousel_slides' ) ) {
+			$jinyu_slides = jinyu_get_carousel_slides();
+			if ( ! empty( $jinyu_slides[0]['image'] ) ) {
+				$jinyu_lcp        = $jinyu_slides[0]['image'];
+				$jinyu_lcp_srcset = ! empty( $jinyu_slides[0]['srcset'] ) ? $jinyu_slides[0]['srcset'] : '';
+			}
+		}
+		if ( ! $jinyu_lcp && ! empty( $wp_query ) && ! empty( $wp_query->posts ) ) {
+			$jinyu_lcp = function_exists( 'jinyu_get_post_cover' ) ? jinyu_get_post_cover( $wp_query->posts[0]->ID ) : '';
+		}
+		if ( $jinyu_lcp ) :
+			?>
+	<link rel="preload" as="image" href="<?php echo esc_url( $jinyu_lcp ); ?>"<?php echo $jinyu_lcp_srcset ? ' imagesrcset="' . esc_attr( $jinyu_lcp_srcset ) . '" imagesizes="100vw"' : ''; ?> fetchpriority="high">
+			<?php
+		endif;
+	}
+	?>
 </head>
 <body <?php body_class(); ?>>
 <?php wp_body_open(); ?>
@@ -87,7 +112,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<?php if ( '' !== $logo_light ) : ?>
 		<img class="jinyu-logo-img jinyu-logo-light" src="<?php echo esc_url( jinyu_img_to_webp_url( $logo_light ) ); ?>" alt="<?php echo $brand_alt; ?>"<?php echo $logo_attrs( $logo_size_light );  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?>>
 		<?php if ( $logo_dual ) : ?>
-			<img class="jinyu-logo-img jinyu-logo-dark" src="<?php echo esc_url( jinyu_img_to_webp_url( $logo_dark ) ); ?>" alt="<?php echo $brand_alt; ?>"<?php echo $logo_attrs( $logo_size_dark );  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?>>
+			<?php // 深色版在浅色主题下 display:none，加 loading="lazy" 后浏览器判定其永不可见 → 不下载。切到深色才按需拉取，首屏省掉一整套 Logo 字节。 ?>
+			<img class="jinyu-logo-img jinyu-logo-dark" loading="lazy" src="<?php echo esc_url( jinyu_img_to_webp_url( $logo_dark ) ); ?>" alt="<?php echo $brand_alt; ?>"<?php echo $logo_attrs( $logo_size_dark );  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?>>
 		<?php endif; ?>
 		<?php elseif ( $custom_logo_id > 0 ) : ?>
 			<?php

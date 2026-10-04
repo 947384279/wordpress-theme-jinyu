@@ -188,13 +188,31 @@ class Jinyu_OptionGlobal extends Jinyu_BaseOptionItem {
 					'sdt'   => false,
 				],
 				[
-					'id'    => 'views_wait_seconds',
-					'title' => __( 'View count cooldown per IP (seconds)', 'jinyu' ),
-					'type'  => 'number',
-					'sdt'   => 10,
-					'desc'  => __( 'Prevents view-count spamming', 'jinyu' ),
-				],
+				'id'    => 'views_wait_seconds',
+				'title' => __( 'View count cooldown per IP (seconds)', 'jinyu' ),
+				'type'  => 'number',
+				'sdt'   => 10,
+				'desc'  => __( 'Prevents view-count spamming', 'jinyu' ),
 			],
+			[
+			'id'    => 'enable_webp',
+			'title' => __( '启用 WebP 自动转换', 'jinyu' ),
+			'type'  => 'switch',
+			'sdt'   => 1,
+			'desc'  => __( '上传图片时自动生成 WebP 副本并前端优先输出 WebP；关闭后不再生成新 WebP，URL 回退原图（已生成的旧文件留盘无害）。', 'jinyu' ),
+		],
+		[
+			'id'    => 'webp_quality',
+			'title' => __( 'WebP 压缩质量', 'jinyu' ),
+				'type'  => 'slider',
+				'sdt'   => 80,
+				'min'   => 40,
+				'max'   => 100,
+				'step'  => 5,
+				'unit'  => '%',
+				'desc'  => __( '数值越低，生成的 WebP 文件越小，但画质越粗糙。仅对设置后新生成的 WebP 生效；已存在的图片需重新上传或批量重生成。', 'jinyu' ),
+			],
+		],
 		];
 	}
 }

@@ -23,7 +23,7 @@ get_header(); ?>
 				</div>
 			</div>
 		</div>
-		<?php get_template_part( 'templates', 'archive-loop' ); ?>
+		<?php get_template_part( 'templates/archive-loop' ); ?>
 	</main>
 	<?php get_sidebar(); ?>
 </div>

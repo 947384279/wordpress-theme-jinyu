@@ -101,6 +101,14 @@ button { font-family: inherit; }
     filter: blur(0);
     transform: none;
 }
+/* 首屏豁免（由 JS 给视口内的 blur 图加 .jinyu-blur-eager）：LCP 元素必须一上来就可见。
+   否则 opacity:0 期间浏览器根本不会把它计入 LCP，要等 load 事件 + .5s 过渡走完才算，
+   白送一段「JS 就绪」的依赖。选择器比上面的规则多一个类，确定性覆盖。 */
+.jinyu-blur-ready .jinyu-blur-img.jinyu-blur-eager:not(.is-loaded) {
+    opacity: 1;
+    filter: none;
+    transform: none;
+}
 @media (prefers-reduced-motion: reduce) {
     .jinyu-blur-img,
     .jinyu-blur-ready .jinyu-blur-img:not(.is-loaded) {
@@ -1607,35 +1615,71 @@ html.jinyu-tools-compact {
     margin: 0;
     max-height: 340px;
     overflow-y: auto;
+    /* 细滚动条：默认粗条在卡片里很突兀，跨浏览器统一收窄、只在需要时淡入 */
+    scrollbar-width: thin;
+    scrollbar-color: @border-strong transparent;
+
+    &::-webkit-scrollbar { width: 6px; }
+    &::-webkit-scrollbar-thumb { background: @border-strong; border-radius: @radius-pill; }
+    &::-webkit-scrollbar-track { background: transparent; }
+
+    li { display: block; }
 
     a {
-        display: block;
-        padding: 6px @s-3;
+        display: flex;
+        align-items: flex-start;
+        gap: 7px;
+        padding: 7px 10px;
         color: @text-3;
         border-radius: @radius-sm;
         line-height: 1.5;
-        border-left: 2px solid transparent;
+        transition: color .18s ease, background .18s ease;
 
-        &:hover { color: @primary-text; background: @primary-light; }
+        &:hover { color: @primary-ink; background: @bg-subtle; }
+
         &.jinyu-toc-active {
-            color: @primary-text;
+            color: @primary-ink;
             background: @primary-light;
-            border-left-color: @primary-text;
             font-weight: 600;
         }
     }
 }
-.jinyu-toc-sub a { padding-left: @s-5; font-size: @fs-xs; }
-.jinyu-toc-list li { display: flex; align-items: center; gap: 8px; }
-.jinyu-toc-list a { flex: 1; }
-.jinyu-toc-dot { width: 6px; height: 6px; border-radius: 50%; border: 1.5px solid @border-strong; background: transparent; flex: 0 0 auto; transition: background .2s ease, border-color .2s ease; }
-.jinyu-toc-done .jinyu-toc-dot { background: var(--jinyu-c-primary); border-color: var(--jinyu-c-primary); }
-.jinyu-toc-sub .jinyu-toc-dot { margin-left: 14px; }
+/* 标题文字：最多 2 行，超出用省略号截断；完整标题已挂 title，悬停可看全文。
+   flex 子项需 min-width:0 + overflow-wrap 才能在窄卡片里正常折行。 */
+.jinyu-toc-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+}
+/* 章节圆点：与首行文字垂直对齐，随阅读进度填充；子级缩进靠左内边距推开。
+   圆点在链接内部（见 jinyu.js），故悬停/选中底色能完整覆盖整行。 */
+.jinyu-toc-dot {
+    flex: 0 0 auto;
+    width: 6px;
+    height: 6px;
+    margin-top: calc(.75em - 3px);
+    border-radius: 50%;
+    border: 1.5px solid @border-strong;
+    background: transparent;
+    transition: background .2s ease, border-color .2s ease;
+}
+.jinyu-toc-done .jinyu-toc-dot,
+.jinyu-toc-active .jinyu-toc-dot {
+    background: var(--jinyu-c-primary);
+    border-color: var(--jinyu-c-primary);
+}
+.jinyu-toc-sub a { font-size: @fs-xs; padding-left: 24px; }
 
 /* 移动端：目录升级为「进度折叠卡」——折叠时显示当前章节 + x/y 进度，箭头随开合旋转 */
 @media (max-width: 768px) {
     .jinyu-toc {
-        padding: @s-4 @s-5;
+        /* 收窄卡片内边距，把可用宽度让给文字，减少长标题折行 */
+        padding: @s-3 @s-4;
     }
     .jinyu-toc-title {
         cursor: pointer;
@@ -1644,7 +1688,12 @@ html.jinyu-tools-compact {
         -webkit-tap-highlight-color: transparent;
         min-height: 24px;
     }
-    .jinyu-toc.jinyu-toc-open .jinyu-toc-title { margin-bottom: @s-3; }
+    /* 展开时才用细分隔线把标题与列表分开，折叠态保持一条干净的标题栏 */
+    .jinyu-toc.jinyu-toc-open .jinyu-toc-title {
+        margin-bottom: @s-3;
+        padding-bottom: @s-3;
+        border-bottom: 1px solid @border;
+    }
     .jinyu-toc-ico { display: inline-block; }
     .jinyu-toc-cur { display: block; }
     .jinyu-toc-toggle { display: inline-flex; }
