@@ -15,6 +15,9 @@ class Jinyu_Setting {
 		add_action( 'wp_ajax_jinyu_regenerate_thumbs', [ $this, 'ajax_regenerate_thumbs' ] );
 		// 查询是否有未跑完的重建任务（页面刷新 / 重开后恢复进度并接着跑）
 		add_action( 'wp_ajax_jinyu_regen_status', [ $this, 'ajax_regen_status' ] );
+		// 注：主题不设「检查更新」按钮，也不自建更新通道。
+		//更新一律走 WordPress.org 官方机制（后台「外观 → 主题 → 更新」），
+		// 本主题已提交 wp.org 审核，通过后由官方分发并提示更新。
 		// 顶栏报警图标：仍有历史封面缺主题尺寸时在设置页顶栏亮起（见 topbar_thumb_alert）。
 		// 不走 admin_notices —— 那个钩子在 .wrap 之外输出，内容与主题设置框架不是同一个
 		// 视觉层；改挂顶栏操作区内的自定义时机，点击即可直达本页「维护工具」面板。
@@ -140,7 +143,7 @@ class Jinyu_Setting {
 						'title' => __( 'Show runtime info in the footer', 'jinyu' ),
 						'type'  => 'switch',
 						'sdt'   => 0,
-						'desc'  => __( 'Output a live runtime info line in the front-end footer: queries / memory / render time. Values are fetched by JS in real time and will not be frozen by full-page cache. After enabling, clear the cache once in "Jinyu Enhancements" to take effect', 'jinyu' ),
+						'desc'  => __( 'Output a runtime info line in the front-end footer: queries / page generation time (server-side measurement). On a full-page cache hit both show 0 because PHP does not run. After enabling, clear the cache once in "Jinyu Enhancements" to take effect', 'jinyu' ),
 					],
 				],
 			],
