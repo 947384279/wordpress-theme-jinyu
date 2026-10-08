@@ -60,16 +60,11 @@
         footer: 'dashicons-admin-page',
         content: 'dashicons-admin-post',
         home_modules: 'dashicons-images-alt2',
-        seo: 'dashicons-search',
+        comment: 'dashicons-admin-comments',
         user: 'dashicons-admin-users',
-        email: 'dashicons-email',
-        resource: 'dashicons-admin-tools',
         extend: 'dashicons-admin-plugins',
-        ai: 'dashicons-format-chat',
         code: 'dashicons-editor-code',
-        about: 'dashicons-info',
-        tools: 'dashicons-admin-settings',
-        storage: 'dashicons-cloud'
+        tools: 'dashicons-admin-tools'
     };
 
     var currentKey = getInitialKey();
@@ -582,20 +577,6 @@
                 '<div class="jinyu-info-box">' + esc(f.desc || '') + '</div></div>';
         }
 
-        // 检查更新（按钮 + 状态区，不进入保存数据）
-        if (type === 'update_check') {
-            return '<div class="jinyu-field jinyu-field--update" data-field="' + esc(id) + '">' +
-                '<label class="jinyu-field-label">' + esc(f.title) + '</label>' +
-                '<div class="jinyu-field-body">' +
-                '<div class="jinyu-update-box">' +
-                '<button type="button" class="jinyu-btn jinyu-btn-primary" data-check-update>' + esc(t('checkUpdates', 'Check for updates')) + '</button>' +
-                '<span class="jinyu-update-status" data-update-status></span>' +
-                '</div>' +
-                '<div class="jinyu-update-detail" data-update-detail></div>' +
-                '</div>' +
-                '</div>';
-        }
-
         if (type === 'dynamic-list') {
             return renderDynamicList(f, v);
         }
@@ -783,7 +764,7 @@
             toolRow('upload', t('importSettings', 'Import settings'), t('importSettingsDesc', 'Restore theme settings from a JSON file. This overwrites all current settings — export a backup first.'), toolAction('jinyu-import', t('chooseFileImport', 'Choose a file and import'), 'jinyu-import-tip') + '<input type="file" id="jinyu-import-file" accept="application/json,.json" hidden>') +
             // 注：标题原本就是中文硬编码，JS 侧取不到 PHP 的 __()。
             // 保持中文字面量，不要"统一"成 __()——那是 PHP 函数，写进 JS 会 ReferenceError 导致整页白屏。
-            toolRow('chart-bar', '页脚运行信息', t('runinfoDesc', 'Output real-time run info in the footer (queries / memory / render time). After enabling, clear the cache once in "Jinyu Booster" for it to take effect.'), runSwitch) +
+            toolRow('chart-bar', '页脚运行信息', t('runinfoDesc', 'Output server-side run info in the footer (queries / page generation time). On a full-page cache hit both show 0. After enabling, clear the cache once in "Jinyu Booster" for it to take effect.'), runSwitch) +
             '</div>' +
             // 注：此前这里有一行「以下能力由金玉增强插件提供……」的归属说明，
             // 按站长要求已移除。邮件 SMTP / 缓存清理 / 数据库优化等运维能力本就归属
@@ -796,21 +777,47 @@
         var head = '<div class="jinyu-nav-head">' +
             '<span class="jinyu-nav-brand"><span class="jinyu-nav-logo" aria-hidden="true"></span>' +
             '<span class="jinyu-nav-title">' + esc(t('brandTitle', 'Jinyu Theme Settings')) + '</span></span>' +
-            '<button type="button" class="jinyu-nav-toggle" data-nav-toggle aria-label="' + esc(t('collapseSidebar', 'Collapse / expand sidebar')) + '" title="' + esc(t('collapseSidebar', 'Collapse / expand sidebar')) + '">' +
-            '<span class="dashicons dashicons-arrow-left-alt2"></span></button>' +
+            '<span class="jinyu-nav-head-actions" id="jinyu-nav-head-actions"></span>' +
             '</div>';
-        var html = '<nav class="jinyu-nav" aria-label="' + esc(t('settingsGroups', 'Settings groups')) + '">' + head;
+        var foot = '<div class="jinyu-nav-foot">' +
+            '<button type="button" class="jinyu-nav-toggle jinyu-nav-toggle--bottom" data-nav-toggle aria-label="' + esc(t('collapseSidebar', 'Collapse / expand sidebar')) + '" title="' + esc(t('collapseSidebar', 'Collapse / expand sidebar')) + '">' +
+            '<span class="dashicons dashicons-arrow-left-alt2"></span></button>' +
+            '<button type="button" id="jinyu-theme-toggle" class="jinyu-icon-btn jinyu-theme-toggle" data-tip="' + esc(t('toggleDarkMode', 'Toggle dark mode')) + '" aria-label="' + esc(t('toggleDarkMode', 'Toggle dark mode')) + '" aria-pressed="false">' +
+            '<svg class="jinyu-ico-svg jinyu-ico-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>' +
+            '<svg class="jinyu-ico-svg jinyu-ico-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg>' +
+            '</button>' +
+            '<button type="button" id="jinyu-save" class="jinyu-btn jinyu-btn-primary jinyu-save-btn" data-tip="' + esc(t('saveChanges', 'Save changes')) + '" aria-label="' + esc(t('saveChanges', 'Save changes')) + '">' +
+            '<svg class="jinyu-ico-svg jinyu-save-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7l-4-4zM7 5h6v5H7V5zm10 14H7v-6h10v6z"/></svg>' +
+            '</button>' +
+            '</div>';
+        var html = '<nav class="jinyu-nav" aria-label="' + esc(t('settingsGroups', 'Settings groups')) + '">' + head +
+            '<div class="jinyu-nav-list">';
+        var shown = 0;
         GROUPS.forEach(function (g) {
             if (g.hidden) return;
-            html += navItemHtml(g);
+            html += navItemHtml(g, shown++);
         });
-        html += '</nav>';
+        html += '</div>' + foot + '</nav>';
         return html;
     }
 
-    function navItemHtml(g) {
+    /**
+     * 把模板里隐藏的插件操作图标搬进侧栏头部。
+     * 侧栏由 JS 渲染，PHP action 无法直接注入，故先由 template.php 输出到
+     * #jinyu-plugin-actions-source，构建完成后再迁位。
+     */
+    function movePluginActionsToSidebar() {
+        var src = document.getElementById('jinyu-plugin-actions-source');
+        var dst = document.getElementById('jinyu-nav-head-actions');
+        if (!src || !dst) return;
+        while (src.firstChild) {
+            dst.appendChild(src.firstChild);
+        }
+    }
+
+    function navItemHtml(g, idx) {
         var ic = ICONS[g.key] || 'dashicons-admin-generic';
-        return '<button type="button" class="jinyu-nav-item' + (g.key === currentKey ? ' is-active' : '') + '" data-nav="' + esc(g.key) + '" data-label="' + esc(g.title) + '">' +
+        return '<button type="button" class="jinyu-nav-item' + (g.key === currentKey ? ' is-active' : '') + '" data-nav="' + esc(g.key) + '" data-label="' + esc(g.title) + '" style="animation-delay:' + (idx * 40) + 'ms">' +
             '<span class="jinyu-nav-ic"><span class="dashicons ' + ic + '"></span></span>' +
             '<span class="jinyu-nav-text">' + esc(g.title) + '</span>' +
             '<span class="jinyu-nav-dot" aria-hidden="true"></span>' +
@@ -895,11 +902,19 @@
             '<div class="jinyu-search-empty" hidden>' + esc(t('noMatching', 'No matching settings. Try a different keyword')) + '</div>' +
             '</div></div></div>';
 
+        // 入场动画播完后清掉内联 animation，释放 transform，让 :active 按压缩放生效
+        root.addEventListener('animationend', function (e) {
+            if (e.target.classList && e.target.classList.contains('jinyu-nav-item')) {
+                e.target.style.animation = 'none';
+            }
+        });
+
         // 顶栏归位到内容列：它必须与内容卡共享同一个 padding 盒（.jinyu-panels），
         // 左右缘才能严格共线。此前它是 .jinyu-setting-wrap 的直接子级，右缘比内容卡多出 42px
         // （漏掉内容列 32px 侧沟 + .jinyu-main 的 10px 滚动条槽），正是「顶栏右边超出内容区」的根因。
         // 放进滚动容器后 position:sticky 依然生效（相对 .jinyu-main 的滚动口吸顶）。
         dockTopbar();
+        movePluginActionsToSidebar();
         syncCrumb(currentKey);
 
         // 还原侧栏折叠态（localStorage 持久化，刷新不丢）。
@@ -947,6 +962,16 @@
         qsa('.jinyu-nav-item', root).forEach(function (n) {
             n.classList.toggle('is-active', n.getAttribute('data-nav') === key);
         });
+        // 切换分组时让新选中项的图标牌弹一下（入场动画结束后才触发，避免首屏叠加）
+        var activeItem = qs('.jinyu-nav-item.is-active', root);
+        if (activeItem) {
+            var icEl = activeItem.querySelector('.jinyu-nav-ic');
+            if (icEl) {
+                icEl.classList.remove('jinyu-nav-pop');
+                void icEl.offsetWidth;
+                icEl.classList.add('jinyu-nav-pop');
+            }
+        }
         qsa('.jinyu-panel', root).forEach(function (p) {
             p.classList.toggle('is-active', p.getAttribute('data-panel') === key);
         });
@@ -1114,9 +1139,6 @@
             });
             return;
         }
-
-        // 关于：检查主题更新
-        if (e.target.closest('[data-check-update]')) { checkUpdate(e.target.closest('[data-check-update]')); return; }
 
         // 配置导入 / 导出
         if (e.target.closest('#jinyu-export')) { doExport(); return; }
@@ -1303,7 +1325,7 @@
         var panels = qsa('.jinyu-panel', root);
         var navs = qsa('.jinyu-nav-item', root);
         var emptyTip = qs('.jinyu-search-empty', root);
-        var navBox = qs('.jinyu-nav', root);
+        var navBox = qs('.jinyu-nav-list', root);
         if (navBox) navBox.classList.toggle('is-searching', !!q);
         if (!q) {
             navs.forEach(function (n) {
@@ -1370,7 +1392,7 @@
             return r.text().then(function (t) {
                 var head = t.charAt(0);
                 if ('<' === head || '{' !== head) {
-                    throw new Error(tf('apiHttpError', [r.status], 'API request failed (HTTP ' + r.status + '). Make sure the Jinyu theme companion plugin is enabled'));
+                    throw new Error(tf('apiHttpError', [r.status], 'API request failed (HTTP ' + r.status + '). Try refreshing the page; if it keeps happening, log in again'));
                 }
                 try {
                     return JSON.parse(t);
@@ -1687,88 +1709,6 @@
             .catch(function () { /* 探不到就当没有待办任务，用户手动点开始即可 */ });
     }
 
-    /* ---------- 关于：检查主题更新 ---------- */
-    function closeUpdatePop() {
-        var detail = qs('.jinyu-update-detail--head');
-        if (detail) detail.innerHTML = '';
-        detachUpdatePopClose();
-    }
-    var updatePopCloseHandler = null;
-    function detachUpdatePopClose() {
-        if (updatePopCloseHandler) {
-            document.removeEventListener('click', updatePopCloseHandler, true);
-            document.removeEventListener('keydown', updatePopCloseHandler._esc, true);
-            updatePopCloseHandler = null;
-        }
-    }
-    function attachUpdatePopClose() {
-        detachUpdatePopClose();
-        var onDoc = function (e) {
-            if (e.target.closest && e.target.closest('[data-close-update]')) { closeUpdatePop(); return; }
-            var box = qs('.jinyu-update-box--head');
-            if (box && box.contains(e.target)) return; // 点在弹卡或「检查更新」按钮内不关闭
-            closeUpdatePop();
-        };
-        var onEsc = function (e) { if (e.key === 'Escape') closeUpdatePop(); };
-        updatePopCloseHandler = onDoc;
-        updatePopCloseHandler._esc = onEsc;
-        document.addEventListener('click', onDoc, true);
-        document.addEventListener('keydown', onEsc, true);
-    }
-    function checkUpdate(btn) {
-        btn.disabled = true;
-        var box = btn.closest('.jinyu-update-box');
-        var status = box ? qs('[data-update-status]', box) : null;
-        var detail = box ? qs('[data-update-detail]', box) : null;
-        if (status) { status.textContent = t('checking', 'Checking…'); status.className = 'jinyu-update-status'; }
-        if (detail) detail.innerHTML = '';
-        doFetch(S.ajax_url + '?action=jinyu_check_update&nonce=' + encodeURIComponent(S.nonce), {})
-            .then(function (json) {
-                if (!json || !json.success) {
-                    var emsg = (json && json.data && json.data.msg) || t('checkFailed', 'Check failed');
-                    if (status) { status.textContent = emsg; status.className = 'jinyu-update-status err'; }
-                    else toast(emsg, false);   // 顶栏按钮没有状态区容器，用 toast 反馈
-                    return;
-                }
-                var d = json.data || {};
-                if (status) {
-                    if (d.has_update) {
-                        status.textContent = tf('newVersion', [d.latest], 'New version v' + d.latest);
-                        status.className = 'jinyu-update-status ok';
-                    } else {
-                        status.textContent = tf('upToDate', [d.current], 'Already up to date: v' + d.current);
-                        status.className = 'jinyu-update-status';
-                    }
-                }
-                if (!box) {
-                    // 顶栏「检查更新」：没有 .jinyu-update-box 容器，结果弹卡无处渲染，
-                    // 必须用全局 toast 给出结果——否则点击后毫无反馈，看起来像按钮坏了
-                    toast(d.has_update ? (tf('newVersion', [d.latest], 'New version v' + d.latest) + '. ' + t('downloadFromAbout', 'Download it from the About panel')) : tf('upToDate', [d.current], 'Already up to date: v' + d.current), true);
-                }
-                if (detail) {
-                    // 仅在确有新版本时才浮出更新卡片（更新日志 + 操作按钮）；已是最新时不渲染任何详情，不撑爆顶栏
-                    var html = '';
-                    if (d.has_update) {
-                        html += '<div class="jinyu-update-pop">' +
-                            '<div class="jinyu-update-pop-head">' +
-                            '<i class="dashicons dashicons-download" aria-hidden="true"></i>' +
-                            esc(tf('newVersion', [d.latest], 'New version v' + d.latest)) +
-                            '<span>' + esc(tf('currentVersion', [d.current], 'Current v' + d.current)) + '</span>' +
-                            '<button type="button" class="jinyu-update-pop-close" data-close-update aria-label="' + esc(t('close', 'Close')) + '">×</button>' +
-                            '</div>' +
-                            (d.changelog ? '<div class="jinyu-update-cl">' + esc(d.changelog) + '</div>' : '<p class="jinyu-update-nocl">' + esc(t('noChangelog', 'No changelog yet.')) + '</p>') +
-                            '<div class="jinyu-update-pop-actions">' +
-                            (d.download_url ? '<a class="jinyu-btn jinyu-btn-sm jinyu-btn-primary" href="' + esc(d.download_url) + '" target="_blank" rel="noopener">' + esc(t('downloadPackage', 'Download update package')) + '</a>' : '') +
-                            (d.detail_url ? '<a class="jinyu-btn jinyu-btn-sm" href="' + esc(d.detail_url) + '" target="_blank" rel="noopener">' + esc(t('viewDetails', 'View details')) + '</a>' : '') +
-                            '</div></div>';
-                    }
-                    detail.innerHTML = html;
-                    if (d.has_update) attachUpdatePopClose(); else detachUpdatePopClose();
-                }
-            })
-            .catch(function (err) { if (status) { status.textContent = tf('networkErrorWith', [err.message], 'Network error: ' + err.message); status.className = 'jinyu-update-status err'; } else toast(tf('networkErrorWith', [err.message], 'Network error: ' + err.message), false); })
-            .then(function () { btn.disabled = false; });
-    }
 
     /* ---------- 顶栏 / 全局按钮 ---------- */
     function wireTopbar() {
@@ -1777,7 +1717,6 @@
         var saveFloat = qs('#jinyu-save-float');
         var discard = qs('#jinyu-discard');
         var search = qs('#jinyu-search');
-        var checkUpdateBtn = qs('#jinyu-check-update');
         dirtybar = qs('#jinyu-dirtybar');
 
         // 快捷键提示随平台自适应：Mac 显示 ⌘K，其余显示 Ctrl + K（与 (ctrlKey||metaKey) 实际监听一致）
@@ -1786,7 +1725,6 @@
             kbdHint.textContent = '⌘K';
         }
 
-        if (checkUpdateBtn) checkUpdateBtn.addEventListener('click', function () { checkUpdate(checkUpdateBtn); });
         if (saveBtn) saveBtn.addEventListener('click', function () { save(saveBtn); });
         if (saveFloat) saveFloat.addEventListener('click', function () { save(saveFloat); });
         if (resetBtn) resetBtn.addEventListener('click', function () { resetAll(resetBtn); });
@@ -1833,6 +1771,61 @@
         });
     }
 
+    /* ---------- 深色模式切换 ----------
+       与 CSS 的 .is-dark 双通路（系统跟随 @media + 手动 .is-dark）配合：
+       - 初始：localStorage 已存偏好优先，否则跟随系统 prefers-color-scheme:dark；
+               模板内联脚本已先注入 class 防白屏，这里只做状态回填与事件绑定。
+       - 点击：在 dark/light 间翻转并持久化；持久化后不再被系统变化覆盖（显式优先）。
+       - 未手动设定过时，监听系统变化实时跟随。 */
+    function wireThemeToggle() {
+        var STORE = 'jinyu_admin_theme';
+        var wrap = qs('.jinyu-setting-wrap');
+        var btns = qsa('.jinyu-theme-toggle');
+        if (!btns.length) return;
+
+        function systemDark() {
+            return !!(window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
+        }
+        function isDark() {
+            return wrap ? wrap.classList.contains('is-dark') : document.documentElement.classList.contains('is-dark');
+        }
+        function apply(dark) {
+            if (wrap) wrap.classList.toggle('is-dark', dark);
+            document.documentElement.classList.toggle('is-dark', dark);
+            // 提示随当前模式反转：深色时提示「切换浅色模式」，浅色时提示「切换深色模式」。
+            var tip = dark ? t('toggleLightMode', 'Toggle light mode') : t('toggleDarkMode', 'Toggle dark mode');
+            btns.forEach(function (b) {
+                b.setAttribute('aria-pressed', dark ? 'true' : 'false');
+                b.setAttribute('data-tip', tip);
+                b.setAttribute('aria-label', tip);
+            });
+        }
+
+        // 状态回填：内联脚本已注入 class，这里同步 aria-pressed
+        apply(isDark());
+
+        btns.forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var next = !isDark();
+                apply(next);
+                try { localStorage.setItem(STORE, next ? 'dark' : 'light'); } catch (e) {}
+            });
+        });
+
+        // 系统主题变化：仅当用户从未手动设定过才跟随
+        if (window.matchMedia) {
+            var mq = matchMedia('(prefers-color-scheme: dark)');
+            var onChange = function (e) {
+                var s = null;
+                try { s = localStorage.getItem(STORE); } catch (err) {}
+                if (s === 'dark' || s === 'light') return;
+                apply(e.matches);
+            };
+            if (mq.addEventListener) mq.addEventListener('change', onChange);
+            else if (mq.addListener) mq.addListener(onChange);
+        }
+    }
+
     /* ---------- 入口 ---------- */
     function init() {
         root = document.getElementById('jinyu-setting-app');
@@ -1840,6 +1833,7 @@
         build();
         resumeThumbsIfPending();   // 上次没跑完的重建任务在这里自动接上
         wireTopbar();
+        wireThemeToggle();
 
         // 顶栏报警图标（.jinyu-alert）是 <a href="…#tools">：浏览器只改 hash、不触发任何
         // JS 面板切换，而 activate() 写回 hash 用的是 replaceState（不产生 hashchange 事件），

@@ -104,8 +104,8 @@ class Jinyu_OptionContent extends Jinyu_BaseOptionItem {
 					'sdt'   => 120,
 					'min'   => 20,
 					'max'   => 300,
-					'unit'  => __( 'words', 'jinyu' ),
-					'desc'  => __( 'Auto excerpt length on list / archive pages', 'jinyu' ),
+					'unit'  => __( 'characters', 'jinyu' ),
+					'desc'  => __( 'List / archive card excerpt length, counted in characters (works the same for Chinese and English). Cards still display at most 2 lines.', 'jinyu' ),
 				],
 
 				[

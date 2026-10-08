@@ -8,6 +8,42 @@ if ( ! defined( 'ABSPATH' ) ) {
  * 统一输出层：所有面向模板的输出函数集中在此，必须做转义。
  */
 
+if ( ! function_exists( 'jinyu_plain_text' ) ) {
+	/**
+	 * HTML → 纯文本的统一清洗（全站唯一出口）
+	 *
+	 * 顺序要点：wp_strip_all_tags() 只去标签、**保留标签内文本**，
+	 * 直接调用会把「前面<script>alert(1)</script>后面」变成「前面 alert(1)后面」。
+	 * 必须先整块删除 <script>/<style>，再剥标签、再压空白。
+	 *
+	 * @param mixed $content mixed 参数（HTML 字符串）。
+	 */
+	function jinyu_plain_text( $content ): string {
+		$text = preg_replace( '#<(script|style)\b[^>]*>.*?</\1>#is', ' ', (string) $content );
+		return trim( preg_replace( '/\s+/u', ' ', wp_strip_all_tags( strip_shortcodes( $text ) ) ) );
+	}
+}
+
+if ( ! function_exists( 'jinyu_trim_text' ) ) {
+	/**
+	 * 按字符数裁切纯文本并补省略号（中文友好）
+	 *
+	 * 刻意不用 wp_trim_words()：它按空白分词，中文长段落整段没有空格，
+	 * 会被当成「N 个词」直接返回原文（截不断）。
+	 *
+	 * @param string $text   已清洗的纯文本
+	 * @param int    $length 字符上限
+	 */
+	function jinyu_trim_text( string $text, int $length ): string {
+		if ( '' === $text || $length <= 0 ) {
+			return '';
+		}
+		return mb_strlen( $text, 'UTF-8' ) > $length
+			? rtrim( mb_substr( $text, 0, $length, 'UTF-8' ) ) . '…'
+			: $text;
+	}
+}
+
 if ( ! function_exists( 'jinyu_pagination' ) ) {
 	/**
 	 * 分页导航。开启「加载更多」时输出按钮，否则输出传统分页 + 页码直达。
@@ -133,6 +169,38 @@ if ( ! function_exists( 'jinyu_read_time' ) ) {
 	function jinyu_read_time( $post_id = 0 ) {
 		/* translators: %s: 占位符 */
 		return sprintf( esc_html__( '%d min read', 'jinyu' ), jinyu_read_minutes( $post_id ) );
+	}
+}
+
+if ( ! function_exists( 'jinyu_get_excerpt_text' ) ) {
+	/**
+	 * 文章摘要纯文本（列表卡片 / 悬停预览 共用唯一出口）
+	 *
+	 * 三个刻意的实现选择：
+	 *  1. 不用 wp_trim_words()：它按空白分词，中文长段落整段没有空格，
+	 *     会被当成「N 个词」直接返回原文（截不断）。改为按字符数裁切，中英文行为一致。
+	 *  2. 优先读 post_excerpt 原字段，不走 get_the_excerpt()：WP 在保存文章时
+	 *     已用 wp_strip_all_tags() 处理过 excerpt 字段，<script>/<style> 的**标签被去掉、
+	 *     标签内文本被留下**（实测 'A<script>alert(1)</script>B' 存成 'Aalert(1)B'）。
+	 *     那一层已丢信息，主题侧无论如何清洗都还原不出脚本块，只能整块跳过。
+	 *  3. 无特色摘要时回退正文原文（post_content），同样先整块删除 <script>/<style>
+	 *     再 wp_strip_all_tags()——后者只去标签、保留标签内文本，顺序反了就会漏出脚本代码。
+	 *
+	 * @param int  $post_id 文章 ID，留空取当前文章
+	 * @param int  $length  字符上限，0 = 读后台设置（excerpt_length）
+	 * @param bool $fallback_content 无特色摘要时是否回退正文纯文本，默认 true
+	 */
+	function jinyu_get_excerpt_text( $post_id = 0, int $length = 0, bool $fallback_content = true ): string {
+		$post_id = (int) ( $post_id ?: get_the_ID() );
+		$length  = $length > 0 ? $length : (int) jinyu_get_option( 'excerpt_length', 120 );
+		$length  = max( 20, min( 300, $length ) );
+
+		$text = trim( (string) get_post_field( 'post_excerpt', $post_id ) );
+		if ( '' === $text && $fallback_content ) {
+			$text = (string) get_post_field( 'post_content', $post_id );
+		}
+
+		return jinyu_trim_text( jinyu_plain_text( $text ), $length );
 	}
 }
 

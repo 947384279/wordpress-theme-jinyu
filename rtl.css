@@ -55,3 +55,14 @@ body {
 	border-left: none;
 	border-right: 4px solid rgba(var(--jinyu-c-primary-rgb), 0.35);
 }
+
+/* 文章列表布局模式：list / cms 的横向卡片靠 flex-direction:row 把封面放左侧，
+   RTL 下需显式镜像到右侧，否则封面留在左边、阅读顺序反了 */
+[dir="rtl"] .jinyu-layout-list .jinyu-post-grid .jinyu-post-card,
+[dir="rtl"] .jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:first-child {
+	flex-direction: row-reverse;
+}
+
+/* 封面叠加 / 瀑布流：overlay 的 .jinyu-post-info 用 inset:auto 0 0 0 绝对定位全宽，
+   不依赖左右阅读顺序；masonry 用 column-count，RTL 下浏览器自动从右起列，
+   二者均无需额外镜像规则，与 list/cms 的 flex-direction 翻转不同。 */

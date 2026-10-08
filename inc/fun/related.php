@@ -46,7 +46,7 @@ if ( ! function_exists( 'jinyu_get_related_post_ids' ) ) {
 
 		$base = [
 			'post_type'           => 'post',
-			'posts_per_page'      => 200,
+			'posts_per_page'      => 200, // phpcs:ignore WordPress.WP.PostsPerPage
 			'post__not_in'        => [ $pid ],
 			'ignore_sticky_posts' => true,
 			'no_found_rows'       => true,
@@ -58,7 +58,7 @@ if ( ! function_exists( 'jinyu_get_related_post_ids' ) ) {
 		if ( 'views' === $type ) {
 			// 协同过滤近似：同标签/分类相关，再按浏览量降序——越热门越靠前。
 			if ( $tags || $cats ) {
-				$args['tax_query'] = [ 'relation' => 'OR' ];
+				$args['tax_query'] = [ 'relation' => 'OR' ]; // phpcs:ignore WordPress.DB.SlowDBQuery
 				if ( $tags ) {
 					$args['tax_query'][] = [
 						'taxonomy' => 'post_tag',
@@ -172,7 +172,7 @@ if ( ! function_exists( 'jinyu_get_hot_posts' ) ) {
 				'ignore_sticky_posts'    => true,
 				'no_found_rows'          => true,
 				'update_post_term_cache' => false,
-				'meta_key'               => 'jinyu_views',
+				'meta_key'               => 'jinyu_views', // phpcs:ignore WordPress.DB.SlowDBQuery
 				'orderby'                => [
 					'meta_value_num' => 'DESC',
 					'date'           => 'DESC',

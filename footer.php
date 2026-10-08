@@ -77,9 +77,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<?php if ( $icp ) : ?>
 			<span class="jinyu-footer-icp"><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener nofollow"><?php echo esc_html( $icp ); ?></a></span>
 			<?php endif; ?>
+
+			<?php if ( jinyu_get_option( 'footer_runinfo', 0 ) ) : ?>
+				<?php
+				$ri_t0  = (float) ( $_SERVER['REQUEST_TIME_FLOAT'] ?? 0 ); /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- 只读计时基准，不落库不回显 */
+				$ri_gen = $ri_t0 > 0 ? max( 0.0, microtime( true ) - $ri_t0 ) : 0.0;
+				?>
+			<span class="jinyu-footer-runinfo" data-jinyu-runinfo>
+				<span class="jinyu-runinfo-item"><i class="fa-solid fa-database" aria-hidden="true" title="<?php esc_attr_e( 'Queries', 'jinyu' ); ?>"></i> <b data-ri="q"><?php echo (int) get_num_queries(); ?></b> <?php esc_html_e( '次', 'jinyu' ); ?></span>
+				<span class="jinyu-runinfo-sep">·</span>
+				<span class="jinyu-runinfo-item"><i class="fa-solid fa-stopwatch" aria-hidden="true" title="<?php esc_attr_e( 'Page generation time', 'jinyu' ); ?>"></i> <b data-ri="ms"><?php echo esc_html( number_format_i18n( $ri_gen, 3 ) ); ?></b> <?php esc_html_e( 'sec', 'jinyu' ); ?></span>
+			</span>
+			<?php endif; ?>
 		</div>
 
-		<?php /* 主题署名：硬编码静态输出，无后台开关、无链接；社交图标内联在署名右侧 */ ?>
+		<?php /* 主题署名：硬编码静态输出，无后台开关、无链接；社交图标与 WP 圆标内联在右侧 */ ?>
 		<div class="jinyu-footer-credit">
 			<a class="jinyu-wp-official" href="https://cn.wordpress.org/" target="_blank" rel="noopener nofollow" title="<?php esc_attr_e( 'Official WordPress website', 'jinyu' ); ?>">
 			<i class="fa-brands fa-wordpress" aria-hidden="true"></i>
@@ -97,16 +109,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<?php endif; ?>
 		</div>
 		</div>
-
-		<?php if ( jinyu_get_option( 'footer_runinfo', 0 ) ) : ?>
-		<div class="jinyu-footer-runinfo" data-jinyu-live="runinfo" hidden>
-		<span class="jinyu-runinfo-item"><?php esc_html_e( 'Queries', 'jinyu' ); ?> <b data-ri="q">—</b> <?php esc_html_e( '次', 'jinyu' ); ?></span>
-		<span class="jinyu-runinfo-sep">·</span>
-		<span class="jinyu-runinfo-item"><?php esc_html_e( 'Memory', 'jinyu' ); ?> <b data-ri="mem">—</b> <?php esc_html_e( 'MB', 'jinyu' ); ?></span>
-		<span class="jinyu-runinfo-sep">·</span>
-		<span class="jinyu-runinfo-item"><?php esc_html_e( 'Render', 'jinyu' ); ?> <b data-ri="ms">—</b> <?php esc_html_e( 'sec', 'jinyu' ); ?></span>
-		</div>
-		<?php endif; ?>
 	</div>
 	</div>
 </footer>

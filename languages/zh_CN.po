@@ -73,14 +73,6 @@ msgid "\" placeholder=\"Click to select or enter a URL\">"
 msgstr "\" placeholder=\"点击选择或输入 URL\">"
 
 #: assets/js/admin.js
-msgid "\" target=\"_blank\" rel=\"noopener\">Download update package</a>"
-msgstr "\" target=\"_blank\" rel=\"noopener\">下载更新包</a>"
-
-#: assets/js/admin.js
-msgid "\" target=\"_blank\" rel=\"noopener\">View details</a>"
-msgstr "\" target=\"_blank\" rel=\"noopener\">查看详情</a>"
-
-#: assets/js/admin.js
 msgid "\">+ Add item</button>"
 msgstr "\">+ 添加一项</button>"
 
@@ -97,12 +89,8 @@ msgid ")"
 msgstr "）"
 
 #: assets/js/admin.js
-msgid "). Make sure the Jinyu theme companion plugin is enabled"
-msgstr "），请检查「金玉主题配套插件」是否已启用"
-
-#: assets/js/admin.js
-msgid ". Download it from the About panel"
-msgstr "，到「关于」面板下载"
+msgid "). Try refreshing the page; if it keeps happening, log in again"
+msgstr "）。请刷新页面重试；若反复出现请重新登录"
 
 #: assets/js/admin.js
 msgid ""
@@ -197,10 +185,6 @@ msgstr ""
 "Memcached 看板、对象存储推送与加速。请到后台左侧菜单「金玉增强」中操作。</p>"
 
 #: assets/js/admin.js
-msgid "<p class=\"jinyu-update-nocl\">No changelog yet.</p>"
-msgstr "<p class=\"jinyu-update-nocl\">暂无更新日志。</p>"
-
-#: assets/js/admin.js
 msgid "<span class=\"jinyu-dyn-grip\" title=\"Drag to sort\">⠿</span>"
 msgstr "<span class=\"jinyu-dyn-grip\" title=\"拖拽排序\">⠿</span>"
 
@@ -233,25 +217,8 @@ msgid "A task is already running; it will resume automatically…"
 msgstr "任务正在进行，稍候自动接管…"
 
 #: assets/js/admin.js
-msgid "Already up to date: v"
-msgstr "已是最新版本 v"
-
-#: assets/js/admin.js
 msgid "API request failed (HTTP "
 msgstr "接口返回异常（HTTP "
-
-#: assets/js/admin.js
-msgid "Check failed"
-msgstr "检查失败"
-
-#: assets/js/admin.js inc/setting/options/Jinyu_OptionAbout.php:39
-#: inc/setting/template.php:27
-msgid "Check for updates"
-msgstr "检查更新"
-
-#: assets/js/admin.js
-msgid "Checking…"
-msgstr "检查中…"
 
 #: assets/js/admin.js
 msgid "Choose a file and import"
@@ -369,10 +336,10 @@ msgstr "暂无可选"
 
 #: assets/js/admin.js
 msgid ""
-"Output real-time run info in the footer (queries / memory / render time). "
-"After enabling, clear the cache once in \"Jinyu Booster\" for it to take "
-"effect."
-msgstr "在前台页脚输出实时运行信息（查询数 / 内存 / 渲染耗时）。开启后到「金玉增强」清理一次缓存即可生效。"
+"Output server-side run info in the footer (queries / page generation time). "
+"On a full-page cache hit both show 0. After enabling, clear the cache once "
+"in \"Jinyu Booster\" for it to take effect."
+msgstr "在前台页脚输出服务端运行信息（查询数 / 页面生成时间）。整页缓存命中时两项均显示 0。开启后到「金玉增强」清理一次缓存即可生效。"
 
 #: assets/js/admin.js
 msgid "Processed "
@@ -1129,6 +1096,10 @@ msgstr "MB"
 #: footer.php:84
 msgid "Official WordPress website"
 msgstr "WordPress 官方网站"
+
+#: footer.php:85
+msgid "Page generation time"
+msgstr "页面生成时间"
 
 #: footer.php:103 inc/fun/widget.php:1463
 msgid "Queries"
@@ -2198,11 +2169,11 @@ msgstr "金玉·访客信息"
 msgid "Learn more"
 msgstr "了解更多"
 
-#: inc/fun/widget.php:158
+#: inc/fun/widget.php:188
 msgid ""
-"Leave empty to use the site icon automatically (Appearance › Customize › "
-"Site Identity); if not set, the site-wide \"Avatar source\" setting applies"
-msgstr "留空则自动使用站点图标（外观 › 自定义 › 站点身份）；未设置时按全站「头像来源」显示"
+"Leave empty to show the author avatar (a custom or third-party avatar if "
+"set, otherwise the site-wide \"Avatar source\" setting)"
+msgstr "留空则显示作者头像（已设置自定义/第三方头像时用该头像，否则按全站「头像来源」）"
 
 #: inc/fun/widget.php:159
 msgid "Link"
@@ -2486,12 +2457,12 @@ msgstr "维护工具"
 
 #: inc/setting/Jinyu_Setting.php:143
 msgid ""
-"Output a live runtime info line in the front-end footer: queries / memory / "
-"render time. Values are fetched by JS in real time and will not be frozen by"
-" full-page cache. After enabling, clear the cache once in \"Jinyu "
-"Enhancements\" to take effect"
+"Output a runtime info line in the front-end footer: queries / page "
+"generation time (server-side measurement). On a full-page cache hit both "
+"show 0 because PHP does not run. After enabling, clear the cache once in "
+"\"Jinyu Enhancements\" to take effect"
 msgstr ""
-"在前台页脚输出一行实时运行信息：查询数 / 内存 / 渲染耗时。数值由 JS 实时拉取，不会被整页缓存冻结。开启后到「金玉增强」清理一次缓存即可生效"
+"在前台页脚输出一行运行信息：查询数 / 页面生成时间（服务端实测）。整页缓存命中时 PHP 未执行，两项均显示 0。开启后到「金玉增强」清理一次缓存即可生效"
 
 #: inc/setting/Jinyu_Setting.php:546
 msgid "Processed %1$d/%2$d, generated %3$d, skipped %4$d, failed %5$d"
@@ -2911,8 +2882,12 @@ msgid "彩票,色情,赌博,代写,刷量,贷款,发票,办证,加微信,返利,
 msgstr "彩票,色情,赌博,代写,刷量,贷款,发票,办证,加微信,返利,兼职,代运营"
 
 #: inc/setting/options/Jinyu_OptionContent.php:108
-msgid "Auto excerpt length on list / archive pages"
-msgstr "列表/归档页自动摘要长度"
+msgid "List / archive card excerpt length, counted in characters (works the same for Chinese and English). Cards still display at most 2 lines."
+msgstr "列表 / 归档页卡片摘要长度，按字符计（中文英文效果一致）。卡片最多仍显示 2 行。"
+
+#: inc/setting/options/Jinyu_OptionContent.php:109
+msgid "characters"
+msgstr "字符"
 
 #: inc/setting/options/Jinyu_OptionContent.php:40
 msgid ""
@@ -3181,10 +3156,6 @@ msgstr "关闭时仍可用「维护工具 → 发送测试邮件」单独验证�
 msgid "Advanced Settings"
 msgstr "高级设置"
 
-#: inc/setting/options/Jinyu_OptionExtend.php:32
-msgid "Disable REST API"
-msgstr "关闭 REST API"
-
 #: inc/setting/options/Jinyu_OptionExtend.php:39
 msgid "Enable PJAX navigation"
 msgstr "启用 PJAX 无刷新导航"
@@ -3207,14 +3178,6 @@ msgstr "第三方服务接入、兼容性开关、AI 对话与主题更新等非
 
 #: inc/setting/options/Jinyu_OptionExtend.php:35
 msgid ""
-"⚠️ Disables the REST API for logged-out visitors only; logged-in users can "
-"still use the Gutenberg editor in the admin. Third-party apps/APIs relying "
-"on the public REST API may break — make sure nothing depends on it before "
-"disabling"
-msgstr ""
-"⚠️ 仅对未登录访客关闭 REST API；已登录用户在后台使用古登堡编辑器不受影响。依赖公开 REST "
-"的第三方应用/接口可能失效，请确认无依赖后再关闭"
-
 #: inc/setting/options/Jinyu_OptionExtend.php:49
 msgid ""
 "⚠️ Privacy note: when enabled, sidebar real-time data sends the visitor's IP"
@@ -3224,10 +3187,6 @@ msgid ""
 msgstr ""
 "⚠️ 隐私提示：开启后侧栏实时数据会把访客 IP 发往第三方服务（whois.pconline.com.cn）查询归属地。默认关闭，仅显示访客本机可得的"
 " IP/系统/浏览器信息。结果缓存 12 小时，关闭后立即停止外发"
-
-#: inc/setting/options/Jinyu_OptionFooter.php:36
-msgid "About section title"
-msgstr "关于区块标题"
 
 #: inc/setting/options/Jinyu_OptionFooter.php:32
 #: inc/setting/options/Jinyu_OptionFooter.php:38
@@ -3259,10 +3218,6 @@ msgid ""
 "e.g. © {year} {name}. All rights reserved. Leave empty to use the default "
 "copyright"
 msgstr "如 © {year} {name} 版权所有，留空使用默认版权"
-
-#: inc/setting/options/Jinyu_OptionFooter.php:71
-msgid "Email notification for new applications"
-msgstr "新申请邮件通知"
 
 #: inc/setting/options/Jinyu_OptionFooter.php:64
 msgid "Enable front-end application form"
@@ -3350,10 +3305,6 @@ msgstr "每行一条要求"
 
 #: inc/setting/options/Jinyu_OptionFooter.php:74
 msgid ""
-"Send an email to the site owner when a friend link application is submitted "
-"(depends on the site's mail configuration)"
-msgstr "有人提交友链申请时发一封邮件到站长邮箱（依赖站点发信配置）"
-
 #: inc/setting/options/Jinyu_OptionFooter.php:112
 msgid ""
 "Show the social accounts above in the header tools area (the header and "
@@ -3461,6 +3412,14 @@ msgstr "左侧"
 #: inc/setting/options/Jinyu_OptionGlobal.php:53
 msgid "Magazine mixed"
 msgstr "杂志混排"
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:57
+msgid "Minimal"
+msgstr "极简模式"
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:61
+msgid "Masonry"
+msgstr "瀑布流"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:104
 msgid "Maintenance message text"
@@ -4121,6 +4080,12 @@ msgstr "设置分组"
 msgid "Collapse / expand sidebar"
 msgstr "折叠 / 展开侧栏"
 
+msgid "Toggle dark mode"
+msgstr "切换深色模式"
+
+msgid "Toggle light mode"
+msgstr "切换浅色模式"
+
 msgid "No matching settings. Try a different keyword"
 msgstr "没有匹配的设置，换个关键词试试"
 
@@ -4139,27 +4104,6 @@ msgstr "已跳过 %s 张"
 msgid "Failed %s images"
 msgstr "失败 %s 张"
 
-msgid "New version v%s"
-msgstr "发现新版本 v%s"
-
-msgid "Already up to date: v%s"
-msgstr "已是最新版本：v%s"
-
-msgid "Current v%s"
-msgstr "当前 v%s"
-
-msgid "No changelog yet."
-msgstr "暂无更新日志。"
-
-msgid "Download update package"
-msgstr "下载更新包"
-
-msgid "Download it from the About panel"
-msgstr "请前往「关于」面板下载"
-
-msgid "View details"
-msgstr "查看详情"
-
 msgid "Stop"
 msgstr "停止"
 
@@ -4169,9 +4113,9 @@ msgid ""
 msgstr "确定将「%s」分组恢复为默认值？该分组的自定义配置将被清空。"
 
 msgid ""
-"API request failed (HTTP %s). Make sure the Jinyu theme companion plugin is "
-"enabled"
-msgstr "接口请求失败（HTTP %s）。请确认金玉配套插件已启用"
+"API request failed (HTTP %s). Try refreshing the page; if it keeps "
+"happening, log in again"
+msgstr "接口请求失败（HTTP %s）。请刷新页面重试；若反复出现请重新登录"
 
 msgid "Could not parse the API response (HTTP %s)"
 msgstr "无法解析接口响应（HTTP %s）"

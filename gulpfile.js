@@ -144,9 +144,6 @@ function buildZipGlob() {
         '!.DS_Store', '!Thumbs.db',
         // w.org 变体构建产物、本仓库打包产物、临时脚本：都不是主题运行期文件（曾因漏排除让包体凭空翻倍）
         '!dist-wporg/**', '!release/**', '!tmp-*', '!tmp/**',
-        // 自托管更新服务的部署配置：.gitignore 已排除（非主题源），主题自身也不读它
-        // （主题更新由配套插件请求远端 update.qicaiyun.top/jinyu-update.json 完成，与本文件无关）
-        '!jinyu-update.json',
         // FontAwesome 子集化中间产物（.gitignore 已列，tools/fa-collect.py 可重新生成）
         '!assets/fonts/fa/icons.all.raw.txt', '!assets/fonts/fa/icons.raw.txt', '!assets/fonts/fa/icons.map.json',
         // —— 以下三项 copyWporg 已排除，自托管版曾漏掉，白带 1.5MB 死副本 ——
@@ -219,10 +216,8 @@ function copyWporg() {
 		'!dist-wporg/**',
 		'!*.zip',
 		'!release/**',
-		// w.org 发行包只保留运行期必需文件：jinyu-update.json 指向自托管更新服务
-		// （审核方会读成「主题自带外部更新通道」），package.json / tools / tests / README.md
-		// 只服务于本仓库与工具链，都不该出现在提交包内。
-		'!jinyu-update.json', '!package.json', '!README.md',
+		// 本仓库与工具链专属文件不该出现在提交包内：package.json / tools / tests / README.md。
+		'!package.json', '!README.md',
 		'!tools/**', '!tests/**',
 		// 临时文件兜底：调试期的 tmp-* 产物若落在项目根，绝不能让它们混进提交包（已实际踩过）
 		'!tmp-*', '!tmp/**',

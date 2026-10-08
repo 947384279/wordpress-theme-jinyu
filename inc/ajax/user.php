@@ -356,7 +356,7 @@ function jinyu_email_confirm_page( bool $ok, string $msg ): void {
 	echo '<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">'
 		. '<meta name="viewport" content="width=device-width,initial-scale=1"><title>'
 		. esc_html( $blog ) . '</title>'
-		. '<style>body{font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;'
+		. '<style' . jinyu_csp_nonce_attr() /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- nonce 属性，已 esc_attr */ . '>body{font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;'
 		. 'background:#f5f6f8;margin:0;display:flex;min-height:100vh;align-items:center;justify-content:center}'
 		. '.card{background:#fff;border-radius:14px;padding:40px 36px;max-width:420px;width:90%;text-align:center;'
 		. 'box-shadow:0 8px 30px rgba(0,0,0,.08)}.icon{font-size:46px;margin-bottom:12px}'

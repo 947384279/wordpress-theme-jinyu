@@ -47,7 +47,7 @@ $stats = is_user_logged_in() ? jinyu_user_stats( $uid ) : [];
 						echo $avatar_url ? esc_url( $avatar_url ) : esc_attr( jinyu_avatar_default( $uid ) );
 					?>
 					"
-					data-jinyu-fallback="<?php echo esc_url( jinyu_avatar_default( $uid ) ); ?>"
+					data-jinyu-fallback="<?php echo esc_attr( jinyu_avatar_default( $uid ) ); ?>"
 					alt="<?php echo esc_attr( $user->display_name ); ?>">
 			</div>
 			<h3 class="jinyu-user-card-name"><?php echo esc_html( $user->display_name ); ?></h3>

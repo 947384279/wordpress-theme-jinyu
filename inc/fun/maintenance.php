@@ -47,7 +47,7 @@ if ( ! function_exists( 'jinyu_maintenance_mode' ) ) {
 		echo '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">'
 			. '<meta name="viewport" content="width=device-width,initial-scale=1">'
 			. '<title>' . esc_html( $title ) . ' · ' . esc_html__( 'Under Maintenance', 'jinyu' ) . '</title>'
-			. '<style>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;'
+			. '<style' . jinyu_csp_nonce_attr() /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- nonce 属性，已 esc_attr */ . '>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;'
 			. 'background:#0f1115;color:#e5e7eb;font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;'
 			. 'text-align:center;padding:24px;box-sizing:border-box}'
 			. '.m-card{max-width:520px}.m-icon{font-size:48px;margin-bottom:16px}'

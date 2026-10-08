@@ -4,7 +4,7 @@ Tags: blog, custom-colors, custom-logo, custom-menu, editor-style, featured-imag
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.2.9
+Stable tag: 1.3.0
 License: GPL v3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -74,6 +74,17 @@ License URI: https://www.gnu.org/licenses/gpl-3.0.html
 每个设置分组面板头部都有「重置本组」按钮，仅清空该分组、回退默认值，不影响其它设置。
 
 == Changelog ==
+
+= 1.3.0 =
+* 新增代码语法高亮：文章代码块由 highlight.js 渲染，明暗双主题跟随站点主题自动切换（后台「内容」设置可开关）。
+* 新增文章图片灯箱：点击正文图片以 viewer.js 全屏查看，支持缩放与翻页。
+* 新增文章二维码分享：文章操作区生成当前链接二维码（qrcode.js）。
+* 新增正文目录（TOC）：基于 H2/H3/H4 自动生成目录并随滚动高亮当前章节。
+* 字体与图标升级：引入 jinyu-text 文本字体，FontAwesome 升级为全量图标集。
+* 侧边栏：修复图标显示异常，优化侧栏动画（A/C/D 三档）。
+* 后台：补全设置项文案国际化（i18n）与 translators 注释。
+* 安全：补全主题内联脚本/样式缺失的 CSP nonce（前台模板、维护页、邮箱校验页、后台设置页），新增 SECURITY.md 部署须知；安全审计确认无 Critical/High 漏洞。
+* 代码规范：全主题 WPCS 校验 0 error / 0 warning（清理存量编码规范问题）。
 
 = 1.2.9 =
 * 修复分类/标签/搜索/作者等归档页因 get_template_part 调用写法错误导致文章列表不显示的问题（v1.2.8 抽离循环模板时引入）；并收尾主题侧解耦契约与打包合规闸门的未提交改动。

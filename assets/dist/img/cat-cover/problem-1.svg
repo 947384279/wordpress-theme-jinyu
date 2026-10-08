@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" preserveAspectRatio="xMidYMid slice" role="img" aria-label="电脑问题">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1" gradientTransform="rotate(35 0.5 0.5)">
+      <stop offset="0" stop-color="hsl(164, 66%, 54%)"/>
+      <stop offset="1" stop-color="hsl(198, 72%, 33%)"/>
+    </linearGradient>
+    <radialGradient id="vig" cx="0.5" cy="0.55" r="0.62">
+      <stop offset="0" stop-color="#000" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0.42"/>
+    </radialGradient>
+  </defs>
+  <rect width="800" height="450" fill="url(#g)"/>
+  <circle cx="256" cy="32" r="6" fill="#fff" fill-opacity="0.10"/><circle cx="768" cy="142" r="6" fill="#fff" fill-opacity="0.10"/><circle cx="736" cy="112" r="9" fill="#fff" fill-opacity="0.10"/><circle cx="544" cy="116" r="8" fill="#fff" fill-opacity="0.10"/><circle cx="96" cy="80" r="6" fill="#fff" fill-opacity="0.10"/><circle cx="128" cy="144" r="10" fill="#fff" fill-opacity="0.10"/><circle cx="480" cy="64" r="7" fill="#fff" fill-opacity="0.10"/><circle cx="256" cy="362" r="6" fill="#fff" fill-opacity="0.10"/><circle cx="480" cy="424" r="8" fill="#fff" fill-opacity="0.10"/><circle cx="320" cy="422" r="3" fill="#fff" fill-opacity="0.10"/><circle cx="416" cy="44" r="11" fill="#fff" fill-opacity="0.10"/><circle cx="544" cy="370" r="9" fill="#fff" fill-opacity="0.10"/><circle cx="768" cy="242" r="11" fill="#fff" fill-opacity="0.10"/><circle cx="704" cy="56" r="9" fill="#fff" fill-opacity="0.10"/><circle cx="0" cy="292" r="3" fill="#fff" fill-opacity="0.10"/><circle cx="640" cy="198" r="8" fill="#fff" fill-opacity="0.10"/><circle cx="416" cy="348" r="10" fill="#fff" fill-opacity="0.10"/><circle cx="576" cy="354" r="4" fill="#fff" fill-opacity="0.10"/><circle cx="384" cy="160" r="7" fill="#fff" fill-opacity="0.10"/><circle cx="320" cy="322" r="3" fill="#fff" fill-opacity="0.10"/><circle cx="320" cy="4" r="11" fill="#fff" fill-opacity="0.10"/><circle cx="384" cy="430" r="5" fill="#fff" fill-opacity="0.10"/><circle cx="352" cy="390" r="3" fill="#fff" fill-opacity="0.10"/><circle cx="384" cy="362" r="7" fill="#fff" fill-opacity="0.10"/><circle cx="736" cy="56" r="7" fill="#fff" fill-opacity="0.10"/><circle cx="224" cy="416" r="9" fill="#fff" fill-opacity="0.10"/>
+  <rect width="800" height="450" fill="url(#vig)"/>
+  <text x="400" y="250" text-anchor="middle" dominant-baseline="middle"
+        font-family="'PingFang SC','Microsoft YaHei','Helvetica Neue',Arial,sans-serif"
+        font-size="76" font-weight="800" letter-spacing="0"
+        fill="#ffffff" fill-opacity="0.96">电脑问题</text>
+  <text x="400" y="297.12" text-anchor="middle" dominant-baseline="middle"
+        font-family="'Helvetica Neue',Arial,sans-serif" font-size="15" font-weight="600"
+        letter-spacing="6" fill="#ffffff" fill-opacity="0.7">QICAIYUN</text>
+</svg>

@@ -7,16 +7,25 @@ if ( ! function_exists( 'jinyu_widget_title' ) ) {
 	/**
 	 * 输出小工具标题，允许 FontAwesome 图标标签。
 	 *
+	 * 装饰图标一律补 aria-hidden="true"：FA 图标由字体伪元素渲染，读屏软件读不到，
+	 * 不加会被逐个念成「fa-solid fa-tags」这类无意义内容。全站 29 条含图标的标题
+	 * msgid（含 HTML，改代码就会脱翻译）都走这里，故在此处集中补，而不是逐条改字符串。
+	 *
 	 * @param mixed $title mixed 参数。
 	 */
 	function jinyu_widget_title( $title ) {
-		$allowed = [
-			'i' => [
-				'class'       => true,
-				'aria-hidden' => true,
-			],
-		];
-		return wp_kses( $title, $allowed );
+		$html = wp_kses(
+			(string) $title,
+			[
+				'i' => [
+					'class'       => true,
+					'aria-hidden' => true,
+				],
+			]
+		);
+
+		// 只给「还没标 aria-hidden 的」<i> 补，不动已有属性的。
+		return preg_replace( '#<i(?![^>]*\baria-hidden\b)([^>]*)>#i', '<i$1 aria-hidden="true">', $html );
 	}
 }
 
@@ -137,14 +146,18 @@ class Jinyu_Author_Widget extends WP_Widget {
 	}
 	/**
 	 * 作者卡头像，优先级：
-	 *   1. 实例配置的图片地址（站点 Logo）
-	 *   2. 站点图标（外观 › 自定义 › 站点身份）——正方形品牌标记
-	 *   3. 后台「头像来源」= letter → 首字母占位 SVG（与评论/头部一致，不联网、永不破图）
-	 *   4. 其余来源走 Gravatar 协议（真实源站由 inc/fun/user.php 的全站过滤器决定），
+	 *   1. 实例配置的图片地址（显式配置永远优先）
+	 *   2. 后台「头像来源」= letter → 首字母占位 SVG（与评论/头部一致，不联网、永不破图）
+	 *   3. 作者本人的头像：本地自定义 / 第三方 OAuth 头像优先，否则走 Gravatar 协议
+	 *      （真实源站由 inc/fun/user.php 的全站过滤器决定，与文末作者卡同源），
 	 *      并挂 data-jinyu-fallback 兜底首字母占位，避免头像服务不可达时留个破图
 	 *
-	 * 站点图标优于 header 的宽幅字标 logo：后者塞进圆里会变形。
-	 * 第 3 步的字母取**卡片名称**而非管理员 display_name——站点卡代表站点，与卡片标题一致。
+	 * ⚠️ 刻意**不**用站点图标（外观 › 自定义 › 站点身份）兜底：站点图标是整站品牌标记，
+	 * 与「作者是谁」无关。它一旦被设置，这里就会静默顶掉作者头像（2026-10-05 实测：
+	 * 侧栏作者卡显示的是品牌 mark.png，而非站长的真实头像）。想把品牌图用在卡上，
+	 * 直接填第 1 项「头像图片地址」即可。
+	 *
+	 * 第 2 步的字母取**卡片名称**而非管理员 display_name——站点卡代表站点，与卡片标题一致。
 	 *
 	 * @param mixed $instance mixed 参数。
 	 * 注意 data URI 必须 esc_attr（esc_url 协议白名单不含 data: 会清空成 src=""）。
@@ -159,22 +172,17 @@ class Jinyu_Author_Widget extends WP_Widget {
 		if ( preg_match( '~^(https?:)?//~i', $url ) ) {
 			return '<img src="' . esc_url( $url ) . '"' . $attr . '>';
 		}
-		// 2) 站点图标
-		$icon = (string) get_site_icon_url( 192 );
-		if ( preg_match( '~^(https?:)?//~i', $icon ) ) {
-			return '<img src="' . esc_url( $icon ) . '"' . $attr . '>';
-		}
-		// 3) letter 模式：不依赖任何头像服务器
+		// 2) letter 模式：不依赖任何头像服务器
 		if ( jinyu_get_option( 'comment_avatar_src', 'gravatar' ) === 'letter' ) {
 			return '<img src="' . esc_attr( $letter ) . '"' . $attr . '>';
 		}
-		// 4) 头像服务；取 192 让高分屏不糊，挂 data-jinyu-fallback 兜底（CSP 安全，无内联 onerror）
+		// 3) 作者头像；取 192 让高分屏不糊，挂 data-jinyu-fallback 兜底（CSP 安全，无内联 onerror）
 		$src = (string) get_avatar_url( (int) ( get_the_author_meta( 'ID' ) ?: 1 ), [ 'size' => 192 ] );
 		if ( $src === '' ) {
 			return '<img src="' . esc_attr( $letter ) . '"' . $attr . '>';
 		}
 		return '<img src="' . esc_url( $src ) . '" data-jinyu-fallback="'
-			. esc_url( $letter ) . '"' . $attr . '>';
+			. esc_attr( $letter ) . '"' . $attr . '>';
 	}
 	public function form( $instance ) {
 		$name = $instance['name'] ?? '';
@@ -186,7 +194,7 @@ class Jinyu_Author_Widget extends WP_Widget {
 		echo '<p>' . esc_html__( 'Description', 'jinyu' ) . ": <textarea name='{$this->get_field_name('desc')}' class='widefat'>" . esc_textarea( $desc ) . '</textarea></p>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报
-		echo '<p>' . esc_html__( 'Avatar image URL', 'jinyu' ) . ": <input name='{$this->get_field_name('avatar')}' value='" . esc_attr( $img ) . "' class='widefat' placeholder='https://'><br><span class='description'>" . esc_html__( 'Leave empty to use the site icon automatically (Appearance › Customize › Site Identity); if not set, the site-wide "Avatar source" setting applies', 'jinyu' ) . '</span></p>';
+		echo '<p>' . esc_html__( 'Avatar image URL', 'jinyu' ) . ": <input name='{$this->get_field_name('avatar')}' value='" . esc_attr( $img ) . "' class='widefat' placeholder='https://'><br><span class='description'>" . esc_html__( 'Leave empty to show the author avatar (a custom or third-party avatar if set, otherwise the site-wide "Avatar source" setting)', 'jinyu' ) . '</span></p>';
 		echo '<p>' . esc_html__( 'Link', 'jinyu' ) . ": <input name='{$this->get_field_name('url')}' value='" . esc_attr( $url ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		echo '<p>' . esc_html__( 'Button text', 'jinyu' ) . ": <input name='{$this->get_field_name('btn')}' value='" . esc_attr( $btn ) . "' class='widefat'></p>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 	}
@@ -1443,6 +1451,16 @@ if ( ! class_exists( 'Jinyu_Perf_Widget' ) ) {
 			echo $args['before_widget']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 			echo $args['before_title'] . jinyu_widget_title( $title ) . $args['after_title']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 			?>
+			<?php
+			// 本页真实生成成本：侧栏 widget 在主内容渲染之后、footer 之前执行，
+			// 此刻 microtime / get_num_queries 即整页到当前为止的真实开销，固化进缓存 HTML。
+			// 整页静态缓存站点下，这个值随页面缓存（默认 30 天）保持不变——这正是「本页生成成本」的真实值，
+			// 比 AJAX 拿不到样本时伪造成 0 诚实得多；前端若拿到真实样本会再用 AJAX 覆盖更新。
+			$ri_t0  = (float) ( $_SERVER['REQUEST_TIME_FLOAT'] ?? 0 ); /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- 只读计时基准，不落库不回显 */
+			$ri_gen = $ri_t0 > 0 ? max( 0.0, microtime( true ) - $ri_t0 ) : 0.0;
+			$ri_q   = (int) get_num_queries();
+			$ri_mem = round( memory_get_peak_usage( true ) / 1048576, 1 );
+			?>
 			<div class="jinyu-perf" data-jinyu-live="perf">
 				<div class="jinyu-perf-top">
 					<span class="jinyu-perf-state">
@@ -1472,26 +1490,26 @@ if ( ! class_exists( 'Jinyu_Perf_Widget' ) ) {
 					<i class="jinyu-perf-avgline" data-perf="avgline" aria-hidden="true" hidden></i>
 					<i class="jinyu-perf-peak" data-perf="peak" aria-hidden="true" hidden></i>
 				</div>
-				<div class="jinyu-perf-grid">
-					<div class="jinyu-perf-cell" data-perf-cell="ms">
-						<i class="jinyu-perf-ico fa-solid fa-bolt" aria-hidden="true"></i>
-						<b data-perf="ms">—</b>
-						<span class="jinyu-perf-name"><?php esc_html_e( 'Response time', 'jinyu' ); ?></span>
-						<span class="jinyu-perf-trend" data-perf="ms-trend">—</span>
-					</div>
-					<div class="jinyu-perf-cell" data-perf-cell="q">
-						<i class="jinyu-perf-ico fa-solid fa-database" aria-hidden="true"></i>
-						<b data-perf="q">—</b>
-						<span class="jinyu-perf-name"><?php esc_html_e( 'Queries', 'jinyu' ); ?></span>
-						<span class="jinyu-perf-trend" data-perf="q-trend">—</span>
-					</div>
-					<div class="jinyu-perf-cell" data-perf-cell="mem">
-						<i class="jinyu-perf-ico fa-solid fa-microchip" aria-hidden="true"></i>
-						<b data-perf="mem">—</b>
-						<span class="jinyu-perf-name"><?php esc_html_e( 'Memory', 'jinyu' ); ?></span>
-						<span class="jinyu-perf-pct" data-perf="mem-pct">—</span>
-					</div>
+			<div class="jinyu-perf-grid">
+				<div class="jinyu-perf-cell" data-perf-cell="ms">
+					<i class="jinyu-perf-ico fa-solid fa-bolt" aria-hidden="true"></i>
+					<b data-perf="ms"><?php echo esc_html( number_format_i18n( $ri_gen, 3 ) ); ?></b>
+					<span class="jinyu-perf-name"><?php esc_html_e( 'Response time', 'jinyu' ); ?></span>
+					<span class="jinyu-perf-trend" data-perf="ms-trend">—</span>
 				</div>
+				<div class="jinyu-perf-cell" data-perf-cell="q">
+					<i class="jinyu-perf-ico fa-solid fa-database" aria-hidden="true"></i>
+					<b data-perf="q"><?php echo esc_html( $ri_q ); ?></b>
+					<span class="jinyu-perf-name"><?php esc_html_e( 'Queries', 'jinyu' ); ?></span>
+					<span class="jinyu-perf-trend" data-perf="q-trend">—</span>
+				</div>
+				<div class="jinyu-perf-cell" data-perf-cell="mem">
+					<i class="jinyu-perf-ico fa-solid fa-microchip" aria-hidden="true"></i>
+					<b data-perf="mem"><?php echo esc_html( $ri_mem ); ?></b>
+					<span class="jinyu-perf-name"><?php esc_html_e( 'Memory', 'jinyu' ); ?></span>
+					<span class="jinyu-perf-pct" data-perf="mem-pct">—</span>
+				</div>
+			</div>
 				<div class="jinyu-perf-meta">
 					<span><i><?php esc_html_e( 'Average', 'jinyu' ); ?></i><b data-perf="avg">—</b></span>
 					<span><i><?php esc_html_e( 'Peak', 'jinyu' ); ?></i><b data-perf="max">—</b></span>

@@ -192,7 +192,6 @@ function jinyu_ajax_search() {
 			'post_type'      => 'post',
 			'post_status'    => 'publish',
 			'posts_per_page' => 8,
-			'no_found_rows'  => true,
 		]
 	);
 
@@ -291,11 +290,9 @@ function jinyu_ajax_link_preview() {
 		wp_send_json_success( [ 'ok' => false ] );
 	}
 
-	$excerpt = wp_strip_all_tags( get_the_excerpt( $pid ) );
-	if ( ! $excerpt ) {
-		$excerpt = wp_strip_all_tags( get_post_field( 'post_content', $pid ) );
-	}
-	$excerpt = mb_substr( $excerpt, 0, 110 );
+	// 复用列表卡片的摘要出口（同一套清洗 + 截断），此前此处自成一套：
+	// 不剥 script 内容、硬编码 110 字符且不补省略号，与卡片摘要对不上。
+	$excerpt = jinyu_get_excerpt_text( $pid, 110 );
 
 	wp_send_json_success(
 		[

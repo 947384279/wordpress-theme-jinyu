@@ -3835,8 +3835,7 @@
             visitor: document.querySelector('.jinyu-visitor[data-jinyu-live="visitor"]'),
             perf: document.querySelector('.jinyu-perf[data-jinyu-live="perf"]'),
             clock: document.querySelector('.jinyu-clock[data-jinyu-live="clock"]'),
-            uptime: document.querySelector('.jinyu-uptime[data-since]'),
-            runinfo: document.querySelector('.jinyu-footer-runinfo[data-jinyu-live="runinfo"]')
+            uptime: document.querySelector('.jinyu-uptime[data-since]')
         };
         var hasLive = boxes.visitor || boxes.perf || boxes.clock || boxes.runinfo;
         var hasUptime = boxes.uptime;
@@ -4014,6 +4013,9 @@
         function fillPerf(p) {
             var el = boxes.perf; if (!el || !p.perf) return;
             var perf = p.perf;
+            // 双保险：即便 p.perf 是个缺字段的对象（如旧接口返回空数组），也不把数字写成 0/undefined，
+            // 而是保留服务端渲染进 HTML 的真实初始值（整页缓存站点永远有这个真实值）。
+            if (typeof perf.ms !== 'number' || typeof perf.q !== 'number') return;
 
             var ms = el.querySelector('[data-perf="ms"]'); setNumUnit(ms, fmtSec(perf.ms), 's');
             var q = el.querySelector('[data-perf="q"]'); setNumUnit(q, perf.q, '次');
@@ -4146,25 +4148,8 @@
             state.fetchedAt = Date.now();
             fillVisitor(p);
             fillPerf(p);
-            fillRuninfo(p);
             tickClock();
             tickUptime();
-        }
-
-        /* 页脚运行信息：复用实时载荷里的 perf（查询数 / 内存 / 渲染耗时）。
-           元素由 footer.php 按 footer_runinfo 开关输出；不命中时 boxes.runinfo 为 null，静默跳过。 */
-        function fillRuninfo(p) {
-            var el = boxes.runinfo;
-            if (!el || !p.perf) return;
-            var perf = p.perf;
-            var set = function (k, v) {
-                var e = el.querySelector('[data-ri="' + k + '"]');
-                if (e) e.textContent = v;
-            };
-            set('q', perf.q);
-            set('mem', perf.mem);
-            set('ms', fmtSec(perf.ms));
-            el.hidden = false; // 首包到达后再显示，避免闪烁「—」
         }
 
         var url = CFG.ajax_url + '?action=jinyu_sidebar_live&_ajax_nonce=' + encodeURIComponent(CFG.nonce);
@@ -4924,6 +4909,13 @@ id: btn.dataset.id
         poster, qrcodeModule, donate, lightbox, carousel, pjax, luck, faviconBadge, sidebarLive,
         widgetAnim, hitokoto, sales, social, webVitals, coverIons, flinkApply
     ];
+
+    /* 页脚运行信息（位于版权/备案行、备案号右侧）：
+       - 查询 / 页面生成时间：footer.php 内联本次 PHP 渲染的真实测量值（服务端口径）。
+       - 整页缓存命中时，内联值即"该页面 MISS 时真实生成成本"的快照，本身是有意义信息，
+         不再由 JS 改写：早期曾用 fetch 读 X-Jinyu-Cache 在命中时把数字强制归零，
+         既造成"闪烁变 0"又额外多发一次绕缓存请求，已彻底移除 runinfoRtt。 */
+
 
     function boot() {
         skeleton();

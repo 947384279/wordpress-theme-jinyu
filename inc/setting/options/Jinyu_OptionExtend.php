@@ -28,13 +28,6 @@ class Jinyu_OptionExtend extends Jinyu_BaseOptionItem {
 			'icon'   => 'fa-solid fa-puzzle-piece',
 			'fields' => [
 				[
-					'id'    => 'close_rest_api',
-					'title' => __( 'Disable REST API', 'jinyu' ),
-					'type'  => 'switch',
-					'sdt'   => false,
-					'desc'  => __( '⚠️ Disables the REST API for logged-out visitors only; logged-in users can still use the Gutenberg editor in the admin. Third-party apps/APIs relying on the public REST API may break — make sure nothing depends on it before disabling', 'jinyu' ),
-				],
-				[
 					'id'    => 'enable_pjax',
 					'title' => __( 'Enable PJAX navigation', 'jinyu' ),
 					'type'  => 'switch',

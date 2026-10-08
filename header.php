@@ -66,8 +66,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	无脚本环境由紧随其后的 noscript 的 display:none 兜底。
 	注意：<script> 内容是 raw text，HTML 实体在这里不会被解码，所以判断符必须写字面量 &&。 */
 ?>
-<script>document.getElementById('jinyu-skeleton')&&document.getElementById('jinyu-skeleton').parentNode.removeChild(document.getElementById('jinyu-skeleton'));</script>
-<noscript><style>.jinyu-skeleton{display:none!important}</style></noscript>
+<script<?php echo jinyu_csp_nonce_attr();  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- nonce 属性，非动态内容 */ ?>>
+document.getElementById('jinyu-skeleton')&&document.getElementById('jinyu-skeleton').parentNode.removeChild(document.getElementById('jinyu-skeleton'));</script>
+<noscript><style<?php echo jinyu_csp_nonce_attr();  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- nonce 属性，已 esc_attr */ ?>>.jinyu-skeleton{display:none!important}</style></noscript>
 
 <?php if ( is_singular( 'post' ) ) : ?>
 <div class="jinyu-read-bar" aria-hidden="true"><div class="jinyu-read-inner"></div></div>
@@ -202,7 +203,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					echo $avatar_url ? esc_url( $avatar_url ) : esc_attr( jinyu_avatar_default( $uid ) );
 				?>
 				"
-				data-jinyu-fallback="<?php echo esc_url( jinyu_avatar_default( get_current_user_id() ) ); ?>"
+				data-jinyu-fallback="<?php echo esc_attr( jinyu_avatar_default( get_current_user_id() ) ); ?>"
 				alt="">
 			</button>
 			<div class="jinyu-user-drop" data-jinyu-user-drop hidden>
@@ -215,7 +216,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						echo $avatar_url ? esc_url( $avatar_url ) : esc_attr( jinyu_avatar_default( $uid ) );
 					?>
 					"
-					data-jinyu-fallback="<?php echo esc_url( jinyu_avatar_default( get_current_user_id() ) ); ?>"
+					data-jinyu-fallback="<?php echo esc_attr( jinyu_avatar_default( get_current_user_id() ) ); ?>"
 					alt="">
 				<div class="jinyu-user-drop-info">
 				<b><?php echo esc_html( wp_get_current_user()->display_name ); ?></b>
@@ -255,7 +256,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</div>
 		</div>
 		<?php elseif ( jinyu_is_checked( 'user_center_enable' ) ) : ?>
-		<button type="button" class="jinyu-login-btn" data-jinyu-auth-open="login"><?php esc_html_e( 'Log in', 'jinyu' ); ?></button>
+		<button type="button" class="jinyu-icon-btn" data-jinyu-auth-open="login" aria-label="<?php esc_attr_e( 'Log in', 'jinyu' ); ?>">
+			<i class="fa-solid fa-user" aria-hidden="true"></i>
+		</button>
 		<?php endif; ?>
 	</div><!-- /.jinyu-header-tools -->
 

@@ -390,7 +390,7 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 				$fu_avatar = jinyu_user_avatar_url( $fu_id, 64 );
 				echo $fu_avatar ? esc_url( $fu_avatar ) : esc_attr( jinyu_avatar_default( $fu_id ) );
 				?>
-				" data-jinyu-fallback="<?php echo esc_url( jinyu_avatar_default( $fu_id ) ); ?>" alt="">
+				" data-jinyu-fallback="<?php echo esc_attr( jinyu_avatar_default( $fu_id ) ); ?>" alt="">
 			</a>
 			<a class="jinyu-follow-name" href="<?php echo esc_url( get_author_posts_url( $fu_id ) ); ?>"><?php echo esc_html( $fu->display_name ); ?></a>
 			<button type="button" class="jinyu-btn jinyu-btn-ghost jinyu-follow-toggle is-following"
@@ -459,7 +459,7 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 			echo $avatar_url ? esc_url( $avatar_url ) : esc_attr( jinyu_avatar_default( $uid ) );
 			?>
 			"
-			data-jinyu-fallback="<?php echo esc_url( jinyu_avatar_default( $uid ) ); ?>"
+			data-jinyu-fallback="<?php echo esc_attr( jinyu_avatar_default( $uid ) ); ?>"
 			alt="avatar">
 		<div class="jinyu-avatar-side">
 		<label class="jinyu-btn jinyu-btn-ghost jinyu-avatar-pick">

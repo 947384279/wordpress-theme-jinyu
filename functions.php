@@ -182,9 +182,9 @@ add_filter(
 			$classes[] = 'jinyu-no-sidebar';
 		}
 
-		// 文章列表风格（card/list/big/cms）.
+		// 文章列表风格（card/list/big/cms/overlay/masonry）.
 		$mode = jinyu_get_option( 'post_style', 'card' );
-		if ( ! in_array( $mode, [ 'card', 'list', 'big', 'cms' ], true ) ) {
+		if ( ! in_array( $mode, [ 'card', 'list', 'big', 'cms', 'overlay', 'masonry' ], true ) ) {
 			$mode = 'card';
 		}
 		$classes[] = 'jinyu-layout-' . $mode;
@@ -374,10 +374,10 @@ add_action(
 				'thanksFeedback' => __( 'Thanks for your feedback', 'jinyu' ),
 				'allRead'        => __( 'All marked as read', 'jinyu' ),
 				'scanToRead'     => __( 'Press and hold or scan the QR code to read the full post', 'jinyu' ),
-			'readDone'       => __( 'Finished ✓', 'jinyu' ),
-			/* translators: %s: 占位符 */
-			'readProgress'   => __( '已读 %1$d% · 还需 %2$s', 'jinyu' ),
-			'tocHeading'     => __( 'Table of Contents', 'jinyu' ),
+				'readDone'       => __( 'Finished ✓', 'jinyu' ),
+				/* translators: %s: 占位符 */
+				'readProgress'   => __( '已读 %1$d% · 还需 %2$s', 'jinyu' ),
+				'tocHeading'     => __( 'Table of Contents', 'jinyu' ),
 			]
 		);
 		// 若已生成 JS 翻译 JSON（wp i18n 提取 + 编译），自动加载；不存在则静默忽略.
@@ -474,12 +474,18 @@ add_action(
 	wp_inline_script_attributes 过滤器统一附加 nonce（覆盖 JINYU_CONFIG）。
 	- 默认不输出 CSP 头；需要严格 CSP 的用户用 jinyu_csp_policy 过滤器返回
 	策略串（用 %NONCE% 占位，会自动替换为本请求的真实 nonce），例如：
-		add_filter('jinyu_csp_policy', function () {
-			return "default-src 'self';"
-				. "script-src 'self' 'nonce-%NONCE%';"
-				. "style-src 'self' 'nonce-%NONCE%';"
-				. "img-src 'self' data: https:;font-src 'self';connect-src 'self'";
-		});
+	add_filter('jinyu_csp_policy', function () {
+		return "default-src 'self';"
+			. "script-src 'self' 'nonce-%NONCE%';"
+			. "style-src 'self' 'nonce-%NONCE%';"
+			. "img-src 'self' data: https:;font-src 'self' data:;"
+			. "connect-src 'self';object-src 'none';base-uri 'self';"
+			. "frame-ancestors 'self'";
+	});
+	- 主题前台所有内联 <style>/<script>（骨架屏、noscript 兜底、评论加载更多、
+	动态样式、关键 CSS、字体变量、Cookie 条、自定义 head/foot CSS、维护模式/
+	邮箱校验页片段）均已自动附加 nonce，启用上述策略不会破坏主题自身渲染；
+	用户自定义 JS（完整 <script> 标签）需自行加 nonce 或放宽 script-src，详见 SECURITY.md。
 	- 注意：用户自行填写的统计代码 / 自定义 JS（含完整 <script> 标签）不在此
 	处自动加 nonce，启用严格 CSP 时需由用户自行处理其片段。
 	====================================================================== */

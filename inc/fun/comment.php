@@ -58,19 +58,13 @@ if ( ! function_exists( 'jinyu_comment_excerpt' ) ) {
 	/**
 	 * 评论正文纯文本摘要
 	 *
-	 * 刻意不用 wp_trim_words()：它按空白分词，中文长段落整段没有空格，
+	 * 评论是访客输入，script 泄漏风险比文章更高，故走 jinyu_plain_text() 统一清洗。
 	 *
 	 * @param mixed $content mixed 参数。
 	 * @param int   $length int 参数，默认 56。
-	 *   会被当成「1 个词」直接返回原文（截不断）。这里改为剥短代码/标签后按字符数裁切。
 	 */
 	function jinyu_comment_excerpt( $content, int $length = 56 ): string {
-		$text = wp_strip_all_tags( strip_shortcodes( (string) $content ) );
-		$text = trim( preg_replace( '/\s+/u', ' ', $text ) );
-		if ( '' === $text ) {
-			return '';
-		}
-		return mb_strlen( $text ) > $length ? mb_substr( $text, 0, $length ) . '…' : $text;
+		return jinyu_trim_text( jinyu_plain_text( $content ), $length );
 	}
 }
 
@@ -324,7 +318,7 @@ if ( ! function_exists( 'jinyu_author_box' ) ) {
 		$bio           = get_the_author_meta( 'description', $uid );
 
 		$html  = '<section class="jinyu-author-box" aria-label="' . esc_attr__( 'About the author', 'jinyu' ) . '">';
-		$html .= '<img class="jinyu-author-avatar" src="' . ( $custom_avatar !== '' ? esc_url( $custom_avatar ) : $fallback ) . '" alt="' . esc_attr( $user->display_name ) . '" loading="lazy" data-jinyu-fallback="' . esc_url( $fallback ) . '">';
+		$html .= '<img class="jinyu-author-avatar" src="' . ( $custom_avatar !== '' ? esc_url( $custom_avatar ) : esc_attr( $fallback ) ) . '" alt="' . esc_attr( $user->display_name ) . '" loading="lazy" data-jinyu-fallback="' . esc_attr( $fallback ) . '">';
 		$html .= '<div class="jinyu-author-info">';
 		$html .= '<div class="jinyu-author-top">';
 		$html .= '<span class="jinyu-author-name">' . esc_html( $user->display_name ) . '</span>';

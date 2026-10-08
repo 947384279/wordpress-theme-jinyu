@@ -145,6 +145,9 @@ html.wp-toolbar .wrap.jinyu-setting-wrap {
 /* 暗色令牌覆盖（跟随系统 + 手动 .is-dark 双通路，避免重复声明） */
 .ja-dark-tokens() {
     /* 暗色令牌取自 companion [data-theme="dark"]：brand #5b8cff / canvas #0d1526 / surface #1a2438 */
+    /* 同步插件：声明 color-scheme:dark，让原生控件（滚动条/checkbox/select/日期框）
+       在深色下按暗色渲染，否则深色面板里会露出刺眼白色原生控件（插件实测踩过的坑）。 */
+    color-scheme: dark;
     --ja-page-bg: #0d1526;
     --ja-surface: #1a2438;
     --ja-surface-2: #1e2a42;
@@ -185,6 +188,115 @@ html.wp-toolbar .wrap.jinyu-setting-wrap {
 }
 :root.is-dark,
 .jinyu-setting-wrap.is-dark { .ja-dark-tokens(); }
+
+/* ============================================================
+   压倒 WP 后台核心 forms.css 对原生控件（input / textarea / select / button）
+   的全局白底/灰底强制样式。WP 选择器（如 .wp-admin input[type=text]）特异性
+   高于本主题 .jinyu-* 单类：浅色时恰好同白看不出，深色下会把表单输入框/按钮
+   压回白色 → 漏白。在设置页作用域内用 !important 彻底接管外观；令牌随
+   .is-dark / 系统跟随切换，故无需写死颜色值，深浅两套自动正确。
+   ============================================================ */
+.jinyu-setting-wrap {
+    /* —— 文本/密码/数字/颜色文本框/多行文本：统一 surface 底 —— */
+    input.jinyu-input,
+    textarea.jinyu-input {
+        background-color: var(--ja-surface) !important;
+        border-color: var(--ja-border-strong) !important;
+        color: var(--ja-text) !important;
+    }
+    input.jinyu-input:focus,
+    textarea.jinyu-input:focus {
+        border-color: var(--ja-primary) !important;
+        background-color: var(--ja-surface) !important;
+        box-shadow: 0 0 0 4px var(--ja-primary-ring) !important;
+    }
+    /* 搜索框 / 多选内搜索：surface-2 底 */
+    input.jinyu-search,
+    .jinyu-ms-search input {
+        background-color: var(--ja-surface-2) !important;
+        border-color: var(--ja-border-strong) !important;
+        color: var(--ja-text) !important;
+    }
+    input.jinyu-search:focus,
+    .jinyu-ms-search input:focus {
+        border-color: var(--ja-primary) !important;
+        background-color: var(--ja-surface) !important;
+        box-shadow: 0 0 0 4px var(--ja-primary-ring) !important;
+    }
+    /* 滑块轨道：用边框灰，深色下才看得见 */
+    input.jinyu-range-input { background-color: var(--ja-border-strong) !important; }
+    /* 原生取色框外框 */
+    input.jinyu-color-swatch {
+        background-color: var(--ja-surface) !important;
+        border-color: var(--ja-border-strong) !important;
+    }
+
+    /* —— 仿输入的外观按钮（下拉触发 / 工具按钮 / 清除等） —— */
+    button.jinyu-select-btn {
+        background-color: var(--ja-surface) !important;
+        border-color: var(--ja-border-strong) !important;
+        color: var(--ja-text) !important;
+    }
+    button.jinyu-select-btn:hover { border-color: var(--ja-primary) !important; }
+    button.jinyu-select-btn:focus-visible {
+        border-color: var(--ja-primary) !important;
+        box-shadow: 0 0 0 3px var(--ja-primary-ring) !important;
+    }
+    button.jinyu-ms-all {
+        background-color: var(--ja-surface-2) !important;
+        border-color: var(--ja-border-strong) !important;
+        color: var(--ja-text-2) !important;
+    }
+    button.jinyu-ms-all:hover {
+        color: var(--ja-primary) !important;
+        border-color: var(--ja-primary) !important;
+        background-color: var(--ja-primary-ring) !important;
+    }
+    button.jinyu-tool-btn {
+        background-color: var(--ja-surface) !important;
+        border-color: var(--ja-border-strong) !important;
+        color: var(--ja-text-2) !important;
+    }
+    button.jinyu-tool-btn:hover {
+        color: var(--ja-primary-600) !important;
+        border-color: var(--ja-primary) !important;
+        background-color: var(--ja-primary-soft) !important;
+    }
+    button.jinyu-color-clear,
+    button.jinyu-upload-remove {
+        background-color: var(--ja-surface-2) !important;
+        border-color: var(--ja-border-strong) !important;
+        color: var(--ja-text-2) !important;
+    }
+    button.jinyu-pw-toggle {
+        background-color: transparent !important;
+        color: var(--ja-text-3) !important;
+    }
+    button.jinyu-pw-toggle:hover { color: var(--ja-primary) !important; }
+    button.jinyu-color-preset { border-color: rgba(255, 255, 255, .16) !important; }
+
+    /* 普通幽灵按钮 */
+    button.jinyu-btn:not(.jinyu-btn-primary) {
+        background-color: var(--ja-surface-2) !important;
+        border-color: var(--ja-border-strong) !important;
+        color: var(--ja-text-2) !important;
+    }
+    button.jinyu-btn:not(.jinyu-btn-primary):hover {
+        border-color: var(--ja-primary) !important;
+        color: var(--ja-primary) !important;
+        background-color: var(--ja-surface-2) !important;
+    }
+    /* 渐变主按钮：保护不被 WP .button 白底覆盖 */
+    button.jinyu-btn-primary,
+    a.jinyu-btn-primary {
+        background-color: var(--ja-primary) !important;
+        background-image: linear-gradient(180deg, rgba(255, 255, 255, .18) 0%, rgba(255, 255, 255, 0) 44%, rgba(0, 0, 0, .16) 100%) !important;
+        color: #fff !important;
+        border-color: transparent !important;
+    }
+    button.jinyu-btn-primary:hover,
+    a.jinyu-btn-primary:hover { background-color: var(--ja-primary-600) !important; }
+}
 
 /* 全局平滑滚动 */
 .toplevel_page_jinyu-options { scroll-behavior: smooth; }
@@ -254,6 +366,8 @@ html.wp-toolbar .wrap.jinyu-setting-wrap {
     margin-left: auto;
     min-width: 0;
 }
+/* 恢复默认：低频图标按钮，与搜索框拉开间距、并离右缘内移一点，避免挤在右上角 */
+#jinyu-reset { margin-left: 8px; margin-right: 6px; }
 .jinyu-ver-chip {
     display: inline-flex;
     align-items: center;
@@ -340,7 +454,7 @@ input.jinyu-search { min-height: 38px; }
 .jinyu-search:focus {
     outline: none;
     border-color: var(--ja-primary);
-    background: #fff;
+    background: var(--ja-surface);
     box-shadow: 0 0 0 4px var(--ja-primary-ring);
 }
 /* 关掉 Chrome 自带的 search 清除按钮，避免与我们自定义的 × 重复 */
@@ -355,8 +469,8 @@ input.jinyu-search { min-height: 38px; }
     min-height: 0;
 }
 
-/* 侧边栏导航：吸顶（与右侧面板头顶部对齐、不随页面滚动）；整条菜单直接显示，
-   仅当视口矮到放不下时才出现兜底内部滚动（绝大多数笔记本一次看全） */
+/* 侧边栏导航：固定 chrome，高度填满布局列；菜单项在 .jinyu-nav-list 内滚动，
+   头部与底部折叠按钮始终可见。 */
 .jinyu-nav {
     width: 264px;
     flex-shrink: 0;
@@ -365,18 +479,24 @@ input.jinyu-search { min-height: 38px; }
     border-right: 1px solid var(--ja-border);
     border-radius: 0;
     padding: 14px 14px;
-    /* 改用 App 外壳：侧栏为固定 chrome，高度填满布局列、内部独立滚动；
-       不再依赖 sticky + 100vh 魔法数字，彻底消除「整页滚动 + 多层 sticky 互相避让」的网页感。 */
     height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    gap: 3px;
-    overflow-y: auto;
-    overflow-anchor: none;
+    overflow: hidden;
     box-shadow: 1px 0 0 var(--ja-border), 10px 0 26px -22px rgba(16, 24, 40, .35);
     transition: width var(--ja-dur) var(--ja-ease), box-shadow var(--ja-dur) var(--ja-ease);
     will-change: width;
+}
+/* 菜单项滚动区：单独承担 overflow，避免整个侧栏滚动把折叠按钮带走 */
+.jinyu-nav-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    overflow-y: auto;
+    overflow-anchor: none;
 }
 
 /* 菜单项：大厂审美——图标入「圆角图标牌」+ 文字，悬停/选中用克制主色填充；
@@ -397,8 +517,21 @@ input.jinyu-search { min-height: 38px; }
     text-align: left;
     cursor: pointer;
     position: relative;
-    transition: background var(--ja-dur) var(--ja-ease), color var(--ja-dur) var(--ja-ease);
+    transition: background var(--ja-dur) var(--ja-ease), color var(--ja-dur) var(--ja-ease), transform .12s var(--ja-ease);
+    transform: translateZ(0);
 }
+/* 入场级联：进设置页时菜单项依次从左淡入滑入（错峰延迟由 JS 设 animation-delay）。
+   fill-mode both 保证延迟期间保持初始态；动画结束后 JS 清掉内联 animation 释放 transform，
+   使下方 :active 按压缩放不被 fill-mode 锁定。 */
+.jinyu-nav-list .jinyu-nav-item {
+    animation: jinyu-nav-in .42s var(--ja-ease) both;
+}
+@keyframes jinyu-nav-in {
+    from { opacity: 0; transform: translateX(-10px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+/* 按压反馈：点击瞬间整项轻微下压 */
+.jinyu-nav-item:active { transform: scale(.97); }
 /* 图标牌：未激活为浅灰圆角块（细腻内描边提升质感），激活态转主色实心——视觉重心清晰、克制不抢戏 */
 .jinyu-nav-ic {
     flex: none;
@@ -449,6 +582,18 @@ input.jinyu-search { min-height: 38px; }
     transition: opacity var(--ja-dur) var(--ja-ease), transform var(--ja-dur) var(--ja-ease);
 }
 .jinyu-nav-item.is-modified .jinyu-nav-dot { opacity: 1; transform: scale(1); }
+/* 切换分组时新选中项的图标牌弹一下（0.88→1，带回弹），与主题动效曲线一致 */
+.jinyu-nav-ic.jinyu-nav-pop { animation: jinyu-nav-ic-pop .34s cubic-bezier(.34, 1.56, .64, 1); }
+@keyframes jinyu-nav-ic-pop {
+    0%   { transform: scale(.88); }
+    60%  { transform: scale(1.06); }
+    100% { transform: scale(1); }
+}
+/* 尊重系统「减少动态效果」：关闭入场与图标弹动，避免眩晕 */
+@media (prefers-reduced-motion: reduce) {
+    .jinyu-nav-list .jinyu-nav-item,
+    .jinyu-nav-ic.jinyu-nav-pop { animation: none; }
+}
 
 /* ===== 侧栏头部：品牌标识 + 折叠开关 ===== */
 .jinyu-nav-head {
@@ -507,6 +652,121 @@ input.jinyu-search { min-height: 38px; }
 .jinyu-nav-toggle .dashicons { font-size: 18px; transition: transform var(--ja-dur) var(--ja-ease); }
 .jinyu-layout.nav-collapsed .jinyu-nav-toggle .dashicons { transform: rotate(180deg); }
 
+/* 侧栏底部工具条：[折叠][深色切换][保存] 三按钮，风格与主题顶栏图标按钮统一 */
+.jinyu-nav-foot {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    padding: 12px 14px 14px;
+    margin-top: auto;
+    border-top: 1px solid var(--ja-border);
+}
+.jinyu-nav-foot > button {
+    flex: none;
+    position: relative;
+    width: 30px;
+    height: 30px;
+    /* 保存按钮带 .jinyu-btn-primary，其 min-height:36px（0,1,0）压不住 height 但会撑高，
+       导致 30×36 非方形、与深色切换按钮形状不一致。此处同特异性更高地锁死为方形。 */
+    min-height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 1px solid var(--ja-border-strong);
+    border-radius: 9px;
+    background: var(--ja-surface);
+    color: var(--ja-text-2);
+    line-height: 1;
+    cursor: pointer;
+    transition: background var(--ja-dur), border-color var(--ja-dur), color var(--ja-dur), box-shadow var(--ja-dur), transform .08s ease;
+}
+/* 折叠按钮独占最左侧；其余按钮靠右紧凑排列 */
+.jinyu-nav-foot > .jinyu-nav-toggle--bottom { margin-right: auto; }
+.jinyu-nav-foot > button:hover {
+    background: var(--ja-surface-2);
+    border-color: var(--ja-border);
+    color: var(--ja-text);
+}
+.jinyu-nav-foot > button:active { transform: translateY(1px); }
+.jinyu-nav-foot > button:focus-visible {
+    outline: 2px solid var(--ja-primary);
+    outline-offset: 2px;
+}
+/* 底部保存按钮：主题主按钮渐变（与顶栏 .jinyu-icon-btn--primary 同款） */
+.jinyu-nav-foot .jinyu-btn-primary {
+    background: linear-gradient(135deg, var(--ja-primary), #ff935e) !important;
+    border-color: transparent !important;
+    color: #fff !important;
+    box-shadow: 0 4px 14px var(--ja-primary-ring);
+}
+.jinyu-nav-foot .jinyu-btn-primary:hover {
+    filter: brightness(1.05);
+    box-shadow: 0 6px 18px var(--ja-primary-ring-strong);
+}
+.jinyu-nav-foot .jinyu-btn-primary:active { transform: translateY(1px); }
+.jinyu-nav-foot .jinyu-save-ico,
+.jinyu-nav-foot .jinyu-ico-svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+    display: block;
+}
+/* 深色切换按钮图标显隐：浅色显月亮，深色显太阳。class 选择器同时覆盖桌面侧栏与顶栏移动端两个按钮。
+   父级（.jinyu-topbar-actions .jinyu-icon-btn / .jinyu-nav-foot）对 svg 写了 display:block，
+   这里用 !important 保证状态切换永远胜出。 */
+.jinyu-theme-toggle .jinyu-ico-sun { display: none !important; }
+.jinyu-setting-wrap.is-dark .jinyu-theme-toggle .jinyu-ico-sun,
+:root.is-dark .jinyu-theme-toggle .jinyu-ico-sun { display: block !important; }
+.jinyu-setting-wrap.is-dark .jinyu-theme-toggle .jinyu-ico-moon,
+:root.is-dark .jinyu-theme-toggle .jinyu-ico-moon { display: none !important; }
+/* 折叠箭头：折叠态旋转 */
+.jinyu-layout.nav-collapsed .jinyu-nav-toggle--bottom .dashicons { transform: rotate(180deg); }
+
+/* 侧栏头部操作区：承接原顶栏的插件告警图标，保持与折叠按钮同尺寸 */
+.jinyu-nav-head-actions {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.jinyu-nav-head-actions:empty { display: none; }
+.jinyu-nav-head-actions > * {
+    flex: none;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+/* 插件注入的告警图标按钮通常自带圆角/背景，这里只兜底保证不撑破头部 */
+.jinyu-nav-head-actions img,
+.jinyu-nav-head-actions svg {
+    max-width: 22px;
+    max-height: 22px;
+}
+/* 头部告警按钮浮层（.jinyu-alert-tip 定义在 admin-alert.less）在侧栏里的两处失效修正：
+   ① 原样式「水平居中于图标」，而图标贴在侧栏右缘 → 浮层右半溢出，被 .jinyu-nav 的
+      overflow:hidden 裁掉（提示文字被切一半）。改为右对齐图标 + 限宽在内容列内。
+   ② .jinyu-alert:hover 带 transform，会新建层叠上下文把浮层自身的 z-index:9999 困住，
+      而 .jinyu-nav-item 是 position:relative 且 DOM 在后 → 菜单项盖住了浮层。
+      把头部整块抬到列表之上即可。 */
+.jinyu-nav-head { position: relative; z-index: 2; }
+.jinyu-nav-head-actions .jinyu-alert-tip {
+    left: auto;
+    right: 0;
+    max-width: 236px; /* = 侧栏内容宽（264 − 14×2），浮层始终落在侧栏内不被裁 */
+    transform: translateY(-4px);
+}
+.jinyu-nav-head-actions .jinyu-alert:hover .jinyu-alert-tip,
+.jinyu-nav-head-actions .jinyu-alert:focus-visible .jinyu-alert-tip { transform: translateY(0); }
+/* 箭头跟着从「顶部居中」改为对准按钮中心（按钮距浮层右缘 32px，中心在 15px 处） */
+.jinyu-nav-head-actions .jinyu-alert-tip::before { left: auto; right: 10px; margin-left: 0; }
+/* 折叠态侧栏仅 76px，浮层无处安放：角标数字 + aria-label 已表达，点击直达维护工具 */
+.jinyu-layout.nav-collapsed .jinyu-nav-head-actions .jinyu-alert-tip { display: none; }
+
 /* 激活态左侧细条指示（Linear/VS Code 风，折叠后落在栏最左缘，成精致标记） */
 .jinyu-nav-item::before {
     content: '';
@@ -528,12 +788,29 @@ input.jinyu-search { min-height: 38px; }
     width: 76px;
     overflow: visible;
 }
+.jinyu-layout.nav-collapsed .jinyu-nav-list {
+    overflow: visible;
+}
 .jinyu-layout.nav-collapsed .jinyu-nav-head {
     justify-content: center;
     padding: 4px 0 14px;
     border-bottom: none;
 }
 .jinyu-layout.nav-collapsed .jinyu-nav-brand { display: none; }
+.jinyu-layout.nav-collapsed .jinyu-nav-head-actions {
+    justify-content: center;
+    width: 100%;
+}
+.jinyu-layout.nav-collapsed .jinyu-nav-foot {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding-left: 0;
+    padding-right: 0;
+}
+/* 折叠态：主题/保存保持原序在上，折叠按钮沉到最下（与 companion order 一致） */
+.jinyu-layout.nav-collapsed .jinyu-nav-foot > button { margin: 0; order: 2; }
+.jinyu-layout.nav-collapsed .jinyu-nav-foot > .jinyu-nav-toggle--bottom { order: 3; margin-right: 0; }
 .jinyu-layout.nav-collapsed .jinyu-nav-item {
     justify-content: center;
     gap: 0;
@@ -618,11 +895,11 @@ input.jinyu-search { min-height: 38px; }
 .jinyu-field[hidden] { display: none; }
 .jinyu-nav-item[hidden] { display: none; }
 /* 搜索过滤后剩余项变少，改为顶部堆叠、收紧内边距，与全量态的舒展间距区分 */
-.jinyu-nav.is-searching { justify-content: flex-start; gap: 2px; padding: 4px 0; }
-.jinyu-nav.is-searching .jinyu-nav-dot { display: none; }
+.jinyu-nav-list.is-searching { justify-content: flex-start; gap: 2px; padding: 4px 0; }
+.jinyu-nav-list.is-searching .jinyu-nav-dot { display: none; }
 /* 命中项之间加细分隔线（box-shadow 不破坏圆角背景），让搜索结果成组更清晰 */
-.jinyu-nav.is-searching .jinyu-nav-item:not(:last-child) { box-shadow: 0 1px 0 var(--ja-border); border-radius: 10px; }
-.jinyu-nav.is-searching .jinyu-nav-item { padding-top: 6px; padding-bottom: 6px; }
+.jinyu-nav-list.is-searching .jinyu-nav-item:not(:last-child) { box-shadow: 0 1px 0 var(--ja-border); border-radius: 10px; }
+.jinyu-nav-list.is-searching .jinyu-nav-item { padding-top: 6px; padding-bottom: 6px; }
 .jinyu-panel { display: none; }
 .jinyu-panel.is-active { display: block; animation: jinyu-fade var(--ja-dur) var(--ja-ease); }
 /* 内容卡：白底 + 细边 + 一级投影，浮在 --ja-page-bg 上（与插件同一套 Bento 语言）。
@@ -755,6 +1032,10 @@ input.jinyu-search { min-height: 38px; }
         &:active { transform: translateY(1px); }
     }
 }
+/* 桌面端隐藏移动版深色切换按钮：它只应在 ≤900px 的窄屏顶栏出现；
+   宽屏时深色切换在侧栏底部 .jinyu-nav-foot 里。必须放在 .jinyu-topbar-actions .jinyu-icon-btn
+   之后，才能以同特异性 + 后源码顺序压过 inline-flex。 */
+.jinyu-topbar-actions .jinyu-theme-toggle--mobile { display: none; }
 
 /* 悬停 / 聚焦提示气泡（含小箭头；箭头单独一条规则，避免 hover 覆写 transform 丢掉旋转） */
 .jinyu-icon-btn[data-tip]::after,
@@ -1436,87 +1717,6 @@ input.jinyu-search { min-height: 38px; }
     line-height: 1.65;
 }
 
-/* 检查更新 */
-.jinyu-field--update .jinyu-field-body { margin-top: 2px; }
-.jinyu-update-box { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-.jinyu-update-status { font-size: 13px; color: var(--ja-text-3); }
-.jinyu-update-status.ok { color: var(--ja-success); font-weight: 600; }
-.jinyu-update-status.err { color: var(--ja-danger); font-weight: 600; }
-.jinyu-update-detail { margin-top: 12px; font-size: 13px; }
-.jinyu-update-cl {
-    padding: 12px 14px;
-    background: var(--ja-surface-2);
-    border: 1px solid var(--ja-border-strong);
-    border-radius: var(--ja-r);
-    color: var(--ja-text-2);
-    line-height: 1.7;
-    white-space: pre-wrap;
-    margin-bottom: 12px;
-}
-.jinyu-update-detail .jinyu-btn { margin-right: 8px; }
-/* 顶栏版本行内的更新状态 / 详情：与版本信息同行，不独占一行 */
-.jinyu-update-box--head { position: relative; gap: 10px; }
-.jinyu-update-detail--head {
-    margin: 0;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-.jinyu-update-detail--head .jinyu-btn { margin-right: 0; }
-/* 发现新版本：详情浮出为顶栏下方的更新卡片（不挤压顶栏布局） */
-.jinyu-update-pop {
-    position: absolute;
-    top: calc(100% + 10px);
-    right: 0;
-    z-index: 50;
-    width: 400px;
-    max-width: min(90vw, 480px);
-    padding: 14px 16px;
-    background: var(--ja-surface);
-    border: 1px solid var(--ja-border-strong);
-    border-radius: var(--ja-r-lg);
-    box-shadow: 0 12px 36px rgba(15, 23, 42, 0.16);
-    text-align: left;
-}
-.jinyu-update-pop-head {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 10px;
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--ja-text);
-
-    span { font-size: 12px; font-weight: 400; color: var(--ja-text-3); }
-    .dashicons { font-size: 16px; width: 16px; height: 16px; color: var(--ja-success); align-self: center; }
-}
-.jinyu-update-pop-close {
-    margin-left: auto;
-    flex: none;
-    width: 22px;
-    height: 22px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    border: none;
-    border-radius: var(--ja-r-sm);
-    background: transparent;
-    color: var(--ja-text-3);
-    font-size: 18px;
-    line-height: 1;
-    cursor: pointer;
-    transition: background var(--ja-dur) var(--ja-ease), color var(--ja-dur) var(--ja-ease);
-}
-.jinyu-update-pop-close:hover { background: var(--ja-surface-2); color: var(--ja-text); }
-.jinyu-update-pop .jinyu-update-cl {
-    max-height: 200px;
-    overflow: auto;
-    margin-bottom: 12px;
-    font-size: 12px;
-}
-.jinyu-update-pop-actions { display: flex; gap: 8px; }
-.jinyu-update-nocl { margin: 0 0 12px; font-size: 12px; color: var(--ja-text-3); }
 
 /* 主题按钮（品牌化，与前端设计语言一致） */
 .jinyu-btn {
@@ -2227,38 +2427,52 @@ input.jinyu-search { min-height: 38px; }
     .jinyu-main { width: 100%; height: auto; overflow: visible; min-width: 0; }
     .jinyu-nav { height: auto; }
     /* 移动端：分组导航改为顶部「横向滚动标签条」，吸顶点选即切，
-       只占一行高度，不再把 14 个分组竖排堆满首屏。 */
+       只占一行高度，不再把 14 个分组竖排堆满首屏。
+       注意：.jinyu-nav-list 自己承担横向滚动，.jinyu-nav 保持 column 布局，
+       避免底部工具条被 row 布局挤进标签条。 */
     .jinyu-nav {
         width: 100%;
         position: sticky;
         top: 0;
         max-height: none;
-        /* 重置桌面「撑满全屏」规则：移动端是顶部横向标签条，不能被 100vh 撑成一整屏高 */
         min-height: 0;
         justify-content: flex-start;
-        overflow-x: auto;
-        overflow-y: hidden;
+        overflow: visible;
         display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        gap: 8px;
+        flex-direction: column;
+        gap: 0;
         padding: 9px 12px;
         border-right: none;
         border-bottom: 1px solid var(--ja-border);
-        /* 吸顶工具栏：冷灰底与内容白卡拉开层次，仅用 1px 下边框分隔，
-           不加投影——避免「白条贴白卡」的误贴感，也不要悬浮投影的浮层观感 */
+        /* 吸顶工具栏：冷灰底与内容白卡拉开层次 */
         background: var(--ja-page-bg);
         z-index: 40;
+    }
+    /* 移动端自绘顶栏是 static（随页滚走），标签条吸顶只避让 WP 固定管理栏 */
+    .admin-bar .jinyu-nav { top: var(--wp-admin--admin-bar--height, 32px); }
+    /* 折叠开关是桌面专属交互，移动端横向标签条不需要，直接隐藏头部 */
+    .jinyu-nav-head { display: none; }
+    /* 菜单项滚动区：移动端改为横向滚动胶囊条 */
+    .jinyu-nav-list {
+        flex: 1 1 auto;
+        min-width: 0;
+        min-height: 0;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: center;
+        gap: 8px;
+        overflow-x: auto;
+        overflow-y: hidden;
         scrollbar-width: none;
         -ms-overflow-style: none;
     }
-    /* 移动端自绘顶栏是 static（随页滚走），标签条吸顶只避让 WP 固定管理栏
-       （WP 官方变量：桌面 32px、≤782px 自动变 46px）。不可给顶栏高度定变量——
-       那是顶栏自身高度，顶栏滚走后标签条会悬空漏出上方滚动内容。 */
-    .admin-bar .jinyu-nav { top: var(--wp-admin--admin-bar--height, 32px); }
-    .jinyu-nav::-webkit-scrollbar { display: none; }
-    /* 折叠开关是桌面专属交互，移动端横向标签条不需要，直接隐藏头部 */
-    .jinyu-nav-head { display: none; }
+    .jinyu-nav-list::-webkit-scrollbar { display: none; }
+    /* 底部工具条：移动端整个隐藏。保存改由 dirtybar 悬浮条触发；
+       深色切换移到顶栏恢复默认按钮右侧。 */
+    .jinyu-nav-foot { display: none; }
+    /* 移动端显示顶栏深色切换按钮（与桌面隐藏规则同特异性，靠媒体查询后源码顺序取胜） */
+    .jinyu-topbar-actions .jinyu-theme-toggle--mobile { display: inline-flex; }
 
     .jinyu-nav-item {
         width: auto;
@@ -2381,22 +2595,8 @@ input.jinyu-search { min-height: 38px; }
     .jinyu-search { height: 36px; }
     .jinyu-icon-btn .jinyu-ico-svg { width: 16px; height: 16px; }
     #jinyu-reset { order: 3; }
-    /* 主按钮退化为纯图标正方形（36×36，与「恢复默认」同尺寸；宽度让出的空间归搜索框），
-       语义由 aria-label 与下方未保存浮条上的「保存」文字共同承载。
-       立体感：上缘高光 + 下缘暗边 + 外投影三层，按下时下沉 1px */
-    /* 正方形主按钮：8px 圆角（36px 见方上约 22%，既不做成全圆也不留直角），
-       立体效果继承 .jinyu-btn-primary（叠加渐变 + 上下 inset 明暗边），此处不再重写阴影。 */
-    #jinyu-save {
-        order: 4;
-        flex: none;
-        width: 36px;
-        height: 36px;
-        min-height: 36px;
-        padding: 0;
-        border-radius: 8px;
-    }
-    #jinyu-save > span { display: none; }
-    #jinyu-save .jinyu-save-ico { width: 18px; height: 18px; }
+    /* 深色切换放到「恢复默认」右侧 */
+    #jinyu-theme-toggle-mobile { order: 4; }
     /* 「上次保存于」只在保存后短暂出现，宽度不参与抢夺：
        flex:1 1 100% 会把它按整行基准吃进主轴（实测把同排 flex:1 1 0 的搜索框挤成 0 宽）。 */
     .jinyu-saved-time {

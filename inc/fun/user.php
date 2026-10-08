@@ -303,7 +303,7 @@ add_filter(
 		$size     = (int) ( $args['size'] ?? 96 );
 		$fallback = jinyu_letter_avatar( $label, $size > 0 ? $size : 96 );
 
-		return preg_replace( '/<img\b/i', '<img data-jinyu-fallback="' . esc_url( $fallback ) . '"', $avatar, 1 );
+		return preg_replace( '/<img\b/i', '<img data-jinyu-fallback="' . esc_attr( $fallback ) . '"', $avatar, 1 );
 	},
 	20,
 	3
@@ -621,8 +621,8 @@ function jinyu_user_pagination( int $total ): void {
 			'type'      => 'list',
 			'mid_size'  => 2,
 			'end_size'  => 1,
-			'prev_text' => '<i class="fa-solid fa-angle-left"></i>',
-			'next_text' => '<i class="fa-solid fa-angle-right"></i>',
+			'prev_text' => '<i class="fa-solid fa-angle-left" aria-hidden="true"></i>',
+			'next_text' => '<i class="fa-solid fa-angle-right" aria-hidden="true"></i>',
 		]
 	);
 	if ( ! $links ) {

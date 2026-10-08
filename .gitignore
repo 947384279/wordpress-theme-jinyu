@@ -62,6 +62,13 @@ jinyu-plugin-preview.html
 # 本地设计审计产物（截图/预览/测试脚本，非主题源）
 _design_audit/
 
+# 一次性调试输出（jy_*_out.html / jy_*_trace.log 之类），
+# 是探针 echo 的结果快照（含线上路径、水印配置等运行态信息），绝不能进包或进库
+jy_*_out.html
+jy_*_out.txt
+jy_*_trace.log
+jy_probe_*.html
+
 # 顶栏设置页视觉预览原型（非主题源，无引用）
 /topbar-preview.html
 

@@ -34,11 +34,6 @@ class Jinyu_OptionAbout extends Jinyu_BaseOptionItem {
 					/* translators: %s: 占位符 */
 					'desc'  => sprintf( __( 'Jinyu theme v%s · PHP 8.0+ · WordPress 6.0+', 'jinyu' ), JINYU_CUR_VER ),
 				],
-				[
-					'id'    => 'update_check',
-					'title' => __( 'Check for updates', 'jinyu' ),
-					'type'  => 'update_check',
-				],
 			],
 		];
 	}

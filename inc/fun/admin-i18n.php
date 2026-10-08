@@ -39,6 +39,9 @@ if ( ! function_exists( 'jinyu_admin_l10n_strings' ) ) {
 			'brandTitle'           => __( 'Jinyu Theme Settings', 'jinyu' ),
 			'settingsGroups'       => __( 'Settings groups', 'jinyu' ),
 			'collapseSidebar'      => __( 'Collapse / expand sidebar', 'jinyu' ),
+			// 深色模式切换按钮（admin.js wireThemeToggle 的 tooltip / aria-label）.
+			'toggleDarkMode'       => __( 'Toggle dark mode', 'jinyu' ),
+			'toggleLightMode'      => __( 'Toggle light mode', 'jinyu' ),
 			'noMatching'           => __( 'No matching settings. Try a different keyword', 'jinyu' ),
 			// 动态列表（四宫格等）
 			'addItem'              => __( 'Add item', 'jinyu' ),
@@ -80,7 +83,7 @@ if ( ! function_exists( 'jinyu_admin_l10n_strings' ) ) {
 			/* translators: %s: 错误信息 */
 			'requestFailed'        => /* translators: %s: 底层错误信息 */ __( 'Request failed: %s', 'jinyu' ),
 			/* translators: %s: HTTP 状态码 */
-			'apiHttpError'         => /* translators: %s: HTTP 状态码 */ __( 'API request failed (HTTP %s). Make sure the Jinyu theme companion plugin is enabled', 'jinyu' ),
+			'apiHttpError'         => /* translators: %s: HTTP 状态码 */ __( 'API request failed (HTTP %s). Try refreshing the page; if it keeps happening, log in again', 'jinyu' ),
 			/* translators: %s: HTTP 状态码 */
 			'apiParseError'        => /* translators: %s: HTTP 状态码 */ __( 'Could not parse the API response (HTTP %s)', 'jinyu' ),
 			// 维护工具面板
@@ -108,19 +111,6 @@ if ( ! function_exists( 'jinyu_admin_l10n_strings' ) ) {
 			'skippedCount'         => /* translators: %s: 跳过的图片数量（已存在该尺寸） */ __( 'Skipped %s images', 'jinyu' ),
 			/* translators: %d: 失败数量 */
 			'failedCount'          => /* translators: %s: 处理失败的图片数量 */ __( 'Failed %s images', 'jinyu' ),
-			// 更新检查
-			'checking'             => __( 'Checking…', 'jinyu' ),
-			'checkFailed'          => __( 'Check failed', 'jinyu' ),
-			/* translators: %s: 最新版本号 */
-			'newVersion'           => /* translators: %s: 最新版本号 */ __( 'New version v%s', 'jinyu' ),
-			/* translators: %s: 当前版本号 */
-			'upToDate'             => /* translators: %s: 当前已安装的版本号 */ __( 'Already up to date: v%s', 'jinyu' ),
-			/* translators: %s: 当前版本号 */
-			'currentVersion'       => /* translators: %s: 当前已安装的版本号 */ __( 'Current v%s', 'jinyu' ),
-			'noChangelog'          => __( 'No changelog yet.', 'jinyu' ),
-			'downloadPackage'      => __( 'Download update package', 'jinyu' ),
-			'viewDetails'          => __( 'View details', 'jinyu' ),
-			'downloadFromAbout'    => __( 'Download it from the About panel', 'jinyu' ),
 			'close'                => __( 'Close', 'jinyu' ),
 			// 维护工具面板（toolsHtml / thumbsToolRow）
 			'regenThumbs'          => __( 'Regenerate cover thumbnails', 'jinyu' ),
@@ -134,10 +124,9 @@ if ( ! function_exists( 'jinyu_admin_l10n_strings' ) ) {
 			'importSettings'       => __( 'Import settings', 'jinyu' ),
 			'importSettingsDesc'   => __( 'Restore theme settings from a JSON file. This overwrites all current settings — export a backup first.', 'jinyu' ),
 			'chooseFileImport'     => __( 'Choose a file and import', 'jinyu' ),
-			'runinfoDesc'          => __( 'Output real-time run info in the footer (queries / memory / render time). After enabling, clear the cache once in "Jinyu Booster" for it to take effect.', 'jinyu' ),
+			'runinfoDesc'          => __( 'Output server-side run info in the footer (queries / page generation time). On a full-page cache hit both show 0. After enabling, clear the cache once in "Jinyu Booster" for it to take effect.', 'jinyu' ),
 			'enabled'              => __( 'Enabled', 'jinyu' ),
 			'disabled'             => __( 'Disabled', 'jinyu' ),
-			'checkUpdates'         => __( 'Check for updates', 'jinyu' ),
 			// —— 以下为 2026-10-02 复审补漏（审计发现词条已存在但代码没接 / 或压根没词条）——
 			'clearColor'           => __( 'Clear', 'jinyu' ),
 			'removeFile'           => __( 'Remove', 'jinyu' ),

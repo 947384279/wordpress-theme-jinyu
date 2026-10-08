@@ -73,14 +73,6 @@ msgid "\" placeholder=\"Click to select or enter a URL\">"
 msgstr ""
 
 #: assets/js/admin.js
-msgid "\" target=\"_blank\" rel=\"noopener\">Download update package</a>"
-msgstr ""
-
-#: assets/js/admin.js
-msgid "\" target=\"_blank\" rel=\"noopener\">View details</a>"
-msgstr ""
-
-#: assets/js/admin.js
 msgid "\">+ Add item</button>"
 msgstr ""
 
@@ -97,11 +89,7 @@ msgid ")"
 msgstr ""
 
 #: assets/js/admin.js
-msgid "). Make sure the Jinyu theme companion plugin is enabled"
-msgstr ""
-
-#: assets/js/admin.js
-msgid ". Download it from the About panel"
+msgid "). Try refreshing the page; if it keeps happening, log in again"
 msgstr ""
 
 #: assets/js/admin.js
@@ -177,10 +165,6 @@ msgid ""
 msgstr ""
 
 #: assets/js/admin.js
-msgid "<p class=\"jinyu-update-nocl\">No changelog yet.</p>"
-msgstr ""
-
-#: assets/js/admin.js
 msgid "<span class=\"jinyu-dyn-grip\" title=\"Drag to sort\">⠿</span>"
 msgstr ""
 
@@ -211,24 +195,7 @@ msgid "A task is already running; it will resume automatically…"
 msgstr ""
 
 #: assets/js/admin.js
-msgid "Already up to date: v"
-msgstr ""
-
-#: assets/js/admin.js
 msgid "API request failed (HTTP "
-msgstr ""
-
-#: assets/js/admin.js
-msgid "Check failed"
-msgstr ""
-
-#: assets/js/admin.js inc/setting/options/Jinyu_OptionAbout.php:39
-#: inc/setting/template.php:27
-msgid "Check for updates"
-msgstr ""
-
-#: assets/js/admin.js
-msgid "Checking…"
 msgstr ""
 
 #: assets/js/admin.js
@@ -2107,10 +2074,10 @@ msgstr ""
 msgid "Learn more"
 msgstr ""
 
-#: inc/fun/widget.php:158
+#: inc/fun/widget.php:188
 msgid ""
-"Leave empty to use the site icon automatically (Appearance › Customize › "
-"Site Identity); if not set, the site-wide \"Avatar source\" setting applies"
+"Leave empty to show the author avatar (a custom or third-party avatar if "
+"set, otherwise the site-wide \"Avatar source\" setting)"
 msgstr ""
 
 #: inc/fun/widget.php:159
@@ -2805,7 +2772,11 @@ msgid "彩票,色情,赌博,代写,刷量,贷款,发票,办证,加微信,返利,
 msgstr ""
 
 #: inc/setting/options/Jinyu_OptionContent.php:108
-msgid "Auto excerpt length on list / archive pages"
+msgid "List / archive card excerpt length, counted in characters (works the same for Chinese and English). Cards still display at most 2 lines."
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionContent.php:109
+msgid "characters"
 msgstr ""
 
 #: inc/setting/options/Jinyu_OptionContent.php:40
@@ -3075,10 +3046,6 @@ msgstr ""
 msgid "Advanced Settings"
 msgstr ""
 
-#: inc/setting/options/Jinyu_OptionExtend.php:32
-msgid "Disable REST API"
-msgstr ""
-
 #: inc/setting/options/Jinyu_OptionExtend.php:39
 msgid "Enable PJAX navigation"
 msgstr ""
@@ -3101,22 +3068,12 @@ msgstr ""
 
 #: inc/setting/options/Jinyu_OptionExtend.php:35
 msgid ""
-"⚠️ Disables the REST API for logged-out visitors only; logged-in users can "
-"still use the Gutenberg editor in the admin. Third-party apps/APIs relying "
-"on the public REST API may break — make sure nothing depends on it before "
-"disabling"
-msgstr ""
-
 #: inc/setting/options/Jinyu_OptionExtend.php:49
 msgid ""
 "⚠️ Privacy note: when enabled, sidebar real-time data sends the visitor's IP"
 " to a third-party service (whois.pconline.com.cn) for location lookup. Off "
 "by default; only locally available IP/OS/browser info is shown. Results are "
 "cached for 12 hours; sending stops immediately when disabled"
-msgstr ""
-
-#: inc/setting/options/Jinyu_OptionFooter.php:36
-msgid "About section title"
 msgstr ""
 
 #: inc/setting/options/Jinyu_OptionFooter.php:32
@@ -3148,10 +3105,6 @@ msgstr ""
 msgid ""
 "e.g. © {year} {name}. All rights reserved. Leave empty to use the default "
 "copyright"
-msgstr ""
-
-#: inc/setting/options/Jinyu_OptionFooter.php:71
-msgid "Email notification for new applications"
 msgstr ""
 
 #: inc/setting/options/Jinyu_OptionFooter.php:64
@@ -3234,10 +3187,6 @@ msgstr ""
 
 #: inc/setting/options/Jinyu_OptionFooter.php:74
 msgid ""
-"Send an email to the site owner when a friend link application is submitted "
-"(depends on the site's mail configuration)"
-msgstr ""
-
 #: inc/setting/options/Jinyu_OptionFooter.php:112
 msgid ""
 "Show the social accounts above in the header tools area (the header and "
@@ -3342,6 +3291,14 @@ msgstr ""
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:53
 msgid "Magazine mixed"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:57
+msgid "Minimal"
+msgstr ""
+
+#: inc/setting/options/Jinyu_OptionGlobal.php:61
+msgid "Masonry"
 msgstr ""
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:104
@@ -3985,6 +3942,12 @@ msgstr ""
 msgid "Collapse / expand sidebar"
 msgstr ""
 
+msgid "Toggle dark mode"
+msgstr ""
+
+msgid "Toggle light mode"
+msgstr ""
+
 msgid "No matching settings. Try a different keyword"
 msgstr ""
 
@@ -4003,27 +3966,6 @@ msgstr ""
 msgid "Failed %s images"
 msgstr ""
 
-msgid "New version v%s"
-msgstr ""
-
-msgid "Already up to date: v%s"
-msgstr ""
-
-msgid "Current v%s"
-msgstr ""
-
-msgid "No changelog yet."
-msgstr ""
-
-msgid "Download update package"
-msgstr ""
-
-msgid "Download it from the About panel"
-msgstr ""
-
-msgid "View details"
-msgstr ""
-
 msgid "Stop"
 msgstr ""
 
@@ -4033,8 +3975,8 @@ msgid ""
 msgstr ""
 
 msgid ""
-"API request failed (HTTP %s). Make sure the Jinyu theme companion plugin is "
-"enabled"
+"API request failed (HTTP %s). Try refreshing the page; if it keeps "
+"happening, log in again"
 msgstr ""
 
 msgid "Could not parse the API response (HTTP %s)"

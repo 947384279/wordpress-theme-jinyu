@@ -34,6 +34,10 @@ if ( ! function_exists( 'jinyu_register_image_sizes' ) ) {
 	function jinyu_register_image_sizes(): void {
 		// 卡片 / 封面主图（首页、归档、相关阅读、轮播之外的常规展示位）.
 		add_image_size( 'jinyu-cover', 768, 512, true );
+		// 瀑布流非裁切封面（宽 768，高随原图，crop=false）—— 真·不等高瀑布流专用。
+		// ⚠️ 旧图需后台「维护工具 → 重建封面缩略图」补一次才会生成该尺寸；
+		//    模板侧已做尺寸存在兜底：未生成时回退 jinyu-cover，不裂图（仅暂时等高）。
+		add_image_size( 'jinyu-cover-free', 768, 9999, false );
 		// 列表小缩略图（侧栏小工具、无限加载返回的缩略图位）.
 		add_image_size( 'jinyu-thumb', 400, 267, true );
 	}
@@ -482,8 +486,13 @@ if ( ! function_exists( 'jinyu_img_to_webp_url' ) ) {
 
 		$rel = substr( $path, strlen( $up['baseurl'] ) ); // 如 /2026/09/x.png.
 		$src = $up['basedir'] . wp_normalize_path( $rel );
+
+		// 原图缺失兜底：原图被清理（如转 WebP 后删源）但同名 .webp 仍在时，
+		// 直接返回 .webp URL，避免元数据里的死 .png/.jpg URL 直出 404 裂图.
 		if ( ! is_file( $src ) ) {
-			return $url;
+			$webp_url = preg_replace( '/\.(jpe?g|png)$/i', '.webp', $path );
+			$webp_src = preg_replace( '/\.(jpe?g|png)$/i', '.webp', $src );
+			return is_file( $webp_src ) ? $webp_url : $url;
 		}
 
 		// ── 通道 A：云端即时转码（首选，零源站 GD / 零推送）──.

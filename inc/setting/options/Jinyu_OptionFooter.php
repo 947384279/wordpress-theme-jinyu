@@ -32,12 +32,6 @@ class Jinyu_OptionFooter extends Jinyu_BaseOptionItem {
 					'title' => __( 'About This Site', 'jinyu' ),
 				],
 				[
-					'id'    => 'footer_about_title',
-					'title' => __( 'About section title', 'jinyu' ),
-					'type'  => 'text',
-					'sdt'   => __( 'About This Site', 'jinyu' ),
-				],
-				[
 					'id'          => 'footer_about',
 					'title'       => __( 'About this site text', 'jinyu' ),
 					'type'        => 'textarea',
@@ -65,13 +59,6 @@ class Jinyu_OptionFooter extends Jinyu_BaseOptionItem {
 					'type'  => 'switch',
 					'sdt'   => 1,
 					'desc'  => __( 'When enabled, the application page shows an online form; submissions enter the "Friend Links" review queue and go live once approved. When off, only the application requirements and the site owner\'s email are shown', 'jinyu' ),
-				],
-				[
-					'id'    => 'flink_apply_notify',
-					'title' => __( 'Email notification for new applications', 'jinyu' ),
-					'type'  => 'switch',
-					'sdt'   => 0,
-					'desc'  => __( 'Send an email to the site owner when a friend link application is submitted (depends on the site\'s mail configuration)', 'jinyu' ),
 				],
 				[
 					'id'          => 'flink_apply_rules',

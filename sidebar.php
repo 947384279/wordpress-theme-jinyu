@@ -42,7 +42,7 @@ if ( jinyu_get_option( 'sidebar_pos', 'right' ) === 'none' ) {
 		$hot_posts = jinyu_get_hot_posts( 5 );
 		?>
 		<section class="jinyu-widget">
-			<h3 class="jinyu-widget-title"><i class="fa-solid fa-fire"></i> <?php esc_html_e( 'Popular Posts', 'jinyu' ); ?></h3>
+			<h3 class="jinyu-widget-title"><i class="fa-solid fa-fire" aria-hidden="true"></i> <?php esc_html_e( 'Popular Posts', 'jinyu' ); ?></h3>
 			<ul class="jinyu-hot-list">
 				<?php if ( $hot_posts ) : ?>
 					<?php foreach ( $hot_posts as $jy_i => $jy_p ) : ?>
@@ -73,7 +73,7 @@ if ( jinyu_get_option( 'sidebar_pos', 'right' ) === 'none' ) {
 
 		<!-- 分类目录 -->
 		<section class="jinyu-widget">
-			<h3 class="jinyu-widget-title"><i class="fa-regular fa-folder-open"></i> <?php esc_html_e( 'Categories', 'jinyu' ); ?></h3>
+			<h3 class="jinyu-widget-title"><i class="fa-regular fa-folder-open" aria-hidden="true"></i> <?php esc_html_e( 'Categories', 'jinyu' ); ?></h3>
 			<?php
 			$cats = get_categories( [ 'hide_empty' => true ] );
 			if ( $cats ) :
@@ -96,7 +96,7 @@ if ( jinyu_get_option( 'sidebar_pos', 'right' ) === 'none' ) {
 		<!-- 最新评论（与「金玉·最新评论」小工具共用：inc/fun/comment.php） -->
 		<?php $recent_comments = jinyu_recent_comments_list( 5 ); ?>
 		<section class="jinyu-widget">
-			<h3 class="jinyu-widget-title"><i class="fa-regular fa-comment"></i> <?php esc_html_e( 'Recent Comments', 'jinyu' ); ?></h3>
+			<h3 class="jinyu-widget-title"><i class="fa-regular fa-comment" aria-hidden="true"></i> <?php esc_html_e( 'Recent Comments', 'jinyu' ); ?></h3>
 			<?php if ( $recent_comments ) : ?>
 				<?php echo $recent_comments; // phpcs:ignore WordPress.Security.EscapeOutput -- 内部函数已逐字段转义 ?>
 			<?php else : ?>
@@ -108,14 +108,14 @@ if ( jinyu_get_option( 'sidebar_pos', 'right' ) === 'none' ) {
 		<?php $tag_cloud = jinyu_tag_cloud_html( 15 ); ?>
 		<?php if ( $tag_cloud !== '' ) : ?>
 		<section class="jinyu-widget">
-			<h3 class="jinyu-widget-title"><i class="fa-solid fa-tags"></i> <?php esc_html_e( 'Tag Cloud', 'jinyu' ); ?></h3>
+			<h3 class="jinyu-widget-title"><i class="fa-solid fa-tags" aria-hidden="true"></i> <?php esc_html_e( 'Tag Cloud', 'jinyu' ); ?></h3>
 			<div class="jinyu-tag-cloud"><?php echo $tag_cloud; // phpcs:ignore WordPress.Security.EscapeOutput -- 内部函数已逐字段转义 ?></div>
 		</section>
 		<?php endif; ?>
 
 		<!-- 搜索 -->
 		<section class="jinyu-widget">
-			<h3 class="jinyu-widget-title"><i class="fa-solid fa-magnifying-glass"></i> <?php esc_html_e( 'Search', 'jinyu' ); ?></h3>
+			<h3 class="jinyu-widget-title"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i> <?php esc_html_e( 'Search', 'jinyu' ); ?></h3>
 			<?php get_search_form(); ?>
 		</section>
 

@@ -187,6 +187,13 @@ if ( ! function_exists( 'jinyu_perf_sample' ) ) {
 
 		set_transient( 'jinyu_perf_beats', $beats, DAY_IN_SECONDS );
 		set_transient( 'jinyu_perf_last', time(), DAY_IN_SECONDS );
+		// 留存「最近一次真实页面生成」样本：整页缓存站点上 shutdown 采样仅在 MISS 触发，
+		// 故这必定是真实 PHP 渲染开销，而非 beacon 开销。供 live 接口在滚动缓冲为空时兜底，
+		// TTL 与页面缓存一致，避免长期缓存站点把「实时性能」卡成 0。
+		$last_beat = end( $beats );
+		if ( is_array( $last_beat ) && isset( $last_beat['ms'], $last_beat['q'], $last_beat['mem'] ) ) {
+			set_transient( 'jinyu_perf_last_gen', $last_beat, 30 * DAY_IN_SECONDS );
+		}
 	}
 }
 
@@ -432,16 +439,31 @@ if ( ! function_exists( 'jinyu_live_payload' ) ) {
 		$ip    = jinyu_visitor_ip();
 		$beats = jinyu_perf_history();
 
-		// 无历史样本时（新站 / 刚清缓存）用本次请求兜底，保证曲线至少有一个点.
+		// 滚动缓冲为空时，不拿「本次 AJAX 请求」兜底——那只会测出 beacon 自身几毫秒的假数据。
+		// 在整页缓存站点上（页面几乎全是 HIT，shutdown 采样 early-return）缓冲长期为空，
+		// 原逻辑会把「实时性能」卡在 0。改为回退到最近一次真实页面生成的样本
+		// （jinyu_perf_last_gen，由 jinyu_perf_sample 在 MISS 时记录），没有则如实留空，
+		// 让前端保持「—」，而不是伪造成 0。
 		if ( ! $beats ) {
-			$start = (float) ( $_SERVER['REQUEST_TIME_FLOAT'] ?? microtime( true ) ); /* phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- 输入在 jinyu_ajax_guard/委托处已 wp_unslash+sanitize，WPCS 追不到 */
-			$beats = [
-				[
-					'ms'  => max( 1, (int) round( ( microtime( true ) - $start ) * 1000 ) ),
-					'q'   => (int) get_num_queries(),
-					'mem' => round( memory_get_peak_usage( true ) / 1048576, 1 ),
-					'ts'  => time(),
+			$last_gen = get_transient( 'jinyu_perf_last_gen' );
+			if ( $last_gen && is_array( $last_gen ) && isset( $last_gen['ms'], $last_gen['q'] ) ) {
+				$beats = [ $last_gen ];
+			}
+		}
+
+		// 缓冲与 sticky 真实样本都缺失（全新站 / 从未有过 MISS）：如实返回空 perf，
+		// 前端保持「—」，绝不伪造 0，也避免对空数组 end() 取值产生警告。
+		if ( ! $beats ) {
+			return [
+				'time'    => jinyu_live_time(),
+				'visitor' => [
+					'ip'      => $ip,
+					'os'      => (string) ( $ua['platform'] ?? '' ),
+					'browser' => (string) ( $ua['browser'] ?? '' ),
+					'version' => (string) ( $ua['version'] ?? '' ),
+					'loc'     => jinyu_ip_location( $ip, $allow_geo ),
 				],
+				'perf'    => null,
 			];
 		}
 

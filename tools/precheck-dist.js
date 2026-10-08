@@ -94,7 +94,11 @@ const NAME_DEBUG = [
 	[/\.tmp$/i, '临时文件'],
 	[/\.(bak|orig|save|swp|swo)$/i, '编辑器备份'],
 	[/^(nul|con|prn|aux|clock\$)$/i, 'Windows 保留设备名残留（shell 误重定向产物）'],
-	[/(^|[._-])(probe|debug|scratch|wip)[._-]/i, '调试脚本'],
+	[/(_|\b)(probe|debug|scratch|wip)[._-]/i, '调试脚本'],
+	// 一次性探针的 echo 输出快照：jy_diag_out.html / jy_ft_out.txt 之类。
+	// 名字既不含 probe|debug 也不含 .log，历史上真的差点进包，
+	// 且内容常带线上绝对路径、水印配置等运行态信息。
+	[/(^|\/)jy_[a-z0-9_]*_(out|trace|result)\.(html?|txt|log|json)$/i, '一次性调试输出快照'],
 	[/(^|\/)(phpunit|jest|karma|cypress|playwright)\.xml$/i, '测试运行器配置'],
 	[/^_[A-Za-z0-9][A-Za-z0-9._-]*\.(csv|txt|log|json|tmp)$/i, '下划线开头的临时扫描产物'],
 	[/(^|\/)(tests?|__tests__|spec|fixtures?)\//i, '测试目录'],

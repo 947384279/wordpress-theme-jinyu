@@ -28,27 +28,27 @@ get_header(); ?>
 			?>
 			<p class="jinyu-article-subtitle"><?php echo esc_html( $jy_subtitle ); ?></p><?php endif; ?>
 		<div class="jinyu-article-meta">
-			<span><i class="fa-regular fa-user"></i><?php the_author(); ?></span>
-			<span><i class="fa-regular fa-calendar"></i><?php echo get_the_date( 'Y-m-d' ); ?></span>
+			<span><i class="fa-regular fa-user" aria-hidden="true"></i><?php the_author(); ?></span>
+			<span><i class="fa-regular fa-calendar" aria-hidden="true"></i><?php echo get_the_date( 'Y-m-d' ); ?></span>
 			<?php
 			if ( get_the_time( 'Y-m-d' ) !== get_the_modified_time( 'Y-m-d' ) ) :
 				?>
-				<span><i class="fa-regular fa-pen-to-square"></i><?php esc_html_e( '更新于', 'jinyu' ); ?> <?php the_modified_time( 'Y-m-d' ); ?></span><?php endif; ?>
-			<span><i class="fa-regular fa-clock"></i><?php echo jinyu_read_time();  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?></span>
-			<span><i class="fa-regular fa-file-lines"></i><?php echo jinyu_post_word_count();  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?></span>
+				<span><i class="fa-regular fa-pen-to-square" aria-hidden="true"></i><?php esc_html_e( '更新于', 'jinyu' ); ?> <?php the_modified_time( 'Y-m-d' ); ?></span><?php endif; ?>
+			<span><i class="fa-regular fa-clock" aria-hidden="true"></i><?php echo jinyu_read_time();  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?></span>
+			<span><i class="fa-regular fa-file-lines" aria-hidden="true"></i><?php echo jinyu_post_word_count();  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?></span>
 			<?php
 			if ( jinyu_show_views() ) :
 				?>
-				<span><i class="fa-regular fa-eye"></i><?php echo jinyu_get_post_views(); ?></span><?php endif;  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?>
+				<span><i class="fa-regular fa-eye" aria-hidden="true"></i><?php echo jinyu_get_post_views(); ?></span><?php endif;  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?>
 			<?php
 			if ( comments_open() || get_comments_number() ) :
 				?>
-				<span><i class="fa-regular fa-comment"></i><?php echo get_comments_number(); ?></span><?php endif;  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?>
+				<span><i class="fa-regular fa-comment" aria-hidden="true"></i><?php echo get_comments_number(); ?></span><?php endif;  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?>
 			<?php $jy_source = get_post_meta( get_the_ID(), '_jinyu_source', true ); ?>
 			<?php
 			if ( $jy_source ) :
 				?>
-				<span><i class="fa-regular fa-building"></i><?php echo esc_html( $jy_source ); ?></span><?php endif; ?>
+				<span><i class="fa-regular fa-building" aria-hidden="true"></i><?php echo esc_html( $jy_source ); ?></span><?php endif; ?>
 		</div>
 
 		<?php $jy_series = function_exists( 'jinyu_get_series_posts' ) ? jinyu_get_series_posts( get_the_ID() ) : false; ?>
@@ -82,7 +82,7 @@ get_header(); ?>
 		<?php
 		if ( $jy_ext ) :
 			?>
-			<div class="jinyu-article-external"><a class="jinyu-btn" href="<?php echo esc_url( $jy_ext ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'View original', 'jinyu' ); ?> <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div><?php endif; ?>
+			<div class="jinyu-article-external"><a class="jinyu-btn" href="<?php echo esc_url( $jy_ext ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'View original', 'jinyu' ); ?> <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a></div><?php endif; ?>
 		<?php $cover = jinyu_get_post_cover(); if ( $cover && jinyu_is_checked( 'show_cover' ) && ! get_post_meta( get_the_ID(), '_jinyu_hide_cover', true ) ) : ?>
 			<?php
 			$ph_feat = jinyu_lqip_url( jinyu_get_post_cover( get_the_ID(), 'thumbnail' ) );
@@ -97,12 +97,12 @@ get_header(); ?>
 		<div class="jinyu-article-tags">
 			<?php foreach ( ( get_the_category() ?: [] ) as $jy_c ) : ?>
 				<a class="jinyu-cat-<?php echo $jy_c->term_id % 12; ?>" href="<?php echo esc_url( get_category_link( $jy_c ) );  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?>">
-					<i class="fa-solid fa-folder"></i><?php echo esc_html( $jy_c->name ); ?>
+					<i class="fa-solid fa-folder" aria-hidden="true"></i><?php echo esc_html( $jy_c->name ); ?>
 				</a>
 			<?php endforeach; ?>
 			<?php foreach ( ( get_the_tags() ?: [] ) as $jy_t ) : ?>
 				<a class="jinyu-cat-<?php echo $jy_t->term_id % 12; ?>" href="<?php echo esc_url( get_tag_link( $jy_t ) );  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?>">
-					<i class="fa-solid fa-hashtag"></i><?php echo esc_html( $jy_t->name ); ?>
+					<i class="fa-solid fa-hashtag" aria-hidden="true"></i><?php echo esc_html( $jy_t->name ); ?>
 				</a>
 			<?php endforeach; ?>
 		</div>

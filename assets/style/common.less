@@ -574,54 +574,191 @@ html.jinyu-tools-compact {
 }
 
 /* ==========================================================================
-   首页文章布局模式（由 body.jinyu-layout-* 切换，无需改 PHP 循环）
-   ========================================================================== */
+   文章列表布局模式（由 body.jinyu-layout-* 切换，无需改 PHP 循环）
+   ==========================================================================
+   ⚠️ 作用域必须锁在 .jinyu-post-grid 之内（同卡片还用于用户中心「我的收藏」
+   的 .jinyu-fav-cell，那里是两列窄格，不该被横向大卡规则命中）。
+   故一律用后代选择器 .jinyu-post-grid .jinyu-post-card，不写裸 .jinyu-post-card。 */
 
 /* 列表模式：横向卡片，单列 */
 .jinyu-layout-list .jinyu-post-grid { grid-template-columns: minmax(0, 1fr); }
-.jinyu-layout-list .jinyu-post-card {
+.jinyu-layout-list .jinyu-post-grid .jinyu-post-card {
     flex-direction: row;
     align-items: stretch;
 }
-.jinyu-layout-list .jinyu-post-cover {
+.jinyu-layout-list .jinyu-post-grid .jinyu-post-cover {
     flex: 0 0 38%;
     aspect-ratio: 16 / 10;
 }
-.jinyu-layout-list .jinyu-post-info {
+.jinyu-layout-list .jinyu-post-grid .jinyu-post-info {
     padding: @s-5 @s-6;
     justify-content: center;
 }
 
 /* 大图模式：通栏大图卡片 */
 .jinyu-layout-big .jinyu-post-grid { grid-template-columns: minmax(0, 1fr); }
-.jinyu-layout-big .jinyu-post-cover { aspect-ratio: 21 / 9; }
-.jinyu-layout-big .jinyu-post-title { font-size: @fs-xl; }
+.jinyu-layout-big .jinyu-post-grid .jinyu-post-cover { aspect-ratio: 21 / 9; }
+.jinyu-layout-big .jinyu-post-grid .jinyu-post-title { font-size: @fs-xl; }
 
 /* 杂志混排：首篇通栏大卡，其余网格 */
-.jinyu-layout-cms .jinyu-post-card:first-child {
+.jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:first-child {
     grid-column: 1 / -1;
     flex-direction: row;
     align-items: stretch;
 }
-.jinyu-layout-cms .jinyu-post-card:first-child .jinyu-post-cover {
+.jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:first-child .jinyu-post-cover {
     flex: 0 0 52%;
     aspect-ratio: 16 / 10;
 }
-.jinyu-layout-cms .jinyu-post-card:first-child .jinyu-post-info {
+.jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:first-child .jinyu-post-info {
     justify-content: center;
     padding: @s-6 @s-8;
 }
-.jinyu-layout-cms .jinyu-post-card:first-child .jinyu-post-title { font-size: @fs-xl; }
+.jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:first-child .jinyu-post-title { font-size: @fs-xl; }
 
-/* 窄屏下列表/混排的横向卡片改为纵向，避免拥挤 */
+/* 窄屏下列表/混排的横向卡片改为纵向，避免拥挤；
+   大图模式同步退回 16:9，否则 21:9 在手机上只剩 156px 高的窄条 */
 @media (max-width: 576px) {
-    .jinyu-layout-list .jinyu-post-card,
-    .jinyu-layout-cms .jinyu-post-card:first-child { flex-direction: column; }
-    .jinyu-layout-list .jinyu-post-cover,
-    .jinyu-layout-cms .jinyu-post-card:first-child .jinyu-post-cover {
+    .jinyu-layout-list .jinyu-post-grid .jinyu-post-card,
+    .jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:first-child { flex-direction: column; }
+    .jinyu-layout-list .jinyu-post-grid .jinyu-post-cover,
+    .jinyu-layout-big .jinyu-post-grid .jinyu-post-cover,
+    .jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:first-child .jinyu-post-cover {
         flex: 1 1 auto;
         aspect-ratio: 16 / 9;
     }
+    .jinyu-layout-big .jinyu-post-grid .jinyu-post-title,
+    .jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:first-child .jinyu-post-title { font-size: @fs-lg; }
+}
+
+/* 封面叠加：整图铺满 + 底部暗渐变条压标题，杂志头条风。
+   ⚠️ 作用域锁在 .jinyu-post-grid 内（同卡片还用于用户中心收藏格，不应命中）。
+   标题/摘要/元信息在暗底上强制白，覆盖默认 @text-*；无封面占位改深底防白字压浅渐变看不清。 */
+.jinyu-layout-overlay .jinyu-post-grid { grid-template-columns: minmax(0, 1fr); }
+.jinyu-layout-overlay .jinyu-post-grid .jinyu-post-card {
+    border: none;
+    box-shadow: @shadow-card;
+}
+.jinyu-layout-overlay .jinyu-post-grid .jinyu-post-cover {
+    aspect-ratio: 16 / 9;
+}
+.jinyu-layout-overlay .jinyu-post-grid .jinyu-post-info {
+    position: absolute;
+    inset: auto 0 0 0;
+    justify-content: flex-end;
+    padding: @s-5 @s-5 @s-4;
+    background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,.5) 52%, rgba(0,0,0,.82) 100%);
+    color: #fff;
+}
+.jinyu-layout-overlay .jinyu-post-grid .jinyu-post-title { color: #fff; }
+.jinyu-layout-overlay .jinyu-post-grid .jinyu-post-card:hover .jinyu-post-title { color: #fff; }
+.jinyu-layout-overlay .jinyu-post-grid .jinyu-post-excerpt { color: rgba(255,255,255,.82); }
+.jinyu-layout-overlay .jinyu-post-grid .jinyu-post-meta { color: rgba(255,255,255,.72); border-top-color: rgba(255,255,255,.18); }
+.jinyu-layout-overlay .jinyu-post-grid .jinyu-post-meta > span { background: rgba(255,255,255,.14); color: rgba(255,255,255,.82); }
+.jinyu-layout-overlay .jinyu-post-grid .jinyu-post-meta-series { color: #fff; background: rgba(255,255,255,.16); }
+.jinyu-layout-overlay .jinyu-post-grid .jinyu-post-pintag { background: rgba(255,255,255,.18); color: #fff; }
+/* 无封面占位：深底，否则白字压浅渐变不可读 */
+.jinyu-layout-overlay .jinyu-post-grid .jinyu-post-cover-ph {
+    background: linear-gradient(135deg, #2a2f3a, #1c2029);
+    color: rgba(255,255,255,.6);
+}
+/* —— overlay 风格微调（2026-10-07 复查优化）—— */
+/* ① 置顶卡补回顶部品牌色描边：避免「无边框」叠加风里丢失置顶标识（base 的 4px 描边被 border:none 覆盖） */
+.jinyu-layout-overlay .jinyu-post-grid .jinyu-post-card.is-sticky {
+    border-top: 4px solid @primary;
+    box-shadow: 0 8px 30px rgba(var(--jinyu-c-primary-rgb), .24);
+}
+.jinyu-layout-overlay .jinyu-post-grid .jinyu-post-card.is-sticky:hover {
+    border-top-color: @primary-text;
+    box-shadow: 0 14px 40px rgba(var(--jinyu-c-primary-rgb), .3);
+}
+/* ② 悬停克制：封面叠加本就是「镇住」的杂志头条风，不做卡片上浮 / 封面放大，避免花哨；
+       base 的 cover::after 暗渐变在 overlay 下会与 info 自有暗渐变叠加，hover 时一并隐去 */
+.jinyu-layout-overlay .jinyu-post-grid .jinyu-post-card:hover { transform: none; }
+.jinyu-layout-overlay .jinyu-post-grid .jinyu-post-card:hover .jinyu-post-cover img { transform: none; }
+.jinyu-layout-overlay .jinyu-post-grid .jinyu-post-card:hover .jinyu-post-cover::after { opacity: 0; }
+/* ③ 分类胶囊：覆盖 base 的高饱和品牌色胶囊，改白字半透底，与元信息胶囊统一、更高级 */
+.jinyu-layout-overlay .jinyu-post-grid .jinyu-post-cat {
+    color: #fff;
+    background: rgba(255,255,255,.16);
+}
+.jinyu-layout-overlay .jinyu-post-grid .jinyu-post-cat i { color: #fff; }
+
+/* —— overlay 改造（2026-10-07）：纯文字小长卡，无缩略图 ——
+   隐藏封面/占位，信息区改静态浅底卡片，标题/元信息回默认色（暗色自适应）。 */
+.jinyu-layout-overlay .jinyu-post-grid { gap: @s-3; }
+.jinyu-layout-overlay .jinyu-post-grid .jinyu-post-cover,
+.jinyu-layout-overlay .jinyu-post-grid .jinyu-post-cover-ph { display: none; }
+.jinyu-layout-overlay .jinyu-post-grid .jinyu-post-card {
+    border: 1px solid @border;
+    box-shadow: @shadow-card;
+}
+.jinyu-layout-overlay .jinyu-post-grid .jinyu-post-info {
+    position: static;
+    inset: auto;
+    padding: @s-4 @s-5;
+    background: none;
+    color: inherit;
+}
+.jinyu-layout-overlay .jinyu-post-grid .jinyu-post-title,
+.jinyu-layout-overlay .jinyu-post-grid .jinyu-post-card:hover .jinyu-post-title { color: @text-1; }
+.jinyu-layout-overlay .jinyu-post-grid .jinyu-post-excerpt { color: @text-3; }
+.jinyu-layout-overlay .jinyu-post-grid .jinyu-post-meta { color: @text-4; border-top-color: @border; }
+.jinyu-layout-overlay .jinyu-post-grid .jinyu-post-meta > span { background: none; color: @text-4; }
+.jinyu-layout-overlay .jinyu-post-grid .jinyu-post-meta-series { background: none; color: @text-2; }
+.jinyu-layout-overlay .jinyu-post-grid .jinyu-post-pintag { background: @primary-light; color: @primary; }
+.jinyu-layout-overlay .jinyu-post-grid .jinyu-post-cat { color: @primary; background: @primary-light; }
+.jinyu-layout-overlay .jinyu-post-grid .jinyu-post-cat i { color: @primary; }
+
+/* 瀑布流：多列不等高，封面按原图比例自由伸缩，无封面卡给最小占位高度。
+   ⚠️ 覆盖 .jinyu-post-grid 的 grid 两栏为 column-count；卡片改 inline-block + break-inside:avoid 防跨列断裂。 */
+.jinyu-layout-masonry .jinyu-post-grid {
+    display: block;
+    column-count: 3;
+    column-gap: @gap;
+    margin: 0;
+}
+.jinyu-layout-masonry .jinyu-post-grid .jinyu-post-card {
+    display: inline-block;
+    width: 100%;
+    margin: 0 0 @gap;
+    break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+}
+/* 瀑布流封面比：真·不等高。模板在 masonry 下输出 jinyu-cover-free（非裁切、按原图比例），
+   故此处放开 aspect-ratio，让封面按真实比例伸缩；旧图未跑「重建封面缩略图」前模板会回退
+   jinyu-cover（3:2），此时仍等高，属预期。 */
+.jinyu-layout-masonry .jinyu-post-grid .jinyu-post-cover {
+    aspect-ratio: auto;
+}
+.jinyu-layout-masonry .jinyu-post-grid .jinyu-post-cover img {
+    height: auto;
+    object-fit: initial;
+}
+.jinyu-layout-masonry .jinyu-post-grid .jinyu-post-cover-ph {
+    min-height: 180px;
+}
+/* 强制比例轮换：真实原图多为 3:2/16:9 导致整版等高、错落感弱。
+   按源顺序每 4 张一轮（3:4 / 1:1 / 4:3 / 3:2），制造杂志式节奏；
+   代价：封面按容器比例裁切（object-fit:cover）。无封面卡仍走 cover-ph 兜底。 */
+.jinyu-layout-masonry .jinyu-post-grid .jinyu-post-card:nth-child(4n+1) .jinyu-post-cover { aspect-ratio: 3 / 4; }
+.jinyu-layout-masonry .jinyu-post-grid .jinyu-post-card:nth-child(4n+2) .jinyu-post-cover { aspect-ratio: 1 / 1; }
+.jinyu-layout-masonry .jinyu-post-grid .jinyu-post-card:nth-child(4n+3) .jinyu-post-cover { aspect-ratio: 4 / 3; }
+.jinyu-layout-masonry .jinyu-post-grid .jinyu-post-card:nth-child(4n+4) .jinyu-post-cover { aspect-ratio: 3 / 2; }
+.jinyu-layout-masonry .jinyu-post-grid .jinyu-post-cover img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* 窄屏适配：masonry 降列，overlay 封面略收 */
+@media (max-width: 992px) {
+    .jinyu-layout-masonry .jinyu-post-grid { column-count: 2; }
+}
+@media (max-width: 576px) {
+    .jinyu-layout-masonry .jinyu-post-grid { column-count: 1; }
+    .jinyu-layout-overlay .jinyu-post-grid .jinyu-post-cover { aspect-ratio: 16 / 10; }
 }
 
 .jinyu-post-card {
@@ -3308,19 +3445,30 @@ html.jinyu-tools-compact {
     }
 }
 
-/* 页脚运行信息（后台「页脚显示运行信息」开关开启时由 footer.php 输出） */
+/* 页脚运行信息（后台「页脚显示运行信息」开关开启时由 footer.php 输出；内联于署名行 WP 圆标左侧） */
 .jinyu-footer-runinfo {
-    margin-top: @s-3;           /* 方案C：与上方版权行拉开（原 8px 偏紧） */
+    margin-left: 18px;         /* 与左侧备案号拉开（原 8px，再加 10px） */
+    position: relative;
+    top: -1px;                 /* 与同行版权/备案文字视觉齐平 */
+    vertical-align: middle;
     font-size: @fs-xs;
     color: @text-footer;
-    display: flex;
+    display: inline-flex;
     flex-wrap: wrap;
-    justify-content: center;
     align-items: center;
     gap: 6px;
 
     .jinyu-runinfo-item {
         white-space: nowrap;
+        display: inline-flex;
+        align-items: center;    /* 图标与数字/单位垂直居中对齐 */
+        gap: 3px;               /* flex 会吞空白文本节点，用 gap 还原图标/数字/单位间距 */
+
+        i.fa-solid {
+            font-size: @fs-sm;  /* 与署名行社交图标视觉尺寸一致 */
+            line-height: 1;
+            opacity: .9;
+        }
 
         b {
             color: @text-footer-strong;

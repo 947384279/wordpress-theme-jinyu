@@ -14,9 +14,42 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * 文章卡片（首页 / 归档 / 加载更多 共用）
  */
-$pid       = get_the_ID();
-$cats      = get_the_category();
-$cover     = jinyu_get_post_cover( $pid );
+$pid        = get_the_ID();
+$cats       = get_the_category();
+$post_mode  = jinyu_get_option( 'post_style', 'card' );
+$is_masonry = ( 'masonry' === $post_mode );
+$is_overlay = ( 'overlay' === $post_mode );
+// 瀑布流用非裁切自由比例封面（真·不等高）；其余沿用主题统一 jinyu-cover。
+$cover_size = $is_masonry ? 'jinyu-cover-free' : 'jinyu-cover';
+$cover      = jinyu_get_post_cover( $pid, $cover_size );
+// 安全兜底：jinyu-cover-free 尺寸未生成（旧图未重建）时回退 jinyu-cover，避免裂图（仅暂时等高）。
+if ( $is_masonry && $cover ) {
+	$_aid = get_post_thumbnail_id( $pid );
+	if ( ! $_aid ) {
+		$_aid = (int) get_post_meta( $pid, '_jinyu_cover_attach_id', true );
+	}
+	if ( $_aid ) {
+		$_meta = wp_get_attachment_metadata( $_aid );
+		if ( empty( $_meta['sizes']['jinyu-cover-free'] ) ) {
+			$cover = jinyu_get_post_cover( $pid, 'jinyu-cover' );
+		}
+	} else {
+		$cover = jinyu_get_post_cover( $pid, 'jinyu-cover' );
+	}
+}
+// 响应式 sizes：overlay 全宽取大值、masonry 取列宽、其余取卡片宽。
+$sizes_attr = $is_overlay
+	? '(max-width: 768px) 92vw, 1080px'
+	: ( $is_masonry ? '(max-width: 768px) 92vw, 360px' : '(max-width: 768px) 92vw, 420px' );
+// 瀑布流封面按真实比例输出 width/height（防 CLS）；其余沿用 16:9 占位。
+if ( $is_masonry && $cover ) {
+	$_dims = jinyu_image_size( $cover );
+	$_cw   = $_dims[0] ?: 768;
+	$_ch   = $_dims[1] ?: 512;
+} else {
+	$_cw = 640;
+	$_ch = 360;
+}
 $cat_class = $cats ? ' jinyu-cat-' . ( $cats[0]->term_id % 12 ) : '';
 // 封面图加载策略：首屏候选统一提前加载，真正的 LCP 元素才提权.
 // 注意：不能只认 current_post === 0 —— 首页首篇常是置顶文章（.is-sticky 卡片），.
@@ -40,12 +73,12 @@ $card_class = is_sticky() ? ' is-sticky' : '';
 		<a class="jinyu-post-cover-link" href="<?php the_permalink(); ?>" tabindex="-1" aria-hidden="true">
 			<?php if ( $cover ) : ?>
 				<?php $ph_card = jinyu_lqip_url( jinyu_get_post_cover( $pid, 'thumbnail', false ) ); ?>
-				<?php $cover_srcset = jinyu_get_post_cover_srcset( $pid ); ?>
-				<img class="jinyu-post-cover-img jinyu-blur-img" src="<?php echo esc_url( $cover ); ?>" alt="" width="640" height="360"
+				<?php $cover_srcset = $is_masonry ? '' : jinyu_get_post_cover_srcset( $pid ); ?>
+				<img class="jinyu-post-cover-img jinyu-blur-img" src="<?php echo esc_url( $cover ); ?>" alt="" width="<?php echo (int) $_cw; ?>" height="<?php echo (int) $_ch; ?>"
 				<?php
 				if ( $cover_srcset ) :
 					?>
-					srcset="<?php echo esc_attr( $cover_srcset ); ?>" sizes="(max-width: 768px) 92vw, 420px"<?php endif; ?> loading="<?php echo $cover_loading; ?>" decoding="async"<?php echo $cover_fetch; ?><?php echo $ph_card ? ' data-ph="' . esc_url( $ph_card ) . '"' : '';  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?>>
+					srcset="<?php echo esc_attr( $cover_srcset ); ?>" sizes="<?php echo esc_attr( $sizes_attr ); ?>"<?php endif; ?> loading="<?php echo $cover_loading; ?>" decoding="async"<?php echo $cover_fetch; ?><?php echo $ph_card ? ' data-ph="' . esc_url( $ph_card ) . '"' : '';  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?>>
 			<?php else : ?>
 				<div class="jinyu-post-cover-ph"><i class="fa-solid fa-fire" aria-hidden="true"></i></div>
 			<?php endif; ?>
@@ -64,25 +97,31 @@ $card_class = is_sticky() ? ' is-sticky' : '';
 			?>
 			<span class="jinyu-post-pintag"><i class="fa-solid fa-thumbtack" aria-hidden="true"></i><?php esc_html_e( 'Sticky', 'jinyu' ); ?></span><?php endif; ?><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
 
-		<?php
-		// 摘要统一占位：无论有无摘要都输出 <p>，由 CSS 固定 2 行高度，避免卡片高度参差.
-		$jinyu_excerpt = wp_trim_words( get_the_excerpt(), 40, '…' );
-		?>
+	<?php
+	// 摘要统一占位：无论有无摘要都输出 <p>，由 CSS 固定 2 行高度，避免卡片高度参差。
+	// 长度由后台「内容 → 摘要字数」唯一决定（jinyu_get_excerpt_text 内部按字符裁切，
+	// 不能用 wp_trim_words —— 中文无空白分词，截不断）。
+	$jinyu_excerpt = jinyu_get_excerpt_text( $pid );
+	?>
 			<p class="jinyu-post-excerpt"<?php echo $jinyu_excerpt ? '' : ' aria-hidden="true"'; ?>><?php echo esc_html( $jinyu_excerpt ); ?></p>
 
 		<div class="jinyu-post-meta">
-			<?php if ( jinyu_show_views() ) : ?>
+			<?php
+			// 瀑布流卡片轻量化：列窄，meta 全输出会挤成两行胶囊、视觉笨重.
+			// masonry 下仅保留「浏览 + 日期」单行；点赞/评论/系列/更新仅在其余风格输出.
+			if ( jinyu_show_views() ) :
+				?>
 			<span><i class="fa-regular fa-eye" aria-hidden="true"></i><?php echo esc_html( jinyu_get_post_views( $pid ) ); ?></span>
 			<?php endif; ?>
-			<?php if ( jinyu_is_checked( 'like_enable' ) ) : ?>
+			<?php if ( ! $is_masonry && jinyu_is_checked( 'like_enable' ) ) : ?>
 			<span><i class="fa-regular fa-heart" aria-hidden="true"></i><span class="jinyu-like-count" data-post-id="<?php echo esc_attr( $pid ); ?>"><?php echo esc_html( jinyu_get_post_likes( $pid ) ); ?></span></span>
 			<?php endif; ?>
-			<?php if ( comments_open() || get_comments_number() ) : ?>
+			<?php if ( ! $is_masonry && ( comments_open() || get_comments_number() ) ) : ?>
 				<span><i class="fa-regular fa-comment" aria-hidden="true"></i><?php echo esc_html( get_comments_number() ); ?></span>
 			<?php endif; ?>
 			<?php
 			// 系列归属：未归入系列的文章不输出。列表页同系列共用 term 级缓存，不会逐篇重复查库.
-			$jinyu_series     = jinyu_is_checked( 'card_series_enable' ) ? ( function_exists( 'jinyu_series_badge' ) ? jinyu_series_badge( (int) $pid ) : false ) : false;
+			$jinyu_series     = ( ! $is_masonry && jinyu_is_checked( 'card_series_enable' ) ) ? ( function_exists( 'jinyu_series_badge' ) ? jinyu_series_badge( (int) $pid ) : false ) : false;
 			$jinyu_series_url = $jinyu_series ? get_term_link( $jinyu_series['term'] ) : '';
 			if ( $jinyu_series && ! is_wp_error( $jinyu_series_url ) ) :
 				?>
@@ -91,7 +130,7 @@ $card_class = is_sticky() ? ' is-sticky' : '';
 			<span><i class="fa-regular fa-calendar" aria-hidden="true"></i><?php echo esc_html( get_the_date( 'Y-m-d' ) ); ?></span>
 			<?php
 			// 最近更新：仅修改明显晚于发布时才提示（阈值见 jinyu_post_updated）.
-			$jinyu_updated = jinyu_is_checked( 'card_updated_enable' ) ? jinyu_post_updated( (int) $pid ) : '';
+			$jinyu_updated = ( ! $is_masonry && jinyu_is_checked( 'card_updated_enable' ) ) ? jinyu_post_updated( (int) $pid ) : '';
 			if ( $jinyu_updated ) :
 				?>
 			<span class="jinyu-post-meta-updated"><i class="fa-regular fa-pen-to-square" aria-hidden="true"></i><?php echo esc_html( $jinyu_updated ); ?></span>

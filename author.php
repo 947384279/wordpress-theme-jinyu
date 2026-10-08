@@ -28,7 +28,7 @@ get_header(); ?>
 						echo $aurl ? esc_url( $aurl ) : esc_attr( jinyu_avatar_default( $aid ) );
 					?>
 					"
-					data-jinyu-fallback="<?php echo esc_url( jinyu_avatar_default( $author->ID ) ); ?>"
+					data-jinyu-fallback="<?php echo esc_attr( jinyu_avatar_default( $author->ID ) ); ?>"
 					alt="">
 				<div class="jinyu-author-meta">
 					<h1><?php echo esc_html( $author->display_name ); ?></h1>
