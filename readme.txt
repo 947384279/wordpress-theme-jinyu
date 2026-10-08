@@ -4,7 +4,7 @@ Tags: blog, custom-colors, custom-logo, custom-menu, editor-style, featured-imag
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.3.0
+Stable tag: 1.3.1
 License: GPL v3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -74,6 +74,9 @@ License URI: https://www.gnu.org/licenses/gpl-3.0.html
 每个设置分组面板头部都有「重置本组」按钮，仅清空该分组、回退默认值，不影响其它设置。
 
 == Changelog ==
+
+= 1.3.1 =
+* 本次为缺陷修复版本：修复用户中心分页 AJAX 始终返回第一页；修复评论加载更多按钮不可见；修复用户中心消息 Tab 的多处 UI 显示问题；增强关注数据健壮性（扩展返回纯 ID 时不再白屏）；修复用户中心链接未配置时误回退 WP 后台；wp.org 发布包移除 phpcs 开发配置。
 
 = 1.3.0 =
 * 新增代码语法高亮：文章代码块由 highlight.js 渲染，明暗双主题跟随站点主题自动切换（后台「内容」设置可开关）。

@@ -105,11 +105,14 @@ const NAME_DEBUG = [
 	[/\.(test|spec)\.(js|mjs|cjs|php|py)$/i, '测试文件'],
 ];
 
-// D. 开发配置 / 构建产物：wp.org 不收，且 phpcs.xml.dist 曾真实误入
+// D. 开发配置 / 构建产物：wp.org 不收，且 phpcs.xml.dist 曾真实误入。
+// 正则覆盖带后缀的规则集（phpcs.xml.dist / phpcs-all.xml.dist 等），曾因只匹配首份漏掉 -all 变体。
+// ⚠️ 关键：必须允许「目录前缀」（/(^|[\\/])…/），因为变体包文件都落在 jinyu-lite/ 子目录下，
+//    写成 ^phpcs…$ 会被前缀挡死、永远匹配不到，等于没查。NAME_LEAK/NAME_DEBUG 已是此约定。
 const NAME_DEVCONF = [
-	[/^phpcs(\.xml)?(\.dist)?$/i, 'PHPCS 开发配置'],
-	[/^(\.babelrc|\.editorconfig|\.eslintrc.*|\.prettierrc.*|codekit-config\.json)$/i, '构建/编辑器配置'],
-	[/^(gulpfile|webpack\.config|rollup\.config|vite\.config)\.(js|cjs|mjs|ts)$/i, '构建脚本'],
+	[/(^|[\\/])phpcs(-[a-z0-9]+)?(\.xml)?(\.dist)?$/i, 'PHPCS 开发配置'],
+	[/(^|[\\/])(\.babelrc|\.editorconfig|\.eslintrc.*|\.prettierrc.*|codekit-config\.json)$/i, '构建/编辑器配置'],
+	[/(^|[\\/])(gulpfile|webpack\.config|rollup\.config|vite\.config)\.(js|cjs|mjs|ts)$/i, '构建脚本'],
 	[/\.map$/, 'source map（调试产物）'],
 ];
 
@@ -172,8 +175,10 @@ function scanFile(rel, abs) {
 	// 否则「命中调试名 + 内含密钥」只会报出前者，掩盖真正的泄露来源。
 	const whyD = checkName(rel, NAME_DEBUG);
 	if (whyD) add(blockers, rel, '测试/调试文件：' + whyD);
+	// 生产主题包（非 flat＝wporg 变体产物目录）严禁夹带开发配置：wp.org 自动扫描判 REQUIRED 直接拒包。
+	// 由「警告」升级为「阻断」，且正则已覆盖 phpcs-all.xml.dist 这类带后缀规则集（见 NAME_DEVCONF）。
 	if (!FLAT && checkName(rel, NAME_DEVCONF)) {
-		add(warns, rel, '开发配置/调试产物（wp.org 不收）：' + checkName(rel, NAME_DEVCONF));
+		add(blockers, rel, '开发配置/调试产物（wp.org REQUIRED：生产主题包不得包含）：' + checkName(rel, NAME_DEVCONF));
 	}
 	const whyA = checkName(rel, NAME_ASCII);
 	if (whyA) return add(blockers, rel, whyA);

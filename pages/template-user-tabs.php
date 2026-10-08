@@ -373,8 +373,31 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 
 	<?php else : ?>
 		<?php
-		$jinyu_follow_users = (array) jinyu_ext_value( 'following_users', [], $uid );
-		$jinyu_follow_terms = (array) jinyu_ext_value( 'following_terms', [], $uid );
+		// 关注数据防御性归一：扩展插槽可能返回对象数组或纯 ID 数组；统一解析为对象，解析失败则丢弃，避免 "read property of int" 致命错误白屏
+		$jinyu_follow_users_raw = (array) jinyu_ext_value( 'following_users', [], $uid );
+		$jinyu_follow_users = [];
+		foreach ( $jinyu_follow_users_raw as $fu_raw ) {
+			if ( is_object( $fu_raw ) ) {
+				$jinyu_follow_users[] = $fu_raw;
+			} elseif ( is_numeric( $fu_raw ) ) {
+				$u = get_user_by( 'ID', (int) $fu_raw );
+				if ( $u ) {
+					$jinyu_follow_users[] = $u;
+				}
+			}
+		}
+		$jinyu_follow_terms_raw = (array) jinyu_ext_value( 'following_terms', [], $uid );
+		$jinyu_follow_terms = [];
+		foreach ( $jinyu_follow_terms_raw as $ft_raw ) {
+			if ( is_object( $ft_raw ) ) {
+				$jinyu_follow_terms[] = $ft_raw;
+			} elseif ( is_numeric( $ft_raw ) ) {
+				$t = get_term( (int) $ft_raw );
+				if ( $t && ! is_wp_error( $t ) ) {
+					$jinyu_follow_terms[] = $t;
+				}
+			}
+		}
 		?>
 	<h3 class="jinyu-user-subtitle"><?php esc_html_e( '关注的用户', 'jinyu' ); ?></h3>
 		<?php if ( $jinyu_follow_users ) : ?>

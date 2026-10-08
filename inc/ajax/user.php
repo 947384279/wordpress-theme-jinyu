@@ -606,9 +606,17 @@ function jinyu_ajax_get_tab(): void {
 	}
 
 	// 分页：AJAX 拉取时把页码注入 query var，模板内 jinyu_user_paged() 即可读到.
-	$paged = isset( $_POST['paged'] ) ? absint( $_POST['paged'] ) : 0;
+	// 前端对静态页面模板生成的分页链接用 'page' 参数（?page=N），互动/文章归档可能用 'paged'，
+	// 两者都要识别，否则 AJAX 翻页恒取第 1 页（见 inc/fun/user.php::jinyu_user_pagination）。
+	$paged = 0;
+	if ( isset( $_POST['paged'] ) ) {
+		$paged = absint( $_POST['paged'] );
+	} elseif ( isset( $_POST['page'] ) ) {
+		$paged = absint( $_POST['page'] );
+	}
 	if ( $paged > 0 ) {
 		set_query_var( 'paged', $paged );
+		set_query_var( 'page', $paged );
 	}
 	// tab 同步进 $_GET：模板内 jinyu_current_user_tab() / 分页 base 构建依赖它.
 	$_GET['tab'] = $tab;

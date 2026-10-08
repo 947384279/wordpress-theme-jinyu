@@ -364,34 +364,40 @@
     &.jinyu-tip-danger  { border-left-color: @danger;  background: rgba(220, 53, 69, .08); }
 }
 
-/* 按钮 */
-.jinyu-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: @s-2;
-    padding: @s-2 @s-5;
-    border: 0;
-    border-radius: @radius-pill;
-    background: @primary;
-    color: @text-invert;
-    font-size: @fs-sm;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all @transition-fast;
+/* 按钮（短代码 [jinyu_btn]）——限定在正文/评论内容区。
+   注意：必须保持作用域！此块曾写成顶层全局，与 user.less 的全局 .jinyu-btn 冲突，
+   悬停时本块 :hover{background:@primary-dark} 与 user.less :hover{color:@primary-text}
+   叠加成「蓝底蓝字」，用户在用户中心「加载更多」按钮上看到不可读色块（线上实测）。 */
+.jinyu-article-content,
+.jinyu-comment-content {
+    .jinyu-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: @s-2;
+        padding: @s-2 @s-5;
+        border: 0;
+        border-radius: @radius-pill;
+        background: @primary;
+        color: @text-invert;
+        font-size: @fs-sm;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all @transition-fast;
 
-    &:hover { background: @primary-dark; color: @text-invert; transform: translateY(-1px); }
-    i { font-size: 14px; }
-}
+        &:hover { background: @primary-dark; color: @text-invert; transform: translateY(-1px); }
+        i { font-size: 14px; }
+    }
 
-/* 按钮颜色变体（短代码 [jinyu_btn type="..."] 对齐 Puock btn-* 系列） */
-.jinyu-btn-success { background: @success; &:hover { background: @success; filter: brightness(.93); } }
-.jinyu-btn-warning { background: @warning; &:hover { background: @warning; filter: brightness(.93); } }
-.jinyu-btn-danger  { background: @danger;  &:hover { background: @danger;  filter: brightness(.93); } }
-.jinyu-btn-info    { background: @info;    &:hover { background: @info;    filter: brightness(.93); } }
-.jinyu-btn-dark    { background: @text-1;  &:hover { background: @text-1;  filter: brightness(.93); } }
-.jinyu-btn-ghost {
-    background: transparent; color: @primary-text; border: 1px solid @primary;
-    &:hover { background: @primary; color: @text-invert; transform: translateY(-1px); }
+    /* 按钮颜色变体（短代码 [jinyu_btn type="..."] 对齐 Puock btn-* 系列） */
+    .jinyu-btn-success { background: @success; &:hover { background: @success; filter: brightness(.93); } }
+    .jinyu-btn-warning { background: @warning; &:hover { background: @warning; filter: brightness(.93); } }
+    .jinyu-btn-danger  { background: @danger;  &:hover { background: @danger;  filter: brightness(.93); } }
+    .jinyu-btn-info    { background: @info;    &:hover { background: @info;    filter: brightness(.93); } }
+    .jinyu-btn-dark    { background: @text-1;  &:hover { background: @text-1;  filter: brightness(.93); } }
+    .jinyu-btn-ghost {
+        background: transparent; color: @primary-text; border: 1px solid @primary;
+        &:hover { background: @primary; color: @text-invert; transform: translateY(-1px); }
+    }
 }
 
 /* 徽章 */

@@ -29,6 +29,9 @@
     &:hover { background: @primary-dark; border-color: @primary-dark; color: @text-invert; }
 }
 .jinyu-btn-ghost { background: transparent; }
+/* [hidden] 兜底：.jinyu-btn 的 display 优先级高于 UA 的 [hidden]{display:none}，
+   否则隐藏态按钮（如用户中心「消息」tab 无更多消息时的「加载更多」）仍会显示 */
+.jinyu-btn[hidden] { display: none; }
 
 .jinyu-field {
     display: flex;

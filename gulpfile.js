@@ -255,7 +255,11 @@ function copyWporg() {
 		'!LICENSE',
 		// 仓库本地恢复说明（中文名 `_先读我-恢复说明.md`）：纯开发/运维内部文档，
 		// 非主题运行期文件，且非 ASCII 文件名在部分平台不通用（WP.org 上传会拒）。不应进提交包。
-		'!_先读我-恢复说明.md'
+		'!_先读我-恢复说明.md',
+		// wp.org REQUIRED：生产主题包严禁夹带开发配置，自动扫描判 REQUIRED 直接拒包。
+		// 根目录两份 PHPCS 规则集一律剔除（自托管版 buildZipGlob 刻意保留 phpcs.xml.dist，
+		// 但 w.org 变体不得带任何一份——曾因漏排除整包被判不通过）。
+		'!phpcs.xml.dist', '!phpcs-all.xml.dist'
 	], { base: '.' })
 		.pipe(gulp.dest(WPORG_DIR));
 }

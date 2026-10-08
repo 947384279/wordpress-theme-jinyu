@@ -45,7 +45,6 @@ if ( jinyu_is_checked( 'comment_smiley' ) ) {
 		if ( $jinyu_lazy_comments ) :
 			$jinyu_cm_max = (int) get_comment_pages_count();
 			?>
-		<style<?php echo jinyu_csp_nonce_attr();  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- nonce 属性，已 esc_attr */ ?>>.jinyu-comments-more{display:block;margin:16px auto 4px;padding:9px 24px;border:1px solid var(--j-line,#e5e7eb);background:var(--j-bg,#fff);color:var(--j-accent,#4f46e5);border-radius:999px;cursor:pointer;font-size:14px;transition:transform .12s ease,box-shadow .12s ease}.jinyu-comments-more:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(79,70,229,.16)}.jinyu-comments-more:active{transform:translateY(0)}</style>
 		<button type="button" class="jinyu-comments-more" data-post-id="<?php the_ID(); ?>" data-page="2" data-max="<?php echo $jinyu_cm_max; ?>" data-ajax="<?php echo esc_url( admin_url( 'admin-ajax.php' ) );  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?>">
 			<span class="jinyu-comments-more-txt"><?php esc_html_e( 'Load more comments', 'jinyu' ); ?></span>
 		</button>

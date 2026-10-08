@@ -2770,8 +2770,33 @@ html.jinyu-tools-compact {
     cursor: pointer;
     transition: all @transition-fast;
 
-    &:hover { border-color: @primary-text; color: @primary-text; }
-    &:disabled { opacity: .5; cursor: not-allowed; }
+	&:hover { border-color: @primary-text; color: @primary-text; }
+	&:disabled { opacity: .5; cursor: not-allowed; }
+}
+
+/* 评论「加载更多」：复用主题令牌，明暗自适应。
+   原内联样式引用了未定义的 --j-line/--j-bg/--j-accent，浅色下白底白页近乎不可见、配色也与主色脱节 */
+.jinyu-comments-more {
+	display: block;
+	margin: @s-4 auto @s-1;
+	padding: @s-2 @s-6;
+	border: 1px solid @border-strong;
+	border-radius: @radius-pill;
+	background: @bg-card;
+	color: @text-2;
+	font-size: @fs-sm;
+	cursor: pointer;
+	transition: transform .12s ease, box-shadow .12s ease, border-color @transition-fast, color @transition-fast;
+
+	&:hover {
+		transform: translateY(-1px);
+		border-color: @primary-text;
+		color: @primary-text;
+		box-shadow: @shadow-hover;
+	}
+	&:active { transform: translateY(0); }
+	&.is-loading { opacity: .6; pointer-events: none; }
+	&:disabled { opacity: .5; cursor: not-allowed; }
 }
 
 /* ==========================================================================

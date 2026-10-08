@@ -18,7 +18,26 @@ if ( ! defined( 'ABSPATH' ) ) {
  * 后台配置的用户中心页面 ID，未配置返回 0
  */
 function jinyu_user_page_id(): int {
-	return absint( jinyu_get_option( 'user_center_page', 0 ) );
+	static $cached = null;
+	if ( null !== $cached ) {
+		return $cached;
+	}
+	$id = absint( jinyu_get_option( 'user_center_page', 0 ) );
+	if ( ! $id ) {
+		// 未显式配置时自动查找使用用户中心模板的页面，避免回退到 WP 后台（profile.php）
+		$found = get_posts(
+			[
+				'post_type'      => 'page',
+				'posts_per_page' => 1,
+				'fields'         => 'ids',
+				'meta_key'       => '_wp_page_template', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+				'meta_value'     => 'template-user-tabs.php',
+			]
+		);
+		$id = ! empty( $found ) ? (int) $found[0] : 0;
+	}
+	$cached = $id;
+	return $cached;
 }
 
 /**
@@ -28,7 +47,7 @@ function jinyu_user_page_id(): int {
  */
 function jinyu_user_page_url( string $tab = '' ): string {
 	$id   = jinyu_user_page_id();
-	$base = $id ? get_permalink( $id ) : admin_url( 'profile.php' );
+	$base = $id ? get_permalink( $id ) : home_url( '/' );
 	return $tab ? add_query_arg( 'tab', $tab, $base ) : $base;
 }
 
