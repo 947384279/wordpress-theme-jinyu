@@ -400,6 +400,18 @@ msgid "Saved successfully"
 msgstr "保存成功"
 
 #: assets/js/admin.js
+msgid "Close"
+msgstr "关闭"
+
+#: assets/js/admin.js
+msgid "Your changes have been applied"
+msgstr "更改已成功应用"
+
+#: assets/js/admin.js
+msgid "Please check and try again"
+msgstr "请检查后重试"
+
+#: assets/js/admin.js
 msgid "Saving…"
 msgstr "保存中…"
 
@@ -2587,9 +2599,25 @@ msgid ""
 msgstr "如果觉得文章对你有帮助，欢迎打赏支持～"
 
 #: inc/setting/options/Jinyu_OptionBasic.php:56
+msgid "Show notice bar"
+msgstr "显示公告条"
+
+#: inc/setting/options/Jinyu_OptionBasic.php:56
 msgid ""
-"Leave empty to hide the notice bar. Simple HTML (e.g. links) is supported"
-msgstr "留空则不显示公告条。支持简单 HTML（如链接）"
+"One notice per line. Multiple notices will scroll vertically when scrolling is "
+"enabled. Simple HTML (e.g. <a>, <strong>) is supported."
+msgstr ""
+"每行一条公告。开启滚动后，多条公告会垂直上下轮播。支持简单 HTML（如 <a>、<strong>）。"
+
+#: inc/setting/options/Jinyu_OptionBasic.php:73
+msgid "Scrolling notice"
+msgstr "滚动显示公告"
+
+#: inc/setting/options/Jinyu_OptionBasic.php:76
+msgid ""
+"When enabled and more than one notice is entered, notices scroll vertically in "
+"a loop. Only available when the notice bar is shown."
+msgstr "开启后输入多条公告时会垂直上下循环轮播。仅在公告条显示时可用。"
 
 #: inc/setting/options/Jinyu_OptionBasic.php:49
 msgid "Leave empty to reuse the light-mode logo in dark mode"
@@ -3479,8 +3507,8 @@ msgid "Site-wide grayscale (mourning mode)"
 msgstr "全站灰度 (哀悼模式)"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:41
-msgid "Standard list"
-msgstr "标准列表"
+msgid "Blog mode"
+msgstr "博客模式"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:106
 msgid ""

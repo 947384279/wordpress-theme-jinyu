@@ -38,7 +38,7 @@ class Jinyu_OptionGlobal extends Jinyu_BaseOptionItem {
 					'sdt'     => 'card',
 					'options' => [
 						[
-							'label' => __( 'Standard list', 'jinyu' ),
+							'label' => __( 'Blog mode', 'jinyu' ),
 							'value' => 'list',
 						],
 						[

@@ -174,11 +174,13 @@ add_action(
 add_filter(
 	'body_class',
 	function ( array $classes ): array {
-		$pos = jinyu_get_option( 'sidebar_pos', 'right' );
+		$pos        = jinyu_get_option( 'sidebar_pos', 'right' );
+		$has_sidebar = is_active_sidebar( 'sidebar-main' );
 		if ( 'left' === $pos ) {
 			$classes[] = 'jinyu-sidebar-left';
 		}
-		if ( 'none' === $pos ) {
+		// 显式关闭或后台未挂任何小工具时，均按「无侧边栏」布局（单页居中、主栏占满）。
+		if ( 'none' === $pos || ! $has_sidebar ) {
 			$classes[] = 'jinyu-no-sidebar';
 		}
 

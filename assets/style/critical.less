@@ -78,7 +78,12 @@ body.jinyu-no-sidebar .jinyu-sidebar { display: none; }
     .jinyu-main-wrap { flex-direction: column; }
     .jinyu-sidebar { display: none; }
 }
-body.jinyu-no-sidebar .jinyu-single-wrap { max-width: 860px; margin: 0 auto; }
+/* 「无侧栏 → 单页 860 居中」仅桌面两栏布局需要（与 common.less 同步包进桌面媒体查询）：
+   窄屏/触摸设备 main-wrap 已变 column，margin:0 auto 属交叉轴 auto 边距，
+   会禁用 stretch、正文列收缩到 860px 造成横向溢出。 */
+@media (min-width: 1025px) {
+    body.jinyu-no-sidebar .jinyu-single-wrap { max-width: 860px; margin: 0 auto; }
+}
 
 /* 无侧栏模板（关于 / 申请友链 / 文章归档 / 友链）版心铺满内容区，见 common.less「文章页」小节。
    首屏关键 CSS 必须同步，否则会先按 880 画出再被主样式改宽（闪一下）。 */
@@ -110,6 +115,11 @@ body.jinyu-no-sidebar .jinyu-single-wrap { max-width: 860px; margin: 0 auto; }
 body.jinyu-no-nav-blur .jinyu-header {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
+}
+/* 古老内核盾：JS 给 <html> 打 jinyu-legacy 后，拆除头部毛玻璃（@bg-header 已是关闭毛玻璃路径的兜底实底）。放 critical 内联 CSS 里，首帧即生效、无闪烁。 */
+html.jinyu-legacy .jinyu-header {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
 }
 body.admin-bar .jinyu-header { top: 32px; }
 @media (max-width: 782px) { body.admin-bar .jinyu-header { top: 46px; } }
@@ -393,6 +403,43 @@ html[data-theme="dark"] .jinyu-logo--dual .jinyu-logo-dark { display: block; }
         color: @text-1;
         line-height: 1.6;
         min-width: 0;
+    }
+
+    // 滚动显示（与 common.less 镜像同步）
+    &--scroll {
+        .jinyu-top-notice-viewport {
+            flex: 1 1 auto;
+            min-width: 0;
+            height: 1.6em;
+            overflow: hidden;
+            line-height: 1.6;
+        }
+        .jinyu-top-notice-track {
+            display: flex;
+            flex-direction: column;
+            will-change: transform;
+            animation: jinyu-notice-scroll 6s linear infinite;
+            > span {
+                height: 1.6em;
+                line-height: 1.6;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            &:hover { animation-play-state: paused; }
+        }
+    }
+}
+
+@keyframes jinyu-notice-scroll {
+    from { transform: translateY( 0 ); }
+    to   { transform: translateY( -50% ); }
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+    .jinyu-top-notice--scroll .jinyu-top-notice-track {
+        animation: none;
+        transform: translateY( 0 );
     }
 }
 

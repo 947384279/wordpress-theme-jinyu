@@ -77,6 +77,9 @@ if ( ! function_exists( 'jinyu_admin_l10n_strings' ) ) {
 			'savedAt'              => /* translators: %s: 保存时间 */ __( 'Saved at %s', 'jinyu' ),
 			'savedSuccessfully'    => __( 'Saved successfully', 'jinyu' ),
 			'done'                 => __( 'Done', 'jinyu' ),
+			'close'                => __( 'Close', 'jinyu' ),
+			'savedHint'            => __( 'Your changes have been applied', 'jinyu' ),
+			'retryHint'            => __( 'Please check and try again', 'jinyu' ),
 			'networkError'         => __( 'Network error', 'jinyu' ),
 			/* translators: %s: 错误信息 */
 			'networkErrorWith'     => /* translators: %s: 底层错误信息 */ __( 'Network error: %s', 'jinyu' ),

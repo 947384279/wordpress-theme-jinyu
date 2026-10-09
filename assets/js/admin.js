@@ -520,7 +520,23 @@
     }
 
     /* ---------- 字段渲染 ---------- */
-    function fieldHtml(f) {
+    /**
+     * 渲染一组字段。inline_for 声明的行内开关不单独占行，
+     * 而是渲染进目标字段输入框同一行右侧（如顶部公告的显示开关）。
+     */
+    function renderFields(fields) {
+        var inline = {};
+        fields.forEach(function (f) {
+            if (f && f.inline_for && f.id) {
+                (inline[f.inline_for] = inline[f.inline_for] || []).push(f);
+            }
+        });
+        return fields.filter(function (f) { return !(f && f.inline_for && f.id); })
+            .map(function (f) { return fieldHtml(f, inline[f.id] || []); })
+            .join('');
+    }
+
+    function fieldHtml(f, inlineSwitches) {
         var id = f.id || '';
         var hasVal = (SAVED[id] !== undefined && SAVED[id] !== null);
         var type = f.type || 'string';
@@ -553,6 +569,19 @@
             var optMap = {};
             (f.options || []).forEach(function (o) { optMap[o.value] = o.label; });
             return renderMultiSelect(f, optMap, v);
+        }
+
+        // 复选框（带文字标签）：用于子选项，区别于主开关的开关形态。
+        // data-type=switch 复用 collect / 脏检查 / 服务端 reset，存 0/1。
+        if (type === 'checkbox') {
+            return '<div class="jinyu-field jinyu-field--checkbox" data-field="' + esc(id) + '"' + showRefAttr + '">' +
+                '<label class="jinyu-checkbox">' +
+                '<input type="checkbox" class="jinyu-checkbox-input" data-key="' + esc(id) + '" data-type="switch"' + (v ? ' checked' : '') + '>' +
+                '<span class="jinyu-checkbox-box" aria-hidden="true"></span>' +
+                '<span class="jinyu-checkbox-text">' + esc(f.title) + '</span>' +
+                '</label>' +
+                (f.desc ? '<p class="jinyu-field-desc">' + esc(f.desc) + '</p>' : '') +
+                '</div>';
         }
 
         // 开关：独立布局（标题+描述在左，开关在右）
@@ -672,6 +701,22 @@
                 body = '<input type="text" class="jinyu-input" data-key="' + esc(id) + '" data-type="string" value="' + esc(v) + '"' + (f.placeholder ? ' placeholder="' + esc(f.placeholder) + '"' : '') + '>';
         }
 
+        // 行内开关（字段声明 inline_for 时传入）：摆到输入框同一行右侧。
+        // 支持同一字段绑定多个行内开关，水平排列并统一垂直居中。
+        // 复用标准 data-key/data-type=switch，collect / 脏检查 / 服务端 reset 全部自动生效。
+        if (inlineSwitches.length && (type === 'string' || type === 'textarea')) {
+            var switchesHtml = inlineSwitches.map(function (inlineSwitch) {
+                var sv = (SAVED[inlineSwitch.id] !== undefined && SAVED[inlineSwitch.id] !== null)
+                    ? SAVED[inlineSwitch.id]
+                    : (inlineSwitch.sdt !== undefined ? inlineSwitch.sdt : false);
+                return '<label class="jinyu-switch jinyu-switch--sm jinyu-inputrow-switch" title="' + esc(inlineSwitch.title || '') + '">' +
+                    '<input type="checkbox" data-key="' + esc(inlineSwitch.id) + '" data-type="switch"' + (sv ? ' checked' : '') + '>' +
+                    '<span class="jinyu-switch-track"></span>' +
+                    '</label>';
+            }).join('');
+            body = '<div class="jinyu-inputrow">' + body + switchesHtml + '</div>';
+        }
+
         return '<div class="jinyu-field jinyu-field--' + esc(type) + '" data-field="' + esc(id) + '"' + showRefAttr + '>' +
             '<label class="jinyu-field-label" for="jinyu-f-' + esc(id) + '">' + esc(f.title) +
             (f.tip ? '<span class="jinyu-field-tip" title="' + esc(f.tip) + '">?</span>' : '') + '</label>' +
@@ -686,7 +731,7 @@
         if (g.custom === 'tools') {
             body = toolsHtml();
         } else {
-            body = (g.fields || []).map(fieldHtml).join('');
+            body = renderFields(g.fields || []);
         }
         // 自定义面板（维护工具 / 我要反馈）不持有设置字段，无需「重置本组」
         var resetBtn = g.custom ? '' :
@@ -1447,20 +1492,53 @@
             .catch(function (err) { toast(tf('networkErrorWith', [err.message], 'Network error: ' + err.message), false); });
     }
 
-    /* ---------- Toast ---------- */
+    /* ---------- Toast（高级版：SVG 勾选动画 + 倒计时进度条 + 关闭按钮） ----------
+       保留 (msg, ok[, desc]) 签名，既有调用方无需改动。toast 挂在 body，
+       配色由 admin.less 的 .jinyu-admin-toast 自包含 --jt-* 令牌提供。 */
     var toastTimer = null;
-    function toast(msg, ok) {
-        var t = qs('#jinyu-admin-toast');
-        if (!t) {
-            t = document.createElement('div');
-            t.id = 'jinyu-admin-toast';
-            document.body.appendChild(t);
+    function toast(msg, ok, desc) {
+        /* 注意：本作用 var node 而非 t，避免遮蔽同作用域的 i18n 函数 t(key, fallback) */
+        var node = qs('#jinyu-admin-toast');
+        if (!node) {
+            node = document.createElement('div');
+            node.id = 'jinyu-admin-toast';
+            document.body.appendChild(node);
         }
-        t.textContent = (ok ? '✓ ' : '✕ ') + msg;
-        t.className = 'jinyu-admin-toast ' + (ok ? 'ok' : 'err');
-        t.style.display = 'block';
+        node.className = 'jinyu-admin-toast ' + (ok ? 'ok' : 'err');
+        node.setAttribute('role', 'status');
+        node.setAttribute('aria-live', 'polite');
+        node.innerHTML =
+            '<span class="jinyu-toast-ico">' +
+                '<svg viewBox="0 0 52 52" aria-hidden="true">' +
+                    '<circle class="jinyu-toast-circle" cx="26" cy="26" r="24"></circle>' +
+                    '<path class="jinyu-toast-mark" d="M15 27 l7 7 l15 -17"></path>' +
+                '</svg>' +
+            '</span>' +
+            '<div class="jinyu-toast-body">' +
+                '<p class="jinyu-toast-title"></p>' +
+                '<p class="jinyu-toast-desc"></p>' +
+            '</div>' +
+            '<button type="button" class="jinyu-toast-close" aria-label="' + t('close', 'Close') + '">&times;</button>' +
+            '<span class="jinyu-toast-progress"></span>';
+        node.querySelector('.jinyu-toast-title').textContent = msg;
+        node.querySelector('.jinyu-toast-desc').textContent =
+            desc || (ok ? t('savedHint', 'Your changes have been applied') : t('retryHint', 'Please check and try again'));
+        /* 清掉可能残留的 inline display（旧逻辑写过 display:block，会覆盖 CSS 的 flex 布局），
+           显隐一律交给 .show / .hide 类控制；强制重排以重启入场动画 */
+        node.style.removeProperty('display');
+        void node.offsetWidth;
+        node.classList.remove('hide');
+        node.classList.add('show');
+        node.querySelector('.jinyu-toast-close').addEventListener('click', function () { dismissToast(node); });
         if (window.clearTimeout) window.clearTimeout(toastTimer);
-        toastTimer = window.setTimeout(function () { t.style.display = 'none'; }, 3200);
+        toastTimer = window.setTimeout(function () { dismissToast(node); }, 2000);
+    }
+    function dismissToast(node) {
+        if (!node) return;
+        node.classList.remove('show');
+        node.classList.add('hide');
+        /* 淡出结束后收起 .hide（base 已是 visibility:hidden，不会闪回） */
+        window.setTimeout(function () { node.classList.remove('hide'); }, 300);
     }
 
     /* ---------- 配置导入 / 导出 ---------- */

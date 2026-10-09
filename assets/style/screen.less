@@ -32,7 +32,12 @@
 @media (max-width: 1024px), (hover: none) and (max-width: 1240px) {
     .jinyu-main-wrap { flex-direction: column; gap: @s-5; }
     .jinyu-sidebar { display: none; }
-    .jinyu-single-wrap { max-width: none; }
+    /* 窄屏下正文列必须恢复 flex stretch 全宽：common.less 的
+       body.jinyu-no-sidebar .jinyu-single-wrap { max-width:860px; margin:0 auto }
+       特异性(0,2,0)压过本块单类选择器，且 column 方向上左右 auto margin 会禁用
+       stretch，正文列退化为按内容收缩（实测被内容撑到 860px 横向溢出）。
+       此处用同为 (0,2,0) 的后代选择器 + 本文件后加载的层叠顺序将其解除。 */
+    .jinyu-main-wrap .jinyu-single-wrap { max-width: none; margin-left: 0; margin-right: 0; }
 }
 
 /* ---------- ≤1024px：网格降列 ----------

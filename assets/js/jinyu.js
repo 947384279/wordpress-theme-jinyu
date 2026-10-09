@@ -3114,7 +3114,7 @@
                 this.slides[i].classList.toggle('is-current', i === act);
             }
         } else if (this.width) {
-            this.track.style.transform = 'translate3d(' + (-this.index * this.width) + 'px,0,0)';
+            this.track.style.transform = 'translateX(' + (-this.index * this.width) + 'px)';
         }
 
         // 非当前幻灯片的链接移出 Tab 序列，避免键盘跳进视口外把轮播顶歪
@@ -3254,7 +3254,7 @@
             }
         }
         this.dragMoved = Math.abs(dx);
-        this.track.style.transform = 'translate3d(' + (-this.index * this.width + dx) + 'px,0,0)';
+        this.track.style.transform = 'translateX(' + (-this.index * this.width + dx) + 'px)';
     };
 
     CP._onUp = function (e) {
@@ -5058,5 +5058,18 @@ id: btn.dataset.id
     } else {
         boot();
     }
+
+    /* 古老内核提示条关闭：仅当 <html> 带 jinyu-legacy（过旧内核）时才存在可见提示条，
+       点击 × 隐藏并记忆到 localStorage，避免反复打扰。无脚本 / 现代浏览器不会有该元素。 */
+    (function () {
+        var notice = doc.querySelector('.jinyu-legacy-notice');
+        if (!notice) return;
+        var btn = notice.querySelector('[data-jinyu-legacy-dismiss]');
+        if (btn) btn.addEventListener('click', function () {
+            notice.style.display = 'none';
+            doc.documentElement.classList.add('jinyu-legacy-notice-off');
+            try { localStorage.setItem('jinyuLegacyNoticeDismissed', '1'); } catch (e) {}
+        });
+    })();
 
 })(window, document);

@@ -463,7 +463,7 @@ add_action(
 // 跨文章的内容聚合缓存：任意文章新增 / 更新 / 删除都会变化，需一并失效
 if ( ! function_exists( 'jinyu_cache_flush_content_lists' ) ) {
 	function jinyu_cache_flush_content_lists(): void {
-		foreach ( [ 'hot_posts', 'archives_list', 'sitemap_posts', 'carousel' ] as $k ) {
+		foreach ( [ 'hot_posts', 'archives_list', 'sitemap_posts', 'carousel', 'tag_cloud_tags', 'cat_list_0', 'cat_list_1' ] as $k ) {
 			jinyu_cache_delete( $k );
 		}
 	}

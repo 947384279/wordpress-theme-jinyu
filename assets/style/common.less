@@ -233,6 +233,65 @@ body.jinyu-no-nav-blur .jinyu-header {
     -webkit-backdrop-filter: none;
 }
 
+/* ==========================================================================
+   古老内核盾（jinyu-legacy）
+   由 header.php 内联脚本按渲染引擎主版本识别过旧内核（Chromium<120 / Safari<15 /
+   Firefox<110）后，给 <html> 打 jinyu-legacy。这里统一拆除会强制 GPU 合成层、
+   在老内核下可能击穿渲染进程的特效，让古老访客不崩、只是少点毛玻璃 / 动画位移。
+   现代浏览器完全拿不到该类，体验零影响。
+   ========================================================================== */
+html.jinyu-legacy {
+    /* 1) 头部毛玻璃 → 退回无模糊实底（@bg-header 即后台「关闭毛玻璃」路径的兜底色） */
+    .jinyu-header {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+    /* 2) 撤销一切 will-change 层提升提示，交回浏览器自行决定合成层 */
+    * { will-change: auto !important; }
+    /* 3) 小工具进场 / 悬浮的 translate3d（强制 3D 合成层）→ 降级为 2D translateY */
+    &.jinyu-widget-anim-ready {
+        .jinyu-widget,
+        .jinyu-footer-widget,
+        .jinyu-single-widget {
+            transform: translateY(16px) !important;
+        }
+        .jinyu-widget.is-in:hover {
+            transform: translateY(-3px) !important;
+        }
+    }
+}
+
+/* 古老内核提示条：默认隐藏，仅 jinyu-legacy 时显示（非阻塞、可关闭、可记忆） */
+.jinyu-legacy-notice {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    background: #2b2f36;
+    color: #fff;
+    font-size: 13px;
+    line-height: 1.5;
+    box-shadow: 0 -2px 12px rgba(0, 0, 0, .25);
+}
+html.jinyu-legacy .jinyu-legacy-notice { display: flex; }
+html.jinyu-legacy-notice-off .jinyu-legacy-notice { display: none !important; }
+.jinyu-legacy-notice span { flex: 1; }
+.jinyu-legacy-notice button {
+    flex: none;
+    border: 0;
+    background: transparent;
+    color: #fff;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 2px 8px;
+    opacity: .8;
+}
+.jinyu-legacy-notice button:hover { opacity: 1; }
+
 /* 登录且存在 WP admin bar 时，sticky 头部避免被 admin bar 盖住 */
 body.admin-bar .jinyu-header { top: 32px; }
 @media (max-width: 782px) {
@@ -573,6 +632,54 @@ html.jinyu-tools-compact {
         color: @text-1;
         line-height: 1.6;
         min-width: 0;
+    }
+
+    // 滚动显示（top_notice_scroll）：多条公告垂直上下轮播。
+    // 图标固定左侧，右侧视口只显示一条，track 上下移动实现无缝循环。
+    &--scroll {
+        .jinyu-top-notice-card {
+            gap: @s-3;
+        }
+
+        .jinyu-top-notice-viewport {
+            flex: 1 1 auto;
+            min-width: 0;
+            height: 1.6em;
+            overflow: hidden;
+            line-height: 1.6;
+        }
+
+        .jinyu-top-notice-track {
+            display: flex;
+            flex-direction: column;
+            will-change: transform;
+            animation: jinyu-notice-scroll 6s linear infinite;
+
+            > span {
+                height: 1.6em;
+                line-height: 1.6;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            &:hover {
+                animation-play-state: paused;
+            }
+        }
+    }
+}
+
+@keyframes jinyu-notice-scroll {
+    from { transform: translateY( 0 ); }
+    to   { transform: translateY( -50% ); }
+}
+
+// 尊重「减少动态效果」系统偏好：关闭轮播，回退为静态展示。
+@media ( prefers-reduced-motion: reduce ) {
+    .jinyu-top-notice--scroll .jinyu-top-notice-track {
+        animation: none;
+        transform: translateY( 0 );
     }
 }
 

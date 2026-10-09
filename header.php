@@ -38,14 +38,32 @@ if ( ! defined( 'ABSPATH' ) ) {
 		}
 		if ( $jinyu_lcp ) :
 			?>
-	<link rel="preload" as="image" href="<?php echo esc_url( $jinyu_lcp ); ?>"<?php echo $jinyu_lcp_srcset ? ' imagesrcset="' . esc_attr( $jinyu_lcp_srcset ) . '" imagesizes="100vw"' : ''; ?> fetchpriority="high">
+		<link rel="preload" as="image" href="<?php echo esc_url( $jinyu_lcp ); ?>"<?php echo $jinyu_lcp_srcset ? ' imagesrcset="' . esc_attr( $jinyu_lcp_srcset ) . '" imagesizes="100vw"' : ''; ?> fetchpriority="high">
 			<?php
 		endif;
 	}
 	?>
+<!-- 古老内核盾：内联识别过旧渲染引擎（Chromium<120 / Safari<15 / Firefox<110），命中给 <html> 打 jinyu-legacy，CSS 据此拆除毛玻璃等 GPU 合成触发点，避免渲染进程崩溃。必须在 </head> 前同步执行，首帧即生效、无闪烁。 -->
+<script<?php echo jinyu_csp_nonce_attr();  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- nonce 属性，非动态内容 */ ?>>
+(function(){var ua=navigator.userAgent||'';var m,legacy=false;
+var chrome=(m=ua.match(/Chrome\/(\d+)/))?parseInt(m[1],10):0;
+var safari=(m=ua.match(/Version\/(\d+)/))?parseInt(m[1],10):0;
+var ff=(m=ua.match(/Firefox\/(\d+)/))?parseInt(m[1],10):0;
+if(chrome&&chrome<120)legacy=true;
+if(safari&&safari<15)legacy=true;
+if(ff&&ff<110)legacy=true;
+if(legacy){document.documentElement.className+=' jinyu-legacy';
+try{if(localStorage.getItem('jinyuLegacyNoticeDismissed')==='1')document.documentElement.className+=' jinyu-legacy-notice-off';}catch(e){}}
+})();
+</script>
 </head>
 <body <?php body_class(); ?>>
 <?php wp_body_open(); ?>
+
+<div class="jinyu-legacy-notice" role="alert">
+	<span><?php esc_html_e( '您的浏览器版本过旧，部分视觉效果已自动降级以保障稳定。建议升级浏览器以获得最佳体验。', 'jinyu' ); ?></span>
+	<button type="button" data-jinyu-legacy-dismiss aria-label="<?php esc_attr_e( '关闭提示', 'jinyu' ); ?>">&times;</button>
+</div>
 
 <a href="#jinyu-content" class="jinyu-skip-link"><?php esc_html_e( 'Skip to content', 'jinyu' ); ?></a>
 
@@ -265,13 +283,35 @@ document.getElementById('jinyu-skeleton')&&document.getElementById('jinyu-skelet
 	</div>
 </header>
 
-<?php $notice = trim( (string) jinyu_get_option( 'top_notice', '' ) ); ?>
-<?php if ( $notice ) : ?>
-	<aside class="jinyu-top-notice" aria-label="<?php esc_attr_e( 'Site Notice', 'jinyu' ); ?>">
+<?php
+$notice_raw = trim( (string) jinyu_get_option( 'top_notice', '' ) );
+// 后台「顶部公告」输入框右侧的行内开关（top_notice_on，默认开）：关闭即临时隐藏，内容保留。
+$notice_on = (bool) jinyu_get_option( 'top_notice_on', 1 );
+// 滚动显示开关（top_notice_scroll，默认关）：开启后多条公告会垂直上下轮播。
+$notice_scroll = (bool) jinyu_get_option( 'top_notice_scroll', 0 );
+
+// 每行视为一条公告；过滤空行。
+$notices = array_filter( array_map( 'trim', preg_split( '/\r\n|\r|\n/', $notice_raw ) ) );
+?>
+<?php if ( ! empty( $notices ) && $notice_on ) : ?>
+	<aside class="jinyu-top-notice<?php echo $notice_scroll && count( $notices ) > 1 ? ' jinyu-top-notice--scroll' : ''; ?>" aria-label="<?php esc_attr_e( 'Site Notice', 'jinyu' ); ?>">
 	<div class="jinyu-container">
 		<div class="jinyu-top-notice-card">
 		<i class="fa-solid fa-bullhorn" aria-hidden="true"></i>
-		<span><?php echo wp_kses_post( $notice ); ?></span>
+		<?php if ( $notice_scroll && count( $notices ) > 1 ) : ?>
+			<div class="jinyu-top-notice-viewport">
+			<div class="jinyu-top-notice-track" style="animation-duration: <?php echo (int) max( 2, count( $notices ) ) * 3; ?>s;">
+				<?php
+				foreach ( array_merge( $notices, $notices ) as $i => $item ) :
+					$is_clone = $i >= count( $notices );
+				?>
+				<span<?php echo $is_clone ? ' aria-hidden="true"' : ''; ?>><?php echo wp_kses_post( $item ); ?></span>
+				<?php endforeach; ?>
+			</div>
+			</div>
+		<?php else : ?>
+		<span><?php echo wp_kses_post( implode( "<br>\n", $notices ) ); ?></span>
+		<?php endif; ?>
 		</div>
 	</div>
 	</aside>

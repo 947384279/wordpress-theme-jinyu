@@ -2481,9 +2481,14 @@ msgid ""
 "donation!"
 msgstr ""
 
+#: inc/setting/options/Jinyu_OptionBasic.php:60
+msgid "Show notice bar"
+msgstr ""
+
 #: inc/setting/options/Jinyu_OptionBasic.php:56
 msgid ""
-"Leave empty to hide the notice bar. Simple HTML (e.g. links) is supported"
+"Simple HTML (e.g. links) is supported. Use the switch on the right of the "
+"input to show or hide the notice bar"
 msgstr ""
 
 #: inc/setting/options/Jinyu_OptionBasic.php:49
@@ -3359,7 +3364,7 @@ msgid "Site-wide grayscale (mourning mode)"
 msgstr ""
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:41
-msgid "Standard list"
+msgid "Blog mode"
 msgstr ""
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:106
