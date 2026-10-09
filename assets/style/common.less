@@ -3831,7 +3831,7 @@ html.jinyu-tools-compact {
     border-radius: @radius-lg;
     padding: @s-6;
     box-shadow: @shadow-float;
-    animation: jinyu-pop-in .25s @ease-out-expo;
+    animation: jinyu-fade-in .2s ease-out;
 }
 
 .jinyu-search-form {
@@ -3924,7 +3924,7 @@ html.jinyu-tools-compact {
     border-radius: @radius-lg;
     padding: @s-6;
     box-shadow: @shadow-float;
-    animation: jinyu-pop-in .25s @ease-out-expo;
+    animation: jinyu-fade-in .2s ease-out;
 }
 
 .jinyu-share-title { font-size: @fs-md; font-weight: 700; color: @text-1; margin-bottom: @s-4; text-align: center; }
@@ -3959,6 +3959,13 @@ html.jinyu-tools-compact {
 @keyframes jinyu-pop-in {
     from { opacity: 0; transform: translateY(12px) scale(.98); }
     to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* 仅用 opacity 的入场淡入：不引入 transform 合成层，避免部分 GPU/驱动下
+   搜索弹窗/建议下拉出现时击穿渲染进程。用于 .jinyu-search-panel / .jinyu-search-suggest。 */
+@keyframes jinyu-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
 }
 
 /* 入场动画只服务于"滚动到视口"的场景：首屏元素的 .jinyu-visible 由 jinyu.js
