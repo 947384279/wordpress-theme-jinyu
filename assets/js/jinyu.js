@@ -523,6 +523,12 @@
             doc.body.style.overflow = 'hidden';
         }
         function close() {
+            // 先把焦点移出弹窗再隐藏：焦点落在将被 display:none 的输入框上时，
+            // 配合遮罩 backdrop-filter 在部分 GPU/驱动下可致渲染进程崩溃（整个标签页白屏）。
+            var ae = doc.activeElement;
+            if (ae && mask.contains(ae) && typeof ae.blur === 'function') {
+                try { ae.blur(); } catch (e) {}
+            }
             mask.hidden = true;
             doc.body.style.overflow = '';
         }
@@ -1260,6 +1266,119 @@
     }
 
     /* ======================================================================
+       模块：瀑布流列均衡（JS 增强）
+       CSS 多列（column-count）按「列序」填充、底口靠 column-fill 估算平衡，
+       底部参差感强且阅读顺序变成竖排。这里改为显式列容器 + 「最短列优先」
+       投放：任意时刻各列底差最多一张卡，阅读顺序恢复横向时间序。
+       无 JS / 脚本异常时仍走 common.less 的 column-count 兜底。
+       ====================================================================== */
+    function masonry() {
+        var grid = $('.jinyu-layout-masonry .jinyu-post-grid');
+        if (!grid || grid.dataset.masonryReady) return;
+        grid.dataset.masonryReady = '1';
+
+        /* 断点须与 common.less 的媒体查询一致：>992 三列、>576 两列、其余单列 */
+        function colCount() {
+            if (window.matchMedia('(max-width: 576px)').matches) return 1;
+            return window.matchMedia('(max-width: 992px)').matches ? 2 : 3;
+        }
+
+        /* 卡片搬进列容器后 nth-child 序号（按列内重新计数）会失真，封面比例
+           轮换（4n+k）随之错乱：投放前把每张封面 computed 的 aspect-ratio
+           固化为内联样式。先纯读后纯写（与 reveal() 同一纪律），避免读写
+           交替触发强制重排。 */
+        function pinRatios(list) {
+            var covers = [], ratios = [];
+            list.forEach(function (card) {
+                var cover = card.querySelector('.jinyu-post-cover');
+                covers.push(cover);
+                ratios.push(cover ? getComputedStyle(cover).aspectRatio : 'auto');
+            });
+            list.forEach(function (card, i) {
+                if (covers[i] && ratios[i] && ratios[i] !== 'auto') {
+                    covers[i].style.aspectRatio = ratios[i];
+                }
+            });
+        }
+
+        var cards = Array.prototype.filter.call(grid.children, function (el) {
+            return el.classList.contains('jinyu-post-card');
+        });
+        if (cards.length < 2) return;
+        pinRatios(cards);
+
+        var cols = [];
+        var lastCount = 0;
+
+        function layout() {
+            var n = colCount();
+            lastCount = n;
+            while (grid.firstChild) grid.removeChild(grid.firstChild);
+            grid.classList.add('jinyu-masonry-js');
+            cols = [];
+            for (var i = 0; i < n; i++) {
+                var col = doc.createElement('div');
+                col.className = 'jinyu-masonry-col';
+                cols.push(col);
+                grid.appendChild(col);
+            }
+            /* 逐卡「最短列优先」：每张卡投放到当前最矮的列，使各列累计高度
+               尽量接近。外层 .jinyu-masonry-js 用 align-items:flex-start（不拉伸），
+               故 offsetHeight 即列内容真实高度，贪心能正确区分空列与已填列、
+               不会退化成单列。投放完成后由下方代码把三列设为等高、列内
+               space-between 均摊缝隙，实现顶/底对齐；中间因封面比例轮换
+               （3:4/1:1/4:3/3:2）与摘要长短不一而呈现瀑布流错落。封面已固化
+               aspect-ratio、列宽一致，卡高投放即稳定。 */
+            cards.forEach(function (card) {
+                var t = 0;
+                for (var j = 1; j < cols.length; j++) {
+                    if (cols[j].offsetHeight < cols[t].offsetHeight) t = j;
+                }
+                cols[t].appendChild(card);
+            });
+            /* 顶/底对齐：量出最大内容高度，给每列设等高（flex-start 下
+               offsetHeight=内容高，未被拉伸干扰），列内 space-between 把
+               多出的高度均摊成缝隙 → 各列底部齐平，无整块空白。 */
+            var maxH = 0;
+            cols.forEach(function (c) { if (c.offsetHeight > maxH) maxH = c.offsetHeight; });
+            if (maxH > 0) cols.forEach(function (c) { c.style.height = maxH + 'px'; });
+        }
+
+        /* 中文字体加载会改变摘要换行与卡高，就绪后按真实高度重排一次 */
+        if (doc.fonts && doc.fonts.ready && doc.fonts.ready.then) {
+            doc.fonts.ready.then(function () {
+                if (grid.isConnected) layout();
+            });
+        }
+
+        /* 窗口尺寸跨断点才重建，列数不变时的微调不值得整版重排 */
+        var rsTimer = null;
+        window.addEventListener('resize', function () {
+            if (!grid.isConnected) return;
+            clearTimeout(rsTimer);
+            rsTimer = setTimeout(function () {
+                if (colCount() !== lastCount) layout();
+            }, 150);
+        });
+
+        /* 「加载更多」把新卡片追加在 grid 末尾（列容器之后），这里收编进
+           cards 并整体重排。loadMore() 在插入后派发 jinyu:grid-appended。 */
+        doc.addEventListener('jinyu:grid-appended', function () {
+            if (!grid.isConnected) return;
+            var fresh = [];
+            Array.prototype.forEach.call(grid.children, function (el) {
+                if (el.classList && el.classList.contains('jinyu-post-card')) fresh.push(el);
+            });
+            if (!fresh.length) return;
+            pinRatios(fresh);
+            fresh.forEach(function (el) { cards.push(el); });
+            layout();
+        });
+
+        layout();
+    }
+
+    /* ======================================================================
        模块：滚动入场动画
        ====================================================================== */
     function reveal() {
@@ -1352,7 +1471,11 @@
                 }
 
                 var wrap = $(btn.dataset.target || '.jinyu-post-grid');
-                if (wrap && res.data.html) wrap.insertAdjacentHTML('beforeend', res.data.html);
+                if (wrap && res.data.html) {
+                    wrap.insertAdjacentHTML('beforeend', res.data.html);
+                    /* 瀑布流列均衡模块监听此事件，把新卡片收编进最短列 */
+                    try { doc.dispatchEvent(new CustomEvent('jinyu:grid-appended')); } catch (e) { /* 旧浏览器忽略 */ }
+                }
 
                 page = Number(res.data.page || (page + 1));
                 btn.dataset.page = page;
@@ -4806,7 +4929,7 @@ id: btn.dataset.id
     }
 
     window.jinyuReinit = function () {
-        [toc, codeBlock, codeHighlight, lightbox, reveal, carousel,
+        [toc, codeBlock, codeHighlight, lightbox, masonry, reveal, carousel,
          readProgress, backTop, loadMore, pageJump, headerScroll, coverFallback,
          liveSearch, fontScale, recentViewed, hoverCard, coView, articleVote, copyGuard, paraCopy, sidebarLive,
          widgetAnim, hitokoto, sales, social, coverIons, flinkApply, commentSmiley, ajaxComment, commentCounter,
@@ -4904,7 +5027,7 @@ id: btn.dataset.id
     var MODULES = [
         theme, greyMode, nav, search, readProgress, readEstimate, backTop, toc, liveSearch, fontScale, recentViewed,
         hoverCard, coView, articleVote, copyGuard, paraCopy,
-        codeBlock, codeHighlight, coverFallback, imgFallback, lazyImg, blurImg, postActions, share, reveal,
+        codeBlock, codeHighlight, coverFallback, imgFallback, lazyImg, blurImg, postActions, share, masonry, reveal,
         headerScroll, loadMore, pageJump, shortcodes, ajaxComment, auth, userForms, userTabs, commentCounter, confirmGuard,
         poster, qrcodeModule, donate, lightbox, carousel, pjax, luck, faviconBadge, sidebarLive,
         widgetAnim, hitokoto, sales, social, webVitals, coverIons, flinkApply
