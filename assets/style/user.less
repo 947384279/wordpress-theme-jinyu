@@ -1210,7 +1210,7 @@
         border-radius: @radius-sm;
         cursor: pointer;
         font-size: @fs-sm;
-        backdrop-filter: blur(4px);
+        /* 不使用 backdrop-filter：同 .jinyu-mask 的 GPU 崩溃隐患 */
         transition: background @transition, border-color @transition;
 
         &:hover { background: rgba(255, 255, 255, .32); }
