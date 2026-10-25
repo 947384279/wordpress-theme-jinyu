@@ -42,23 +42,40 @@ class Jinyu_OptionBasic extends Jinyu_BaseOptionItem {
 					'desc'  => __( 'A transparent PNG is recommended. Dark mode automatically switches to the "Dark mode" logo below; if not set, this image is reused', 'jinyu' ),
 				],
 				[
-					'id'    => 'web_logo_dark',
-					'title' => __( 'Site Logo (dark mode)', 'jinyu' ),
-					'type'  => 'upload',
-					'sdt'   => '',
-					'desc'  => __( 'Leave empty to reuse the light-mode logo in dark mode', 'jinyu' ),
-				],
-				[
-					'id'    => 'top_notice',
-					'title' => __( 'Top Notice', 'jinyu' ),
-					'type'  => 'string',
-					'sdt'   => '',
-					'desc'  => __( 'Leave empty to hide the notice bar. Simple HTML (e.g. links) is supported', 'jinyu' ),
-					'html'  => true,
-				],
-				[
-					'id'    => 'single_copyright',
-					'title' => __( 'Copyright notice at the end of posts', 'jinyu' ),
+				'id'    => 'web_logo_dark',
+				'title' => __( 'Site Logo (dark mode)', 'jinyu' ),
+				'type'  => 'upload',
+				'sdt'   => '',
+				'desc'  => __( 'Leave empty to reuse the light-mode logo in dark mode', 'jinyu' ),
+			],
+			// 总开关：独立占行（标题在左、开关在右），控制公告条整体显隐；关闭只是临时隐藏，内容保留。
+			[
+				'id'    => 'top_notice_on',
+				'title' => __( 'Show notice bar', 'jinyu' ),
+				'type'  => 'switch',
+				'sdt'   => false,
+			],
+			[
+				'id'    => 'top_notice',
+				'title' => __( 'Top Notice', 'jinyu' ),
+				'type'  => 'textarea',
+				'sdt'   => '',
+				'desc'  => __( 'One notice per line. Multiple notices will scroll vertically when scrolling is enabled. Simple HTML (e.g. <a>, <strong>) is supported.', 'jinyu' ),
+				'html'  => true,
+			],
+			// 滚动显示：多条公告时垂直上下轮播（prefers-reduced-motion 下自动关闭）。
+			// 作为「显示公告条」的子选项，用带文字的复选框呈现（区别于主开关形态），仅在公告条显示时可见。
+			[
+				'id'        => 'top_notice_scroll',
+				'title'     => __( 'Scrolling notice', 'jinyu' ),
+				'type'      => 'checkbox',
+				'sdt'       => false,
+				'showRefId' => 'top_notice_on',
+				'desc'      => __( 'When enabled and more than one notice is entered, notices scroll vertically in a loop. Only available when the notice bar is shown.', 'jinyu' ),
+			],
+			[
+				'id'    => 'single_copyright',
+				'title' => __( 'Copyright notice at the end of posts', 'jinyu' ),
 					'type'  => 'textarea',
 					'sdt'   => __( "Article link: {url}\nPlease credit the source when reposting: {title} (by {author})", 'jinyu' ),
 					'desc'  => __( 'Leave empty to use the default notice. Placeholders supported: {url} post link, {title} title, {author} author, {date} date; simple HTML (e.g. links) is supported', 'jinyu' ),

@@ -72,6 +72,14 @@ button { font-family: inherit; }
 .jinyu-post-cover img,
 .jinyu-article-content img { background-color: var(--jinyu-c-bg-subtle, #f5f6f8); }
 
+/* 正文容器：长串（超长 URL / 无空格 token）只在必要时折行，避免撑破窄屏（与卡片/链接盒子的 overflow-wrap 策略一致） */
+.jinyu-article-content { overflow-wrap: break-word; word-break: break-word; }
+.jinyu-article-content img,
+.jinyu-article-content video,
+.jinyu-article-content iframe,
+.jinyu-article-content embed,
+.jinyu-article-content object { max-width: 100%; }
+
 /* 跨文档视图转场：现代浏览器路由切换更顺滑（不支持的浏览器自动忽略，零 JS 风险） */
 @view-transition { navigation: auto; }
 @media (prefers-reduced-motion: no-preference) {
@@ -189,7 +197,12 @@ button { font-family: inherit; }
 /* 侧边栏位置（后台「全局设置」） */
 body.jinyu-sidebar-left .jinyu-sidebar { order: -1; }
 body.jinyu-no-sidebar .jinyu-sidebar { display: none; }
-body.jinyu-no-sidebar .jinyu-single-wrap { max-width: 860px; margin: 0 auto; }
+/* 「无侧栏 → 单页 860 居中」是桌面两栏布局的需求：包进桌面媒体查询。
+   窄屏/触摸设备 main-wrap 已变 column，此处 margin:0 auto 属「交叉轴 auto 边距」，
+   会禁用 stretch 拉伸、正文列按内容收缩到 860px 造成横向溢出（critical.less 同步）。 */
+@media (min-width: 1025px) {
+    body.jinyu-no-sidebar .jinyu-single-wrap { max-width: 860px; margin: 0 auto; }
+}
 
 /* ==========================================================================
    顶部导航
@@ -219,6 +232,65 @@ body.jinyu-no-nav-blur .jinyu-header {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
 }
+
+/* ==========================================================================
+   古老内核盾（jinyu-legacy）
+   由 header.php 内联脚本按渲染引擎主版本识别过旧内核（Chromium<120 / Safari<15 /
+   Firefox<110）后，给 <html> 打 jinyu-legacy。这里统一拆除会强制 GPU 合成层、
+   在老内核下可能击穿渲染进程的特效，让古老访客不崩、只是少点毛玻璃 / 动画位移。
+   现代浏览器完全拿不到该类，体验零影响。
+   ========================================================================== */
+html.jinyu-legacy {
+    /* 1) 头部毛玻璃 → 退回无模糊实底（@bg-header 即后台「关闭毛玻璃」路径的兜底色） */
+    .jinyu-header {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+    /* 2) 撤销一切 will-change 层提升提示，交回浏览器自行决定合成层 */
+    * { will-change: auto !important; }
+    /* 3) 小工具进场 / 悬浮的 translate3d（强制 3D 合成层）→ 降级为 2D translateY */
+    &.jinyu-widget-anim-ready {
+        .jinyu-widget,
+        .jinyu-footer-widget,
+        .jinyu-single-widget {
+            transform: translateY(16px) !important;
+        }
+        .jinyu-widget.is-in:hover {
+            transform: translateY(-3px) !important;
+        }
+    }
+}
+
+/* 古老内核提示条：默认隐藏，仅 jinyu-legacy 时显示（非阻塞、可关闭、可记忆） */
+.jinyu-legacy-notice {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    background: #2b2f36;
+    color: #fff;
+    font-size: 13px;
+    line-height: 1.5;
+    box-shadow: 0 -2px 12px rgba(0, 0, 0, .25);
+}
+html.jinyu-legacy .jinyu-legacy-notice { display: flex; }
+html.jinyu-legacy-notice-off .jinyu-legacy-notice { display: none !important; }
+.jinyu-legacy-notice span { flex: 1; }
+.jinyu-legacy-notice button {
+    flex: none;
+    border: 0;
+    background: transparent;
+    color: #fff;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 2px 8px;
+    opacity: .8;
+}
+.jinyu-legacy-notice button:hover { opacity: 1; }
 
 /* 登录且存在 WP admin bar 时，sticky 头部避免被 admin bar 盖住 */
 body.admin-bar .jinyu-header { top: 32px; }
@@ -628,6 +700,54 @@ html.jinyu-tools-compact {
         line-height: 1.6;
         min-width: 0;
     }
+
+    // 滚动显示（top_notice_scroll）：多条公告垂直上下轮播。
+    // 图标固定左侧，右侧视口只显示一条，track 上下移动实现无缝循环。
+    &--scroll {
+        .jinyu-top-notice-card {
+            gap: @s-3;
+        }
+
+        .jinyu-top-notice-viewport {
+            flex: 1 1 auto;
+            min-width: 0;
+            height: 1.6em;
+            overflow: hidden;
+            line-height: 1.6;
+        }
+
+        .jinyu-top-notice-track {
+            display: flex;
+            flex-direction: column;
+            will-change: transform;
+            animation: jinyu-notice-scroll 6s linear infinite;
+
+            > span {
+                height: 1.6em;
+                line-height: 1.6;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            &:hover {
+                animation-play-state: paused;
+            }
+        }
+    }
+}
+
+@keyframes jinyu-notice-scroll {
+    from { transform: translateY( 0 ); }
+    to   { transform: translateY( -50% ); }
+}
+
+// 尊重「减少动态效果」系统偏好：关闭轮播，回退为静态展示。
+@media ( prefers-reduced-motion: reduce ) {
+    .jinyu-top-notice--scroll .jinyu-top-notice-track {
+        animation: none;
+        transform: translateY( 0 );
+    }
 }
 
 
@@ -671,95 +791,100 @@ html.jinyu-tools-compact {
    ① 头条大卡通栏 → ② 两张半宽宽卡 → ③ 三张三分之一小卡，循环往复。
    纯 CSS nth-child 节奏，不依赖 PHP 改动。
    末位兜底（nth-last-child）：任意总篇数都不会出现「落单小卡 / 末行空洞」。 */
-.jinyu-layout-cms .jinyu-post-grid {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-}
+/* 桌面（≥993px）：6 轨网格。⚠️ 整段锁进桌面媒体查询——末位兜底规则的
+   nth-last-child 特异性比平板/手机块更高，若不隔离会泄漏到窄屏：
+   span 6/3 在单列网格里撑出隐式列、row+固定封面宽把手机卡挤扁。 */
+@media (min-width: 993px) {
+    .jinyu-layout-cms .jinyu-post-grid {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
 
-/* ① 头条大卡：通栏，横向（封面 56% + 大标题） */
-.jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-child(6n+1) {
-    grid-column: span 6;
-    flex-direction: row;
-    align-items: stretch;
-}
-.jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-child(6n+1) .jinyu-post-cover {
-    flex: 0 0 56%;
-    aspect-ratio: 16 / 9;
-}
-.jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-child(6n+1) .jinyu-post-info {
-    justify-content: center;
-    padding: @s-6 @s-8;
-}
-.jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-child(6n+1) .jinyu-post-title { font-size: @fs-2xl; }
+    /* ① 头条大卡：通栏，横向（封面 56% + 大标题） */
+    .jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-child(6n+1) {
+        grid-column: span 6;
+        flex-direction: row;
+        align-items: stretch;
+    }
+    .jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-child(6n+1) .jinyu-post-cover {
+        flex: 0 0 56%;
+        aspect-ratio: 16 / 9;
+    }
+    .jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-child(6n+1) .jinyu-post-info {
+        justify-content: center;
+        padding: @s-6 @s-8;
+    }
+    .jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-child(6n+1) .jinyu-post-title { font-size: @fs-2xl; }
 
-/* ② 半宽宽卡：横向（封面 50% + 中标题） */
-.jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-child(6n+2),
-.jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-child(6n+3) {
-    grid-column: span 3;
-    flex-direction: row;
-    align-items: stretch;
-}
-.jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-child(6n+2) .jinyu-post-cover,
-.jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-child(6n+3) .jinyu-post-cover {
-    flex: 0 0 50%;
-    aspect-ratio: 16 / 10;
-}
-.jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-child(6n+2) .jinyu-post-info,
-.jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-child(6n+3) .jinyu-post-info {
-    justify-content: center;
-    padding: @s-4 @s-5;
-}
-.jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-child(6n+2) .jinyu-post-title,
-.jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-child(6n+3) .jinyu-post-title { font-size: @fs-xl; }
+    /* ② 半宽宽卡：横向（封面 50% + 中标题） */
+    .jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-child(6n+2),
+    .jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-child(6n+3) {
+        grid-column: span 3;
+        flex-direction: row;
+        align-items: stretch;
+    }
+    .jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-child(6n+2) .jinyu-post-cover,
+    .jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-child(6n+3) .jinyu-post-cover {
+        flex: 0 0 50%;
+        aspect-ratio: 16 / 10;
+    }
+    .jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-child(6n+2) .jinyu-post-info,
+    .jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-child(6n+3) .jinyu-post-info {
+        justify-content: center;
+        padding: @s-4 @s-5;
+    }
+    .jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-child(6n+2) .jinyu-post-title,
+    .jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-child(6n+3) .jinyu-post-title { font-size: @fs-xl; }
 
-/* ③ 三分之一小卡：纵向默认（封面在上 + 小标题），占一格 */
-.jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-child(6n+4),
-.jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-child(6n+5),
-.jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-child(6n+6) {
-    grid-column: span 2;
-}
+    /* ③ 三分之一小卡：纵向默认（封面在上 + 小标题），占一格 */
+    .jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-child(6n+4),
+    .jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-child(6n+5),
+    .jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-child(6n+6) {
+        grid-column: span 2;
+    }
 
-/* ============ 末位兜底：消除落单小卡 ============
-   总篇数 mod 6 = 2：末篇本是 lone 半宽 → 拉通成收尾大卡（与头条对称）
-   总篇数 mod 6 = 4：末篇本是 lone 三分之一 → 拉通成收尾大卡
-   总篇数 mod 6 = 5：末两篇本占 2/3 宽 → 改成两张半宽，末行刚好填满
-   （mod 6 ∈ {0,1,3} 末行本就满排，无需处理） */
-.jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-last-child(1):nth-child(6n+2),
-.jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-last-child(1):nth-child(6n+4) {
-    grid-column: span 6;
-    flex-direction: row;
-    align-items: stretch;
-}
-.jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-last-child(1):nth-child(6n+2) .jinyu-post-cover,
-.jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-last-child(1):nth-child(6n+4) .jinyu-post-cover {
-    flex: 0 0 56%;
-    aspect-ratio: 16 / 9;
-}
-.jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-last-child(1):nth-child(6n+2) .jinyu-post-info,
-.jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-last-child(1):nth-child(6n+4) .jinyu-post-info {
-    justify-content: center;
-    padding: @s-6 @s-8;
-}
-.jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-last-child(1):nth-child(6n+2) .jinyu-post-title,
-.jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-last-child(1):nth-child(6n+4) .jinyu-post-title { font-size: @fs-2xl; }
+    /* ============ 末位兜底：消除落单小卡 ============
+       总篇数 mod 6 = 2：末篇本是 lone 半宽 → 拉通成收尾大卡（与头条对称）
+       总篇数 mod 6 = 4：末篇本是 lone 三分之一 → 拉通成收尾大卡
+       总篇数 mod 6 = 5：末两篇本占 2/3 宽 → 改成两张半宽，末行刚好填满
+       （mod 6 ∈ {0,1,3} 末行本就满排，无需处理） */
+    .jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-last-child(1):nth-child(6n+2),
+    .jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-last-child(1):nth-child(6n+4) {
+        grid-column: span 6;
+        flex-direction: row;
+        align-items: stretch;
+    }
+    .jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-last-child(1):nth-child(6n+2) .jinyu-post-cover,
+    .jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-last-child(1):nth-child(6n+4) .jinyu-post-cover {
+        flex: 0 0 56%;
+        aspect-ratio: 16 / 9;
+    }
+    .jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-last-child(1):nth-child(6n+2) .jinyu-post-info,
+    .jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-last-child(1):nth-child(6n+4) .jinyu-post-info {
+        justify-content: center;
+        padding: @s-6 @s-8;
+    }
+    .jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-last-child(1):nth-child(6n+2) .jinyu-post-title,
+    .jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-last-child(1):nth-child(6n+4) .jinyu-post-title { font-size: @fs-2xl; }
 
-.jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-last-child(2):nth-child(6n+4),
-.jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-last-child(1):nth-child(6n+5) {
-    grid-column: span 3;
-    flex-direction: row;
-    align-items: stretch;
+    .jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-last-child(2):nth-child(6n+4),
+    .jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-last-child(1):nth-child(6n+5) {
+        grid-column: span 3;
+        flex-direction: row;
+        align-items: stretch;
+    }
+    .jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-last-child(2):nth-child(6n+4) .jinyu-post-cover,
+    .jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-last-child(1):nth-child(6n+5) .jinyu-post-cover {
+        flex: 0 0 50%;
+        aspect-ratio: 16 / 10;
+    }
+    .jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-last-child(2):nth-child(6n+4) .jinyu-post-info,
+    .jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-last-child(1):nth-child(6n+5) .jinyu-post-info {
+        justify-content: center;
+        padding: @s-4 @s-5;
+    }
+    .jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-last-child(2):nth-child(6n+4) .jinyu-post-title,
+    .jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-last-child(1):nth-child(6n+5) .jinyu-post-title { font-size: @fs-xl; }
 }
-.jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-last-child(2):nth-child(6n+4) .jinyu-post-cover,
-.jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-last-child(1):nth-child(6n+5) .jinyu-post-cover {
-    flex: 0 0 50%;
-    aspect-ratio: 16 / 10;
-}
-.jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-last-child(2):nth-child(6n+4) .jinyu-post-info,
-.jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-last-child(1):nth-child(6n+5) .jinyu-post-info {
-    justify-content: center;
-    padding: @s-4 @s-5;
-}
-.jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-last-child(2):nth-child(6n+4) .jinyu-post-title,
-.jinyu-layout-cms .jinyu-post-grid .jinyu-post-card:nth-last-child(1):nth-child(6n+5) .jinyu-post-title { font-size: @fs-xl; }
 
 /* 平板（577–992px）：2 轨。改用 5 篇一循环（1 头条通栏 + 4 半宽两行），
    块内必满，绝不落单；末篇落单（mod5 ∈ {2,4}）再拉通收尾。 */
@@ -3864,9 +3989,10 @@ html.jinyu-tools-compact {
 .jinyu-mask {
     position: fixed;
     inset: 0;
+    /* 不使用 backdrop-filter：整屏模糊合成层在部分 GPU/驱动下会击穿渲染进程，
+       导致搜索/登录弹窗打开或交互时整标签页白屏崩溃（STATUS_BREAKPOINT）。
+       @bg-mask 已是 rgba(0,0,0,.55) 半透明黑底，暗化效果足够，无需模糊。 */
     background: @bg-mask;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
     z-index: @z-mask;
     display: flex;
     align-items: center;
@@ -3884,7 +4010,7 @@ html.jinyu-tools-compact {
     border-radius: @radius-lg;
     padding: @s-6;
     box-shadow: @shadow-float;
-    animation: jinyu-pop-in .25s @ease-out-expo;
+    animation: jinyu-fade-in .2s ease-out;
 }
 
 .jinyu-search-form {
@@ -3977,7 +4103,7 @@ html.jinyu-tools-compact {
     border-radius: @radius-lg;
     padding: @s-6;
     box-shadow: @shadow-float;
-    animation: jinyu-pop-in .25s @ease-out-expo;
+    animation: jinyu-fade-in .2s ease-out;
 }
 
 .jinyu-share-title { font-size: @fs-md; font-weight: 700; color: @text-1; margin-bottom: @s-4; text-align: center; }
@@ -4012,6 +4138,13 @@ html.jinyu-tools-compact {
 @keyframes jinyu-pop-in {
     from { opacity: 0; transform: translateY(12px) scale(.98); }
     to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* 仅用 opacity 的入场淡入：不引入 transform 合成层，避免部分 GPU/驱动下
+   搜索弹窗/建议下拉出现时击穿渲染进程。用于 .jinyu-search-panel / .jinyu-search-suggest。 */
+@keyframes jinyu-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
 }
 
 /* 入场动画只服务于"滚动到视口"的场景：首屏元素的 .jinyu-visible 由 jinyu.js
@@ -5030,6 +5163,43 @@ a,button,input,label,summary{ -webkit-tap-highlight-color: transparent; }
         animation: none;
     }
 }
+
+/* ==========================================================================
+   古老内核提示条（1.3.2）
+   --------------------------------------------------------------------------
+   默认隐藏，仅 html.jinyu-legacy 时显示（非阻塞、可关闭、关闭状态记忆）。
+   与下方 html.jinyu-legacy 降级规则配套：命中旧内核时既拆掉 GPU 合成
+   触发点，也提示访客升级浏览器。
+   ========================================================================== */
+.jinyu-legacy-notice {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    background: #2b2f36;
+    color: #fff;
+    font-size: 13px;
+    line-height: 1.5;
+    box-shadow: 0 -2px 12px rgba(0, 0, 0, .25);
+}
+html.jinyu-legacy .jinyu-legacy-notice { display: flex; }
+html.jinyu-legacy-notice-off .jinyu-legacy-notice { display: none !important; }
+.jinyu-legacy-notice span { flex: 1; }
+.jinyu-legacy-notice button {
+    flex: none;
+    border: 0;
+    background: transparent;
+    color: #fff;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 2px 8px;
+    opacity: .8;
+}
+.jinyu-legacy-notice button:hover { opacity: 1; }
 
 /* ==========================================================================
    古老内核盾（1.3.2）

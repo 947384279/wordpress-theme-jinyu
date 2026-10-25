@@ -52,12 +52,18 @@ var ff=(m=ua.match(/Firefox\/(\d+)/))?parseInt(m[1],10):0;
 if(chrome&&chrome<120)legacy=true;
 if(safari&&safari<15)legacy=true;
 if(ff&&ff<110)legacy=true;
-if(legacy){document.documentElement.className+=' jinyu-legacy';}
+if(legacy){document.documentElement.className+=' jinyu-legacy';
+try{if(localStorage.getItem('jinyuLegacyNoticeDismissed')==='1')document.documentElement.className+=' jinyu-legacy-notice-off';}catch(e){}}
 })();
 </script>
 </head>
 <body <?php body_class(); ?>>
 <?php wp_body_open(); ?>
+
+<div class="jinyu-legacy-notice" role="alert">
+	<span><?php esc_html_e( '您的浏览器版本过旧，部分视觉效果已自动降级以保障稳定。建议升级浏览器以获得最佳体验。', 'jinyu' ); ?></span>
+	<button type="button" data-jinyu-legacy-dismiss aria-label="<?php esc_attr_e( '关闭提示', 'jinyu' ); ?>">&times;</button>
+</div>
 
 <a href="#jinyu-content" class="jinyu-skip-link"><?php esc_html_e( 'Skip to content', 'jinyu' ); ?></a>
 

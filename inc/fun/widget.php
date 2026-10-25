@@ -91,17 +91,29 @@ if ( ! function_exists( 'jinyu_tag_cloud_html' ) ) {
 	 * @return string 已逐字段转义的 HTML；无标签时返回空串
 	 */
 	function jinyu_tag_cloud_html( int $num = 20 ): string {
-		$tags = get_tags(
-			[
-				'orderby'    => 'count',
-				'order'      => 'DESC',
-				'number'     => max( 5, min( 50, $num ) ),
-				'hide_empty' => true,
-			]
-		);
+		$num = max( 5, min( 50, $num ) );
+		// 标签列表跨请求缓存（TTL 1h）：随文章发布/删除变化，save_post 经
+		// jinyu_cache_flush_content_lists() 失效。取满 50 条后再按各实例 $num 截，
+		// 让多个标签云实例共享同一份缓存，避免按 num 各存一份。
+		$tags = jinyu_cache_get( 'tag_cloud_tags' );
+		if ( false === $tags ) {
+			$tags = get_tags(
+				[
+					'orderby'    => 'count',
+					'order'      => 'DESC',
+					'number'     => 50,
+					'hide_empty' => true,
+				]
+			);
+			if ( ! is_array( $tags ) ) {
+				$tags = [];
+			}
+			jinyu_cache_set( 'tag_cloud_tags', $tags, HOUR_IN_SECONDS );
+		}
 		if ( ! $tags ) {
 			return '';
 		}
+		$tags = array_slice( $tags, 0, $num );
 
 		$first = reset( $tags );              // 已按 count DESC 排序，首项即最热
 		$max   = max( 1, (int) $first->count );
@@ -519,17 +531,26 @@ class Jinyu_Categories_Widget extends WP_Widget {
 	public function widget( $args, $instance ) {
 		$title = $instance['title'] ?? __( '<i class="fa-regular fa-folder-open"></i> Categories', 'jinyu' );
 		$hide  = ! empty( $instance['hide_empty'] ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		// 分类列表跨请求缓存（TTL 1h）：随文章发布/删除变化，save_post 经
+		// jinyu_cache_flush_content_lists() 失效（key 按 hide_empty 分 0/1 两种）。
+		$key  = 'cat_list_' . ( $hide ? 1 : 0 );
+		$html = jinyu_cache_get( $key );
+		if ( false === $html ) {
+			$cats = get_categories( [ 'hide_empty' => $hide ] );
+			$html = '';
+			if ( $cats ) {
+				$html .= '<ul class="jinyu-widget-list jinyu-cat-list">';
+				foreach ( $cats as $c ) {
+					$html .= '<li><a href="' . esc_url( get_category_link( $c->term_id ) ) . '">' . esc_html( $c->name ) . '</a>';
+					$html .= '<span class="jinyu-cat-count">' . (int) $c->count . '</span></li>';
+				}
+				$html .= '</ul>';
+			}
+			jinyu_cache_set( $key, $html, HOUR_IN_SECONDS );
+		}
 		echo $args['before_widget']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		echo $args['before_title'] . jinyu_widget_title( $title ) . $args['after_title']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-		$cats = get_categories( [ 'hide_empty' => $hide ] );
-		if ( $cats ) {
-			echo '<ul class="jinyu-widget-list jinyu-cat-list">';
-			foreach ( $cats as $c ) {
-				echo '<li><a href="' . esc_url( get_category_link( $c->term_id ) ) . '">' . esc_html( $c->name ) . '</a>';
-				echo '<span class="jinyu-cat-count">' . (int) $c->count . '</span></li>';
-			}
-			echo '</ul>';
-		} /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+		echo $html; // phpcs:ignore WordPress.Security.EscapeOutput -- 内部已逐字段转义（esc_url/esc_html/(int)）
 		echo $args['after_widget']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 	}
 	public function form( $instance ) {
@@ -1014,18 +1035,23 @@ class Jinyu_Gallery_Widget extends WP_Widget {
 
 	/** 自动模式：取分类下文章的封面（jinyu_get_post_cover 自带兜底图，不会破图） */
 	private function items_from_posts( $cat, $num ) {
-		$q     = new WP_Query(
+		// 结果集缓存：ID 列表 + 已取对象（含 meta/term）一并缓存，
+		// 命中后整段循环 0 SQL，与热门/随机/相关小工具保持同一套缓存纪律。
+		$cache_key = 'gallery_cat_' . $cat . '_' . $num;
+		$ids       = jinyu_cached_post_ids(
+			$cache_key,
+			10 * MINUTE_IN_SECONDS,
 			[
 				'post_type'              => 'post',
 				'posts_per_page'         => $num,
 				'cat'                    => $cat,
 				'ignore_sticky_posts'    => true,
-				'no_found_rows'          => true,
 				'update_post_term_cache' => false,
 			]
 		);
-		$items = [];
-		foreach ( $q->posts as $p ) {
+		$posts     = jinyu_hydrate_posts_cached( $ids, $cache_key, 10 * MINUTE_IN_SECONDS );
+		$items     = [];
+		foreach ( $posts as $p ) {
 			$items[] = [
 				'img'   => jinyu_get_post_cover( $p->ID, 'jinyu-thumb' ),
 				'url'   => get_permalink( $p ),
@@ -1258,6 +1284,10 @@ if ( ! class_exists( 'Jinyu_Newcomers_Widget' ) ) {
 			echo $args['before_widget']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 			echo $args['before_title'] . jinyu_widget_title( $title ) . $args['after_title']; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 
+		// 结果集缓存：users / commenters 两条分支的查询只在 TTL 内跑一次。
+		// 用户注册、评论审核经 cache.php 的 jinyu_cache_flush() 自动失效，不会显示陈旧数据。
+		$items = jinyu_cache_get( 'newcomers_' . $source . '_' . $num );
+		if ( ! is_array( $items ) ) {
 			$items = [];
 			if ( $source === 'users' ) {
 				foreach ( get_users(
@@ -1299,6 +1329,8 @@ if ( ! class_exists( 'Jinyu_Newcomers_Widget' ) ) {
 					}
 				}
 			}
+			jinyu_cache_set( 'newcomers_' . $source . '_' . $num, $items, 10 * MINUTE_IN_SECONDS );
+		}
 
 			if ( $items ) {
 				echo '<ul class="jinyu-newcomers">';

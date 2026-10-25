@@ -110,12 +110,14 @@ The remaining scripts and styles (homepage carousel, table of contents, likes, r
 
 = 1.3.2 =
 * Rebuilt the site notice banner: the "Site Notice" field now accepts one notice per line, with a dedicated toggle to show or hide the banner and a second toggle to scroll multiple notices vertically in a seamless loop. A single notice is displayed statically.
-* Added a legacy engine shield: an inline script in the document head detects outdated rendering engines (Chromium below 120, Safari below 15, Firefox below 110) and marks the document so that GPU-heavy effects such as backdrop blur are disabled, preventing renderer crashes on older browsers.
+* Added a legacy engine shield: an inline script in the document head detects outdated rendering engines (Chromium below 120, Safari below 15, Firefox below 110) and marks the document so that GPU-heavy effects such as backdrop blur are disabled, preventing renderer crashes on older browsers. A dismissible notice tells visitors their browser is outdated.
 * Sidebar behavior: when no widgets are added to the "Main Sidebar" in the admin, the theme no longer renders its built-in fallback widgets; the sidebar is hidden and the main column takes the full width.
 * Performance: removed the front-end global styles inline stylesheet (about 15 KB); block styles are provided by the theme itself. Tag clouds and category lists now use a cross-request cache that is invalidated whenever posts are published, edited or deleted.
 * Performance: author card counts (published posts and approved comments) are cached per author and invalidated precisely when the relevant post or comment changes.
 * Fixed the search overlay and suggestion list entrance animation to use a plain opacity fade (no movement) and removed the overlay backdrop blur, fixing renderer crashes on older engines.
 * Misc: renamed the "Standard list" style option to "Blog mode"; added three localized admin strings (close, changes applied, please try again).
+
+= 1.3.1 =
 
 = 1.3.0 =
 * Added code syntax highlighting: post code blocks rendered by highlight.js, with light/dark themes following the site automatically (toggle under "Content" settings).
