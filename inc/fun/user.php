@@ -177,8 +177,18 @@ function jinyu_avatar_https( string $url ): string {
 	return preg_replace( '#^http://#i', 'https://', $url );
 }
 
-function jinyu_user_avatar_url( int $user_id, int $size = 96 ): string {
-	$custom = get_user_meta( $user_id, 'jinyu_avatar', true );
+/**
+ * 取用户自定义 / OAuth / 本地插件头像 URL，没有时返回空串。
+ *
+ * $user_id 允许为 null：某些归档上下文（作者归档等）拿不到用户对象，
+ * 调用点传 null 会触发 TypeError 直接 500，故这里放宽为可空并归一化为 0。
+ *
+ * @param int|null $user_id int 参数。
+ * @param int      $size    int 参数。
+ */
+function jinyu_user_avatar_url( ?int $user_id, int $size = 96 ): string {
+	$user_id = (int) $user_id;
+	$custom  = get_user_meta( $user_id, 'jinyu_avatar', true );
 	if ( $custom ) {
 		return jinyu_avatar_proxy_url( jinyu_avatar_https( jinyu_img_to_webp_url( esc_url_raw( $custom ) ) ) );
 	}
@@ -255,10 +265,11 @@ if ( ! function_exists( 'jinyu_letter_avatar' ) ) {
 /**
  * 离线友好的默认头像（首字母 SVG），Gravatar 不可达时兜底
  *
- * @param int $user_id int 参数。
+ * @param int|null $user_id int 参数。
  */
-function jinyu_avatar_default( int $user_id ): string {
-	$user = get_userdata( $user_id );
+function jinyu_avatar_default( ?int $user_id ): string {
+	$user_id = (int) $user_id;
+	$user    = get_userdata( $user_id );
 	return jinyu_letter_avatar( $user ? (string) $user->display_name : '', 64 );
 }
 
