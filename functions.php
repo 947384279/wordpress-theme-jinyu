@@ -115,8 +115,17 @@ add_action(
 			return;
 		}
 		wp_enqueue_media(); // 设置页「上传/选择」字段依赖 wp.media，缺则点击无反应.
-		wp_enqueue_style( 'jinyu-admin', JINYU_ABS_URI . '/assets/dist/style/admin.min.css', [], substr( (string) md5_file( JINYU_ABS_DIR . '/assets/dist/style/admin.min.css' ), 0, 12 ) );
-		wp_enqueue_script( 'jinyu-admin', JINYU_ABS_URI . '/assets/dist/js/admin.min.js', [ 'jquery' ], substr( (string) md5_file( JINYU_ABS_DIR . '/assets/dist/js/admin.min.js' ), 0, 12 ), true );
+		// w.org 发行变体整体剔除了独立设置页（inc/setting/Jinyu_Setting.php 不随包发布），
+		// 对应的 admin.min.css / admin.min.js 也不随包发布 —— 此处必须判存在，
+		// 否则 md5_file() 会对不存在的文件告警、并把 404 的资源地址 enqueue 出去。
+		$admin_css = JINYU_ABS_DIR . '/assets/dist/style/admin.min.css';
+		if ( file_exists( $admin_css ) ) {
+			wp_enqueue_style( 'jinyu-admin', JINYU_ABS_URI . '/assets/dist/style/admin.min.css', [], substr( (string) md5_file( $admin_css ), 0, 12 ) );
+		}
+		$admin_js = JINYU_ABS_DIR . '/assets/dist/js/admin.min.js';
+		if ( file_exists( $admin_js ) ) {
+			wp_enqueue_script( 'jinyu-admin', JINYU_ABS_URI . '/assets/dist/js/admin.min.js', [ 'jquery' ], substr( (string) md5_file( $admin_js ), 0, 12 ), true );
+		}
 		// 后台配置页界面文案：整页由 admin.js 动态拼装，走不到 PHP 的 __()，
 		// 故单独注入一份词条表（词条本身在 inc/fun/admin-i18n.php，那里是数据而非逻辑）。
 		jinyu_admin_l10n();
