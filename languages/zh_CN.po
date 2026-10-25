@@ -597,8 +597,8 @@ msgstr ""
 "<div class=\"jinyu-wechat-guide-tip\">点击右上角 <b>···</b><br>即可分享给好友或朋友圈</div>"
 
 #: assets/js/jinyu.js
-msgid "<h3 class=\"jinyu-widget-title\">People also read</h3>"
-msgstr "<h3 class=\"jinyu-widget-title\">读过这篇的人还读了</h3>"
+msgid "People also read"
+msgstr "读过这篇的人还读了"
 
 #: assets/js/jinyu.js
 msgid ""
@@ -3479,8 +3479,8 @@ msgid "Site-wide grayscale (mourning mode)"
 msgstr "全站灰度 (哀悼模式)"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:41
-msgid "Standard list"
-msgstr "标准列表"
+msgid "Blog mode"
+msgstr "博客模式"
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:106
 msgid ""

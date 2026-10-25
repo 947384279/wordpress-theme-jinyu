@@ -289,10 +289,44 @@ add_action(
 			// jinyu_jinyu_post_X 双重前缀、与 post_X 缓存键不匹配、导致失效失效.
 			jinyu_cache_delete( 'post_' . $comment->comment_post_ID );
 		}
+		// 已登录用户发的评论计入其作者卡「评论数」
+		if ( ! empty( $comment->user_id ) ) {
+			jinyu_cache_delete( 'author_counts_' . (int) $comment->user_id );
+		}
 	},
 	10,
 	2
 );
+
+if ( ! function_exists( 'jinyu_author_counts' ) ) {
+	/**
+	 * 作者卡公开计数（已发布文章数 / 已审核评论数），带缓存。
+	 *
+	 * 文章页每次整页缓存 MISS 渲染作者卡都直查 COUNT(*)（实测为该页最贵单条 SQL）。
+	 * 按作者缓存 1 小时，并在文章 / 评论变动时按作者精确失效（见 inc/fun/cache.php）。
+	 *
+	 * @param  int $uid 作者用户 ID。
+	 * @return array{posts:int,comments:int}
+	 */
+	function jinyu_author_counts( int $uid ): array {
+		$key    = 'author_counts_' . $uid;
+		$counts = jinyu_cache_get( $key );
+		if ( ! is_array( $counts ) ) {
+			$counts = [
+				'posts'    => (int) count_user_posts( $uid, 'post', true ),
+				'comments' => (int) get_comments(
+					[
+						'user_id' => $uid,
+						'count'   => true,
+						'status'  => 'approve',
+					]
+				),
+			];
+			jinyu_cache_set( $key, $counts, HOUR_IN_SECONDS );
+		}
+		return $counts;
+	}
+}
 
 if ( ! function_exists( 'jinyu_author_box' ) ) {
 	/**
@@ -314,7 +348,7 @@ if ( ! function_exists( 'jinyu_author_box' ) ) {
 		}
 		$custom_avatar = jinyu_user_avatar_url( $uid );
 		$fallback      = jinyu_avatar_default( $uid );
-		$stats         = jinyu_user_stats( $uid );
+		$stats         = jinyu_author_counts( $uid );
 		$bio           = get_the_author_meta( 'description', $uid );
 
 		$html  = '<section class="jinyu-author-box" aria-label="' . esc_attr__( 'About the author', 'jinyu' ) . '">';

@@ -552,7 +552,7 @@ msgid ""
 msgstr ""
 
 #: assets/js/jinyu.js
-msgid "<h3 class=\"jinyu-widget-title\">People also read</h3>"
+msgid "People also read"
 msgstr ""
 
 #: assets/js/jinyu.js
@@ -3359,7 +3359,7 @@ msgid "Site-wide grayscale (mourning mode)"
 msgstr ""
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:41
-msgid "Standard list"
+msgid "Blog mode"
 msgstr ""
 
 #: inc/setting/options/Jinyu_OptionGlobal.php:106

@@ -2,8 +2,9 @@
 /**
  * 侧边栏
  *
- * 后台「外观 > 小工具」里若向「主侧边栏」拖拽了主题专属小工具，则优先渲染拖拽内容；
- * 若未配置或 sidebar 为空，则自动 fallback 到主题内置的默认小工具。
+ * 后台「外观 > 小工具」里向「主侧边栏」拖入的小工具通过 dynamic_sidebar 渲染；
+ * 若未拖入任何小工具（is_active_sidebar 为假），则整段侧边栏不输出，前台自动隐藏。
+ * 注：不再提供主题内置默认小工具 fallback —— 空侧边栏即隐藏，避免无意义占位。
  *
  * @package WordPress
  * @subpackage Jinyu
@@ -18,107 +19,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( jinyu_get_option( 'sidebar_pos', 'right' ) === 'none' ) {
 	return;
 }
+
+// 后台未向「主侧边栏」拖入任何小工具时，不渲染侧边栏（含主题内置默认小工具），避免无意义占位。
+if ( ! is_active_sidebar( 'sidebar-main' ) ) {
+	return;
+}
 ?>
 <aside class="jinyu-sidebar">
 
-	<?php if ( is_active_sidebar( 'sidebar-main' ) ) : ?>
-		<?php dynamic_sidebar( 'sidebar-main' ); ?>
-	<?php else : ?>
-
-		<!-- 站点信息卡 -->
-		<section class="jinyu-widget jinyu-widget--author jinyu-author-card">
-			<div class="jinyu-author-cover"></div>
-			<div class="jinyu-author-avatar">
-				<i class="fa-solid fa-user" aria-hidden="true"></i>
-			</div>
-			<div class="jinyu-author-info">
-				<h4 class="jinyu-author-name"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></h4>
-				<p class="jinyu-author-desc"><?php echo esc_html( get_bloginfo( 'description' ) ); ?></p>
-			</div>
-		</section>
-
-		<?php
-		// 热门文章：数据源与「金玉·热门文章」小工具共用 jinyu_get_hot_posts()（inc/fun/related.php）。
-		$hot_posts = jinyu_get_hot_posts( 5 );
-		?>
-		<section class="jinyu-widget">
-			<h3 class="jinyu-widget-title"><i class="fa-solid fa-fire" aria-hidden="true"></i> <?php esc_html_e( 'Popular Posts', 'jinyu' ); ?></h3>
-			<ul class="jinyu-hot-list">
-				<?php if ( $hot_posts ) : ?>
-					<?php foreach ( $hot_posts as $jy_i => $jy_p ) : ?>
-						<li class="jinyu-hot-item">
-							<span class="jinyu-hot-rank jinyu-rank-<?php echo esc_attr( min( 3, $jy_i + 1 ) ); ?>">
-								<?php echo esc_html( $jy_i + 1 ); ?>
-							</span>
-							<div class="jinyu-hot-info">
-								<div class="jinyu-hot-title">
-									<a href="<?php echo esc_url( get_permalink( $jy_p ) ); ?>"><?php echo esc_html( get_the_title( $jy_p ) ); ?></a>
-								</div>
-								<?php if ( jinyu_show_views() ) : ?>
-								<div class="jinyu-hot-views">
-									<i class="fa-regular fa-eye" aria-hidden="true"></i> <?php echo esc_html( jinyu_get_post_views( $jy_p->ID ) ); ?>
-								</div>
-								<?php endif; ?>
-							</div>
-						</li>
-					<?php endforeach; ?>
-				<?php else : ?>
-					<li class="jinyu-hot-item">
-						<span class="jinyu-hot-rank">1</span>
-						<div class="jinyu-hot-info"><div class="jinyu-hot-title"><?php esc_html_e( 'No popular posts yet', 'jinyu' ); ?></div></div>
-					</li>
-				<?php endif; ?>
-			</ul>
-		</section>
-
-		<!-- 分类目录 -->
-		<section class="jinyu-widget">
-			<h3 class="jinyu-widget-title"><i class="fa-regular fa-folder-open" aria-hidden="true"></i> <?php esc_html_e( 'Categories', 'jinyu' ); ?></h3>
-			<?php
-			$cats = get_categories( [ 'hide_empty' => true ] );
-			if ( $cats ) :
-				?>
-				<ul class="jinyu-widget-list jinyu-cat-list">
-					<?php foreach ( $cats as $c ) : ?>
-						<li>
-							<a href="<?php echo esc_url( get_category_link( $c->term_id ) ); ?>">
-								<?php echo esc_html( $c->name ); ?>
-								<span class="jinyu-cat-count"><?php echo (int) $c->count; ?></span>
-							</a>
-						</li>
-					<?php endforeach; ?>
-				</ul>
-			<?php else : ?>
-				<p class="jinyu-widget-empty"><?php esc_html_e( 'No categories yet', 'jinyu' ); ?></p>
-			<?php endif; ?>
-		</section>
-
-		<!-- 最新评论（与「金玉·最新评论」小工具共用：inc/fun/comment.php） -->
-		<?php $recent_comments = jinyu_recent_comments_list( 5 ); ?>
-		<section class="jinyu-widget">
-			<h3 class="jinyu-widget-title"><i class="fa-regular fa-comment" aria-hidden="true"></i> <?php esc_html_e( 'Recent Comments', 'jinyu' ); ?></h3>
-			<?php if ( $recent_comments ) : ?>
-				<?php echo $recent_comments; // phpcs:ignore WordPress.Security.EscapeOutput -- 内部函数已逐字段转义 ?>
-			<?php else : ?>
-				<p class="jinyu-widget-empty"><?php esc_html_e( 'No comments yet', 'jinyu' ); ?></p>
-			<?php endif; ?>
-		</section>
-
-		<!-- 标签云（与小工具共用 jinyu_tag_cloud_html()，样式/分级只有一套实现） -->
-		<?php $tag_cloud = jinyu_tag_cloud_html( 15 ); ?>
-		<?php if ( $tag_cloud !== '' ) : ?>
-		<section class="jinyu-widget">
-			<h3 class="jinyu-widget-title"><i class="fa-solid fa-tags" aria-hidden="true"></i> <?php esc_html_e( 'Tag Cloud', 'jinyu' ); ?></h3>
-			<div class="jinyu-tag-cloud"><?php echo $tag_cloud; // phpcs:ignore WordPress.Security.EscapeOutput -- 内部函数已逐字段转义 ?></div>
-		</section>
-		<?php endif; ?>
-
-		<!-- 搜索 -->
-		<section class="jinyu-widget">
-			<h3 class="jinyu-widget-title"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i> <?php esc_html_e( 'Search', 'jinyu' ); ?></h3>
-			<?php get_search_form(); ?>
-		</section>
-
-	<?php endif; ?>
+	<?php dynamic_sidebar( 'sidebar-main' ); ?>
 
 </aside>

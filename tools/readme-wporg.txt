@@ -4,7 +4,7 @@ Tags: blog, custom-colors, custom-logo, custom-menu, editor-style, featured-imag
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.3.1
+Stable tag: 1.3.2
 License: GPL v3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -113,7 +113,7 @@ License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 == Changelog ==
 
-= 1.3.1 =
+= 1.3.2 =
 
 = 1.3.0 =
 * 新增代码语法高亮：文章代码块由 highlight.js 渲染，明暗双主题跟随站点主题自动切换（后台「内容」设置可开关）。

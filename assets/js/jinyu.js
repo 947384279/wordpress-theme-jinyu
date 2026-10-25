@@ -466,6 +466,7 @@
             // 3) 极端兜底：整条横向滚动，项全可见（隐藏滚动条）
             navEl.classList.add('jinyu-nav-scroll');
             navEl.style.maxWidth = avail + 'px';
+            if (navEl.__jinyuBlobReposition) navEl.__jinyuBlobReposition();   // 流体缩放/滚动兜底后重定位液态光标
         }
 
         var fitTimer = 0;
@@ -505,6 +506,98 @@
                 sub.style.transform = '';
             });
         });
+
+        /* ---------- 桌面增强：液态光标（滑动背景） ----------
+           仅在桌面平铺态（mqDesktop）启用：注入 .jinyu-nav-blob（渐变实心 + 流动光带）与
+           .jinyu-nav-blob-ghost（模糊拖影，更长过渡形成液态拖尾）两枚光标，hover 在菜单项间
+           弹性滑动并有机形变；默认停在当前项。项宽因流体缩放/字体就绪而变化时由 fitNav 调
+           __jinyuBlobReposition 重定位。移动端浮层 / 极限横向滚动兜底态移除 .jinyu-nav-blob-on，
+           回落 CSS 无 JS 的当前项样式。 */
+        function navBlob() {
+            if (!navEl) return;
+            var RADII = ['14px', '18px 24px 16px 22px', '22px 16px 24px 18px', '16px 22px 18px 24px', '20px 16px 22px 18px'];
+            var main = null, ghost = null, current = null, marked = null, on = false;
+
+            // 仅取顶级 li（注入的 ghost/main 是 span，且子菜单 li 会让 :first-child / 全量查询失真）
+            function topLis() {
+                return Array.prototype.filter.call(navEl.children, function (el) {
+                    return el.tagName === 'LI';
+                });
+            }
+            function liIndex(li) {
+                return topLis().indexOf(li);
+            }
+            function findCurrent() {
+                var lis = topLis(), i, li;
+                for (i = 0; i < lis.length; i++) {
+                    li = lis[i];
+                    if (li.classList.contains('current-menu-item')
+                        || li.classList.contains('current_page_item')
+                        || li.classList.contains('jinyu-active')) {
+                        return li;
+                    }
+                }
+                return lis[0] || null;
+            }
+            // 光标所停项标白字：不依赖 :hover / WP current 类（首页自定义链接 Home 常无 current 类）
+            function mark(li) {
+                if (marked === li) return;
+                if (marked) marked.classList.remove('jinyu-nav-cur');
+                marked = li;
+                if (marked) marked.classList.add('jinyu-nav-cur');
+            }
+            function place(li) {
+                if (!li || !on) return;
+                var x = li.offsetLeft, w = li.offsetWidth, h = li.offsetHeight;
+                var r = RADII[liIndex(li) % RADII.length];
+                main.style.opacity = ghost.style.opacity = '1';
+                main.style.width = ghost.style.width = w + 'px';
+                main.style.height = ghost.style.height = h + 'px';
+                main.style.transform = ghost.style.transform = 'translate(' + x + 'px, -50%)';
+                main.style.borderRadius = ghost.style.borderRadius = r;
+                mark(li);
+            }
+            function show() {
+                if (on) return;
+                on = true;
+                if (!main) {
+                    ghost = doc.createElement('span');
+                    ghost.className = 'jinyu-nav-blob-ghost';
+                    main = doc.createElement('span');
+                    main.className = 'jinyu-nav-blob';
+                    navEl.insertBefore(ghost, navEl.firstChild);
+                    navEl.insertBefore(main, ghost.nextSibling);
+                    navEl.addEventListener('mouseleave', function () { place(current); });
+                    topLis().forEach(function (li) {
+                        li.addEventListener('mouseenter', function () { place(li); });
+                    });
+                }
+                navEl.classList.add('jinyu-nav-blob-on');
+                reposition();
+            }
+            function hide() {
+                on = false;
+                navEl.classList.remove('jinyu-nav-blob-on');
+                if (marked) { marked.classList.remove('jinyu-nav-cur'); marked = null; }
+                if (main) { main.style.opacity = '0'; ghost.style.opacity = '0'; }
+            }
+            function reposition() {
+                if (!on) return;
+                if (navEl.classList.contains('jinyu-nav-scroll')) {
+                    main.style.opacity = '0';
+                    ghost.style.opacity = '0';
+                    return;
+                }
+                if (!current || !navEl.contains(current)) current = findCurrent();
+                place(current);
+            }
+            navEl.__jinyuBlobReposition = reposition;
+
+            if (mqDesktop.matches) show();
+            if (mqDesktop.addEventListener) mqDesktop.addEventListener('change', function (e) { e.matches ? show() : hide(); });
+            else if (mqDesktop.addListener) mqDesktop.addListener(function (e) { e.matches ? show() : hide(); });
+        }
+        navBlob();
     }
 
     /* ======================================================================
@@ -1260,6 +1353,119 @@
     }
 
     /* ======================================================================
+       模块：瀑布流列均衡（JS 增强）
+       CSS 多列（column-count）按「列序」填充、底口靠 column-fill 估算平衡，
+       底部参差感强且阅读顺序变成竖排。这里改为显式列容器 + 「最短列优先」
+       投放：任意时刻各列底差最多一张卡，阅读顺序恢复横向时间序。
+       无 JS / 脚本异常时仍走 common.less 的 column-count 兜底。
+       ====================================================================== */
+    function masonry() {
+        var grid = $('.jinyu-layout-masonry .jinyu-post-grid');
+        if (!grid || grid.dataset.masonryReady) return;
+        grid.dataset.masonryReady = '1';
+
+        /* 断点须与 common.less 的媒体查询一致：>992 三列、>576 两列、其余单列 */
+        function colCount() {
+            if (window.matchMedia('(max-width: 576px)').matches) return 1;
+            return window.matchMedia('(max-width: 992px)').matches ? 2 : 3;
+        }
+
+        /* 卡片搬进列容器后 nth-child 序号（按列内重新计数）会失真，封面比例
+           轮换（4n+k）随之错乱：投放前把每张封面 computed 的 aspect-ratio
+           固化为内联样式。先纯读后纯写（与 reveal() 同一纪律），避免读写
+           交替触发强制重排。 */
+        function pinRatios(list) {
+            var covers = [], ratios = [];
+            list.forEach(function (card) {
+                var cover = card.querySelector('.jinyu-post-cover');
+                covers.push(cover);
+                ratios.push(cover ? getComputedStyle(cover).aspectRatio : 'auto');
+            });
+            list.forEach(function (card, i) {
+                if (covers[i] && ratios[i] && ratios[i] !== 'auto') {
+                    covers[i].style.aspectRatio = ratios[i];
+                }
+            });
+        }
+
+        var cards = Array.prototype.filter.call(grid.children, function (el) {
+            return el.classList.contains('jinyu-post-card');
+        });
+        if (cards.length < 2) return;
+        pinRatios(cards);
+
+        var cols = [];
+        var lastCount = 0;
+
+        function layout() {
+            var n = colCount();
+            lastCount = n;
+            while (grid.firstChild) grid.removeChild(grid.firstChild);
+            grid.classList.add('jinyu-masonry-js');
+            cols = [];
+            for (var i = 0; i < n; i++) {
+                var col = doc.createElement('div');
+                col.className = 'jinyu-masonry-col';
+                cols.push(col);
+                grid.appendChild(col);
+            }
+            /* 逐卡「最短列优先」：每张卡投放到当前最矮的列，使各列累计高度
+               尽量接近。外层 .jinyu-masonry-js 用 align-items:flex-start（不拉伸），
+               故 offsetHeight 即列内容真实高度，贪心能正确区分空列与已填列、
+               不会退化成单列。投放完成后由下方代码把三列设为等高、列内
+               space-between 均摊缝隙，实现顶/底对齐；中间因封面比例轮换
+               （3:4/1:1/4:3/3:2）与摘要长短不一而呈现瀑布流错落。封面已固化
+               aspect-ratio、列宽一致，卡高投放即稳定。 */
+            cards.forEach(function (card) {
+                var t = 0;
+                for (var j = 1; j < cols.length; j++) {
+                    if (cols[j].offsetHeight < cols[t].offsetHeight) t = j;
+                }
+                cols[t].appendChild(card);
+            });
+            /* 顶/底对齐：量出最大内容高度，给每列设等高（flex-start 下
+               offsetHeight=内容高，未被拉伸干扰），列内 space-between 把
+               多出的高度均摊成缝隙 → 各列底部齐平，无整块空白。 */
+            var maxH = 0;
+            cols.forEach(function (c) { if (c.offsetHeight > maxH) maxH = c.offsetHeight; });
+            if (maxH > 0) cols.forEach(function (c) { c.style.height = maxH + 'px'; });
+        }
+
+        /* 中文字体加载会改变摘要换行与卡高，就绪后按真实高度重排一次 */
+        if (doc.fonts && doc.fonts.ready && doc.fonts.ready.then) {
+            doc.fonts.ready.then(function () {
+                if (grid.isConnected) layout();
+            });
+        }
+
+        /* 窗口尺寸跨断点才重建，列数不变时的微调不值得整版重排 */
+        var rsTimer = null;
+        window.addEventListener('resize', function () {
+            if (!grid.isConnected) return;
+            clearTimeout(rsTimer);
+            rsTimer = setTimeout(function () {
+                if (colCount() !== lastCount) layout();
+            }, 150);
+        });
+
+        /* 「加载更多」把新卡片追加在 grid 末尾（列容器之后），这里收编进
+           cards 并整体重排。loadMore() 在插入后派发 jinyu:grid-appended。 */
+        doc.addEventListener('jinyu:grid-appended', function () {
+            if (!grid.isConnected) return;
+            var fresh = [];
+            Array.prototype.forEach.call(grid.children, function (el) {
+                if (el.classList && el.classList.contains('jinyu-post-card')) fresh.push(el);
+            });
+            if (!fresh.length) return;
+            pinRatios(fresh);
+            fresh.forEach(function (el) { cards.push(el); });
+            layout();
+        });
+
+        layout();
+    }
+
+    /* ======================================================================
        模块：滚动入场动画
        ====================================================================== */
     function reveal() {
@@ -1352,7 +1558,11 @@
                 }
 
                 var wrap = $(btn.dataset.target || '.jinyu-post-grid');
-                if (wrap && res.data.html) wrap.insertAdjacentHTML('beforeend', res.data.html);
+                if (wrap && res.data.html) {
+                    wrap.insertAdjacentHTML('beforeend', res.data.html);
+                    /* 瀑布流列均衡模块监听此事件，把新卡片收编进最短列 */
+                    try { doc.dispatchEvent(new CustomEvent('jinyu:grid-appended')); } catch (e) { /* 旧浏览器忽略 */ }
+                }
 
                 page = Number(res.data.page || (page + 1));
                 btn.dataset.page = page;
@@ -3679,7 +3889,7 @@
             var list = (res.data && res.data.list) || [];
             if (!list.length) { box.style.display = 'none'; return; }
             box.innerHTML =
-                '<h3 class="jinyu-widget-title">People also read</h3>' +
+                '<h3 class="jinyu-widget-title">' + _t('coviewHeading', 'People also read') + '</h3>' +
                 '<div class="jinyu-coview-grid">' + list.map(function (it) {
                     return '<a class="jinyu-coview-card" href="' + encodeURI(it.url) + '">' +
                         '<div class="jinyu-coview-cover">' +
@@ -4806,7 +5016,7 @@ id: btn.dataset.id
     }
 
     window.jinyuReinit = function () {
-        [toc, codeBlock, codeHighlight, lightbox, reveal, carousel,
+        [toc, codeBlock, codeHighlight, lightbox, masonry, reveal, carousel,
          readProgress, backTop, loadMore, pageJump, headerScroll, coverFallback,
          liveSearch, fontScale, recentViewed, hoverCard, coView, articleVote, copyGuard, paraCopy, sidebarLive,
          widgetAnim, hitokoto, sales, social, coverIons, flinkApply, commentSmiley, ajaxComment, commentCounter,
@@ -4904,7 +5114,7 @@ id: btn.dataset.id
     var MODULES = [
         theme, greyMode, nav, search, readProgress, readEstimate, backTop, toc, liveSearch, fontScale, recentViewed,
         hoverCard, coView, articleVote, copyGuard, paraCopy,
-        codeBlock, codeHighlight, coverFallback, imgFallback, lazyImg, blurImg, postActions, share, reveal,
+        codeBlock, codeHighlight, coverFallback, imgFallback, lazyImg, blurImg, postActions, share, masonry, reveal,
         headerScroll, loadMore, pageJump, shortcodes, ajaxComment, auth, userForms, userTabs, commentCounter, confirmGuard,
         poster, qrcodeModule, donate, lightbox, carousel, pjax, luck, faviconBadge, sidebarLive,
         widgetAnim, hitokoto, sales, social, webVitals, coverIons, flinkApply

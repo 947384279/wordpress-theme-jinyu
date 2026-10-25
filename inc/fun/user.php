@@ -180,7 +180,7 @@ function jinyu_avatar_https( string $url ): string {
 function jinyu_user_avatar_url( int $user_id, int $size = 96 ): string {
 	$custom = get_user_meta( $user_id, 'jinyu_avatar', true );
 	if ( $custom ) {
-		return jinyu_avatar_https( jinyu_img_to_webp_url( esc_url_raw( $custom ) ) );
+		return jinyu_avatar_proxy_url( jinyu_avatar_https( jinyu_img_to_webp_url( esc_url_raw( $custom ) ) ) );
 	}
 	// 兼容：旧版全局 jinyu_oauth_avatar + 新版按平台 jinyu_oauth_{platform}_avatar
 	$oauth = '';
@@ -194,7 +194,7 @@ function jinyu_user_avatar_url( int $user_id, int $size = 96 ): string {
 		}
 	}
 	if ( $oauth ) {
-		return jinyu_avatar_https( jinyu_img_to_webp_url( esc_url_raw( $oauth ) ) );
+		return jinyu_avatar_proxy_url( jinyu_avatar_https( jinyu_img_to_webp_url( esc_url_raw( $oauth ) ) ) );
 	}
 	// 兼容本地头像插件与旧主题遗留：Simple Local Avatars 标准 meta（simple_local_avatar）
 	// 及 Kratos 旧主题的 kratos_local_avatar，结构均为序列化数组（full + 各尺寸 URL）。
@@ -204,7 +204,7 @@ function jinyu_user_avatar_url( int $user_id, int $size = 96 ): string {
 		if ( is_array( $local ) ) {
 			$url = $local[ $size ] ?? ( $local['full'] ?? '' );
 			if ( is_string( $url ) && preg_match( '#^https?://#i', $url ) ) {
-				return jinyu_avatar_https( jinyu_img_to_webp_url( esc_url_raw( $url ) ) );
+				return jinyu_avatar_proxy_url( jinyu_avatar_https( jinyu_img_to_webp_url( esc_url_raw( $url ) ) ) );
 			}
 		}
 	}

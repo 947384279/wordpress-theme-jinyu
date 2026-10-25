@@ -59,6 +59,7 @@ require_once JINYU_ABS_DIR . '/inc/fun/core.php';
 require_once JINYU_ABS_DIR . '/inc/fun/patterns.php';
 require_once JINYU_ABS_DIR . '/inc/fun/maintenance.php';
 require_once JINYU_ABS_DIR . '/inc/fun/feed.php';
+require_once JINYU_ABS_DIR . '/inc/fun/avatar-proxy.php';
 // SMTP 发信已迁至配套插件 jinyu-theme-companion（邮件 SMTP 分区）：主题保持纯呈现层，.
 // 避免两处重复注册 wp_ajax_jinyu_test_smtp（nonce 不同源，跨插件调用必被 check_ajax_referer 打回 403）.
 // 性能优化中心已迁至配套插件 jinyu-theme-companion（perf-center.php），
@@ -66,6 +67,20 @@ require_once JINYU_ABS_DIR . '/inc/fun/feed.php';
 // 契约：主题 apply_filters( 'jinyu_perf_options', [] ) 广播需求 → 插件 add_filter 注入自己的开关表；
 // 双方互不引用对方符号，插件缺席时自动落到 $default（零行为变更）。
 // 历史数据（主题时代的 jinyu_perf_options 等旧键）由插件侧一次性接管，主题不参与迁移。
+
+/**
+ * P1-6 性能优化：移除前端 global-styles 内联 CSS（约 15KB）。
+ *
+ * 本主题为经典主题，区块样式由 assets/style/block.less 自行接管（作用域 .jinyu-article-content）；
+ * 经实测，已发布文章 / 首页渲染 DOM 中 0 个 wp-block-* / is-layout-* / has-*-color 工具类 /
+ * 内联 --wp 变量依赖，theme.json 衍生的 global-styles 在前端纯属死重。
+ * 编辑器通过独立的 enqueue_block_editor_assets 钩子（wp_enqueue_global_styles_css_custom_properties）
+ * 仍保留全局样式，本移除仅影响前端，不影响后台区块编辑器。
+ * 仅摘 wp_enqueue_global_styles（主题预设 / 布局 / 工具类）；保留 wp_enqueue_stored_styles（用户自定义全局样式）。
+ */
+remove_action( 'wp_enqueue_scripts', 'wp_enqueue_global_styles' );
+remove_action( 'wp_footer', 'wp_enqueue_global_styles', 1 );
+
 function jinyu_perf_opt( string $key, bool $default = false ): bool {
 	// 同一次请求内只解析一次（静态缓存），避免 wp_enqueue_scripts / template_redirect
 	// 等多处高频调用时反复跑过滤器链。
@@ -174,11 +189,13 @@ add_action(
 add_filter(
 	'body_class',
 	function ( array $classes ): array {
-		$pos = jinyu_get_option( 'sidebar_pos', 'right' );
+		$pos        = jinyu_get_option( 'sidebar_pos', 'right' );
+		$has_sidebar = is_active_sidebar( 'sidebar-main' );
 		if ( 'left' === $pos ) {
 			$classes[] = 'jinyu-sidebar-left';
 		}
-		if ( 'none' === $pos ) {
+		// 显式关闭或后台未挂任何小工具时，均按「无侧边栏」布局（单页居中、主栏占满）。
+		if ( 'none' === $pos || ! $has_sidebar ) {
 			$classes[] = 'jinyu-no-sidebar';
 		}
 
@@ -246,10 +263,26 @@ add_action(
 			return file_exists( $p ) ? substr( (string) md5_file( $p ), 0, 12 ) : JINYU_CUR_VER;
 		};
 
-		// 图标样式为按白名单裁剪后的子集版本（tools/fa-subset.py 生成），.
-		// 新增图标请先往 assets/fonts/fa/icons.extra.txt 里追加再重新生成，否则会显示豆腐块.
-		wp_enqueue_style( 'jinyu-font-awesome', JINYU_ABS_URI . '/assets/fonts/fa/subset.min.css', [], '6.5.1' );
-		wp_enqueue_style( 'jinyu-style', JINYU_ABS_URI . '/assets/dist/style/style.min.css', [ 'jinyu-font-awesome' ], $css_ver );
+		// FontAwesome 子集已并入全局 style.min.css（构建期由 gulp 内联，见 buildStyle），
+		// 不再单独发请求。新增图标仍走 tools/fa-subset.py 重新生成 subset.min.css 即可。
+		wp_enqueue_style( 'jinyu-style', JINYU_ABS_URI . '/assets/dist/style/style.min.css', [], $css_ver );
+
+		// ── 按模板拆包：把仅特定路由用到的样式从全站 style.min.css 拆出，减小每页全局 CSS 体积 ──
+		// 首页轮播：仅首页加载。轮播是首页首屏/LCP 元素，保持阻塞渲染以避免 FOUC。
+		if ( is_front_page() || is_home() ) {
+			$home_css = JINYU_ABS_DIR . '/assets/dist/style/home.min.css';
+			if ( file_exists( $home_css ) ) {
+				wp_enqueue_style( 'jinyu-style-home', JINYU_ABS_URI . '/assets/dist/style/home.min.css', [ 'jinyu-style' ], substr( (string) md5_file( $home_css ), 0, 12 ) );
+			}
+		}
+
+		// 用户中心：仅用户模板页加载。用户卡片/导航位于首屏，故保持阻塞，不冒险异步。
+		if ( is_page_template( 'pages/template-user.php' ) || is_page_template( 'pages/template-user-tabs.php' ) ) {
+			$user_css = JINYU_ABS_DIR . '/assets/dist/style/user.min.css';
+			if ( file_exists( $user_css ) ) {
+				wp_enqueue_style( 'jinyu-style-user', JINYU_ABS_URI . '/assets/dist/style/user.min.css', [ 'jinyu-style' ], substr( (string) md5_file( $user_css ), 0, 12 ) );
+			}
+		}
 
 		$deps = [];
 		if ( is_singular() ) {
@@ -335,7 +368,7 @@ add_action(
 		);
 		// 前端可翻译文案字典：切语言后 JS 注入的 UI（阅读进度、加载中、评论提交等）随之翻译.
 		// 与 .po 翻译体系解耦，零构建步骤即可生效；后续若用 wp i18n 生成 languages/jinyu-xx_XX-js.json，.
-		// wp_set_script_translations 会自动接管，无需改动此处.
+		// 若将来 JS 改用 wp i18n，需在此显式调用 wp_set_script_translations（见下方警示注释）.
 		wp_localize_script(
 			'jinyu-main',
 			'JINYU_I18N',
@@ -378,13 +411,12 @@ add_action(
 				/* translators: %s: 占位符 */
 				'readProgress'   => __( '已读 %1$d% · 还需 %2$s', 'jinyu' ),
 				'tocHeading'     => __( 'Table of Contents', 'jinyu' ),
+				'coviewHeading'  => __( 'People also read', 'jinyu' ),
 			]
 		);
-		// 若已生成 JS 翻译 JSON（wp i18n 提取 + 编译），自动加载；不存在则静默忽略.
-		if ( function_exists( 'wp_set_script_translations' ) ) {
-			wp_set_script_translations( 'jinyu-main', 'jinyu' );
-		}
-		if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
+	// 注意：不要再加 wp_set_script_translations( 'jinyu-main' ) —— 主题 JS 不调用 wp.i18n，
+	// 该调用只会白白拉入 wp-i18n + wp-hooks 两个 head 阻塞脚本（2026-10-14 实测移除）。
+	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
 			wp_enqueue_script( 'comment-reply' );
 		}
 	}
