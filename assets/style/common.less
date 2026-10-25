@@ -331,6 +331,7 @@ html[data-theme="dark"] .jinyu-logo--dual .jinyu-logo-dark { display: block; }
     padding: 0;
     margin: 0;
     min-width: 0;
+    position: relative;       /* 为液态光标提供定位上下文；二级菜单相对 li 定位，此处新增不影响其包含块 */
 
     > li {
         position: relative;
@@ -410,6 +411,72 @@ html[data-theme="dark"] .jinyu-logo--dual .jinyu-logo-dark { display: block; }
             transform: translateY(0);
         }
     }
+}
+
+/* ---------- 桌面增强：液态光标（滑动背景） ----------
+   JS 在桌面平铺态注入 `.jinyu-nav-blob` / `.jinyu-nav-blob-ghost` 两枚光标：
+   主体为渐变实心胶囊，hover 时在菜单项间以弹性曲线滑动并有机形变，表层叠一条流动光带；
+   拖影（ghost）用更长过渡 + 模糊形成液态拖尾。默认停在当前项。
+   移动端浮层 / 极限横向滚动兜底态下 JS 移除 .jinyu-nav-blob-on，回落下方无 JS 的当前项样式。 */
+.jinyu-nav-blob,
+.jinyu-nav-blob-ghost {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0;
+    border-radius: 14px;
+    will-change: transform, width, border-radius;
+}
+.jinyu-nav-blob {
+    background: linear-gradient(135deg, @primary, @primary-dark);
+    box-shadow: 0 8px 20px -6px rgba(var(--jinyu-c-primary-rgb), .5);
+    transition: transform .55s cubic-bezier(.34, 1.3, .64, 1),
+                width .55s cubic-bezier(.34, 1.3, .64, 1),
+                border-radius .55s ease, opacity .35s ease;
+}
+.jinyu-nav-blob::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(110deg, transparent 25%, rgba(255, 255, 255, .42) 50%, transparent 75%);
+    background-size: 220% 100%;
+    mix-blend-mode: overlay;
+    animation: jinyu-blob-sheen 2.6s linear infinite;
+}
+.jinyu-nav-blob-ghost {
+    background: rgba(var(--jinyu-c-primary-rgb), .22);
+    filter: blur(7px);
+    transition: transform .75s cubic-bezier(.34, 1.3, .64, 1),
+                width .75s cubic-bezier(.34, 1.3, .64, 1),
+                border-radius .75s ease, opacity .4s ease;
+}
+@keyframes jinyu-blob-sheen {
+    from { background-position: 220% 0; }
+    to   { background-position: -220% 0; }
+}
+
+/* blob 启用时：去掉旧底色/下划线，转白字只留一个来源 —— JS 的 .jinyu-nav-cur（光标所停项）。
+   ⚠️ 这里不得再让 .current-menu-item / .current_page_item / .jinyu-active 无条件转白字：
+   光标滑到别的项后，该项底色仍是 transparent，白字落在页面白底上完全不可见。
+   首页自定义链接普遍带 current-menu-item，故表现为「鼠标移到其他 tab，Home 就消失」。
+   「当前项」的视觉由 jinyu.js navBlob().mark() 统一承担（含无 current 类的首页链接）。 */
+.jinyu-nav.jinyu-nav-blob-on > li { position: relative; z-index: 1; }
+.jinyu-nav.jinyu-nav-blob-on > li > a {
+    color: @text-2;
+    background: transparent;
+    box-shadow: none;
+    /* 变色必须滞后于 blob 行程：blob 的 transform 是 .55s 弹性曲线（前段即走过大半），
+       若立刻转白，会在「胶囊还没滑到」的空窗期留下白底白字。延迟 .16s + .18s 后白字出现时
+       胶囊已基本到位；反向亦然，鼠标移开时深字恢复与胶囊离开同步。 */
+    transition: color .18s ease .16s, background-color @transition-fast, box-shadow @transition-fast;
+}
+.jinyu-nav.jinyu-nav-blob-on > li:hover > a,
+.jinyu-nav.jinyu-nav-blob-on > li.jinyu-nav-cur > a {
+    color: #fff;
+    font-weight: 700;
 }
 
 /* 工具区兜底：桌面菜单放不下时由 jinyu.js 给 <html> 加 .jinyu-tools-compact，
@@ -4808,7 +4875,8 @@ html.jinyu-tools-compact {
 .jinyu-coview { margin: @s-6 0 0; }
 .jinyu-coview-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    /* 固定 2 列：本区域固定取 4 篇，2×2 铺满不留孤儿卡；auto-fill 会在内容列宽下算出 3 列形成 3+1 */
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: @s-4;
 }
 .jinyu-coview-card {
@@ -4901,5 +4969,111 @@ a,button,input,label,summary{ -webkit-tap-highlight-color: transparent; }
         background: @primary-light;
         box-shadow: inset 3px 0 0 @primary;
         font-weight: 600;
+    }
+}
+
+/* ==========================================================================
+   顶部公告：多行滚动轮播（1.3.2）
+   --------------------------------------------------------------------------
+   后台「顶部公告」改为多行 textarea（每行一条公告）。开启「滚动显示公告」且
+   条数 > 1 时走 .jinyu-top-notice--scroll 分支：
+
+   结构（见 header.php）：
+     .jinyu-top-notice--scroll
+       └ .jinyu-top-notice-card
+           └ .jinyu-top-notice-viewport   ← 固定高度，裁掉溢出
+               └ .jinyu-top-notice-track  ← 纵向平移，animation-duration 由 PHP 按条数算
+                   └ span × 2N            ← 内容复制一份实现无缝衔接
+
+   动画只跑 transform（合成层位移），不触发布局重排，旧内核也能扛。
+   尊重 prefers-reduced-motion：用户要求减少动效时直接静态平铺。
+   ========================================================================== */
+.jinyu-top-notice--scroll {
+    .jinyu-top-notice-card {
+        overflow: hidden;
+    }
+
+    .jinyu-top-notice-viewport {
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+    }
+
+    .jinyu-top-notice-track {
+        display: flex;
+        flex-direction: column;
+        will-change: transform;
+        animation-name: jinyu-notice-scroll;
+        animation-timing-function: ease-in-out;
+        animation-iteration-count: infinite;
+
+        span {
+            flex-shrink: 0;
+            min-height: 1.6em;
+        }
+    }
+}
+
+@keyframes jinyu-notice-scroll {
+    0%   { transform: translateY(0); }
+    50%  { transform: translateY(-50%); }
+    100% { transform: translateY(-50%); }
+}
+
+/* 悬停时暂停，方便用户读完当前条 */
+.jinyu-top-notice--scroll .jinyu-top-notice-card:hover .jinyu-top-notice-track {
+    animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .jinyu-top-notice--scroll .jinyu-top-notice-track {
+        animation: none;
+    }
+}
+
+/* ==========================================================================
+   古老内核盾（1.3.2）
+   --------------------------------------------------------------------------
+   header.php 在 </head> 前同步执行一段内联脚本，识别过旧渲染引擎
+   （Chromium < 120 / Safari < 15 / Firefox < 110），命中则给 <html> 追加
+   .jinyu-legacy。首帧即生效，无闪烁。
+
+   旧内核的已知问题：backdrop-filter / 复杂 box-shadow / 大量合成层会触发
+   渲染进程崩溃。这里统一把高风险特性降级为静态表现，优先保证「能打开、
+   能读」而不是「好看」。
+
+   ⚠️ 必须用 html.jinyu-legacy 作用域（类挂在 <html> 上，非 body）。
+   ========================================================================== */
+html.jinyu-legacy {
+    /* 毛玻璃是旧内核崩溃的首要触发点：一律关掉，改用不透明背景 */
+    .jinyu-header {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background: @bg-card !important;
+    }
+
+    .jinyu-mask {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        /* @bg-mask 是 var(--jinyu-c-bg-mask) 的引用，Less 无法对其做 fade() 运算，
+           这里直接给一个不透明的遮罩色（旧内核下遮罩本就该更实，避免透出内容）。 */
+        background: rgba(0, 0, 0, .92) !important;
+    }
+
+    /* 关掉所有非必要动画与过渡，避免长任务掉帧被误判为崩溃 */
+    *,
+    *::before,
+    *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    /* 大面积模糊阴影同样是合成层高发点 */
+    .jinyu-card,
+    .jinyu-post-card,
+    .jinyu-top-notice-card {
+        box-shadow: none !important;
     }
 }

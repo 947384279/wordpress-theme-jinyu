@@ -466,6 +466,7 @@
             // 3) 极端兜底：整条横向滚动，项全可见（隐藏滚动条）
             navEl.classList.add('jinyu-nav-scroll');
             navEl.style.maxWidth = avail + 'px';
+            if (navEl.__jinyuBlobReposition) navEl.__jinyuBlobReposition();   // 流体缩放/滚动兜底后重定位液态光标
         }
 
         var fitTimer = 0;
@@ -505,6 +506,98 @@
                 sub.style.transform = '';
             });
         });
+
+        /* ---------- 桌面增强：液态光标（滑动背景） ----------
+           仅在桌面平铺态（mqDesktop）启用：注入 .jinyu-nav-blob（渐变实心 + 流动光带）与
+           .jinyu-nav-blob-ghost（模糊拖影，更长过渡形成液态拖尾）两枚光标，hover 在菜单项间
+           弹性滑动并有机形变；默认停在当前项。项宽因流体缩放/字体就绪而变化时由 fitNav 调
+           __jinyuBlobReposition 重定位。移动端浮层 / 极限横向滚动兜底态移除 .jinyu-nav-blob-on，
+           回落 CSS 无 JS 的当前项样式。 */
+        function navBlob() {
+            if (!navEl) return;
+            var RADII = ['14px', '18px 24px 16px 22px', '22px 16px 24px 18px', '16px 22px 18px 24px', '20px 16px 22px 18px'];
+            var main = null, ghost = null, current = null, marked = null, on = false;
+
+            // 仅取顶级 li（注入的 ghost/main 是 span，且子菜单 li 会让 :first-child / 全量查询失真）
+            function topLis() {
+                return Array.prototype.filter.call(navEl.children, function (el) {
+                    return el.tagName === 'LI';
+                });
+            }
+            function liIndex(li) {
+                return topLis().indexOf(li);
+            }
+            function findCurrent() {
+                var lis = topLis(), i, li;
+                for (i = 0; i < lis.length; i++) {
+                    li = lis[i];
+                    if (li.classList.contains('current-menu-item')
+                        || li.classList.contains('current_page_item')
+                        || li.classList.contains('jinyu-active')) {
+                        return li;
+                    }
+                }
+                return lis[0] || null;
+            }
+            // 光标所停项标白字：不依赖 :hover / WP current 类（首页自定义链接 Home 常无 current 类）
+            function mark(li) {
+                if (marked === li) return;
+                if (marked) marked.classList.remove('jinyu-nav-cur');
+                marked = li;
+                if (marked) marked.classList.add('jinyu-nav-cur');
+            }
+            function place(li) {
+                if (!li || !on) return;
+                var x = li.offsetLeft, w = li.offsetWidth, h = li.offsetHeight;
+                var r = RADII[liIndex(li) % RADII.length];
+                main.style.opacity = ghost.style.opacity = '1';
+                main.style.width = ghost.style.width = w + 'px';
+                main.style.height = ghost.style.height = h + 'px';
+                main.style.transform = ghost.style.transform = 'translate(' + x + 'px, -50%)';
+                main.style.borderRadius = ghost.style.borderRadius = r;
+                mark(li);
+            }
+            function show() {
+                if (on) return;
+                on = true;
+                if (!main) {
+                    ghost = doc.createElement('span');
+                    ghost.className = 'jinyu-nav-blob-ghost';
+                    main = doc.createElement('span');
+                    main.className = 'jinyu-nav-blob';
+                    navEl.insertBefore(ghost, navEl.firstChild);
+                    navEl.insertBefore(main, ghost.nextSibling);
+                    navEl.addEventListener('mouseleave', function () { place(current); });
+                    topLis().forEach(function (li) {
+                        li.addEventListener('mouseenter', function () { place(li); });
+                    });
+                }
+                navEl.classList.add('jinyu-nav-blob-on');
+                reposition();
+            }
+            function hide() {
+                on = false;
+                navEl.classList.remove('jinyu-nav-blob-on');
+                if (marked) { marked.classList.remove('jinyu-nav-cur'); marked = null; }
+                if (main) { main.style.opacity = '0'; ghost.style.opacity = '0'; }
+            }
+            function reposition() {
+                if (!on) return;
+                if (navEl.classList.contains('jinyu-nav-scroll')) {
+                    main.style.opacity = '0';
+                    ghost.style.opacity = '0';
+                    return;
+                }
+                if (!current || !navEl.contains(current)) current = findCurrent();
+                place(current);
+            }
+            navEl.__jinyuBlobReposition = reposition;
+
+            if (mqDesktop.matches) show();
+            if (mqDesktop.addEventListener) mqDesktop.addEventListener('change', function (e) { e.matches ? show() : hide(); });
+            else if (mqDesktop.addListener) mqDesktop.addListener(function (e) { e.matches ? show() : hide(); });
+        }
+        navBlob();
     }
 
     /* ======================================================================
@@ -3796,7 +3889,7 @@
             var list = (res.data && res.data.list) || [];
             if (!list.length) { box.style.display = 'none'; return; }
             box.innerHTML =
-                '<h3 class="jinyu-widget-title">People also read</h3>' +
+                '<h3 class="jinyu-widget-title">' + _t('coviewHeading', 'People also read') + '</h3>' +
                 '<div class="jinyu-coview-grid">' + list.map(function (it) {
                     return '<a class="jinyu-coview-card" href="' + encodeURI(it.url) + '">' +
                         '<div class="jinyu-coview-cover">' +

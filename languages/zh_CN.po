@@ -147,167 +147,171 @@ msgstr "秒"
 msgid "To bottom"
 msgstr "去底部"
 
-#: functions.php:347
+#: functions.php:376
 msgid "About %d min"
 msgstr "约 %d 分钟"
 
-#: functions.php:644
+#: functions.php:672
 msgid "Agree"
 msgstr "同意"
 
-#: functions.php:377
+#: functions.php:406
 msgid "All marked as read"
 msgstr "已全部标记已读"
 
-#: functions.php:364
+#: functions.php:393
 msgid "Busy"
 msgstr "拥堵"
 
-#: functions.php:350
+#: functions.php:379
 msgid "Comment submitted"
 msgstr "评论已提交"
 
-#: functions.php:642
+#: functions.php:670
 msgid "Cookie Notice"
 msgstr "Cookie 提示"
 
-#: functions.php:356
+#: functions.php:385
 msgid "Copied"
 msgstr "已复制"
 
-#: functions.php:355 inc/fun/admin-i18n.php:53
+#: functions.php:384 inc/fun/admin-i18n.php:53
 #: pages/template-link-apply.php:90 pages/template-link-apply.php:102
 msgid "Copy"
 msgstr "复制"
 
-#: functions.php:370
+#: functions.php:399
 msgid "Copy failed. Please select the text manually"
 msgstr "复制失败，请手动选择"
 
-#: functions.php:357 templates/post-actions.php:42
+#: functions.php:386 templates/post-actions.php:42
 msgid "Favorited"
 msgstr "已收藏"
 
-#: functions.php:379
+#: functions.php:408
 msgid "Finished ✓"
 msgstr "已读完 ✓"
 
-#: functions.php:152
+#: functions.php:167
 msgid "Footer Menu"
 msgstr "页脚菜单"
 
-#: functions.php:366
+#: functions.php:395
 msgid "Last %d samples"
 msgstr "近 %d 次采样"
 
-#: functions.php:345
+#: functions.php:374
 msgid "Less than 1 min"
 msgstr "不到 1 分钟"
 
-#: functions.php:371
+#: functions.php:400
 msgid "Link copied"
 msgstr "链接已复制"
 
-#: functions.php:367 inc/fun/widget.php:1516
+#: functions.php:396 inc/fun/widget.php:1516
 msgid "Load"
 msgstr "负载"
 
-#: functions.php:354 inc/fun/template-tags.php:75
+#: functions.php:383 inc/fun/template-tags.php:75
 #: pages/template-user-tabs.php:469
 msgid "Load more"
 msgstr "加载更多"
 
-#: functions.php:348 pages/template-user-tabs.php:465
+#: functions.php:377 pages/template-user-tabs.php:465
 msgid "Loading…"
 msgstr "加载中…"
 
-#: functions.php:368
+#: functions.php:397
 msgid "Memory usage"
 msgstr "内存占用"
 
-#: functions.php:358
+#: functions.php:387
 msgid "Network error. Please try again later."
 msgstr "网络异常，请稍后重试"
 
-#: functions.php:353
+#: functions.php:382
 msgid "No cover image"
 msgstr "暂无封面"
 
-#: functions.php:352 inc/ajax/index.php:258
+#: functions.php:381 inc/ajax/index.php:258
 msgid "No more"
 msgstr "没有更多了"
 
-#: functions.php:373
+#: functions.php:402
 msgid "No post to jump to"
 msgstr "没有可跳转的文章"
 
-#: functions.php:374
+#: functions.php:403
 msgid "Operation failed. Please try again later."
 msgstr "操作失败，请稍后再试"
 
-#: functions.php:372
+#: functions.php:401
 msgid "Operation successful"
 msgstr "操作成功"
 
-#: functions.php:378
+#: functions.php:412
+msgid "People also read"
+msgstr "大家都在看"
+
+#: functions.php:407
 msgid "Press and hold or scan the QR code to read the full post"
 msgstr "长按 / 扫码阅读全文"
 
-#: functions.php:151
+#: functions.php:166
 msgid "Primary Menu"
 msgstr "主导航菜单"
 
-#: functions.php:359 inc/fun/admin-i18n.php:99
+#: functions.php:388 inc/fun/admin-i18n.php:102
 msgid "Processing…"
 msgstr "处理中…"
 
-#: functions.php:381
+#: functions.php:410
 msgid "Read %1$d%% · %2$s left"
 msgstr "已读 %1$d% · 还需 %2$s"
 
-#: functions.php:362
+#: functions.php:391
 msgid "Real-time"
 msgstr "实时"
 
-#: functions.php:369
+#: functions.php:398
 msgid "Samples"
 msgstr "采样"
 
-#: functions.php:363
+#: functions.php:392
 msgid "Slow"
 msgstr "偏慢"
 
-#: functions.php:361
+#: functions.php:390
 msgid "Stable"
 msgstr "持平"
 
-#: functions.php:351
+#: functions.php:380
 msgid "Submission failed. Please try again later."
 msgstr "提交失败，请稍后重试"
 
-#: functions.php:349
+#: functions.php:378
 msgid "Submitting…"
 msgstr "提交中…"
 
-#: functions.php:382
+#: functions.php:411
 msgid "Table of Contents"
 msgstr "目录"
 
-#: functions.php:360
+#: functions.php:389
 msgid ""
 "Tap \"Save image\" to enlarge it, then press and hold the image to save it "
 "to your album"
 msgstr "点「保存图片」放大后长按图片，即可保存到相册"
 
-#: functions.php:376
+#: functions.php:405
 msgid "Thanks for your feedback"
 msgstr "感谢你的反馈"
 
-#: functions.php:375
+#: functions.php:404
 msgid "Thanks for your support ♥"
 msgstr "感谢支持 ♥"
 
-#: functions.php:449
+#: functions.php:477
 msgid "The Jinyu theme is missing a PHP extension: %s"
 msgstr "金玉主题缺少 PHP 扩展：%s"
 
@@ -315,78 +319,78 @@ msgstr "金玉主题缺少 PHP 扩展：%s"
 msgid "The Jinyu theme requires PHP 8.0+. Current version: %s"
 msgstr "金玉主题要求 PHP 8.0+，当前版本 %s"
 
-#: functions.php:640
+#: functions.php:668
 msgid ""
 "This site uses cookies to improve your browsing experience. By continuing to"
 " browse, you agree to our privacy policy."
 msgstr "本站点使用 Cookie 以提升浏览体验，继续浏览即表示您同意我们的隐私政策。"
 
-#: functions.php:334 inc/setting/options/Jinyu_OptionBasic.php:71
+#: functions.php:363 inc/setting/options/Jinyu_OptionBasic.php:71
 msgid "Tip the author"
 msgstr "赞赏作者"
 
-#: header.php:245
+#: header.php:257
 msgid "Account Settings"
 msgstr "账号设置"
 
-#: header.php:255 pages/template-user.php:86
+#: header.php:267 pages/template-user.php:86
 msgid "Are you sure you want to log out?"
 msgstr "确定退出登录吗？"
 
-#: header.php:82
+#: header.php:94
 msgid "Close menu"
 msgstr "关闭菜单"
 
-#: header.php:81 header.php:83
+#: header.php:93 header.php:95
 msgid "Expand menu"
 msgstr "展开菜单"
 
-#: header.php:259 templates/auth-modal.php:49 templates/auth-modal.php:78
+#: header.php:271 templates/auth-modal.php:49 templates/auth-modal.php:78
 msgid "Log in"
 msgstr "登录"
 
-#: header.php:255 pages/template-user.php:88
+#: header.php:267 pages/template-user.php:88
 msgid "Log out"
 msgstr "退出登录"
 
-#: header.php:247 inc/fun/user.php:89 pages/template-user-tabs.php:459
+#: header.php:259 inc/fun/user.php:89 pages/template-user-tabs.php:459
 msgid "Messages"
 msgstr "消息中心"
 
-#: header.php:283
+#: header.php:317
 msgid "Press Esc to close"
 msgstr "按 Esc 关闭"
 
-#: header.php:184 searchform.php:14 searchform.php:19 searchform.php:20
+#: header.php:196 searchform.php:14 searchform.php:19 searchform.php:20
 msgid "Search"
 msgstr "搜索"
 
-#: header.php:270 inc/fun/widget.php:212
+#: header.php:291 inc/fun/widget.php:212
 msgid "Site Notice"
 msgstr "站点公告"
 
-#: header.php:280
+#: header.php:314
 msgid "Site search"
 msgstr "站内搜索"
 
-#: header.php:50
+#: header.php:62
 msgid "Skip to content"
 msgstr "跳到主内容"
 
-#: header.php:243 pages/template-user-tabs.php:184
+#: header.php:255 pages/template-user-tabs.php:184
 #: pages/template-user-tabs.php:204
 msgid "Submit Post"
 msgstr "投稿"
 
-#: header.php:189
+#: header.php:201
 msgid "Toggle light/dark mode"
 msgstr "切换明暗模式"
 
-#: header.php:228
+#: header.php:240
 msgid "User Center"
 msgstr "用户中心"
 
-#: header.php:196
+#: header.php:208
 msgid "User menu"
 msgstr "用户菜单"
 
@@ -695,11 +699,11 @@ msgstr ""
 "\n"
 "如果这不是你本人的操作，请忽略本邮件，原邮箱不受影响。\n"
 
-#: inc/fun/admin-i18n.php:135
+#: inc/fun/admin-i18n.php:138
 msgid " copy"
 msgstr " 副本"
 
-#: inc/fun/admin-i18n.php:105
+#: inc/fun/admin-i18n.php:108
 msgid "A task is already running; it will resume automatically…"
 msgstr "任务正在进行，稍候自动接管…"
 
@@ -707,17 +711,17 @@ msgstr "任务正在进行，稍候自动接管…"
 msgid "Add item"
 msgstr "添加项"
 
-#: inc/fun/admin-i18n.php:86
+#: inc/fun/admin-i18n.php:89
 msgid ""
 "API request failed (HTTP %s). Try refreshing the page; if it keeps "
 "happening, log in again"
 msgstr "接口请求失败（HTTP %s）。请刷新页面重试；若反复出现请重新登录"
 
-#: inc/fun/admin-i18n.php:126
+#: inc/fun/admin-i18n.php:129
 msgid "Choose a file and import"
 msgstr "选择文件并导入"
 
-#: inc/fun/admin-i18n.php:131
+#: inc/fun/admin-i18n.php:134
 msgid "Clear"
 msgstr "清除"
 
@@ -729,8 +733,8 @@ msgstr "点击右侧按钮选择，或直接输入网址"
 msgid "Click to select or enter a URL"
 msgstr "点击选择或输入网址"
 
-#: inc/fun/admin-i18n.php:114 inc/setting/options/Jinyu_OptionUser.php:77
-#: templates/auth-modal.php:26
+#: inc/fun/admin-i18n.php:80 inc/fun/admin-i18n.php:117
+#: inc/setting/options/Jinyu_OptionUser.php:77 templates/auth-modal.php:26
 msgid "Close"
 msgstr "关闭"
 
@@ -738,7 +742,7 @@ msgstr "关闭"
 msgid "Collapse / expand sidebar"
 msgstr "折叠 / 展开侧栏"
 
-#: inc/fun/admin-i18n.php:88
+#: inc/fun/admin-i18n.php:91
 msgid "Could not parse the API response (HTTP %s)"
 msgstr "无法解析接口响应（HTTP %s）"
 
@@ -750,7 +754,7 @@ msgstr "删除"
 msgid "Deselect all"
 msgstr "全不选"
 
-#: inc/fun/admin-i18n.php:129
+#: inc/fun/admin-i18n.php:132
 msgid "Disabled"
 msgstr "已关闭"
 
@@ -762,45 +766,45 @@ msgstr "完成"
 msgid "Drag to sort"
 msgstr "拖拽排序"
 
-#: inc/fun/admin-i18n.php:128
+#: inc/fun/admin-i18n.php:131
 msgid "Enabled"
 msgstr "已开启"
 
-#: inc/fun/admin-i18n.php:122
+#: inc/fun/admin-i18n.php:125
 msgid ""
 "Export all theme settings to a JSON file for backup and multi-site "
 "migration."
 msgstr "将当前所有主题设置导出为 JSON 文件，便于备份与多站迁移。"
 
-#: inc/fun/admin-i18n.php:92
+#: inc/fun/admin-i18n.php:95
 msgid "Export failed"
 msgstr "导出失败"
 
-#: inc/fun/admin-i18n.php:123
+#: inc/fun/admin-i18n.php:126
 msgid "Export JSON"
 msgstr "导出 JSON"
 
-#: inc/fun/admin-i18n.php:121
+#: inc/fun/admin-i18n.php:124
 msgid "Export settings"
 msgstr "导出配置"
 
-#: inc/fun/admin-i18n.php:91
+#: inc/fun/admin-i18n.php:94
 msgid "Exported"
 msgstr "已导出"
 
-#: inc/fun/admin-i18n.php:90
+#: inc/fun/admin-i18n.php:93
 msgid "Exporting…"
 msgstr "导出中…"
 
-#: inc/fun/admin-i18n.php:101
+#: inc/fun/admin-i18n.php:104
 msgid "Failed"
 msgstr "失败"
 
-#: inc/fun/admin-i18n.php:113
+#: inc/fun/admin-i18n.php:116
 msgid "Failed %s images"
 msgstr "失败 %s 张"
 
-#: inc/fun/admin-i18n.php:117
+#: inc/fun/admin-i18n.php:120
 msgid ""
 "Generate the theme image sizes jinyu-cover (768×512) and jinyu-thumb "
 "(400×267) for previously uploaded covers, so cards load small images instead"
@@ -810,23 +814,23 @@ msgstr ""
 "为历史上传的封面图补出主题自建尺寸 jinyu-cover（768×512）与 jinyu-"
 "thumb（400×267），卡片就用小图、不再加载原图。仅处理缺这两个尺寸的图，分批进行直至完成。"
 
-#: inc/fun/admin-i18n.php:109
+#: inc/fun/admin-i18n.php:112
 msgid "Generated %s images"
 msgstr "已生成 %s 张"
 
-#: inc/fun/admin-i18n.php:95
+#: inc/fun/admin-i18n.php:98
 msgid "Import failed"
 msgstr "导入失败"
 
-#: inc/fun/admin-i18n.php:124
+#: inc/fun/admin-i18n.php:127
 msgid "Import settings"
 msgstr "导入配置"
 
-#: inc/fun/admin-i18n.php:94
+#: inc/fun/admin-i18n.php:97
 msgid "Imported successfully"
 msgstr "导入成功"
 
-#: inc/fun/admin-i18n.php:93
+#: inc/fun/admin-i18n.php:96
 msgid "Importing…"
 msgstr "导入中…"
 
@@ -834,7 +838,7 @@ msgstr "导入中…"
 msgid "Item %d"
 msgstr "第 %d 项"
 
-#: inc/fun/admin-i18n.php:136
+#: inc/fun/admin-i18n.php:139
 msgid "items"
 msgstr "项"
 
@@ -844,7 +848,7 @@ msgstr "项"
 msgid "Jinyu Theme Settings"
 msgstr "金玉主题配置"
 
-#: inc/fun/admin-i18n.php:96
+#: inc/fun/admin-i18n.php:99
 msgid "JSON parse failed"
 msgstr "JSON 解析失败"
 
@@ -856,11 +860,11 @@ msgstr "下移"
 msgid "Move up"
 msgstr "上移"
 
-#: inc/fun/admin-i18n.php:80
+#: inc/fun/admin-i18n.php:83
 msgid "Network error"
 msgstr "网络错误"
 
-#: inc/fun/admin-i18n.php:82
+#: inc/fun/admin-i18n.php:85
 msgid "Network error: %s"
 msgstr "网络错误：%s"
 
@@ -872,39 +876,43 @@ msgstr "没有匹配的设置，换个关键词试试"
 msgid "No options available"
 msgstr "暂无可选"
 
-#: inc/fun/admin-i18n.php:127
+#: inc/fun/admin-i18n.php:130
 msgid ""
 "Output server-side run info in the footer (queries / page generation time). "
 "On a full-page cache hit both show 0. After enabling, clear the cache once "
 "in \"Jinyu Booster\" for it to take effect."
 msgstr "在前台页脚输出服务端运行信息（查询数 / 页面生成时间）。整页缓存命中时两项均显示 0。开启后到「金玉增强」清理一次缓存即可生效。"
 
-#: inc/fun/admin-i18n.php:119
+#: inc/fun/admin-i18n.php:82
+msgid "Please check and try again"
+msgstr "请检查后重试"
+
+#: inc/fun/admin-i18n.php:122
 msgid "Preparing…"
 msgstr "准备中…"
 
-#: inc/fun/admin-i18n.php:107
+#: inc/fun/admin-i18n.php:110
 msgid "Processed %1$s / %2$s images"
 msgstr "已处理 %1$s / %2$s 张"
 
-#: inc/fun/admin-i18n.php:104
+#: inc/fun/admin-i18n.php:107
 msgid "Rebuild complete"
 msgstr "重建完成"
 
-#: inc/fun/admin-i18n.php:116
+#: inc/fun/admin-i18n.php:119
 msgid "Regenerate cover thumbnails"
 msgstr "重建封面缩略图"
 
-#: inc/fun/admin-i18n.php:103
+#: inc/fun/admin-i18n.php:106
 msgid "Regenerating cover thumbnails…"
 msgstr "正在重建封面缩略图…"
 
-#: inc/fun/admin-i18n.php:55 inc/fun/admin-i18n.php:132
+#: inc/fun/admin-i18n.php:55 inc/fun/admin-i18n.php:135
 #: pages/template-user-tabs.php:242
 msgid "Remove"
 msgstr "移除"
 
-#: inc/fun/admin-i18n.php:84
+#: inc/fun/admin-i18n.php:87
 msgid "Request failed: %s"
 msgstr "请求失败：%s"
 
@@ -930,7 +938,7 @@ msgstr "重置本组"
 msgid "Restore all options to defaults? This action cannot be undone."
 msgstr "确认恢复所有选项为默认值？此操作不可撤销。"
 
-#: inc/fun/admin-i18n.php:125
+#: inc/fun/admin-i18n.php:128
 msgid ""
 "Restore theme settings from a JSON file. This overwrites all current "
 "settings — export a backup first."
@@ -948,7 +956,7 @@ msgstr "保存于 %s"
 msgid "Saved successfully"
 msgstr "保存成功"
 
-#: inc/fun/admin-i18n.php:97
+#: inc/fun/admin-i18n.php:100
 msgid "Saving…"
 msgstr "保存中…"
 
@@ -976,7 +984,7 @@ msgstr "已选 %d 项"
 msgid "Select…"
 msgstr "请选择…"
 
-#: inc/fun/admin-i18n.php:133
+#: inc/fun/admin-i18n.php:136
 msgid "Set. Leave empty to keep unchanged"
 msgstr "已设置，留空则不修改"
 
@@ -984,31 +992,31 @@ msgstr "已设置，留空则不修改"
 msgid "Settings groups"
 msgstr "设置分组"
 
-#: inc/fun/admin-i18n.php:134
+#: inc/fun/admin-i18n.php:137
 msgid "Show/hide"
 msgstr "显示/隐藏"
 
-#: inc/fun/admin-i18n.php:111
+#: inc/fun/admin-i18n.php:114
 msgid "Skipped %s images"
 msgstr "已跳过 %s 张"
 
-#: inc/fun/admin-i18n.php:118
+#: inc/fun/admin-i18n.php:121
 msgid "Start rebuild"
 msgstr "开始重建"
 
-#: inc/fun/admin-i18n.php:120
+#: inc/fun/admin-i18n.php:123
 msgid "Stop"
 msgstr "停止"
 
-#: inc/fun/admin-i18n.php:102
+#: inc/fun/admin-i18n.php:105
 msgid "Stopped"
 msgstr "已停止"
 
-#: inc/fun/admin-i18n.php:98
+#: inc/fun/admin-i18n.php:101
 msgid "Stopping…"
 msgstr "正在停止…"
 
-#: inc/fun/admin-i18n.php:100
+#: inc/fun/admin-i18n.php:103
 msgid "Success"
 msgstr "成功"
 
@@ -1024,11 +1032,15 @@ msgstr "切换浅色模式"
 msgid "Up to %d items"
 msgstr "最多 %d 项"
 
-#: inc/fun/cache.php:599
+#: inc/fun/admin-i18n.php:81
+msgid "Your changes have been applied"
+msgstr "您的更改已生效"
+
+#: inc/fun/cache.php:616
 msgid "Don't show again"
 msgstr "不再提示"
 
-#: inc/fun/cache.php:598
+#: inc/fun/cache.php:615
 msgid ""
 "Persistent object caching (Memcached / Redis) is not enabled on this site. "
 "Without object caching, the Jinyu theme homepage requires roughly 70+ "
@@ -1054,7 +1066,7 @@ msgstr "%s前"
 msgid "(No content)"
 msgstr "（无正文）"
 
-#: inc/fun/comment.php:320
+#: inc/fun/comment.php:354
 msgid "About the author"
 msgstr "关于作者"
 
@@ -1062,7 +1074,7 @@ msgstr "关于作者"
 msgid "Author"
 msgstr "作者"
 
-#: inc/fun/comment.php:333 inc/fun/user.php:102 inc/fun/widget.php:610
+#: inc/fun/comment.php:367 inc/fun/user.php:102 inc/fun/widget.php:610
 #: pages/template-user-tabs.php:79 pages/template-user.php:59
 msgid "Comments"
 msgstr "评论"
@@ -1071,7 +1083,7 @@ msgstr "评论"
 msgid "Pending review"
 msgstr "审核中"
 
-#: inc/fun/comment.php:331 inc/fun/widget.php:608
+#: inc/fun/comment.php:365 inc/fun/widget.php:608
 #: pages/template-user-tabs.php:64 pages/template-user.php:58
 msgid "Posts"
 msgstr "文章"
@@ -1088,7 +1100,7 @@ msgstr "回复"
 msgid "Say something..."
 msgstr "说点什么吧..."
 
-#: inc/fun/comment.php:325
+#: inc/fun/comment.php:359
 msgid "View profile"
 msgstr "查看主页"
 

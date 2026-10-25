@@ -4,7 +4,7 @@ Tags: blog, custom-colors, custom-logo, custom-menu, editor-style, featured-imag
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.3.1
+Stable tag: 1.3.2
 License: GPL v3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -74,6 +74,14 @@ License URI: https://www.gnu.org/licenses/gpl-3.0.html
 每个设置分组面板头部都有「重置本组」按钮，仅清空该分组、回退默认值，不影响其它设置。
 
 == Changelog ==
+
+= 1.3.2 =
+* 新增顶部公告重构：后台「顶部公告」改为多行 textarea（每行一条），新增独立总开关「显示公告条」与「滚动显示公告」复选框，多条开启滚动时垂直上下无缝轮播；仅一条或未开启滚动时静态平铺展示。
+* 新增古老内核盾：首帧同步识别过旧渲染引擎（Chromium < 120 / Safari < 15 / Firefox < 110），命中后为 html 追加 jinyu-legacy 降级标记（拆除毛玻璃等 GPU 合成触发点）并显示可关闭的版本提示，避免旧内核渲染进程崩溃。
+* 修改侧边栏策略：后台未向「主侧边栏」拖入任何小工具时不再渲染主题内置默认卡（作者卡 / 热门文章等），侧边栏整段隐藏，主栏占满；未拖入小工具时 body_class 同步追加 jinyu-no-sidebar。
+* 性能：标签云与分类列表接入跨请求缓存（TTL 1 小时），并随文章发布 / 修改 / 删除经 jinyu_cache_flush_content_lists() 一并失效。
+* 修复：搜索弹层 / 建议列表入场动画改为纯 opacity 淡入（移除位移），并移除遮罩 backdrop-filter，修复旧内核下渲染进程崩溃。
+* 杂项：列表风格设置项「标准列表」文案调整为「博客模式」；后台管理 JS 补充 close / savedHint / retryHint 三条本地化文案。
 
 = 1.3.1 =
 * 本次为缺陷修复版本：修复用户中心分页 AJAX 始终返回第一页；修复评论加载更多按钮不可见；修复用户中心消息 Tab 的多处 UI 显示问题；增强关注数据健壮性（扩展返回纯 ID 时不再白屏）；修复用户中心链接未配置时误回退 WP 后台；wp.org 发布包移除 phpcs 开发配置。

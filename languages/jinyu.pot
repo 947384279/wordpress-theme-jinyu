@@ -147,167 +147,171 @@ msgstr ""
 msgid "To bottom"
 msgstr ""
 
-#: functions.php:347
+#: functions.php:376
 msgid "About %d min"
 msgstr ""
 
-#: functions.php:644
+#: functions.php:672
 msgid "Agree"
 msgstr ""
 
-#: functions.php:377
+#: functions.php:406
 msgid "All marked as read"
 msgstr ""
 
-#: functions.php:364
+#: functions.php:393
 msgid "Busy"
 msgstr ""
 
-#: functions.php:350
+#: functions.php:379
 msgid "Comment submitted"
 msgstr ""
 
-#: functions.php:642
+#: functions.php:670
 msgid "Cookie Notice"
 msgstr ""
 
-#: functions.php:356
+#: functions.php:385
 msgid "Copied"
 msgstr ""
 
-#: functions.php:355 inc/fun/admin-i18n.php:53
+#: functions.php:384 inc/fun/admin-i18n.php:53
 #: pages/template-link-apply.php:90 pages/template-link-apply.php:102
 msgid "Copy"
 msgstr ""
 
-#: functions.php:370
+#: functions.php:399
 msgid "Copy failed. Please select the text manually"
 msgstr ""
 
-#: functions.php:357 templates/post-actions.php:42
+#: functions.php:386 templates/post-actions.php:42
 msgid "Favorited"
 msgstr ""
 
-#: functions.php:379
+#: functions.php:408
 msgid "Finished ✓"
 msgstr ""
 
-#: functions.php:152
+#: functions.php:167
 msgid "Footer Menu"
 msgstr ""
 
-#: functions.php:366
+#: functions.php:395
 msgid "Last %d samples"
 msgstr ""
 
-#: functions.php:345
+#: functions.php:374
 msgid "Less than 1 min"
 msgstr ""
 
-#: functions.php:371
+#: functions.php:400
 msgid "Link copied"
 msgstr ""
 
-#: functions.php:367 inc/fun/widget.php:1516
+#: functions.php:396 inc/fun/widget.php:1516
 msgid "Load"
 msgstr ""
 
-#: functions.php:354 inc/fun/template-tags.php:75
+#: functions.php:383 inc/fun/template-tags.php:75
 #: pages/template-user-tabs.php:469
 msgid "Load more"
 msgstr ""
 
-#: functions.php:348 pages/template-user-tabs.php:465
+#: functions.php:377 pages/template-user-tabs.php:465
 msgid "Loading…"
 msgstr ""
 
-#: functions.php:368
+#: functions.php:397
 msgid "Memory usage"
 msgstr ""
 
-#: functions.php:358
+#: functions.php:387
 msgid "Network error. Please try again later."
 msgstr ""
 
-#: functions.php:353
+#: functions.php:382
 msgid "No cover image"
 msgstr ""
 
-#: functions.php:352 inc/ajax/index.php:258
+#: functions.php:381 inc/ajax/index.php:258
 msgid "No more"
 msgstr ""
 
-#: functions.php:373
+#: functions.php:402
 msgid "No post to jump to"
 msgstr ""
 
-#: functions.php:374
+#: functions.php:403
 msgid "Operation failed. Please try again later."
 msgstr ""
 
-#: functions.php:372
+#: functions.php:401
 msgid "Operation successful"
 msgstr ""
 
-#: functions.php:378
+#: functions.php:412
+msgid "People also read"
+msgstr ""
+
+#: functions.php:407
 msgid "Press and hold or scan the QR code to read the full post"
 msgstr ""
 
-#: functions.php:151
+#: functions.php:166
 msgid "Primary Menu"
 msgstr ""
 
-#: functions.php:359 inc/fun/admin-i18n.php:99
+#: functions.php:388 inc/fun/admin-i18n.php:102
 msgid "Processing…"
 msgstr ""
 
-#: functions.php:381
+#: functions.php:410
 msgid "Read %1$d%% · %2$s left"
 msgstr ""
 
-#: functions.php:362
+#: functions.php:391
 msgid "Real-time"
 msgstr ""
 
-#: functions.php:369
+#: functions.php:398
 msgid "Samples"
 msgstr ""
 
-#: functions.php:363
+#: functions.php:392
 msgid "Slow"
 msgstr ""
 
-#: functions.php:361
+#: functions.php:390
 msgid "Stable"
 msgstr ""
 
-#: functions.php:351
+#: functions.php:380
 msgid "Submission failed. Please try again later."
 msgstr ""
 
-#: functions.php:349
+#: functions.php:378
 msgid "Submitting…"
 msgstr ""
 
-#: functions.php:382
+#: functions.php:411
 msgid "Table of Contents"
 msgstr ""
 
-#: functions.php:360
+#: functions.php:389
 msgid ""
 "Tap \"Save image\" to enlarge it, then press and hold the image to save it "
 "to your album"
 msgstr ""
 
-#: functions.php:376
+#: functions.php:405
 msgid "Thanks for your feedback"
 msgstr ""
 
-#: functions.php:375
+#: functions.php:404
 msgid "Thanks for your support ♥"
 msgstr ""
 
-#: functions.php:449
+#: functions.php:477
 msgid "The Jinyu theme is missing a PHP extension: %s"
 msgstr ""
 
@@ -315,78 +319,78 @@ msgstr ""
 msgid "The Jinyu theme requires PHP 8.0+. Current version: %s"
 msgstr ""
 
-#: functions.php:640
+#: functions.php:668
 msgid ""
 "This site uses cookies to improve your browsing experience. By continuing to"
 " browse, you agree to our privacy policy."
 msgstr ""
 
-#: functions.php:334 inc/setting/options/Jinyu_OptionBasic.php:71
+#: functions.php:363 inc/setting/options/Jinyu_OptionBasic.php:71
 msgid "Tip the author"
 msgstr ""
 
-#: header.php:245
+#: header.php:257
 msgid "Account Settings"
 msgstr ""
 
-#: header.php:255 pages/template-user.php:86
+#: header.php:267 pages/template-user.php:86
 msgid "Are you sure you want to log out?"
 msgstr ""
 
-#: header.php:82
+#: header.php:94
 msgid "Close menu"
 msgstr ""
 
-#: header.php:81 header.php:83
+#: header.php:93 header.php:95
 msgid "Expand menu"
 msgstr ""
 
-#: header.php:259 templates/auth-modal.php:49 templates/auth-modal.php:78
+#: header.php:271 templates/auth-modal.php:49 templates/auth-modal.php:78
 msgid "Log in"
 msgstr ""
 
-#: header.php:255 pages/template-user.php:88
+#: header.php:267 pages/template-user.php:88
 msgid "Log out"
 msgstr ""
 
-#: header.php:247 inc/fun/user.php:89 pages/template-user-tabs.php:459
+#: header.php:259 inc/fun/user.php:89 pages/template-user-tabs.php:459
 msgid "Messages"
 msgstr ""
 
-#: header.php:283
+#: header.php:317
 msgid "Press Esc to close"
 msgstr ""
 
-#: header.php:184 searchform.php:14 searchform.php:19 searchform.php:20
+#: header.php:196 searchform.php:14 searchform.php:19 searchform.php:20
 msgid "Search"
 msgstr ""
 
-#: header.php:270 inc/fun/widget.php:212
+#: header.php:291 inc/fun/widget.php:212
 msgid "Site Notice"
 msgstr ""
 
-#: header.php:280
+#: header.php:314
 msgid "Site search"
 msgstr ""
 
-#: header.php:50
+#: header.php:62
 msgid "Skip to content"
 msgstr ""
 
-#: header.php:243 pages/template-user-tabs.php:184
+#: header.php:255 pages/template-user-tabs.php:184
 #: pages/template-user-tabs.php:204
 msgid "Submit Post"
 msgstr ""
 
-#: header.php:189
+#: header.php:201
 msgid "Toggle light/dark mode"
 msgstr ""
 
-#: header.php:228
+#: header.php:240
 msgid "User Center"
 msgstr ""
 
-#: header.php:196
+#: header.php:208
 msgid "User menu"
 msgstr ""
 
@@ -681,11 +685,11 @@ msgid ""
 "If this was not you, please ignore this email and the original email address will remain unchanged.\n"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:135
+#: inc/fun/admin-i18n.php:138
 msgid " copy"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:105
+#: inc/fun/admin-i18n.php:108
 msgid "A task is already running; it will resume automatically…"
 msgstr ""
 
@@ -693,17 +697,17 @@ msgstr ""
 msgid "Add item"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:86
+#: inc/fun/admin-i18n.php:89
 msgid ""
 "API request failed (HTTP %s). Try refreshing the page; if it keeps "
 "happening, log in again"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:126
+#: inc/fun/admin-i18n.php:129
 msgid "Choose a file and import"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:131
+#: inc/fun/admin-i18n.php:134
 msgid "Clear"
 msgstr ""
 
@@ -715,8 +719,8 @@ msgstr ""
 msgid "Click to select or enter a URL"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:114 inc/setting/options/Jinyu_OptionUser.php:77
-#: templates/auth-modal.php:26
+#: inc/fun/admin-i18n.php:80 inc/fun/admin-i18n.php:117
+#: inc/setting/options/Jinyu_OptionUser.php:77 templates/auth-modal.php:26
 msgid "Close"
 msgstr ""
 
@@ -724,7 +728,7 @@ msgstr ""
 msgid "Collapse / expand sidebar"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:88
+#: inc/fun/admin-i18n.php:91
 msgid "Could not parse the API response (HTTP %s)"
 msgstr ""
 
@@ -736,7 +740,7 @@ msgstr ""
 msgid "Deselect all"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:129
+#: inc/fun/admin-i18n.php:132
 msgid "Disabled"
 msgstr ""
 
@@ -748,45 +752,45 @@ msgstr ""
 msgid "Drag to sort"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:128
+#: inc/fun/admin-i18n.php:131
 msgid "Enabled"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:122
+#: inc/fun/admin-i18n.php:125
 msgid ""
 "Export all theme settings to a JSON file for backup and multi-site "
 "migration."
 msgstr ""
 
-#: inc/fun/admin-i18n.php:92
+#: inc/fun/admin-i18n.php:95
 msgid "Export failed"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:123
+#: inc/fun/admin-i18n.php:126
 msgid "Export JSON"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:121
+#: inc/fun/admin-i18n.php:124
 msgid "Export settings"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:91
+#: inc/fun/admin-i18n.php:94
 msgid "Exported"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:90
+#: inc/fun/admin-i18n.php:93
 msgid "Exporting…"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:101
+#: inc/fun/admin-i18n.php:104
 msgid "Failed"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:113
+#: inc/fun/admin-i18n.php:116
 msgid "Failed %s images"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:117
+#: inc/fun/admin-i18n.php:120
 msgid ""
 "Generate the theme image sizes jinyu-cover (768×512) and jinyu-thumb "
 "(400×267) for previously uploaded covers, so cards load small images instead"
@@ -794,23 +798,23 @@ msgid ""
 "until complete."
 msgstr ""
 
-#: inc/fun/admin-i18n.php:109
+#: inc/fun/admin-i18n.php:112
 msgid "Generated %s images"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:95
+#: inc/fun/admin-i18n.php:98
 msgid "Import failed"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:124
+#: inc/fun/admin-i18n.php:127
 msgid "Import settings"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:94
+#: inc/fun/admin-i18n.php:97
 msgid "Imported successfully"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:93
+#: inc/fun/admin-i18n.php:96
 msgid "Importing…"
 msgstr ""
 
@@ -818,7 +822,7 @@ msgstr ""
 msgid "Item %d"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:136
+#: inc/fun/admin-i18n.php:139
 msgid "items"
 msgstr ""
 
@@ -828,7 +832,7 @@ msgstr ""
 msgid "Jinyu Theme Settings"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:96
+#: inc/fun/admin-i18n.php:99
 msgid "JSON parse failed"
 msgstr ""
 
@@ -840,11 +844,11 @@ msgstr ""
 msgid "Move up"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:80
+#: inc/fun/admin-i18n.php:83
 msgid "Network error"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:82
+#: inc/fun/admin-i18n.php:85
 msgid "Network error: %s"
 msgstr ""
 
@@ -856,39 +860,43 @@ msgstr ""
 msgid "No options available"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:127
+#: inc/fun/admin-i18n.php:130
 msgid ""
 "Output server-side run info in the footer (queries / page generation time). "
 "On a full-page cache hit both show 0. After enabling, clear the cache once "
 "in \"Jinyu Booster\" for it to take effect."
 msgstr ""
 
-#: inc/fun/admin-i18n.php:119
+#: inc/fun/admin-i18n.php:82
+msgid "Please check and try again"
+msgstr ""
+
+#: inc/fun/admin-i18n.php:122
 msgid "Preparing…"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:107
+#: inc/fun/admin-i18n.php:110
 msgid "Processed %1$s / %2$s images"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:104
+#: inc/fun/admin-i18n.php:107
 msgid "Rebuild complete"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:116
+#: inc/fun/admin-i18n.php:119
 msgid "Regenerate cover thumbnails"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:103
+#: inc/fun/admin-i18n.php:106
 msgid "Regenerating cover thumbnails…"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:55 inc/fun/admin-i18n.php:132
+#: inc/fun/admin-i18n.php:55 inc/fun/admin-i18n.php:135
 #: pages/template-user-tabs.php:242
 msgid "Remove"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:84
+#: inc/fun/admin-i18n.php:87
 msgid "Request failed: %s"
 msgstr ""
 
@@ -914,7 +922,7 @@ msgstr ""
 msgid "Restore all options to defaults? This action cannot be undone."
 msgstr ""
 
-#: inc/fun/admin-i18n.php:125
+#: inc/fun/admin-i18n.php:128
 msgid ""
 "Restore theme settings from a JSON file. This overwrites all current "
 "settings — export a backup first."
@@ -932,7 +940,7 @@ msgstr ""
 msgid "Saved successfully"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:97
+#: inc/fun/admin-i18n.php:100
 msgid "Saving…"
 msgstr ""
 
@@ -960,7 +968,7 @@ msgstr ""
 msgid "Select…"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:133
+#: inc/fun/admin-i18n.php:136
 msgid "Set. Leave empty to keep unchanged"
 msgstr ""
 
@@ -968,31 +976,31 @@ msgstr ""
 msgid "Settings groups"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:134
+#: inc/fun/admin-i18n.php:137
 msgid "Show/hide"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:111
+#: inc/fun/admin-i18n.php:114
 msgid "Skipped %s images"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:118
+#: inc/fun/admin-i18n.php:121
 msgid "Start rebuild"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:120
+#: inc/fun/admin-i18n.php:123
 msgid "Stop"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:102
+#: inc/fun/admin-i18n.php:105
 msgid "Stopped"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:98
+#: inc/fun/admin-i18n.php:101
 msgid "Stopping…"
 msgstr ""
 
-#: inc/fun/admin-i18n.php:100
+#: inc/fun/admin-i18n.php:103
 msgid "Success"
 msgstr ""
 
@@ -1008,11 +1016,15 @@ msgstr ""
 msgid "Up to %d items"
 msgstr ""
 
-#: inc/fun/cache.php:599
+#: inc/fun/admin-i18n.php:81
+msgid "Your changes have been applied"
+msgstr ""
+
+#: inc/fun/cache.php:616
 msgid "Don't show again"
 msgstr ""
 
-#: inc/fun/cache.php:598
+#: inc/fun/cache.php:615
 msgid ""
 "Persistent object caching (Memcached / Redis) is not enabled on this site. "
 "Without object caching, the Jinyu theme homepage requires roughly 70+ "
@@ -1036,7 +1048,7 @@ msgstr ""
 msgid "(No content)"
 msgstr ""
 
-#: inc/fun/comment.php:320
+#: inc/fun/comment.php:354
 msgid "About the author"
 msgstr ""
 
@@ -1044,7 +1056,7 @@ msgstr ""
 msgid "Author"
 msgstr ""
 
-#: inc/fun/comment.php:333 inc/fun/user.php:102 inc/fun/widget.php:610
+#: inc/fun/comment.php:367 inc/fun/user.php:102 inc/fun/widget.php:610
 #: pages/template-user-tabs.php:79 pages/template-user.php:59
 msgid "Comments"
 msgstr ""
@@ -1053,7 +1065,7 @@ msgstr ""
 msgid "Pending review"
 msgstr ""
 
-#: inc/fun/comment.php:331 inc/fun/widget.php:608
+#: inc/fun/comment.php:365 inc/fun/widget.php:608
 #: pages/template-user-tabs.php:64 pages/template-user.php:58
 msgid "Posts"
 msgstr ""
@@ -1070,7 +1082,7 @@ msgstr ""
 msgid "Say something..."
 msgstr ""
 
-#: inc/fun/comment.php:325
+#: inc/fun/comment.php:359
 msgid "View profile"
 msgstr ""
 

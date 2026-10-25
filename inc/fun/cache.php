@@ -469,6 +469,15 @@ if ( ! function_exists( 'jinyu_cache_flush_content_lists' ) ) {
 	}
 }
 
+// 作者卡公开计数（author_counts_<uid>）按作者缓存，文章 / 评论变动时精确失效.
+if ( ! function_exists( 'jinyu_cache_flush_author_counts' ) ) {
+	function jinyu_cache_flush_author_counts( int $uid ): void {
+		if ( $uid > 0 ) {
+			jinyu_cache_delete( 'author_counts_' . $uid );
+		}
+	}
+}
+
 // 文章新增 / 更新 / 删除
 add_action(
 	'save_post',
@@ -480,6 +489,8 @@ add_action(
 			jinyu_cache_delete( 'cover_src_' . $post_id . '_' . $s );
 		}
 		jinyu_cache_flush_content_lists();
+		// 文章发布 / 转草稿直接影响作者的「文章数」
+		jinyu_cache_flush_author_counts( (int) get_post_field( 'post_author', $post_id ) );
 	},
 	10,
 	1
@@ -487,13 +498,16 @@ add_action(
 
 add_action(
 	'deleted_post',
-	function ( $post_id ) {
+	function ( $post_id, $post = null ) {
 		jinyu_cache_delete( 'post_' . $post_id );
 		jinyu_cache_delete( 'related_' . $post_id );
 		jinyu_cache_flush_content_lists();
+		// deleted_post 在行删除后触发，get_post_field 已读不到，用钩子传入的文章对象兜底.
+		$uid = ( $post instanceof WP_Post ) ? (int) $post->post_author : 0;
+		jinyu_cache_flush_author_counts( $uid );
 	},
 	10,
-	1
+	2
 );
 
 // 评论变动（含审核通过 / 删除）：仅影响依赖评论的缓存，不要动文章聚合缓存。
@@ -505,6 +519,7 @@ add_action(
 		if ( $comment && ! empty( $comment->comment_post_ID ) ) {
 			jinyu_cache_delete( 'post_' . $comment->comment_post_ID );
 		}
+		jinyu_cache_flush_author_counts( $comment ? (int) $comment->user_id : 0 );
 	},
 	10,
 	2
@@ -517,6 +532,7 @@ add_action(
 	function ( $comment_id ) {
 		jinyu_cache_delete( 'stats_counts' );
 		jinyu_cache_delete( 'reader_wall_rows' );
+		jinyu_cache_flush_author_counts( (int) ( get_comment( $comment_id )->user_id ?? 0 ) );
 	},
 	10,
 	1
@@ -529,6 +545,7 @@ add_action(
 		if ( ! empty( $comment->comment_post_ID ) ) {
 			jinyu_cache_delete( 'post_' . $comment->comment_post_ID );
 		}
+		jinyu_cache_flush_author_counts( (int) ( $comment->user_id ?? 0 ) );
 	},
 	10,
 	3
