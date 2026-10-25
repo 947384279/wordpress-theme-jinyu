@@ -104,7 +104,7 @@ class Jinyu_OptionFooter extends Jinyu_BaseOptionItem {
 					'title'       => __( 'ICP filing number', 'jinyu' ),
 					'type'        => 'text',
 					'sdt'         => '',
-					'placeholder' => __( '如 京ICP备12345678号', 'jinyu' ),
+					'placeholder' => __( 'e.g. ICP-12345678', 'jinyu' ),
 					'desc'        => __( 'Shown in the footer once filled', 'jinyu' ),
 				],
 			],

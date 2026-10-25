@@ -80,10 +80,10 @@ $jinyu_car_seq = 0;
 			<?php endforeach; ?>
 		</div>
 
-		<button type="button" class="jinyu-carousel-arrow jinyu-carousel-arrow-prev" aria-controls="<?php echo esc_attr( $car_id ); ?>" aria-label="<?php echo esc_attr__( '上一张', 'jinyu' ); ?>">
+		<button type="button" class="jinyu-carousel-arrow jinyu-carousel-arrow-prev" aria-controls="<?php echo esc_attr( $car_id ); ?>" aria-label="<?php echo esc_attr__( 'Previous', 'jinyu' ); ?>">
 			<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5.5 8.5 12 15 18.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 		</button>
-		<button type="button" class="jinyu-carousel-arrow jinyu-carousel-arrow-next" aria-controls="<?php echo esc_attr( $car_id ); ?>" aria-label="<?php echo esc_attr__( '下一张', 'jinyu' ); ?>">
+		<button type="button" class="jinyu-carousel-arrow jinyu-carousel-arrow-next" aria-controls="<?php echo esc_attr( $car_id ); ?>" aria-label="<?php echo esc_attr__( 'Next', 'jinyu' ); ?>">
 			<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 5.5 15.5 12 9 18.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 		</button>
 

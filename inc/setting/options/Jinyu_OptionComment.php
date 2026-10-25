@@ -81,7 +81,7 @@ class Jinyu_OptionComment extends Jinyu_BaseOptionItem {
 					'id'    => 'anti_spam_words',
 					'title' => __( 'Spam comment keywords', 'jinyu' ),
 					'type'  => 'textarea',
-					'sdt'   => defined( 'JINYU_DEFAULT_SPAM_WORDS' ) ? JINYU_DEFAULT_SPAM_WORDS : __( '彩票,色情,赌博,代写,刷量,贷款,发票,办证,加微信,返利,兼职,代运营', 'jinyu' ),
+					'sdt'   => defined( 'JINYU_DEFAULT_SPAM_WORDS' ) ? JINYU_DEFAULT_SPAM_WORDS : __( 'lottery,porn,gambling,ghostwriting,fake traffic,loans,invoices,fake certificates,WeChat promos,rewards,part-time jobs,SEO services', 'jinyu' ),
 					'desc'  => __( 'Comma-separated. If a comment contains any of these words, it is marked as spam. A list of common spam words is built in; you can add or remove entries here', 'jinyu' ),
 				],
 			],

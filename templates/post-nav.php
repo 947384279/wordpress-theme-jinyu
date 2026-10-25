@@ -18,16 +18,16 @@ $prev = get_previous_post();
 $next = get_next_post();
 ?>
 <?php if ( jinyu_is_checked( 'post_nav_enable' ) ) : ?>
-<nav class="jinyu-post-nav" aria-label="<?php esc_attr_e( '上一篇下一篇', 'jinyu' ); ?>">
+<nav class="jinyu-post-nav" aria-label="<?php esc_attr_e( 'Previous and next posts', 'jinyu' ); ?>">
 	<?php if ( $prev ) : ?>
 		<a class="jinyu-post-nav-item jinyu-post-nav-prev" href="<?php echo esc_url( get_permalink( $prev ) ); ?>">
-			<span class="jinyu-post-nav-label"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> <?php esc_html_e( '上一篇', 'jinyu' ); ?></span>
+			<span class="jinyu-post-nav-label"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> <?php esc_html_e( 'Previous', 'jinyu' ); ?></span>
 			<span class="jinyu-post-nav-title"><?php echo esc_html( get_the_title( $prev ) ); ?></span>
 		</a>
 	<?php endif; ?>
 	<?php if ( $next ) : ?>
 		<a class="jinyu-post-nav-item jinyu-post-nav-next" href="<?php echo esc_url( get_permalink( $next ) ); ?>">
-			<span class="jinyu-post-nav-label"><?php esc_html_e( '下一篇', 'jinyu' ); ?> <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
+			<span class="jinyu-post-nav-label"><?php esc_html_e( 'Next', 'jinyu' ); ?> <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
 			<span class="jinyu-post-nav-title"><?php echo esc_html( get_the_title( $next ) ); ?></span>
 		</a>
 	<?php endif; ?>

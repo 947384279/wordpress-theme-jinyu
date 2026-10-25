@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /*
-Template Name: 友情链接
+Template Name: Friend Links
 */
 get_header();
 ?>
@@ -40,7 +40,7 @@ get_header();
 				<?php endforeach; ?>
 			</div>
 			<?php else : ?>
-			<p>暂无友情链接，请在 WordPress 后台「链接」中添加。</p>
+			<p><?php esc_html_e( 'No friend links yet. Add them under "Links" in the admin.', 'jinyu' ); ?></p>
 			<?php endif; ?>
 		</article>
 	</main>

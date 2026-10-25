@@ -4,11 +4,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Title: 金玉 · 常见问答
+ * Title: Jinyu: FAQ
  * Slug: jinyu/faq
  * Categories: jinyu
- * Keywords: FAQ, 问答, 常见问题
- * Description: 三组问答版式，问题带主题色标记，适合产品说明与帮助页。
+ * Keywords: FAQ, questions, answers
+ * Description: Three Q&A groups with theme-colored question markers. Great for product notes and help pages.
  * Viewport Width: 800
  *
  * @package Jinyu
@@ -17,30 +17,30 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 <!-- wp:group {"className":"jy-pat-faq"} -->
 <div class="wp-block-group jy-pat-faq"><!-- wp:heading {"level":2} -->
-<h2 class="wp-block-heading">常见问答</h2>
+<h2 class="wp-block-heading">Frequently Asked Questions</h2>
 <!-- /wp:heading -->
 
 <!-- wp:heading {"level":3} -->
-<h3 class="wp-block-heading">主题支持 PHP 多少版本？</h3>
+<h3 class="wp-block-heading">Which PHP versions are supported?</h3>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p>支持 PHP 8.0 及以上版本，推荐使用 8.2 及以上以获得最佳性能。</p>
+<p>PHP 8.0 or above is required; 8.2+ is recommended for the best performance.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:heading {"level":3} -->
-<h3 class="wp-block-heading">可以商用吗？</h3>
+<h3 class="wp-block-heading">Can I use it commercially?</h3>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p>采用 GPL v3 许可发布，允许商用与二次开发。</p>
+<p>The theme is released under GPL v3, so commercial use and modification are allowed.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:heading {"level":3} -->
-<h3 class="wp-block-heading">遇到问题如何反馈？</h3>
+<h3 class="wp-block-heading">How do I get support?</h3>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p>可在主题支持论坛发帖，或通过站点联系方式联系我们。</p>
+<p>Post in the theme support forum, or reach us through the contact options on this site.</p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->

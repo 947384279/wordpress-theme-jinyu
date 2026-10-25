@@ -4,11 +4,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Title: 金玉 · 精选文章三栏
+ * Title: Jinyu: Featured Posts Grid
  * Slug: jinyu/posts-grid
  * Categories: jinyu
- * Keywords: 文章列表, 最新文章, 网格
- * Description: 动态取最新 3 篇文章，封面 + 标题 + 日期三栏网格，前端自动更新。
+ * Keywords: posts, latest, grid
+ * Description: A three-column grid of the 3 latest posts (cover + title + date), updated automatically on the front end.
  * Viewport Width: 900
  *
  * @package Jinyu
@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <!-- wp:query-no-results -->
 <!-- wp:paragraph -->
-<p><?php echo esc_html__( '暂无文章。', 'jinyu' ); ?></p>
+<p><?php echo esc_html__( 'No posts yet.', 'jinyu' ); ?></p>
 <!-- /wp:paragraph -->
 <!-- /wp:query-no-results --></div>
 <!-- /wp:query -->

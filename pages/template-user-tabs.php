@@ -29,15 +29,15 @@ $user      = wp_get_current_user();
 $nonce     = wp_create_nonce( 'jinyu_front' );
 ?>
 <?php if ( 'dashboard' === $tab ) : ?>
-	<h1 class="jinyu-user-title"><?php esc_html_e( '概览', 'jinyu' ); ?></h1>
+	<h1 class="jinyu-user-title"><?php esc_html_e( 'Overview', 'jinyu' ); ?></h1>
 	<?php
 	// 时段问候：早 / 午 / 晚 / 深夜，比固定「欢迎回来」更有温度.
 	$jinyu_hour        = (int) current_time( 'G' );
 	$jinyu_greet       = $jinyu_hour < 6
-	? __( '夜深了', 'jinyu' )
+	? __( 'It\'s late at night', 'jinyu' )
 	: ( $jinyu_hour < 12
-		? __( '早上好', 'jinyu' )
-		: ( $jinyu_hour < 18 ? __( '下午好', 'jinyu' ) : __( '晚上好', 'jinyu' ) ) );
+		? __( 'Good morning', 'jinyu' )
+		: ( $jinyu_hour < 18 ? __( 'Good afternoon', 'jinyu' ) : __( 'Good evening', 'jinyu' ) ) );
 	$jinyu_unread_dash = (int) jinyu_ext_value( 'unread_count', 0, $uid );
 	?>
 	<div class="jinyu-user-welcome">
@@ -48,9 +48,9 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 		<?php
 		if ( $jinyu_unread_dash > 0 ) {
 			/* translators: %s: 占位符 */
-			printf( esc_html__( '你有 %1$s 条未读消息，点击侧栏「消息」查看。', 'jinyu' ), number_format_i18n( $jinyu_unread_dash ) ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
+			printf( esc_html__( 'You have %1$s unread messages. Open "Messages" in the sidebar to read them.', 'jinyu' ), number_format_i18n( $jinyu_unread_dash ) ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		} else {
-			esc_html_e( '欢迎回来，继续你的创作之旅。', 'jinyu' );
+			esc_html_e( 'Welcome back. Keep your creative journey going.', 'jinyu' );
 		}
 		?>
 		</p>
@@ -61,7 +61,7 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 	<?php $dash_stats = function_exists( 'jinyu_user_stats' ) ? jinyu_user_stats( $uid ) : []; ?>
 	<div class="jinyu-user-cards">
 	<a class="jinyu-user-card-stat" href="<?php echo esc_url( jinyu_user_page_url( 'posts' ) ); ?>">
-		<b><?php echo (int) ( $dash_stats['posts'] ?? 0 ); ?></b><span><?php esc_html_e( '文章', 'jinyu' ); ?></span>
+		<b><?php echo (int) ( $dash_stats['posts'] ?? 0 ); ?></b><span><?php esc_html_e( 'Posts', 'jinyu' ); ?></span>
 	</a>
 	<a class="jinyu-user-card-stat" href="
 	<?php
@@ -76,7 +76,7 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 	);
 	?>
 											">
-		<b><?php echo (int) ( $dash_stats['comments'] ?? 0 ); ?></b><span><?php esc_html_e( '评论', 'jinyu' ); ?></span>
+		<b><?php echo (int) ( $dash_stats['comments'] ?? 0 ); ?></b><span><?php esc_html_e( 'Comments', 'jinyu' ); ?></span>
 	</a>
 	<a class="jinyu-user-card-stat" href="
 	<?php
@@ -91,16 +91,16 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 	);
 	?>
 											">
-		<b><?php echo (int) ( $dash_stats['favs'] ?? 0 ); ?></b><span><?php esc_html_e( '收藏', 'jinyu' ); ?></span>
+		<b><?php echo (int) ( $dash_stats['favs'] ?? 0 ); ?></b><span><?php esc_html_e( 'Favorite', 'jinyu' ); ?></span>
 	</a>
 	<div class="jinyu-user-card-stat">
-		<b><?php echo (int) ( $dash_stats['likes'] ?? 0 ); ?></b><span><?php esc_html_e( '获赞', 'jinyu' ); ?></span>
+		<b><?php echo (int) ( $dash_stats['likes'] ?? 0 ); ?></b><span><?php esc_html_e( 'Likes received', 'jinyu' ); ?></span>
 	</div>
 	</div>
 
 	<div class="jinyu-user-actions">
 	<a class="jinyu-btn jinyu-btn-primary" href="<?php echo esc_url( jinyu_user_page_url( 'profile' ) ); ?>">
-		<i class="fa-solid fa-user-gear" aria-hidden="true"></i><?php esc_html_e( '编辑资料', 'jinyu' ); ?>
+		<i class="fa-solid fa-user-gear" aria-hidden="true"></i><?php esc_html_e( 'Edit profile', 'jinyu' ); ?>
 	</a>
 	<?php if ( jinyu_user_can_submit() ) : ?>
 		<a class="jinyu-btn" href="
@@ -116,17 +116,17 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 		);
 		?>
 									">
-		<i class="fa-solid fa-pen-to-square" aria-hidden="true"></i><?php esc_html_e( '去投稿', 'jinyu' ); ?>
+		<i class="fa-solid fa-pen-to-square" aria-hidden="true"></i><?php esc_html_e( 'Submit a post', 'jinyu' ); ?>
 		</a>
 	<?php endif; ?>
 	<?php if ( current_user_can( 'edit_posts' ) ) : ?>
 		<a class="jinyu-btn" href="<?php echo esc_url( admin_url( 'post-new.php' ) ); ?>">
-		<i class="fa-solid fa-plus" aria-hidden="true"></i><?php esc_html_e( '写文章', 'jinyu' ); ?>
+		<i class="fa-solid fa-plus" aria-hidden="true"></i><?php esc_html_e( 'Write a post', 'jinyu' ); ?>
 		</a>
 	<?php endif; ?>
 	</div>
 
-	<h3 class="jinyu-user-subtitle"><?php esc_html_e( '最近文章', 'jinyu' ); ?></h3>
+	<h3 class="jinyu-user-subtitle"><?php esc_html_e( 'Recent posts', 'jinyu' ); ?></h3>
 	<?php
 	$recent_posts = jinyu_user_posts( $uid, 1, 5 );
 	if ( $recent_posts->have_posts() ) :
@@ -140,8 +140,8 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 	elseif ( jinyu_user_can_submit() ) :
 			jinyu_user_empty(
 				'fa-regular fa-file-lines',
-				__( '还没有发布文章，去写下第一篇吧', 'jinyu' ),
-				__( '去投稿', 'jinyu' ),
+				__( 'No posts yet. Go write your first one.', 'jinyu' ),
+				__( 'Submit a post', 'jinyu' ),
 				add_query_arg(
 					[
 						'tab'     => 'posts',
@@ -151,13 +151,13 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 				)
 			);
 		elseif ( current_user_can( 'edit_posts' ) ) :
-			jinyu_user_empty( 'fa-regular fa-file-lines', __( '还没有发布文章，去写下第一篇吧', 'jinyu' ), __( '写文章', 'jinyu' ), admin_url( 'post-new.php' ) );
+			jinyu_user_empty( 'fa-regular fa-file-lines', __( 'No posts yet. Go write your first one.', 'jinyu' ), __( 'Write a post', 'jinyu' ), admin_url( 'post-new.php' ) );
 		else :
-			echo '<p class="jinyu-empty">' . esc_html__( '还没有发布文章', 'jinyu' ) . '</p>';
+			echo '<p class="jinyu-empty">' . esc_html__( 'No posts yet', 'jinyu' ) . '</p>';
 	endif;
 		?>
 
-	<h3 class="jinyu-user-subtitle"><?php esc_html_e( '最新评论', 'jinyu' ); ?></h3>
+	<h3 class="jinyu-user-subtitle"><?php esc_html_e( 'Recent Comments', 'jinyu' ); ?></h3>
 	<?php $recent = jinyu_user_comments( $uid, 5 ); ?>
 	<?php if ( $recent ) : ?>
 	<ul class="jinyu-comment-list jinyu-user-comments">
@@ -174,19 +174,19 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 		<?php endforeach; ?>
 	</ul>
 	<?php else : ?>
-	<p class="jinyu-empty"><?php esc_html_e( '还没有评论', 'jinyu' ); ?></p>
+	<p class="jinyu-empty"><?php esc_html_e( 'No comments yet', 'jinyu' ); ?></p>
 	<?php endif; ?>
 
 <?php elseif ( 'posts' === $tab ) : ?>
 	<?php $jinyu_compose = isset( $_GET['compose'] ) && jinyu_user_can_submit(); ?>
 	<div class="jinyu-user-title-row">
 	<?php if ( $jinyu_compose ) : ?>
-		<h1 class="jinyu-user-title"><?php esc_html_e( '投稿', 'jinyu' ); ?></h1>
+		<h1 class="jinyu-user-title"><?php esc_html_e( 'Submit Post', 'jinyu' ); ?></h1>
 		<a class="jinyu-btn jinyu-btn-ghost" href="<?php echo esc_url( jinyu_user_page_url( 'posts' ) ); ?>">
-		<i class="fa-solid fa-arrow-left" aria-hidden="true"></i><?php esc_html_e( '返回列表', 'jinyu' ); ?>
+		<i class="fa-solid fa-arrow-left" aria-hidden="true"></i><?php esc_html_e( 'Back to list', 'jinyu' ); ?>
 		</a>
 	<?php else : ?>
-		<h1 class="jinyu-user-title"><?php esc_html_e( '我的文章', 'jinyu' ); ?></h1>
+		<h1 class="jinyu-user-title"><?php esc_html_e( 'My Posts', 'jinyu' ); ?></h1>
 		<?php if ( jinyu_user_can_submit() ) : ?>
 		<a class="jinyu-btn jinyu-btn-primary" href="
 			<?php
@@ -201,7 +201,7 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 			);
 			?>
 														">
-			<i class="fa-solid fa-pen-to-square" aria-hidden="true"></i><?php esc_html_e( '投稿', 'jinyu' ); ?>
+			<i class="fa-solid fa-pen-to-square" aria-hidden="true"></i><?php esc_html_e( 'Submit Post', 'jinyu' ); ?>
 		</a>
 		<?php endif; ?>
 	<?php endif; ?>
@@ -212,14 +212,14 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 		<input type="hidden" name="_ajax_nonce" value="<?php echo esc_attr( $nonce ); ?>">
 		<label class="jinyu-field">
 		<input type="text" name="post_title" maxlength="100"
-				placeholder="<?php esc_attr_e( '标题（4-100 字）', 'jinyu' ); ?>">
+				placeholder="<?php esc_attr_e( 'Title (4-100 characters)', 'jinyu' ); ?>">
 		</label>
 		<span class="jinyu-char-count" data-jinyu-count="post_title" data-min="4" data-max="100" aria-live="polite"></span>
 		<label class="jinyu-field">
 		<?php
 		wp_dropdown_categories(
 			[
-				'show_option_none' => __( '选择分类', 'jinyu' ),
+				'show_option_none' => __( 'Choose a category', 'jinyu' ),
 				'name'             => 'post_category',
 				'orderby'          => 'name',
 				'hierarchical'     => true,
@@ -232,23 +232,23 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 			<input type="file" name="post_cover" accept="image/jpeg,image/png,image/webp,image/gif" hidden>
 			<div class="jinyu-cover-empty" data-jinyu-cover-empty>
 			<span class="jinyu-cover-ico" aria-hidden="true"><i class="fa-regular fa-image"></i></span>
-			<span class="jinyu-cover-txt"><?php esc_html_e( '拖拽图片到此处，或', 'jinyu' ); ?> <em><?php esc_html_e( '点击上传', 'jinyu' ); ?></em></span>
-			<span class="jinyu-cover-sub"><?php esc_html_e( '可选 · JPG / PNG / WebP / GIF · ≤5MB', 'jinyu' ); ?></span>
-			<span class="jinyu-cover-sub"><?php esc_html_e( '建议横图 1200×675，上传后自动压缩', 'jinyu' ); ?></span>
+			<span class="jinyu-cover-txt"><?php esc_html_e( 'Drag an image here or', 'jinyu' ); ?> <em><?php esc_html_e( 'click to upload', 'jinyu' ); ?></em></span>
+			<span class="jinyu-cover-sub"><?php esc_html_e( 'Optional · JPG / PNG / WebP / GIF · up to 5MB', 'jinyu' ); ?></span>
+			<span class="jinyu-cover-sub"><?php esc_html_e( 'Landscape 1200×675 recommended; images are compressed automatically after upload', 'jinyu' ); ?></span>
 			</div>
 			<img class="jinyu-cover-preview" hidden alt="">
 			<div class="jinyu-cover-mask" hidden>
-			<button type="button" class="jinyu-cover-repick"><?php esc_html_e( '更换', 'jinyu' ); ?></button>
-			<button type="button" class="jinyu-cover-clear"><?php esc_html_e( '移除', 'jinyu' ); ?></button>
+			<button type="button" class="jinyu-cover-repick"><?php esc_html_e( 'Replace', 'jinyu' ); ?></button>
+			<button type="button" class="jinyu-cover-clear"><?php esc_html_e( 'Remove', 'jinyu' ); ?></button>
 			</div>
 		</div>
 		</div>
-		<textarea name="post_content" rows="10" aria-label="<?php esc_attr_e( '正文内容', 'jinyu' ); ?>"
-				placeholder="<?php esc_attr_e( '正文内容（至少 20 字）', 'jinyu' ); ?>"></textarea>
+		<textarea name="post_content" rows="10" aria-label="<?php esc_attr_e( 'Body content', 'jinyu' ); ?>"
+				placeholder="<?php esc_attr_e( 'Body content (at least 20 characters)', 'jinyu' ); ?>"></textarea>
 		<span class="jinyu-char-count" data-jinyu-count="post_content" data-min="20" aria-live="polite"></span>
 		<input type="text" class="jinyu-field" name="post_tags"
-			placeholder="<?php esc_attr_e( '标签，逗号分隔', 'jinyu' ); ?>">
-		<button type="submit" class="jinyu-btn jinyu-btn-primary"><?php esc_html_e( '提交投稿', 'jinyu' ); ?></button>
+			placeholder="<?php esc_attr_e( 'Tags, separated by commas', 'jinyu' ); ?>">
+		<button type="submit" class="jinyu-btn jinyu-btn-primary"><?php esc_html_e( 'Submit post', 'jinyu' ); ?></button>
 		<p class="jinyu-auth-tip" data-jinyu-submit-tip aria-live="polite"></p>
 	</form>
 	<?php else : ?>
@@ -266,8 +266,8 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 	elseif ( jinyu_user_can_submit() ) :
 			jinyu_user_empty(
 				'fa-regular fa-file-lines',
-				__( '还没有发布文章，去写下第一篇吧', 'jinyu' ),
-				__( '去投稿', 'jinyu' ),
+				__( 'No posts yet. Go write your first one.', 'jinyu' ),
+				__( 'Submit a post', 'jinyu' ),
 				add_query_arg(
 					[
 						'tab'     => 'posts',
@@ -277,9 +277,9 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 				)
 			);
 		elseif ( current_user_can( 'edit_posts' ) ) :
-			jinyu_user_empty( 'fa-regular fa-file-lines', __( '还没有发布文章，去写下第一篇吧', 'jinyu' ), __( '写文章', 'jinyu' ), admin_url( 'post-new.php' ) );
+			jinyu_user_empty( 'fa-regular fa-file-lines', __( 'No posts yet. Go write your first one.', 'jinyu' ), __( 'Write a post', 'jinyu' ), admin_url( 'post-new.php' ) );
 		else :
-			echo '<p class="jinyu-empty">' . esc_html__( '还没有发布文章', 'jinyu' ) . '</p>';
+			echo '<p class="jinyu-empty">' . esc_html__( 'No posts yet', 'jinyu' ) . '</p>';
 	endif;
 		?>
 	<?php endif; ?>
@@ -288,7 +288,7 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 	<?php
 	$jinyu_sub = jinyu_current_interact_sub();
 	?>
-	<h1 class="jinyu-user-title"><?php esc_html_e( '互动', 'jinyu' ); ?></h1>
+	<h1 class="jinyu-user-title"><?php esc_html_e( 'Interactions', 'jinyu' ); ?></h1>
 	<nav class="jinyu-user-subnav">
 	<?php foreach ( jinyu_user_interact_tabs() as $jinyu_its => $jinyu_itab ) : ?>
 		<a class="jinyu-user-sub-item<?php echo $jinyu_sub === $jinyu_its ? ' is-active' : ''; ?>"
@@ -334,7 +334,7 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 			<?php jinyu_user_pagination( (int) ceil( jinyu_user_comments_count( $uid ) / $jinyu_cmt_per ) ); ?>
 			<?php
 	else :
-			jinyu_user_empty( 'fa-regular fa-comments', __( '还没有评论，去文章下聊聊吧', 'jinyu' ), __( '去首页逛逛', 'jinyu' ), home_url( '/' ) );
+			jinyu_user_empty( 'fa-regular fa-comments', __( 'No comments yet. Join the discussion under a post.', 'jinyu' ), __( 'Browse the homepage', 'jinyu' ), home_url( '/' ) );
 	endif;
 	?>
 
@@ -367,7 +367,7 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 			wp_reset_postdata();
 			jinyu_user_pagination( (int) $q->max_num_pages );
 	else :
-		jinyu_user_empty( 'fa-regular fa-bookmark', __( '还没有收藏任何文章', 'jinyu' ), __( '去首页逛逛', 'jinyu' ), home_url( '/' ) );
+		jinyu_user_empty( 'fa-regular fa-bookmark', __( 'No favorites yet', 'jinyu' ), __( 'Browse the homepage', 'jinyu' ), home_url( '/' ) );
 	endif;
 	?>
 
@@ -399,7 +399,7 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 			}
 		}
 		?>
-	<h3 class="jinyu-user-subtitle"><?php esc_html_e( '关注的用户', 'jinyu' ); ?></h3>
+	<h3 class="jinyu-user-subtitle"><?php esc_html_e( 'Following', 'jinyu' ); ?></h3>
 		<?php if ( $jinyu_follow_users ) : ?>
 		<ul class="jinyu-follow-list">
 			<?php
@@ -418,18 +418,18 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 			<a class="jinyu-follow-name" href="<?php echo esc_url( get_author_posts_url( $fu_id ) ); ?>"><?php echo esc_html( $fu->display_name ); ?></a>
 			<button type="button" class="jinyu-btn jinyu-btn-ghost jinyu-follow-toggle is-following"
 					data-jinyu-follow data-target="user" data-id="<?php echo $fu_id;  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?>">
-				<?php esc_html_e( '取消关注', 'jinyu' ); ?>
+				<?php esc_html_e( 'Unfollow', 'jinyu' ); ?>
 			</button>
 			</li>
 			<?php endforeach; ?>
 		</ul>
 			<?php
 	else :
-		jinyu_user_empty( 'fa-regular fa-user-group', __( '还没有关注任何用户', 'jinyu' ) );
+		jinyu_user_empty( 'fa-regular fa-user-group', __( 'Not following anyone yet', 'jinyu' ) );
 	endif;
 	?>
 
-	<h3 class="jinyu-user-subtitle"><?php esc_html_e( '收藏的系列', 'jinyu' ); ?></h3>
+	<h3 class="jinyu-user-subtitle"><?php esc_html_e( 'Saved series', 'jinyu' ); ?></h3>
 		<?php if ( $jinyu_follow_terms ) : ?>
 		<ul class="jinyu-follow-list jinyu-follow-terms">
 			<?php
@@ -442,36 +442,36 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 			</a>
 			<button type="button" class="jinyu-btn jinyu-btn-ghost jinyu-follow-toggle is-following"
 					data-jinyu-follow data-target="term" data-id="<?php echo $ft_id;  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?>">
-				<?php esc_html_e( '取消收藏', 'jinyu' ); ?>
+				<?php esc_html_e( 'Remove from favorites', 'jinyu' ); ?>
 			</button>
 			</li>
 			<?php endforeach; ?>
 		</ul>
 			<?php
 	else :
-		jinyu_user_empty( 'fa-regular fa-layer-group', __( '还没有收藏任何系列', 'jinyu' ) );
+		jinyu_user_empty( 'fa-regular fa-layer-group', __( 'No saved series yet', 'jinyu' ) );
 	endif;
 	?>
 	<?php endif; ?>
 
 <?php elseif ( 'notifications' === $tab ) : ?>
 	<h1 class="jinyu-user-title">
-	<?php esc_html_e( '消息', 'jinyu' ); ?>
+	<?php esc_html_e( 'Messages', 'jinyu' ); ?>
 	<button type="button" class="jinyu-btn jinyu-btn-ghost jinyu-notif-readall" data-jinyu-notif-readall>
-		<?php esc_html_e( '全部已读', 'jinyu' ); ?>
+		<?php esc_html_e( 'Mark all as read', 'jinyu' ); ?>
 	</button>
 	</h1>
 	<ul class="jinyu-notif-list" data-jinyu-notif-list>
-	<li class="jinyu-empty"><?php esc_html_e( '加载中…', 'jinyu' ); ?></li>
+	<li class="jinyu-empty"><?php esc_html_e( 'Loading…', 'jinyu' ); ?></li>
 	</ul>
 	<div class="jinyu-notif-more-wrap">
 	<button type="button" class="jinyu-btn" data-jinyu-notif-more hidden>
-		<?php esc_html_e( '加载更多', 'jinyu' ); ?>
+		<?php esc_html_e( 'Load more', 'jinyu' ); ?>
 	</button>
 	</div>
 
 <?php elseif ( 'profile' === $tab ) : ?>
-	<h1 class="jinyu-user-title"><?php esc_html_e( '资料设置', 'jinyu' ); ?></h1>
+	<h1 class="jinyu-user-title"><?php esc_html_e( 'Profile Settings', 'jinyu' ); ?></h1>
 	<form class="jinyu-profile-form" data-jinyu-profile method="post">
 	<input type="hidden" name="_ajax_nonce" value="<?php echo esc_attr( $nonce ); ?>">
 	<div class="jinyu-avatar-edit">
@@ -486,50 +486,50 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 			alt="avatar">
 		<div class="jinyu-avatar-side">
 		<label class="jinyu-btn jinyu-btn-ghost jinyu-avatar-pick">
-			<?php esc_html_e( '上传头像', 'jinyu' ); ?>
+			<?php esc_html_e( 'Upload avatar', 'jinyu' ); ?>
 			<input type="file" name="avatar" accept="image/*" data-jinyu-avatar hidden>
 		</label>
-		<p class="jinyu-field-hint"><?php esc_html_e( '支持 JPG / PNG / WebP / GIF，≤2MB，或在下栏填写图片 URL', 'jinyu' ); ?></p>
+		<p class="jinyu-field-hint"><?php esc_html_e( 'JPG / PNG / WebP / GIF up to 2MB, or paste an image URL in the field below', 'jinyu' ); ?></p>
 		</div>
 	</div>
 	<label class="jinyu-field jinyu-avatar-url">
-		<input type="text" name="avatar_url" placeholder="<?php esc_attr_e( '或填写头像图片 URL', 'jinyu' ); ?>">
+		<input type="text" name="avatar_url" placeholder="<?php esc_attr_e( 'or enter an avatar image URL', 'jinyu' ); ?>">
 	</label>
 	<label class="jinyu-field">
 		<input type="text" name="display_name" value="<?php echo esc_attr( $user->display_name ); ?>"
-			placeholder="<?php esc_attr_e( '昵称', 'jinyu' ); ?>">
+			placeholder="<?php esc_attr_e( 'Nickname', 'jinyu' ); ?>">
 	</label>
 	<label class="jinyu-field">
-		<span class="jinyu-field-label"><?php esc_html_e( '邮箱', 'jinyu' ); ?></span>
+		<span class="jinyu-field-label"><?php esc_html_e( 'Email', 'jinyu' ); ?></span>
 		<input type="email" name="user_email" value="<?php echo esc_attr( $user->user_email ); ?>" autocomplete="email">
 	</label>
-	<p class="jinyu-field-hint"><?php esc_html_e( '修改邮箱需验证：提交后系统会向新邮箱发送确认链接，点击后方可生效。', 'jinyu' ); ?></p>
+	<p class="jinyu-field-hint"><?php esc_html_e( 'Email changes require verification: after submitting, a confirmation link is sent to the new address, and the change takes effect once you click it.', 'jinyu' ); ?></p>
 	<label class="jinyu-field">
 		<input type="url" name="user_url" value="<?php echo esc_attr( $user->user_url ); ?>"
-			placeholder="<?php esc_attr_e( '个人网站', 'jinyu' ); ?>">
+			placeholder="<?php esc_attr_e( 'Website', 'jinyu' ); ?>">
 	</label>
-	<textarea name="description" rows="3" aria-label="<?php esc_attr_e( '个人简介', 'jinyu' ); ?>"
-				placeholder="<?php esc_attr_e( '个人简介', 'jinyu' ); ?>"><?php echo esc_textarea( $user->description ); ?></textarea>
-	<button type="submit" class="jinyu-btn jinyu-btn-primary"><?php esc_html_e( '保存资料', 'jinyu' ); ?></button>
+	<textarea name="description" rows="3" aria-label="<?php esc_attr_e( 'Bio', 'jinyu' ); ?>"
+				placeholder="<?php esc_attr_e( 'Bio', 'jinyu' ); ?>"><?php echo esc_textarea( $user->description ); ?></textarea>
+	<button type="submit" class="jinyu-btn jinyu-btn-primary"><?php esc_html_e( 'Save profile', 'jinyu' ); ?></button>
 	<p class="jinyu-auth-tip" data-jinyu-profile-tip aria-live="polite"></p>
 	</form>
 
-	<h3 class="jinyu-user-subtitle"><?php esc_html_e( '修改密码', 'jinyu' ); ?></h3>
+	<h3 class="jinyu-user-subtitle"><?php esc_html_e( 'Change password', 'jinyu' ); ?></h3>
 	<form class="jinyu-profile-form" data-jinyu-password method="post">
 	<input type="hidden" name="_ajax_nonce" value="<?php echo esc_attr( $nonce ); ?>">
 	<label class="jinyu-field">
 		<input type="password" name="old_pwd" autocomplete="current-password"
-			placeholder="<?php esc_attr_e( '当前密码', 'jinyu' ); ?>">
+			placeholder="<?php esc_attr_e( 'Current password', 'jinyu' ); ?>">
 	</label>
 	<label class="jinyu-field">
 		<input type="password" name="new_pwd" autocomplete="new-password"
-			placeholder="<?php esc_attr_e( '新密码（至少 6 位）', 'jinyu' ); ?>">
+			placeholder="<?php esc_attr_e( 'New password (at least 6 characters)', 'jinyu' ); ?>">
 	</label>
 	<label class="jinyu-field">
 		<input type="password" name="new_pwd2" autocomplete="new-password"
-			placeholder="<?php esc_attr_e( '确认新密码', 'jinyu' ); ?>">
+			placeholder="<?php esc_attr_e( 'Confirm new password', 'jinyu' ); ?>">
 	</label>
-	<button type="submit" class="jinyu-btn jinyu-btn-primary"><?php esc_html_e( '更新密码', 'jinyu' ); ?></button>
+	<button type="submit" class="jinyu-btn jinyu-btn-primary"><?php esc_html_e( 'Update password', 'jinyu' ); ?></button>
 	<p class="jinyu-auth-tip" data-jinyu-password-tip aria-live="polite"></p>
 	</form>
 

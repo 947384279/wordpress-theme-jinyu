@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /*
-Template Name: 说说/动态
+Template Name: Moments
 */
 get_header();
 ?>
@@ -66,7 +66,7 @@ get_header();
 				<div class="jinyu-moment-meta">
 					<a href="<?php the_permalink(); ?>"><?php echo esc_html( get_the_date( 'Y-m-d H:i' ) ); ?></a>
 					<?php if ( comments_open() || (int) get_comments_number() > 0 ) : ?>
-					· <a href="<?php echo esc_url( get_comments_link() ); ?>"><?php printf( __( '%s 条评论', 'jinyu' ), (int) get_comments_number() );  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped,WordPress.WP.I18n.MissingTranslatorsComment -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?></a>
+					· <a href="<?php echo esc_url( get_comments_link() ); ?>"><?php printf( __( '%s comments', 'jinyu' ), (int) get_comments_number() );  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped,WordPress.WP.I18n.MissingTranslatorsComment -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?></a>
 					<?php endif; ?>
 				</div>
 				</div>
@@ -76,7 +76,7 @@ get_header();
 				wp_reset_postdata();
 			else :
 				?>
-			<p><?php esc_html_e( '暂无动态，请在后台「时光圈」中发表。', 'jinyu' ); ?></p>
+			<p><?php esc_html_e( 'No moments yet. Publish them under "Moments" in the admin.', 'jinyu' ); ?></p>
 			<?php endif; ?>
 		</div>
 		</div>

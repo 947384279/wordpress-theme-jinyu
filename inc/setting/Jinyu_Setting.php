@@ -382,7 +382,7 @@ class Jinyu_Setting {
 		$msg = __( 'Import successful', 'jinyu' );
 		if ( $skipped_secret > 0 ) {
 			/* translators: %s: 占位符 */
-			$msg .= sprintf( __( '；%d 个加密字段（API Key / 密码等）无法跨站解密，已跳过，请重新填写', 'jinyu' ), $skipped_secret );
+			$msg .= sprintf( __( '; %d encrypted fields (API keys / passwords) cannot be decrypted on this site and were skipped — please re-enter them', 'jinyu' ), $skipped_secret );
 		}
 		wp_send_json_success( [ 'msg' => $msg ] );
 	}
@@ -742,7 +742,7 @@ class Jinyu_Setting {
 		// 完整说明收进浮层与 aria-label：按钮本身只承担"这里有报警"的入口职责，
 		// 长文案铺在顶栏会把整条操作区顶宽。
 		$tip = $summary .
-			__( '：缺 jinyu-cover / jinyu-thumb，卡片会直接加载原图拖慢页面；前往「维护工具」重建一次即可，无需手动裁剪。', 'jinyu' );
+			__( ': missing jinyu-cover / jinyu-thumb — cards load the original image directly, slowing the page. Run a rebuild once under "Maintenance Tools"; no manual cropping needed.', 'jinyu' );
 		printf(
 			'<a class="jinyu-alert" href="%1$s" aria-label="%2$s">' .
 				'<span class="jinyu-alert-ico" aria-hidden="true">' .

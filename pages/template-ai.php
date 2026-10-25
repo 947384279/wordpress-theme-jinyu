@@ -11,25 +11,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /*
-Template Name: AI 对话
+Template Name: AI Chat
 */
 get_header();
 ?>
 <div class="jinyu-container jinyu-main-wrap">
 	<main id="jinyu-content" class="jinyu-content jinyu-ai-page">
 		<div class="jinyu-ai-header">
-			<div class="jinyu-ai-title">🤖 AI 智能助手</div>
-			<div class="jinyu-ai-subtitle">对接大模型 API · 可后台配置</div>
+			<div class="jinyu-ai-title">🤖 <?php esc_html_e( 'AI Assistant', 'jinyu' ); ?></div>
+			<div class="jinyu-ai-subtitle"><?php esc_html_e( 'Powered by your LLM API · configurable in the admin', 'jinyu' ); ?></div>
 		</div>
 		<div class="jinyu-ai-messages" id="jyAiMessages">
 			<div class="jinyu-ai-msg jinyu-ai-bot">
 				<div class="jinyu-ai-avatar">🤖</div>
-				<div class="jinyu-ai-bubble">你好！我是金玉 AI 助手，有什么可以帮你的？</div>
+				<div class="jinyu-ai-bubble"><?php esc_html_e( "Hi! I'm the Jinyu AI assistant. How can I help you?", 'jinyu' ); ?></div>
 			</div>
 		</div>
 		<div class="jinyu-ai-input-area">
-			<textarea id="jyAiInput" rows="3" aria-label="<?php esc_attr_e( 'AI 对话输入框', 'jinyu' ); ?>" placeholder="<?php echo esc_attr__( '输入问题，Enter 发送，Shift+Enter 换行...', 'jinyu' ); ?>"></textarea>
-			<button id="jyAiSend" class="jinyu-ai-send"><?php esc_html_e( '发送', 'jinyu' ); ?></button>
+			<textarea id="jyAiInput" rows="3" aria-label="<?php esc_attr_e( 'AI chat input', 'jinyu' ); ?>" placeholder="<?php echo esc_attr__( 'Type your question. Enter to send, Shift+Enter for a new line...', 'jinyu' ); ?>"></textarea>
+			<button id="jyAiSend" class="jinyu-ai-send"><?php esc_html_e( 'Send', 'jinyu' ); ?></button>
 		</div>
 	</main>
 </div>

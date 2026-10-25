@@ -84,7 +84,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				$ri_gen = $ri_t0 > 0 ? max( 0.0, microtime( true ) - $ri_t0 ) : 0.0;
 				?>
 			<span class="jinyu-footer-runinfo" data-jinyu-runinfo>
-				<span class="jinyu-runinfo-item"><i class="fa-solid fa-database" aria-hidden="true" title="<?php esc_attr_e( 'Queries', 'jinyu' ); ?>"></i> <b data-ri="q"><?php echo (int) get_num_queries(); ?></b> <?php esc_html_e( '次', 'jinyu' ); ?></span>
+				<span class="jinyu-runinfo-item"><i class="fa-solid fa-database" aria-hidden="true" title="<?php esc_attr_e( 'Queries', 'jinyu' ); ?>"></i> <b data-ri="q"><?php echo (int) get_num_queries(); ?></b> <?php esc_html_e( 'queries', 'jinyu' ); ?></span>
 				<span class="jinyu-runinfo-sep">·</span>
 				<span class="jinyu-runinfo-item"><i class="fa-solid fa-stopwatch" aria-hidden="true" title="<?php esc_attr_e( 'Page generation time', 'jinyu' ); ?>"></i> <b data-ri="ms"><?php echo esc_html( number_format_i18n( $ri_gen, 3 ) ); ?></b> <?php esc_html_e( 'sec', 'jinyu' ); ?></span>
 			</span>

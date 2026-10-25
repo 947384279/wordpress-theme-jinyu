@@ -104,8 +104,8 @@ if ( ! function_exists( 'jinyu_pagination' ) ) {
 				'mid_size'  => $mid_size,
 				'end_size'  => $end_size,
 				// ⚠️ 纯图标链接读屏读不出名称（link-name 失败）：图标 aria-hidden，另加 screen-reader-text 文本兜底。
-				'prev_text' => '<i class="fa-solid fa-angle-left" aria-hidden="true"></i><span class="screen-reader-text">' . esc_html__( '上一页', 'jinyu' ) . '</span>',
-				'next_text' => '<i class="fa-solid fa-angle-right" aria-hidden="true"></i><span class="screen-reader-text">' . esc_html__( '下一页', 'jinyu' ) . '</span>',
+				'prev_text' => '<i class="fa-solid fa-angle-left" aria-hidden="true"></i><span class="screen-reader-text">' . esc_html__( 'Previous', 'jinyu' ) . '</span>',
+				'next_text' => '<i class="fa-solid fa-angle-right" aria-hidden="true"></i><span class="screen-reader-text">' . esc_html__( 'Next', 'jinyu' ) . '</span>',
 			]
 		);
 
@@ -132,13 +132,13 @@ if ( ! function_exists( 'jinyu_pagination' ) ) {
 			esc_attr( $jump_tpl ),
 			$current, /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 			$total, /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
-			esc_html__( '跳转', 'jinyu' ),
+			esc_html__( 'Go', 'jinyu' ),
 			$chev_single, /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 			$total, /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 			esc_attr__( 'Page number', 'jinyu' ),
 			/* translators: %s: 占位符 */
 			esc_attr( sprintf( __( 'Enter a page number between 1 and %d to jump', 'jinyu' ), $total ) ),
-			esc_attr__( '跳转', 'jinyu' ),
+			esc_attr__( 'Go', 'jinyu' ),
 			$chev_double /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		);
 
@@ -241,7 +241,7 @@ if ( ! function_exists( 'jinyu_post_updated' ) ) {
 
 		$date = get_the_modified_date( 'Y-m-d', $post );
 		/* translators: %s: 占位符 */
-		return $date ? sprintf( esc_html__( '更新于 %s', 'jinyu' ), $date ) : '';
+		return $date ? sprintf( esc_html__( 'Updated on %s', 'jinyu' ), $date ) : '';
 	}
 }
 
@@ -292,7 +292,7 @@ if ( ! function_exists( 'jinyu_archive_meta_html' ) ) {
 		$count = (int) $q->found_posts;
 		$html  = '<p class="jinyu-term-meta"><b>' . esc_html( number_format_i18n( $count ) ) . '</b> ' . esc_html__( 'posts', 'jinyu' );
 		if ( ! empty( $q->posts[0]->post_date ) ) {
-			$html .= ' · ' . esc_html__( '最后更新于', 'jinyu' ) . ' ' . esc_html( mysql2date( get_option( 'date_format' ), $q->posts[0]->post_date ) );
+			$html .= ' · ' . esc_html__( 'Last updated on', 'jinyu' ) . ' ' . esc_html( mysql2date( get_option( 'date_format' ), $q->posts[0]->post_date ) );
 		}
 		$html .= '</p>';
 		return $html;

@@ -19,7 +19,7 @@ if ( jinyu_is_checked( 'related_enable' ) ) {
 		if ( $q->have_posts() ) {
 			?>
 <section class="jinyu-relevant">
-	<h3 class="jinyu-widget-title">相关文章</h3>
+	<h3 class="jinyu-widget-title"><?php esc_html_e( 'Related posts', 'jinyu' ); ?></h3>
 	<div class="jinyu-relevant-grid">
 			<?php
 			while ( $q->have_posts() ) :

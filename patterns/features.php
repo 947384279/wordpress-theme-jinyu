@@ -4,11 +4,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Title: 金玉 · 三栏特性卡
+ * Title: Jinyu: Three-Column Features
  * Slug: jinyu/features
  * Categories: jinyu
- * Keywords: 特性, 栏目, 三栏
- * Description: 三栏特性介绍卡，适合产品/服务/功能卖点展示。
+ * Keywords: features, highlights, columns
+ * Description: Three feature cards in columns. Fits product / service / capability showcases.
  * Viewport Width: 900
  *
  * @package Jinyu
@@ -22,11 +22,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 <!-- /wp:html -->
 
 <!-- wp:heading {"level":3} -->
-<h3 class="wp-block-heading">极速加载</h3>
+<h3 class="wp-block-heading">Blazing Fast</h3>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p>按需加载资源，关键 CSS 内联，首屏秒开。</p>
+<p>Assets load on demand, critical CSS is inlined, and the first screen opens in seconds.</p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:column -->
 
@@ -36,11 +36,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 <!-- /wp:html -->
 
 <!-- wp:heading {"level":3} -->
-<h3 class="wp-block-heading">暗色模式</h3>
+<h3 class="wp-block-heading">Dark Mode</h3>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p>手动切换或跟随系统，配色自动派生，夜间阅读不刺眼。</p>
+<p>Switch manually or follow the system; colors are derived automatically for comfortable night reading.</p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:column -->
 
@@ -50,11 +50,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 <!-- /wp:html -->
 
 <!-- wp:heading {"level":3} -->
-<h3 class="wp-block-heading">全端自适应</h3>
+<h3 class="wp-block-heading">Fully Responsive</h3>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p>手机、平板、桌面一站适配，布局在任意屏幕都保持工整。</p>
+<p>One layout that stays tidy on phones, tablets, and desktops alike.</p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:column --></div>
 <!-- /wp:columns -->

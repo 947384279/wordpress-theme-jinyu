@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /*
-Template Name: 手气不错
+Template Name: I'm Feeling Lucky
 */
 get_header();
 ?>
@@ -23,9 +23,9 @@ get_header();
 		<h1 class="jinyu-article-title"><?php the_title(); ?></h1>
 		<div class="jinyu-article-content">
 		<div class="jinyu-luck-box">
-			<p class="jinyu-luck-tip"><?php esc_html_e( '点击按钮，随机跳转到一篇站内文章。', 'jinyu' ); ?></p>
+			<p class="jinyu-luck-tip"><?php esc_html_e( 'Click the button to jump to a random post on this site.', 'jinyu' ); ?></p>
 			<button type="button" class="jinyu-luck-btn" id="jinyu-luck-btn">
-			<i class="fa-solid fa-shuffle" aria-hidden="true"></i> <?php esc_html_e( '手气不错', 'jinyu' ); ?>
+			<i class="fa-solid fa-shuffle" aria-hidden="true"></i> <?php esc_html_e( 'I\'m Feeling Lucky', 'jinyu' ); ?>
 			</button>
 		</div>
 		</div>

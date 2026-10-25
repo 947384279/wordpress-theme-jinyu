@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /*
-Template Name: 全宽页面
+Template Name: Full Width
 */
 get_header();
 ?>

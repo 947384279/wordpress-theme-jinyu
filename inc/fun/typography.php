@@ -59,3 +59,28 @@ if ( ! function_exists( 'jinyu_cn_autospace' ) ) {
 
 add_filter( 'the_content', 'jinyu_cn_autospace', 20 );
 add_filter( 'comment_text', 'jinyu_cn_autospace', 20 );
+
+if ( ! function_exists( 'jinyu_is_cn_locale' ) ) {
+	/**
+	 * Jinyu_is_cn_locale()
+	 *
+	 * 判断当前站点是否为中文语言环境。
+	 * 依据站点语言（locale）：zh_CN / zh_TW / zh_HK / zh_SG 等一律视为中文环境。
+	 * 用于决定是否套用中文排版增强（.jinyu-cn 作用域：两端对齐、标点挤压、舒适行距）。
+	 * 这些规则对英文正文是有害的（词间拉出空隙），故必须按语言环境开关，而非无条件常开。
+	 *
+	 * @return bool
+	 */
+	function jinyu_is_cn_locale(): bool {
+		$locale = function_exists( 'determine_locale' ) ? determine_locale() : get_locale();
+		if ( ! is_string( $locale ) || '' === $locale ) {
+			return false;
+		}
+		$locale = strtolower( str_replace( '_', '-', $locale ) );
+
+		return ( 0 === strpos( $locale, 'zh' ) )
+			|| ( 0 === strpos( $locale, 'cmn' ) )   // 中文（ISO 639-3）
+			|| ( 0 === strpos( $locale, 'yue' ) )   // 粤语
+			|| ( 0 === strpos( $locale, 'nan' ) );  // 闽南语
+	}
+}

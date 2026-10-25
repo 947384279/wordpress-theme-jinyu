@@ -202,7 +202,7 @@ const WPORG_NAME = 'Jinyu Lite';
 // 变体描述必须与实际能力一致：自托管版描述里的「支持后台可视化配置」在变体中是 Customizer
 // （独立设置中心与代码注入均已剔除），照抄会误导审核方与用户。
 // 描述同样避开 "WordPress" 字样，避免被读成与官方存在隶属关系。
-const WPORG_DESC = '金玉（Jinyu）纯呈现层发行版：高颜值自适应博客主题，支持暗色模式、多种布局、短代码、点赞收藏、评论互动与无限加载；外观选项统一在「外观 → 自定义」中配置。';
+const WPORG_DESC = 'A clean, responsive blog theme with dark mode, multiple layouts, shortcodes, likes & bookmarks, comment interactions and infinite scroll. All appearance options are configured in the Customizer (Appearance → Customize).';
 const WPORG_DIR = `dist-wporg/${WPORG_SLUG}`;
 
 function copyWporg() {
@@ -218,6 +218,12 @@ function copyWporg() {
 		'!release/**',
 		// 本仓库与工具链专属文件不该出现在提交包内：package.json / tools / tests / README.md。
 		'!package.json', '!README.md',
+		// SECURITY.md 是中文运维/部署须知（非主题运行期文件，且非英文）；用户侧数据口径已由 readme.txt 的 Privacy 节覆盖。
+		// 保留在仓库供自托管版参考，但 w.org 变体不随包发布，避免包内出现非英文文档（踩过 review 红线）。
+		'!SECURITY.md',
+		// icons.extra.txt 是 FontAwesome 子集化的手工维护清单（仅构建期用，代码里只以注释提及）。
+		// 非运行期文件 + 内容为中文，一并剔除。
+		'!assets/fonts/fa/icons.extra.txt',
 		'!tools/**', '!tests/**',
 		// 临时文件兜底：调试期的 tmp-* 产物若落在项目根，绝不能让它们混进提交包（已实际踩过）
 		'!tmp-*', '!tmp/**',
@@ -244,13 +250,14 @@ function copyWporg() {
 		// 头部 5 个国内头像镜像在 inc/fun/user.php 的 jinyu_avatar_mirror_map() 里，
 		//   选中非官方源会把评论者邮箱 md5 发往第三方。该函数已加 wporg 门控
 		//   （发行变体只返回官方 gravatar.com），无需剔除整个 user.php。
-		// —— 以下为「开发源文件」：运行期只加载编译产物，绝不该进提交包（用户要求：不要打包不相干的）——
-		// .less 源（assets/dist/style/*.min.css 才是运行期样式，WP.org 不读 less）
-		'!assets/style/**/*.less',
-		// 顶层原始 JS（buildJs/buildAdminJs 已编译为 assets/dist/js/*.min.js，运行期只认 .min 版）
-		'!assets/js/*.js',
-		// 原始 vendor（保留对应 *.min.js：functions.php enqueue 的是 .min 版）
-		'!assets/js/vendor/highlight.js', '!assets/js/vendor/qrcode.js', '!assets/js/vendor/viewer.js',
+		// —— 以下为「开发源文件」：运行期只加载编译产物 ——
+		// wp.org REQUIRED：凡随包发布的压缩文件，必须同时提供未压缩原始文件（成对）。
+		// 故 .less 源 / 顶层原始 .js / vendor 原始 .js 一律随包提供，便于审核与用户核对。
+		// 仅剔除 w.org 发行变体不使用的后台设置页资产（运行期无对应加载，不触发“必须随附原始文件”要求）：
+		'!assets/dist/style/admin.min.css',
+		'!assets/dist/js/admin.min.js',
+		'!assets/style/admin.less',
+		'!assets/js/admin.js',
 		// WP.org 只需一份许可证：保留 license.txt，删去大写的 LICENSE 副本（内容相同，纯冗余）
 		'!LICENSE',
 		// 仓库本地恢复说明（中文名 `_先读我-恢复说明.md`）：纯开发/运维内部文档，
@@ -299,6 +306,9 @@ function renameWporg(done) {
 		s = s.replace(/^Theme Name: .*$/m, `Theme Name: ${WPORG_NAME}`);
 		// 描述只改主题头，且只改 style.css：其它文件里的 "Description:" 是设置字段标签，不可动。
 		if (path.basename(file) === 'style.css') {
+			// Theme URI 在 w.org 变体整体移除：wp.org 页面尚未上线，保留外站 URI 会被判不合格。
+			// （Theme URI 可选；若保留则必须指向 wp.org 托管的本主题页，故直接删去最稳妥。）
+			s = s.replace(/^Theme URI: .*$/m, '');
 			s = s.replace(/^Description: .*$/m, `Description: ${WPORG_DESC}`);
 		}
 		if (s !== before) fs.writeFileSync(file, s);

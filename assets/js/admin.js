@@ -764,7 +764,7 @@
             toolRow('upload', t('importSettings', 'Import settings'), t('importSettingsDesc', 'Restore theme settings from a JSON file. This overwrites all current settings — export a backup first.'), toolAction('jinyu-import', t('chooseFileImport', 'Choose a file and import'), 'jinyu-import-tip') + '<input type="file" id="jinyu-import-file" accept="application/json,.json" hidden>') +
             // 注：标题原本就是中文硬编码，JS 侧取不到 PHP 的 __()。
             // 保持中文字面量，不要"统一"成 __()——那是 PHP 函数，写进 JS 会 ReferenceError 导致整页白屏。
-            toolRow('chart-bar', '页脚运行信息', t('runinfoDesc', 'Output server-side run info in the footer (queries / page generation time). On a full-page cache hit both show 0. After enabling, clear the cache once in "Jinyu Booster" for it to take effect.'), runSwitch) +
+            toolRow('chart-bar', t('runinfoTitle', 'Footer run info'), t('runinfoDesc', 'Output server-side run info in the footer (queries / page generation time). On a full-page cache hit both show 0. After enabling, clear the cache once in "Jinyu Booster" for it to take effect.'), runSwitch) +
             '</div>' +
             // 注：此前这里有一行「以下能力由金玉增强插件提供……」的归属说明，
             // 按站长要求已移除。邮件 SMTP / 缓存清理 / 数据库优化等运维能力本就归属
@@ -1533,13 +1533,13 @@
             .then(function (json) {
                 if (json && json.success) {
                     SAVED.footer_runinfo = val ? 1 : 0;
-                    toast('已' + (val ? '开启' : '关闭') + '页脚运行信息', true);
+                    toast('Footer run info ' + (val ? 'enabled' : 'disabled'), true);
                     var stateEl = qs('#jinyu-runinfo-state', root);
                     if (stateEl) {
                         stateEl.textContent = val ? t('enabled', 'Enabled') : t('disabled', 'Disabled');
                         stateEl.className = 'jinyu-tool-state' + (val ? ' on' : '');
                     }
-                    if (tipEl) { tipEl.textContent = '已' + (val ? '开启' : '关闭'); tipEl.className = 'jinyu-tools-tip ok'; }
+                    if (tipEl) { tipEl.textContent = (val ? 'Enabled' : 'Disabled'); tipEl.className = 'jinyu-tools-tip ok'; }
                 } else {
                     toast((json && json.data && json.data.msg) ? json.data.msg : t('saveFailed', 'Save failed'), false);
                     if (tipEl) { tipEl.textContent = t('saveFailed', 'Save failed'); tipEl.className = 'jinyu-tools-tip err'; }

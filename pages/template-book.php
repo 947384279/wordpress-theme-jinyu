@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /*
-Template Name: 书单/推荐阅读
+Template Name: Book List
 */
 get_header();
 ?>
@@ -54,7 +54,7 @@ get_header();
 				wp_reset_postdata();
 			else :
 				?>
-			<p><?php esc_html_e( '暂无内容', 'jinyu' ); ?></p>
+			<p><?php esc_html_e( 'Nothing here yet', 'jinyu' ); ?></p>
 			<?php endif; ?>
 		</div>
 		</div>

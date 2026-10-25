@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /*
-Template Name: 文章归档
+Template Name: Post Archives
 */
 get_header();
 ?>

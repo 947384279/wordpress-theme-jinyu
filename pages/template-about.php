@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /*
-Template Name: 关于
+Template Name: About
 */
 get_header();
 ?>
@@ -55,7 +55,7 @@ get_header();
 							printf(
 								wp_kses(
 									/* translators: 1: 本页编辑链接，2: 个人资料链接。 */
-									__( '本页正文为空，访客只能看到上方头像与简介。请到 <a href="%1$s">后台编辑本页</a> 填写「关于」内容；头像与个人说明取自 <a href="%2$s">个人资料</a>。', 'jinyu' ),
+									__( 'The page body is empty, so visitors only see the avatar and bio above. Go to <a href="%1$s">edit this page</a> and fill in the About content; the avatar and description come from your <a href="%2$s">profile</a>.', 'jinyu' ),
 									[ 'a' => [ 'href' => [] ] ]
 								),
 								esc_url( (string) get_edit_post_link() ),

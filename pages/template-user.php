@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /*
-Template Name: 用户中心
+Template Name: User Center
 */
 get_header();
 
@@ -29,10 +29,10 @@ $stats = is_user_logged_in() ? jinyu_user_stats( $uid ) : [];
 	<?php if ( ! is_user_logged_in() ) : ?>
 		<div class="jinyu-user-gate">
 		<i class="fa-solid fa-lock" aria-hidden="true"></i>
-		<h1><?php esc_html_e( '请先登录', 'jinyu' ); ?></h1>
-		<p><?php esc_html_e( '登录后即可管理你的文章、收藏与资料。', 'jinyu' ); ?></p>
+		<h1><?php esc_html_e( 'Please log in first', 'jinyu' ); ?></h1>
+		<p><?php esc_html_e( 'Log in to manage your posts, favorites, and profile.', 'jinyu' ); ?></p>
 		<button type="button" class="jinyu-btn jinyu-btn-primary" data-jinyu-auth-open="login">
-			<?php esc_html_e( '登录 / 注册', 'jinyu' ); ?>
+			<?php esc_html_e( 'Log in / Register', 'jinyu' ); ?>
 		</button>
 		</div>
 	<?php else : ?>
@@ -55,10 +55,10 @@ $stats = is_user_logged_in() ? jinyu_user_stats( $uid ) : [];
 			</div>
 
 			<ul class="jinyu-user-stats">
-			<li><b data-stat="posts"><?php echo $stats['posts']; ?></b><span><?php esc_html_e( '文章', 'jinyu' );  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?></span></li>
-			<li><b data-stat="comments"><?php echo $stats['comments']; ?></b><span><?php esc_html_e( '评论', 'jinyu' );  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?></span></li>
-			<li><b data-stat="favs"><?php echo $stats['favs']; ?></b><span><?php esc_html_e( '收藏', 'jinyu' );  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?></span></li>
-			<li><b data-stat="likes"><?php echo $stats['likes']; ?></b><span><?php esc_html_e( '获赞', 'jinyu' );  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?></span></li>
+			<li><b data-stat="posts"><?php echo $stats['posts']; ?></b><span><?php esc_html_e( 'Posts', 'jinyu' );  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?></span></li>
+			<li><b data-stat="comments"><?php echo $stats['comments']; ?></b><span><?php esc_html_e( 'Comments', 'jinyu' );  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?></span></li>
+			<li><b data-stat="favs"><?php echo $stats['favs']; ?></b><span><?php esc_html_e( 'Favorite', 'jinyu' );  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?></span></li>
+			<li><b data-stat="likes"><?php echo $stats['likes']; ?></b><span><?php esc_html_e( 'Likes received', 'jinyu' );  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?></span></li>
 			</ul>
 
 			<nav class="jinyu-user-nav">
@@ -83,9 +83,9 @@ $stats = is_user_logged_in() ? jinyu_user_stats( $uid ) : [];
 				?>
 				</a>
 			<?php endforeach; ?>
-			<a class="jinyu-user-nav-item jinyu-user-nav-logout" href="<?php echo esc_url( wp_logout_url( home_url() ) ); ?>" data-jinyu-confirm="<?php esc_attr_e( '确定退出登录吗？', 'jinyu' ); ?>">
+			<a class="jinyu-user-nav-item jinyu-user-nav-logout" href="<?php echo esc_url( wp_logout_url( home_url() ) ); ?>" data-jinyu-confirm="<?php esc_attr_e( 'Are you sure you want to log out?', 'jinyu' ); ?>">
 				<i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
-				<span><?php esc_html_e( '退出登录', 'jinyu' ); ?></span>
+				<span><?php esc_html_e( 'Log out', 'jinyu' ); ?></span>
 			</a>
 			</nav>
 		</aside>

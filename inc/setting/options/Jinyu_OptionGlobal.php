@@ -38,7 +38,7 @@ class Jinyu_OptionGlobal extends Jinyu_BaseOptionItem {
 					'sdt'     => 'card',
 					'options' => [
 						[
-							'label' => __( 'Standard list', 'jinyu' ),
+							'label' => __( 'Blog mode', 'jinyu' ),
 							'value' => 'list',
 						],
 						[
@@ -204,21 +204,21 @@ class Jinyu_OptionGlobal extends Jinyu_BaseOptionItem {
 				],
 				[
 					'id'    => 'enable_webp',
-					'title' => __( '启用 WebP 自动转换', 'jinyu' ),
+					'title' => __( 'Enable automatic WebP conversion', 'jinyu' ),
 					'type'  => 'switch',
 					'sdt'   => 1,
-					'desc'  => __( '上传图片时自动生成 WebP 副本并前端优先输出 WebP；关闭后不再生成新 WebP，URL 回退原图（已生成的旧文件留盘无害）。', 'jinyu' ),
+					'desc'  => __( 'Automatically generate a WebP copy on upload and prefer serving it; when disabled, no new WebP copies are created and URLs fall back to the original image (existing copies remain on disk, harmless).', 'jinyu' ),
 				],
 				[
 					'id'    => 'webp_quality',
-					'title' => __( 'WebP 压缩质量', 'jinyu' ),
+					'title' => __( 'WebP compression quality', 'jinyu' ),
 					'type'  => 'slider',
 					'sdt'   => 80,
 					'min'   => 40,
 					'max'   => 100,
 					'step'  => 5,
 					'unit'  => '%',
-					'desc'  => __( '数值越低，生成的 WebP 文件越小，但画质越粗糙。仅对设置后新生成的 WebP 生效；已存在的图片需重新上传或批量重生成。', 'jinyu' ),
+					'desc'  => __( 'Lower values produce smaller WebP files with rougher quality. Only applies to WebP generated after this setting; existing images need to be re-uploaded or regenerated in bulk.', 'jinyu' ),
 				],
 			],
 		];

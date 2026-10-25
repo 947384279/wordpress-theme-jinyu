@@ -8,123 +8,118 @@ Stable tag: 1.3.1
 License: GPL v3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-面向内容站点的高颜值自适应博客主题：暗色模式、多种首页版块、点赞收藏、TOC 目录与代码高亮；纯呈现层、不外联、无需插件。
+A clean, responsive blog theme for content sites: dark mode, multiple homepage sections, likes & bookmarks, table of contents and code highlighting. Pure presentation layer, no code injection, and no visitor data is sent to third parties.
 
 == Description ==
 
-金玉主题的 WordPress.org 发行版（Jinyu Lite）：面向内容站点的自适应博客主题，自研架构全新编写，纯呈现层实现，不含代码注入，不向第三方发送访客数据。
+Jinyu Lite is the WordPress.org-distributed variant of the Jinyu theme. It is a responsive blog theme written from scratch with an original architecture, implemented as a pure presentation layer: it contains no code injection and sends no visitor data to any third party.
 
-主要特性：
-* 外观选项全部走 WordPress 标准「外观 → 自定义」（Customizer），20+ 个分组覆盖站点标识、全局风格、配色、首页版块、内容展示、评论与页脚。
-* 暗色模式：手动切换 +「跟随系统」自动切换。
-* 首页头部版块（幻灯片 / 四宫格 / 分类两栏），后台开关式配置，无需切换布局。
-* 内容增强：目录（TOC）、面包屑、返回顶部、代码高亮、阅读进度条、相关文章、上下篇导航。
-* 文章互动：点赞、收藏、分享、海报生成、二维码。
-* 评论增强：UA 解析、表情选择器、评论分页、防暴破限流。
-* SEO：内置 Open Graph / Twitter Card / JSON-LD 结构化数据。
-* 布局：列表 / 大图 / 卡片等多种版式，双栏与三栏，侧栏可左右切换；提供「全宽页面」模板。
-* 6 个 Gutenberg 区块图案，编辑器内「金玉」分类可直接插入。
-* PHP 8.0+ / WordPress 6.0+；资源按需加载、关键 CSS 内联、HTML 压缩可选。
+Key features:
 
-本版主题单独使用即为完整可用的博客主题，无需安装任何其他组件。
+* All appearance options live in the standard WordPress **Appearance → Customize** (Customizer), with 20+ panels covering site identity, global style, color scheme, homepage sections, content display, comments, and footer.
+* Dark mode: manual toggle plus an automatic "follow system" switch.
+* Homepage header sections (slider / 2x2 grid / category two-column) configured via on/off switches — no layout switching required.
+* Content enhancements: table of contents (TOC), breadcrumbs, back-to-top, code highlighting, reading progress bar, related posts, and previous/next post navigation.
+* Post interactions: like, bookmark, share, poster generation, and QR code.
+* Comment enhancements: user-agent parsing, emoji picker, comment pagination, and brute-force rate limiting.
+* SEO: built-in Open Graph / Twitter Card / JSON-LD structured data.
+* Layouts: list / large-image / card styles, two-column and three-column, sidebar that can be switched left or right; a "Full Width Page" template is provided.
+* 6 Gutenberg block patterns, insertable directly from the "Jinyu" category in the editor.
+* PHP 8.0+ / WordPress 6.0+; assets are loaded on demand, critical CSS is inlined, and HTML minification is optional.
+
+This theme is fully usable on its own — no additional components need to be installed.
 
 == Installation ==
 
-1. 后台「外观 → 主题 → 安装主题 → 上传主题」，选择 `jinyu-lite-x.y.z.zip` 上传并启用；或直接把主题目录放进 `/wp-content/themes/` 后在「外观 → 主题」中启用。
-2. 进入「外观 → 自定义」按需配置站点标识、配色与首页版块。
-3. （可选）到「设置 → 固定链接」保存一次以刷新重写规则。
+1. In your dashboard go to **Appearance → Themes → Add New → Upload Theme**, choose `jinyu-lite-x.y.z.zip` to upload and activate; or place the theme folder into `/wp-content/themes/` and activate it under **Appearance → Themes**.
+2. Go to **Appearance → Customize** to configure site identity, color scheme, and homepage sections as needed.
+3. (Optional) Visit **Settings → Permalinks** and save once to flush rewrite rules.
 
 == Frequently Asked Questions ==
 
-= 为什么和 GitHub 上的金玉主题功能不一样？ =
+= Why is this different from the Jinyu theme on GitHub? =
 
-金玉主题有两条发行线，源码同源：自托管版（slug `jinyu`）保留独立设置中心与代码注入等后台能力；本发行版（slug `jinyu-lite`，即你正在使用的这一版）为 WordPress.org 规范版，外观选项统一走 Customizer，不含任意代码注入与后台独立设置页。两者可以共存互不干扰。
+Jinyu ships on two distribution lines from the same source. The self-hosted edition (slug `jinyu`) keeps the standalone settings center and code-injection capabilities. This distribution (slug `jinyu-lite`, the one you are using) is the WordPress.org-compliant edition: appearance options are unified under the Customizer, and it contains no arbitrary code injection or standalone settings page. The two can coexist without conflict.
 
-= 外观选项在哪里？ =
+= Where are the appearance options? =
 
-全部在「外观 → 自定义」里，按面板分组：基础设置、全局设置、风格外观、内容增强、评论互动、首页模块、高级设置、用户与登录、页脚设置。
+All of them are under **Appearance → Customize**, grouped into panels: Basic, Global, Style, Content, Comments, Homepage, Advanced, User & Login, and Footer.
 
-= 需要额外的服务器端功能（缓存、安全加固等）怎么办？ =
+= What if I need server-side features (caching, hardening, etc.)? =
 
-这些不属于主题职责，请用相应的插件实现。主题本身不做对象缓存、不写统计、不注入代码。
+Those are outside the theme's responsibility; please implement them with the appropriate plugins. The theme itself does no object caching, writes no statistics, and injects no code.
 
-= 无插件时前台功能是否完整？ =
+= Does the front end work completely without plugins? =
 
-是。主题对外只依赖 WordPress 核心能力，未安装任何插件也不会出现白屏或功能缺失。
+Yes. The theme relies only on WordPress core capabilities. Installing no plugins will not cause a white screen or missing functionality.
 
-= 这款主题会把我的访客数据发给第三方吗？ =
+= Does this theme send my visitors' data to third parties? =
 
-不会。发行版**不含任何把访客数据发往第三方的代码路径**：IP 归属地查询、头像镜像等能力已整体移除；第三方资源（Font Awesome / highlight.js / viewer.js / qrcode.js）全部本地打包，不走 CDN。
+No. The distribution contains no code path that sends visitor data to third parties: IP geolocation lookups, avatar mirrors, and similar capabilities of the self-hosted edition have been removed entirely. Third-party assets (Font Awesome / highlight.js / viewer.js / qrcode.js) are all bundled locally and never loaded from a CDN.
 
-全部行为都发生在本站数据库内 —— 存储：点赞与收藏（用户元数据，各上限 2000 条）、文章点赞数与投票数、浏览量、头像地址、关注与站内通知、邮箱变更验证记录、主题配置（单个 option）、匿名共现统计（**仅文章 ID 对**，每节点上限 15、全局上限 400，不含 IP、UA 或任何用户标识）。Cookie 三个，均为本地偏好、不含个人识别信息、不用于跨站跟踪：`jinyu_liked_<文章ID>`（未登录点赞去重，30 天）、`jinyu-theme`（暗色模式偏好，1 年）、`jinyu_cookie_ok`（提示条已同意，30 天）。
+All behavior happens inside this site's own database — storage: likes and bookmarks (user meta, capped at 2000 each), post like counts and votes, view counts, avatar URLs, follow relationships and on-site notifications, email-change verification records, theme configuration (a single option), and anonymous co-view statistics (post ID pairs only, capped at 15 neighbors per node and 400 nodes total, with no IP, UA, or any user identifier). Three cookies, all local preferences with no personally identifiable information and no cross-site tracking: `jinyu_liked_<post ID>` (logged-out like de-duplication, 30 days), `jinyu-theme` (dark mode preference, 1 year), and `jinyu_cookie_ok` (consent banner acknowledged, 30 days).
 
-只有两处需站长主动配置才会产生外部请求：在 `wp-config.php` 定义 `JINYU_HITOKOTO_REMOTE` 使用自定义每日一句语料；把头像来源从官方 Gravatar 换成第三方镜像（此时评论者邮箱的 md5 会发往该镜像）。完整清单见下方 Privacy 一节。
+Only two cases produce an external request, and both require the site owner to opt in: defining `JINYU_HITOKOTO_REMOTE` in `wp-config.php` to use a custom daily-quote source; or switching the avatar source away from the official Gravatar (in which case the md5 of the commenter's email is sent to that mirror). See the Privacy section below for the full list.
 
 == Privacy ==
 
-本主题不收集、不上报任何统计信息，不向第三方发送访客数据。发行版**不含任何把访客数据发往第三方的代码路径**（IP 归属地查询等自托管版才有的功能已整体移除）。
+This theme collects and reports no statistics and sends no visitor data to third parties. The distribution contains no code path that sends visitor data to third parties (IP geolocation lookups and other self-hosted-only features have been removed entirely).
 
-**本主题在本地存储的数据（均在本站数据库内，不外发）：**
+**Data stored locally by this theme (all inside this site's own database, never sent out):**
 
-* 点赞 / 收藏：登录用户存于用户元数据 `jinyu_liked_posts` / `jinyu_fav_posts`（最多各 2000 条，超出淘汰最旧）；未登录用户不写库。
-* 文章计数：点赞数存文章元数据 `jinyu_likes`；「有帮助」投票存 `_jinyu_helpful_yes` / `_jinyu_helpful_no`。
-* 头像：上传或填写的头像地址存用户元数据 `jinyu_avatar`。
-* 站内互动：关注关系、消息通知、邮箱变更验证（`jinyu_pending_email`，含 token 哈希与过期时间）存用户元数据。
-* 主题配置：全部存于单个 option `jinyu_options`。
-* 共现统计：`jinyu_coview_map` 记录**匿名**访客读过的文章 ID 对（每节点最多 15 个邻居、总数上限 400 节点），不含 IP、UA 或任何用户标识，仅用于推荐「还读过」。
-* 浏览量：文章浏览量存文章元数据 `jinyu_views`。
+* Likes / bookmarks: for logged-in users stored in user meta `jinyu_liked_posts` / `jinyu_fav_posts` (up to 2000 each; oldest evicted when exceeded); logged-out users are not written to the database.
+* Post counters: like count in post meta `jinyu_likes`; "helpful" votes in `_jinyu_helpful_yes` / `_jinyu_helpful_no`.
+* Avatars: uploaded or entered avatar URLs stored in user meta `jinyu_avatar`.
+* On-site interactions: follow relationships, message notifications, and email-change verification (`jinyu_pending_email`, containing a token hash and expiry) stored in user meta.
+* Theme configuration: all stored in a single option `jinyu_options`.
+* Co-view statistics: `jinyu_coview_map` records **anonymous** pairs of post IDs that visitors read together (at most 15 neighbors per node, 400 nodes total), with no IP, UA, or any user identifier; used only to recommend "also read".
+* View counts: post view count stored in post meta `jinyu_views`.
 
-**本主题使用的 Cookie（均为本地偏好，不用于跨站跟踪）：**
+**Cookies used by this theme (all local preferences, not for cross-site tracking):**
 
-* `jinyu_liked_<文章ID>`：未登录用户点赞去重，30 天。
-* `jinyu-theme`：暗色 / 亮色模式偏好，1 年。
-* `jinyu_cookie_ok`：Cookie 提示条已同意标记，30 天。
+* `jinyu_liked_<post ID>`: logged-out like de-duplication, 30 days.
+* `jinyu-theme`: dark / light mode preference, 1 year.
+* `jinyu_cookie_ok`: consent banner acknowledged, 30 days.
 
-**唯一可能的对外通信（需站长自行启用，且仅自托管版提供）：**
+**The only possible external communication (requires the site owner to enable, and only available in the self-hosted edition):**
 
-* 每日一句语料：默认使用主题内置的本地语料，零外部请求；仅当站长在 `wp-config.php` 中手动定义 `JINYU_HITOKOTO_REMOTE` 常量时才会拉取该自定义地址的 JSON。
-* 头像：默认使用官方 Gravatar。选择其他镜像源会把评论者邮箱的 md5 哈希发往该镜像服务器。
+* Daily quote source: by default the theme uses a built-in local corpus with zero external requests; an external pull happens only when the site owner manually defines the `JINYU_HITOKOTO_REMOTE` constant in `wp-config.php` to fetch JSON from that custom address.
+* Avatars: by default the official Gravatar is used. Choosing another mirror source sends the md5 hash of the commenter's email to that mirror server.
 
-卸载主题不会自动删除上述数据；如需彻底清除，请在数据库中手动清理对应的 option 与用户元数据。
+Uninstalling the theme does not automatically delete the data above; to purge it completely, manually clean up the corresponding options and user meta in the database.
 
 == Compatibility ==
 
-* 多语言：文本域 `jinyu-lite`，随主题提供 `.pot` 模板；字符串均可被 WPML / Polylang 翻译接管，菜单使用「外观 → 菜单」注册的菜单位置。
-* 页面构建器：兼容 Gutenberg 区块编辑器（支持 block-styles / wide-blocks / align-wide）；提供「全宽页面」页面模板，适配 Elementor 等构建器的全宽布局需求。
-* 商城：未内置 WooCommerce 深度定制，但保持基础样式兼容。
+* Multilingual: text domain `jinyu-lite`, a `.pot` template ships with the theme; strings can be taken over by WPML / Polylang, and menu locations are registered under **Appearance → Menus**.
+* Page builders: compatible with the Gutenberg block editor (supports block-styles / wide-blocks / align-wide); a "Full Width Page" page template is provided for the full-width layout needs of builders such as Elementor.
+* Store: WooCommerce deep customization is not built in, but basic style compatibility is maintained.
 
 == Resources ==
 
-本主题在 `assets/` 下打包了以下第三方资源，其许可如下：
+This theme bundles the following third-party assets under `assets/`, licensed as noted:
 
-* Font Awesome Free 6：图标采用 CC BY 4.0 许可（https://creativecommons.org/licenses/by/4.0/）；
-  字体采用 SIL OFL 1.1 许可（https://opensource.org/licenses/OFL-1.1）；代码采用 MIT 许可。
-  商标声明：Font Awesome 为 Dave Gandy 的商标，本主题仅按其开源许可使用，与商标持有人无隶属关系。
-* Highlight.js 11.9.0（`assets/js/vendor/highlight.js`，代码高亮）——BSD-3-Clause 许可，
-  https://github.com/highlightjs/highlight.js/blob/main/LICENSE ，版权归 Highlight.js 贡献者所有；
-  随附的 GitHub 配色（`assets/css/vendor/highlight.css`）属同一项目、同一许可。
-* Viewer.js 1.11.7（`assets/js/vendor/viewer.js`，正文图片查看器）——MIT 许可，
-  https://github.com/fengyuanchen/viewerjs/blob/main/LICENSE ，版权归 Chen Fengyuan 所有。
-* QRCode.js（`assets/js/vendor/qrcode.js`，分享二维码）——MIT 许可，
-  https://github.com/davidshimjs/qrcodejs ，版权归 Kazuhiko Arase / davidshimjs 所有。
+* Font Awesome Free 6: icons under CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/); fonts under SIL OFL 1.1 (https://opensource.org/licenses/OFL-1.1); code under MIT. Trademark notice: Font Awesome is a trademark of Dave Gandy; this theme uses it only under its open-source license and is not affiliated with the trademark holder.
+* Highlight.js 11.9.0 (`assets/js/vendor/highlight.js`, code highlighting) — BSD-3-Clause, https://github.com/highlightjs/highlight.js/blob/main/LICENSE, copyright the Highlight.js contributors; the bundled GitHub color scheme (`assets/css/vendor/highlight.css`) belongs to the same project under the same license.
+* Viewer.js 1.11.7 (`assets/js/vendor/viewer.js`, image lightbox) — MIT, https://github.com/fengyuanchen/viewerjs/blob/main/LICENSE, copyright Chen Fengyuan.
+* QRCode.js (`assets/js/vendor/qrcode.js`, share QR code) — MIT, https://github.com/davidshimjs/qrcodejs, copyright Kazuhiko Arase / davidshimjs.
 
-以上资源均以未压缩源码 + 压缩版成对提供，可直接阅读与核对；许可均为 GPL 兼容（MIT / BSD-3-Clause / CC BY 4.0 / SIL OFL 1.1）。
-其余脚本与样式（首页轮播、目录、点赞、阅读进度等）均为本主题自研实现，无第三方代码与许可义务。
+All of the above are provided as uncompressed source paired with their minified versions, readable and verifiable directly; all licenses are GPL-compatible (MIT / BSD-3-Clause / CC BY 4.0 / SIL OFL 1.1).
+The remaining scripts and styles (homepage carousel, table of contents, likes, reading progress, etc.) are original implementations of this theme, with no third-party code or licensing obligations.
 
 == Changelog ==
 
 = 1.3.1 =
 
 = 1.3.0 =
-* 新增代码语法高亮：文章代码块由 highlight.js 渲染，明暗双主题跟随站点主题自动切换（后台「内容」设置可开关）。
-* 新增文章图片灯箱：点击正文图片以 viewer.js 全屏查看，支持缩放与翻页。
-* 新增文章二维码分享：文章操作区生成当前链接二维码（qrcode.js）。
-* 新增正文目录（TOC）：基于 H2/H3/H4 自动生成目录并随滚动高亮当前章节。
-* 字体与图标升级：引入 jinyu-text 文本字体，FontAwesome 升级为全量图标集。
-* 侧边栏：修复图标显示异常，优化侧栏动画（A/C/D 三档）。
-* 后台：补全设置项文案国际化（i18n）与 translators 注释。
-* 安全：补全主题内联脚本/样式缺失的 CSP nonce，新增 SECURITY.md 部署须知；安全审计确认无 Critical/High 漏洞。
-* 代码规范：全主题 WPCS 校验 0 error / 0 warning。
+* Added code syntax highlighting: post code blocks rendered by highlight.js, with light/dark themes following the site automatically (toggle under "Content" settings).
+* Added a post image lightbox: click a body image to view it full-screen via viewer.js, with zoom and paging.
+* Added post QR-code sharing: a QR code of the current link is generated in the post actions area (qrcode.js).
+* Added an in-post table of contents (TOC): auto-generated from H2/H3/H4 and highlighted against the current section on scroll.
+* Font and icon upgrade: introduced the jinyu-text font; Font Awesome upgraded to the full icon set.
+* Sidebar: fixed icon display glitches and optimized sidebar animation (A/C/D tiers).
+* Admin: completed internationalization (i18n) of settings labels and translator comments.
+* Security: completed CSP nonce coverage for the theme's inline scripts/styles, added a deployment note; security audit confirmed no Critical/High vulnerabilities.
+* Code standards: whole theme passes WPCS with 0 errors / 0 warnings.
 
 = 1.2.9 =
 
@@ -133,7 +128,7 @@ License URI: https://www.gnu.org/licenses/gpl-3.0.html
 = 1.2.7 =
 
 = 1.2.3 =
-* 首次提交到 WordPress.org 主题目录的发行版（Jinyu Lite），与自托管版 1.2.3 同源。
-* 剔除任意代码注入字段与后台独立设置页，外观选项统一为 WordPress 标准 Customizer。
-* 全部页面模板在编辑器「模板」选择器中可见；界面文案全面接入翻译体系。
-* 修复 ≤600px 视口下登录用户顶栏与管理栏的相对位置错位。
+* First submission of the WordPress.org-distributed edition (Jinyu Lite), sharing the same source as the self-hosted 1.2.3.
+* Removed arbitrary code-injection fields and the standalone settings page; appearance options unified under the standard WordPress Customizer.
+* All page templates visible in the editor's "Template" selector; UI strings fully wired into the translation system.
+* Fixed the relative-positioning misalignment of the top bar and admin bar for logged-in users at viewports of 600px and below.

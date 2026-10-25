@@ -174,11 +174,13 @@ add_action(
 add_filter(
 	'body_class',
 	function ( array $classes ): array {
-		$pos = jinyu_get_option( 'sidebar_pos', 'right' );
+		$pos        = jinyu_get_option( 'sidebar_pos', 'right' );
+		$has_sidebar = is_active_sidebar( 'sidebar-main' );
 		if ( 'left' === $pos ) {
 			$classes[] = 'jinyu-sidebar-left';
 		}
-		if ( 'none' === $pos ) {
+		// 显式关闭或后台未挂任何小工具时，均按「无侧边栏」布局（单页居中、主栏占满）。
+		if ( 'none' === $pos || ! $has_sidebar ) {
 			$classes[] = 'jinyu-no-sidebar';
 		}
 
@@ -189,8 +191,13 @@ add_filter(
 		}
 		$classes[] = 'jinyu-layout-' . $mode;
 
-		// 中文排版优化（已内置常开：两端对齐、标点挤压、舒适行距等中文排版增强）.
-		$classes[] = 'jinyu-cn';
+		// 中文排版优化（两端对齐、标点挤压、舒适行距等中文排版增强）。
+		// 仅对中文语言环境生效：这些排版规则（text-align:justify + inter-character 两端对齐、
+		// 标点挤压）对英文正文是有害的——会在词间拉出难看的空隙。英文站点应走正常西文排版。
+		// 站点语言（get_locale）即用户的内容语言声明，是判断依据。
+		if ( jinyu_is_cn_locale() ) {
+			$classes[] = 'jinyu-cn';
+		}
 
 		// 导航栏毛玻璃：默认开启，后台「全局设置 › 导航栏毛玻璃效果」关闭时摘掉 backdrop-filter.
 		if ( ! jinyu_is_checked( 'nav_blur' ) ) {
@@ -376,7 +383,7 @@ add_action(
 				'scanToRead'     => __( 'Press and hold or scan the QR code to read the full post', 'jinyu' ),
 				'readDone'       => __( 'Finished ✓', 'jinyu' ),
 				/* translators: %s: 占位符 */
-				'readProgress'   => __( '已读 %1$d% · 还需 %2$s', 'jinyu' ),
+				'readProgress'   => __( 'Read %1$d%% · %2$s left', 'jinyu' ),
 				'tocHeading'     => __( 'Table of Contents', 'jinyu' ),
 			]
 		);

@@ -1049,7 +1049,7 @@ class Jinyu_Gallery_Widget extends WP_Widget {
 		echo "<label><input type='radio' name='{$this->get_field_name('source')}' value='cat'" . checked( $source, 'cat', false ) . '> ' . esc_html__( 'Auto category thumbnails', 'jinyu' ) . '</label></p>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		echo '<p>' . esc_html__( 'Manual list (one per line: image URL|link|title)', 'jinyu' ) . ':<br>'; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报
-		echo "<textarea name='{$this->get_field_name('items')}' rows='5' class='widefat' placeholder='https://a.com/1.jpg|https://a.com|活动入口'>" . esc_textarea( $items ) . '</textarea></p>';
+		echo "<textarea name='{$this->get_field_name('items')}' rows='5' class='widefat' placeholder='https://a.com/1.jpg|https://a.com|" . esc_attr__( 'Link label', 'jinyu' ) . "'>" . esc_textarea( $items ) . '</textarea></p>';
 		echo '<p>' . esc_html__( 'Auto mode: category', 'jinyu' ) . ": <select name='{$this->get_field_name('cat')}' class='widefat'>"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */
 		echo '<option value="0">' . esc_html__( '— All categories (newest first) —', 'jinyu' ) . '</option>';
 		foreach ( get_categories( [ 'hide_empty' => false ] ) as $c ) {
@@ -1595,7 +1595,7 @@ if ( ! class_exists( 'Jinyu_Subscribe_Widget' ) ) {
 		public function __construct() {
 			parent::__construct(
 				'jinyu_subscribe_widget',
-				'金玉 · 邮件订阅',
+				__( 'Jinyu: Email Subscription', 'jinyu' ),
 				[ 'description' => __( 'Render a newsletter subscription form (depends on the "Sales & Monetization › Newsletter" toggle)', 'jinyu' ) ]
 			);
 		}

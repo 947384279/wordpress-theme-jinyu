@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /*
-Template Name: 站点地图
+Template Name: Sitemap
 */
 get_header();
 
@@ -52,7 +52,7 @@ if ( ! is_array( $sitemap_posts_map ) ) {
 		<?php if ( jinyu_is_checked( 'sitemap_enable' ) ) : ?>
 		<div class="jinyu-sitemap">
 			<section class="jinyu-sitemap-sec">
-			<h2><?php esc_html_e( '文章分类', 'jinyu' ); ?></h2>
+			<h2><?php esc_html_e( 'Post categories', 'jinyu' ); ?></h2>
 			<?php
 			if ( $cats ) :
 				foreach ( $cats as $c ) :
@@ -79,7 +79,7 @@ endif;
 
 			<?php if ( $pages ) : ?>
 			<section class="jinyu-sitemap-sec">
-			<h2><?php esc_html_e( '独立页面', 'jinyu' ); ?></h2>
+			<h2><?php esc_html_e( 'Standalone pages', 'jinyu' ); ?></h2>
 			<ul class="jinyu-sitemap-pages">
 				<?php foreach ( $pages as $pg ) : ?>
 				<li><a href="<?php echo esc_url( get_permalink( $pg ) ); ?>"><?php echo esc_html( $pg->post_title ); ?></a></li>
@@ -89,7 +89,7 @@ endif;
 			<?php endif; ?>
 		</div>
 		<?php else : ?>
-		<p class="jinyu-sitemap-off"><?php esc_html_e( '站点地图功能已关闭。', 'jinyu' ); ?></p>
+		<p class="jinyu-sitemap-off"><?php esc_html_e( 'The sitemap feature is turned off.', 'jinyu' ); ?></p>
 		<?php endif; ?>
 		</div>
 	</article>

@@ -33,7 +33,7 @@ get_header(); ?>
 			<?php
 			if ( get_the_time( 'Y-m-d' ) !== get_the_modified_time( 'Y-m-d' ) ) :
 				?>
-				<span><i class="fa-regular fa-pen-to-square" aria-hidden="true"></i><?php esc_html_e( '更新于', 'jinyu' ); ?> <?php the_modified_time( 'Y-m-d' ); ?></span><?php endif; ?>
+				<span><i class="fa-regular fa-pen-to-square" aria-hidden="true"></i><?php esc_html_e( 'Updated', 'jinyu' ); ?> <?php the_modified_time( 'Y-m-d' ); ?></span><?php endif; ?>
 			<span><i class="fa-regular fa-clock" aria-hidden="true"></i><?php echo jinyu_read_time();  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?></span>
 			<span><i class="fa-regular fa-file-lines" aria-hidden="true"></i><?php echo jinyu_post_word_count();  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?></span>
 			<?php
@@ -59,13 +59,13 @@ get_header(); ?>
 			<?php
 			if ( $jy_series['prev'] ) :
 				?>
-				<a class="jinyu-series-prev" href="<?php echo esc_url( get_permalink( $jy_series['prev'] ) ); ?>"><i class="fa-solid fa-angle-left" aria-hidden="true"></i> <?php esc_html_e( '上一篇', 'jinyu' ); ?></a><?php endif; ?>
+				<a class="jinyu-series-prev" href="<?php echo esc_url( get_permalink( $jy_series['prev'] ) ); ?>"><i class="fa-solid fa-angle-left" aria-hidden="true"></i> <?php esc_html_e( 'Previous', 'jinyu' ); ?></a><?php endif; ?>
 			<?php /* translators: %s: 占位符 */ ?>
 			<span class="jinyu-series-count"><?php printf( esc_html__( 'Post %1$d / %2$d', 'jinyu' ), $jy_series['index'] + 1, $jy_series['total'] );  /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 输出经 esc_html/esc_attr/wp_kses 处理或为核心传入值/整型，WPCS 追不到集中式委托故误报 */ ?></span>
 			<?php
 			if ( $jy_series['next'] ) :
 				?>
-				<a class="jinyu-series-next" href="<?php echo esc_url( get_permalink( $jy_series['next'] ) ); ?>"><?php esc_html_e( '下一篇', 'jinyu' ); ?> <i class="fa-solid fa-angle-right" aria-hidden="true"></i></a><?php endif; ?>
+				<a class="jinyu-series-next" href="<?php echo esc_url( get_permalink( $jy_series['next'] ) ); ?>"><?php esc_html_e( 'Next', 'jinyu' ); ?> <i class="fa-solid fa-angle-right" aria-hidden="true"></i></a><?php endif; ?>
 			</span>
 		</div>
 		<?php endif; ?>
