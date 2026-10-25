@@ -147,171 +147,171 @@ msgstr "秒"
 msgid "To bottom"
 msgstr "去底部"
 
-#: functions.php:376
+#: functions.php:385
 msgid "About %d min"
 msgstr "约 %d 分钟"
 
-#: functions.php:672
+#: functions.php:681
 msgid "Agree"
 msgstr "同意"
 
-#: functions.php:406
+#: functions.php:415
 msgid "All marked as read"
 msgstr "已全部标记已读"
 
-#: functions.php:393
+#: functions.php:402
 msgid "Busy"
 msgstr "拥堵"
 
-#: functions.php:379
+#: functions.php:388
 msgid "Comment submitted"
 msgstr "评论已提交"
 
-#: functions.php:670
+#: functions.php:679
 msgid "Cookie Notice"
 msgstr "Cookie 提示"
 
-#: functions.php:385
+#: functions.php:394
 msgid "Copied"
 msgstr "已复制"
 
-#: functions.php:384 inc/fun/admin-i18n.php:53
+#: functions.php:393 inc/fun/admin-i18n.php:53
 #: pages/template-link-apply.php:90 pages/template-link-apply.php:102
 msgid "Copy"
 msgstr "复制"
 
-#: functions.php:399
+#: functions.php:408
 msgid "Copy failed. Please select the text manually"
 msgstr "复制失败，请手动选择"
 
-#: functions.php:386 templates/post-actions.php:42
+#: functions.php:395 templates/post-actions.php:42
 msgid "Favorited"
 msgstr "已收藏"
 
-#: functions.php:408
+#: functions.php:417
 msgid "Finished ✓"
 msgstr "已读完 ✓"
 
-#: functions.php:167
+#: functions.php:176
 msgid "Footer Menu"
 msgstr "页脚菜单"
 
-#: functions.php:395
+#: functions.php:404
 msgid "Last %d samples"
 msgstr "近 %d 次采样"
 
-#: functions.php:374
+#: functions.php:383
 msgid "Less than 1 min"
 msgstr "不到 1 分钟"
 
-#: functions.php:400
+#: functions.php:409
 msgid "Link copied"
 msgstr "链接已复制"
 
-#: functions.php:396 inc/fun/widget.php:1516
+#: functions.php:405 inc/fun/widget.php:1516
 msgid "Load"
 msgstr "负载"
 
-#: functions.php:383 inc/fun/template-tags.php:75
+#: functions.php:392 inc/fun/template-tags.php:75
 #: pages/template-user-tabs.php:469
 msgid "Load more"
 msgstr "加载更多"
 
-#: functions.php:377 pages/template-user-tabs.php:465
+#: functions.php:386 pages/template-user-tabs.php:465
 msgid "Loading…"
 msgstr "加载中…"
 
-#: functions.php:397
+#: functions.php:406
 msgid "Memory usage"
 msgstr "内存占用"
 
-#: functions.php:387
+#: functions.php:396
 msgid "Network error. Please try again later."
 msgstr "网络异常，请稍后重试"
 
-#: functions.php:382
+#: functions.php:391
 msgid "No cover image"
 msgstr "暂无封面"
 
-#: functions.php:381 inc/ajax/index.php:258
+#: functions.php:390 inc/ajax/index.php:258
 msgid "No more"
 msgstr "没有更多了"
 
-#: functions.php:402
+#: functions.php:411
 msgid "No post to jump to"
 msgstr "没有可跳转的文章"
 
-#: functions.php:403
+#: functions.php:412
 msgid "Operation failed. Please try again later."
 msgstr "操作失败，请稍后再试"
 
-#: functions.php:401
+#: functions.php:410
 msgid "Operation successful"
 msgstr "操作成功"
 
-#: functions.php:412
+#: functions.php:421
 msgid "People also read"
 msgstr "大家都在看"
 
-#: functions.php:407
+#: functions.php:416
 msgid "Press and hold or scan the QR code to read the full post"
 msgstr "长按 / 扫码阅读全文"
 
-#: functions.php:166
+#: functions.php:175
 msgid "Primary Menu"
 msgstr "主导航菜单"
 
-#: functions.php:388 inc/fun/admin-i18n.php:102
+#: functions.php:397 inc/fun/admin-i18n.php:102
 msgid "Processing…"
 msgstr "处理中…"
 
-#: functions.php:410
+#: functions.php:419
 msgid "Read %1$d%% · %2$s left"
 msgstr "已读 %1$d% · 还需 %2$s"
 
-#: functions.php:391
+#: functions.php:400
 msgid "Real-time"
 msgstr "实时"
 
-#: functions.php:398
+#: functions.php:407
 msgid "Samples"
 msgstr "采样"
 
-#: functions.php:392
+#: functions.php:401
 msgid "Slow"
 msgstr "偏慢"
 
-#: functions.php:390
+#: functions.php:399
 msgid "Stable"
 msgstr "持平"
 
-#: functions.php:380
+#: functions.php:389
 msgid "Submission failed. Please try again later."
 msgstr "提交失败，请稍后重试"
 
-#: functions.php:378
+#: functions.php:387
 msgid "Submitting…"
 msgstr "提交中…"
 
-#: functions.php:411
+#: functions.php:420
 msgid "Table of Contents"
 msgstr "目录"
 
-#: functions.php:389
+#: functions.php:398
 msgid ""
 "Tap \"Save image\" to enlarge it, then press and hold the image to save it "
 "to your album"
 msgstr "点「保存图片」放大后长按图片，即可保存到相册"
 
-#: functions.php:405
+#: functions.php:414
 msgid "Thanks for your feedback"
 msgstr "感谢你的反馈"
 
-#: functions.php:404
+#: functions.php:413
 msgid "Thanks for your support ♥"
 msgstr "感谢支持 ♥"
 
-#: functions.php:477
+#: functions.php:486
 msgid "The Jinyu theme is missing a PHP extension: %s"
 msgstr "金玉主题缺少 PHP 扩展：%s"
 
@@ -319,13 +319,13 @@ msgstr "金玉主题缺少 PHP 扩展：%s"
 msgid "The Jinyu theme requires PHP 8.0+. Current version: %s"
 msgstr "金玉主题要求 PHP 8.0+，当前版本 %s"
 
-#: functions.php:668
+#: functions.php:677
 msgid ""
 "This site uses cookies to improve your browsing experience. By continuing to"
 " browse, you agree to our privacy policy."
 msgstr "本站点使用 Cookie 以提升浏览体验，继续浏览即表示您同意我们的隐私政策。"
 
-#: functions.php:363 inc/setting/options/Jinyu_OptionBasic.php:71
+#: functions.php:372 inc/setting/options/Jinyu_OptionBasic.php:71
 msgid "Tip the author"
 msgstr "赞赏作者"
 
@@ -1107,6 +1107,30 @@ msgstr "查看主页"
 #: inc/fun/hitokoto-data.php:111
 msgid "All"
 msgstr "全部"
+
+#: inc/fun/hitokoto-data.php:125
+msgid "Inspirational"
+msgstr "励志奋斗"
+
+#: inc/fun/hitokoto-data.php:129
+msgid "Life & People"
+msgstr "处世为人"
+
+#: inc/fun/hitokoto-data.php:130
+msgid "Nature & Poetry"
+msgstr "自然诗意"
+
+#: inc/fun/hitokoto-data.php:128
+msgid "Optimism"
+msgstr "豁达乐观"
+
+#: inc/fun/hitokoto-data.php:126
+msgid "Reading"
+msgstr "读书求知"
+
+#: inc/fun/hitokoto-data.php:127
+msgid "Self-cultivation"
+msgstr "修身律己"
 
 #: inc/fun/live.php:411
 msgid "Friday"

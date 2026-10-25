@@ -117,15 +117,17 @@ if ( ! function_exists( 'jinyu_hitokoto_categories' ) ) {
 }
 
 if ( ! function_exists( 'jinyu_hitokoto_cat_label' ) ) {
-	/** 分类键 → 中文标签（远程/自定义键未知时回退原键） */
+	/** 分类键 → 显示名（远程/自定义键未知时回退原键） */
 	function jinyu_hitokoto_cat_label( $key ) {
+		// 标签必须走 i18n：w.org 发行变体以英文 msgid 呈现，中文译文在 zh_CN.po。
+		// 早前这里是硬编码中文，会让英文站点的前台小组件直接输出中文。
 		$labels = [
-			'motivational' => '励志奋斗',
-			'reading'      => '读书求知',
-			'self'         => '修身律己',
-			'optimism'     => '豁达乐观',
-			'people'       => '处世为人',
-			'nature'       => '自然诗意',
+			'motivational' => __( 'Inspirational', 'jinyu' ),
+			'reading'      => __( 'Reading', 'jinyu' ),
+			'self'         => __( 'Self-cultivation', 'jinyu' ),
+			'optimism'     => __( 'Optimism', 'jinyu' ),
+			'people'       => __( 'Life & People', 'jinyu' ),
+			'nature'       => __( 'Nature & Poetry', 'jinyu' ),
 		];
 		return $labels[ $key ] ?? $key;
 	}

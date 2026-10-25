@@ -146,8 +146,14 @@ function buildZipGlob() {
         '!dist-wporg/**', '!release/**', '!tmp-*', '!tmp/**',
         // FontAwesome 子集化中间产物（.gitignore 已列，tools/fa-collect.py 可重新生成）
         '!assets/fonts/fa/icons.all.raw.txt', '!assets/fonts/fa/icons.raw.txt', '!assets/fonts/fa/icons.map.json',
+        // 英文版白名单只是 w.org 构建期的中转文件（gulp build:wporg 用它覆盖包内中文版），
+        // 本身不进任何包。
+        '!assets/fonts/fa/icons.extra.en.txt',
+        // 英文版语料与词库同理，只是 w.org 构建期的中转文件。
+        '!inc/data/quotes.en.php', '!inc/data/spam-words.en.php',
         // —— 以下三项 copyWporg 已排除，自托管版曾漏掉，白带 1.5MB 死副本 ——
-        // 未子集的完整 FA 样式（102KB）：运行期只加载 subset.min.css，全仓库无引用
+        // 未子集的完整 FA 压缩样式（102KB）：运行期只加载 subset.min.css，全仓库无引用。
+        // 未压缩的 all.css 会随包发布，作为 all.min.css 的配对原始文件。
         '!assets/fonts/fa/all.min.css',
         // 死副本：assets/dist/img 与 assets/img 内容逐字节相同，而代码只走 assets/img/
         // （post-meta.php 的类目封面用 get_theme_file_uri('assets/img/cat-cover/…')）
@@ -205,6 +211,40 @@ const WPORG_NAME = 'Jinyu Lite';
 const WPORG_DESC = 'A clean, responsive blog theme with dark mode, multiple layouts, shortcodes, likes & bookmarks, comment interactions and infinite scroll. All appearance options are configured in the Customizer (Appearance → Customize).';
 const WPORG_DIR = `dist-wporg/${WPORG_SLUG}`;
 
+/**
+ * w.org 变体里「HTML 注释」的中英对照表。
+ *
+ * 背景：审核员要求「所有用户可见文本必须是英文」。PHP 的行注释与块注释不渲染到页面，
+ * 但 HTML 注释（尖括号包裹的注释语法）虽是源码文本、同样是包内可见的中文字面量，审核团队 grep 源码时
+ * 一定会看到。数量不多（11 处），故在构建期按显式映射逐条替换 —— 不做正则模糊替换，
+ * 避免误伤；也便于日后人工核对每一条译文是否贴切。
+ *
+ * key 为原中文注释片段（需在源文件中唯一命中），value 为英文译文。
+ */
+const WPORG_HTML_COMMENT_EN = {
+	// inc/setting/template.php —— 后台设置页
+	'顶栏：玻璃吸顶操作条。\n\t\t品牌标识与页面标题已从这里下放到侧栏顶部与内容卡卡头，顶栏只留「当前位置 + 全局操作」，\n\t\t高度 60px 且滚动时常驻，避免长表单「滚到底才能保存」。所有按钮 id 保持不变，\n\t\tadmin.js 的事件绑定与快捷键（Ctrl+K）无需改动。':
+		'Top bar: a glass sticky action bar. The brand identity and page title were moved down to the\n\t\tsidebar top and the content card header, so the top bar only keeps "current location + global actions".\n\t\tIt is 60px tall and stays visible while scrolling, so long forms do not force a scroll to the bottom\n\t\tjust to reach the save button. All button ids are unchanged, so the event bindings and the Ctrl+K\n\t\tshortcut in admin.js need no changes.',
+	'当前分组名由 admin.js 在切换分组时写入':
+		'The current group name is written by admin.js when the group is switched.',
+	'「恢复默认」保留纯图标（低频次操作，图标比文字更克制）；图标提示由\n\t\t\t.jinyu-icon-btn 的 CSS 浮层渲染，不引 JS、也不与原生 title 重复。':
+		'"Restore defaults" stays icon-only (a low-frequency action; an icon is more restrained than a label).\n\t\t\tThe tooltip is rendered by the CSS overlay of .jinyu-icon-btn, so no extra JavaScript is needed\n\t\t\tand it does not duplicate the native title attribute.',
+	'移动端深色切换：窄屏时侧栏底部工具条隐藏，把月亮/太阳切钮放到恢复默认右侧。\n\t\t\t桌面端通过 CSS 隐藏，JS 对所有 .jinyu-theme-toggle 统一绑定。':
+		'Mobile dark-mode toggle: on narrow screens the bottom sidebar toolbar is hidden and the moon/sun\n\t\t\tswitch is moved next to "Restore defaults". On desktop it is hidden via CSS, and JavaScript binds\n\t\t\tall .jinyu-theme-toggle elements uniformly.',
+	'设置分组（含「维护工具」面板）由 admin.js 渲染':
+		'The settings groups (including the "Maintenance tools" panel) are rendered by admin.js.',
+	// templates/auth-modal.php —— 登录/注册弹窗
+	'登录': 'Sign in',
+	'注册': 'Register',
+	'找回密码': 'Lost password',
+	// pages/template-tags.php —— 标签云
+	'字母导航': 'Alphabet navigation',
+	'分组列表': 'Grouped list',
+	// header.php —— 旧内核盾
+	'古老内核盾：内联识别过旧渲染引擎（Chromium<120 / Safari<15 / Firefox<110），命中给 <html> 打 jinyu-legacy，CSS 据此拆除毛玻璃等 GPU 合成触发点，避免渲染进程崩溃。必须在 </head> 前同步执行，首帧即生效、无闪烁。':
+		'Legacy engine shield: an inline script detects outdated rendering engines (Chromium < 120 / Safari < 15 /\n\t\tFirefox < 110) and flags <html> with jinyu-legacy, so the CSS can drop the backdrop-filter effects that\n\t\ttrigger GPU compositing and crash the renderer. It must run synchronously before </head> so that it\n\t\ttakes effect on the first frame, with no flash of unstyled content.',
+};
+
 function copyWporg() {
 	// 先清空上一次构建产物，避免 gulp.dest 增量写入导致旧文件（如被新规则剔除的 .less/原始 .js）残留进包
 	fs.rmSync(WPORG_DIR, { recursive: true, force: true });
@@ -221,16 +261,21 @@ function copyWporg() {
 		// SECURITY.md 是中文运维/部署须知（非主题运行期文件，且非英文）；用户侧数据口径已由 readme.txt 的 Privacy 节覆盖。
 		// 保留在仓库供自托管版参考，但 w.org 变体不随包发布，避免包内出现非英文文档（踩过 review 红线）。
 		'!SECURITY.md',
-		// icons.extra.txt 是 FontAwesome 子集化的手工维护清单（仅构建期用，代码里只以注释提及）。
-		// 非运行期文件 + 内容为中文，一并剔除。
-		'!assets/fonts/fa/icons.extra.txt',
 		'!tools/**', '!tests/**',
 		// 临时文件兜底：调试期的 tmp-* 产物若落在项目根，绝不能让它们混进提交包（已实际踩过）
 		'!tmp-*', '!tmp/**',
 		// —— 以下为「.gitignore 已排除 = 非主题源」的构建中间产物与死副本，一律不进提交包 ——
 		// FontAwesome 子集化中间产物：.gitignore 已列，tools/fa-collect.py 可随时重新生成
 		'!assets/fonts/fa/icons.all.raw.txt', '!assets/fonts/fa/icons.raw.txt', '!assets/fonts/fa/icons.map.json',
-		// 未子集的完整 FA 样式（102KB）：运行期只加载 subset.min.css，全量版全仓库无引用
+		// 英文版白名单只是构建期的中转文件（localizeWporg 用它覆盖包内中文版），本身不进包。
+		'!assets/fonts/fa/icons.extra.en.txt',
+		// 同理：英文版语料与词库是 localizeWporg 的中转文件，包内只保留
+		// inc/data/quotes.php 与 inc/data/spam-words.php 这两个文件名。
+		'!inc/data/quotes.en.php', '!inc/data/spam-words.en.php',
+		// 未子集的完整 FA 压缩样式（102KB）：运行期只加载 subset.min.css，全仓库无引用。
+		// 但 wp.org 要求「压缩文件必须同时提供未压缩原始文件」——
+		// subset.min.css 的配对源是 subset.css（未压缩），all.min.css 的配对源是 all.css（未压缩），
+		// 两者都随包发布，故 all.min.css 仅作构建期裁剪源，不进提交包。
 		'!assets/fonts/fa/all.min.css',
 		// 死副本：assets/dist/img 与 assets/img 内容逐字节相同，而代码只走 assets/img/
 		// （post-meta.php 的类目封面用 get_theme_file_uri('assets/img/cat-cover/…')）
@@ -282,6 +327,127 @@ function flagWporg(done) {
 	done();
 }
 
+/**
+ * 把 FontAwesome 图标白名单替换成英文注释版，并把中文语料/词库换成英文版。
+ *
+ * 1) 仓库里的 assets/fonts/fa/icons.extra.txt 带中文说明（面向维护者），
+ *    不能进 wp.org 提交包（包内不得出现非英文文档）。构建时用等价的英文版
+ *    icons.extra.en.txt 覆盖包内同名文件 —— 图标清单内容一字不差，只是注释换成英文。
+ * 2) 每日一句语料（inc/data/quotes.php）是中文古诗文，随包发布会让英文站的前台
+ *    小组件输出非英文文案 —— w.org 变体改用等价的英文语料 inc/data/quotes.en.php。
+ * 3) 垃圾评论词库（inc/data/spam-words.php）：仓库版是**中文**词表（面向中文站）。
+ *    w.org 变体改用纯英文词表 inc/data/spam-words.en.php —— 词条是**运行时匹配数据**
+ *    （用于匹配访客评论，前台不展示），换成英文词表后：
+ *      a) 包内不再有任何中文字面量，审核团队 grep 源码时无话可说；
+ *      b) 英文站真正会遇到的是英文垃圾评论，英文词表命中率更高；
+ *      c) 需要中文词表的站长用自托管版（那里保留完整中文库）。
+ */
+function localizeWporg(done) {
+	const faDir = path.join(WPORG_DIR, 'assets', 'fonts', 'fa');
+	const zhWhitelist = path.join(faDir, 'icons.extra.txt');
+	// 英文版从仓库源目录读取，不复制进包（它只是构建期的中转文件）。
+	const enWhitelist = path.join(__dirname, 'assets', 'fonts', 'fa', 'icons.extra.en.txt');
+	if (!fs.existsSync(zhWhitelist) || !fs.existsSync(enWhitelist)) {
+		return done(new Error('localizeWporg: 缺少 icons.extra.txt 或 icons.extra.en.txt'));
+	}
+	fs.copyFileSync(enWhitelist, zhWhitelist);
+
+	// 语料：英文版整体替换中文版（包内只保留 quotes.php 这一个文件名）。
+	const dataDir = path.join(WPORG_DIR, 'inc', 'data');
+	const quotesZh = path.join(dataDir, 'quotes.php');
+	const quotesEn = path.join(__dirname, 'inc', 'data', 'quotes.en.php');
+	if (!fs.existsSync(quotesZh) || !fs.existsSync(quotesEn)) {
+		return done(new Error('localizeWporg: 缺少 inc/data/quotes.php 或 quotes.en.php'));
+	}
+	fs.copyFileSync(quotesEn, quotesZh);
+	// 中转文件已被打包排除规则挡在包外，正常不会出现在包里；存在才删（容错）。
+	if (fs.existsSync(path.join(dataDir, 'quotes.en.php'))) {
+		fs.unlinkSync(path.join(dataDir, 'quotes.en.php'));
+	}
+
+	// 垃圾词库：w.org 变体整体换成纯英文词表（见 localizeWporg 顶部说明）。
+	const spamZh = path.join(dataDir, 'spam-words.php');
+	const spamEn = path.join(__dirname, 'inc', 'data', 'spam-words.en.php');
+	if (!fs.existsSync(spamZh) || !fs.existsSync(spamEn)) {
+		return done(new Error('localizeWporg: 缺少 inc/data/spam-words.php 或 spam-words.en.php'));
+	}
+	fs.copyFileSync(spamEn, spamZh);
+	if (fs.existsSync(path.join(dataDir, 'spam-words.en.php'))) {
+		fs.unlinkSync(path.join(dataDir, 'spam-words.en.php'));
+	}
+
+	// 4) 移除「旧版中文垃圾词库」迁移逻辑（inc/fun/opt.php 的 jinyu_migrate_spam_words）：
+	//    该函数靠匹配旧版中文内置词库的两个字符串来判断「用户没自定义过」。
+	//    w.org 发行变体面向英文站点，不存在「停留在中文旧库」这个状态，
+	//    函数整体移除即可顺带消掉这两串中文常量。
+	const optPhp = path.join(WPORG_DIR, 'inc', 'fun', 'opt.php');
+	if (fs.existsSync(optPhp)) {
+		let s = fs.readFileSync(optPhp, 'utf8');
+		const MIG = /function jinyu_migrate_spam_words\(\): void \{[\s\S]*?\n\}\nadd_action\( 'init', 'jinyu_migrate_spam_words', 6 \);\n/;
+		if (!MIG.test(s)) {
+			return done(new Error('localizeWporg: 未能定位 jinyu_migrate_spam_words()，旧版中文词库常量会残留在包内'));
+		}
+		s = s.replace(MIG, '');
+		fs.writeFileSync(optPhp, s);
+	}
+
+	// 5) 社交平台配置里的中文键名（inc/fun/template-tags.php 的 jinyu_parse_social 映射表）：
+	//    这些键是「站长填写社交平台」的输入匹配键（填「微博」也能识别），输出的是图标，
+	//    不是用户可见文案。但审核团队会 grep 源码里的中文字面量，为免被追问，
+	//    w.org 变体只保留英文键名 —— 英文站点本来也只会填英文平台名。
+	const tagsPhp = path.join(WPORG_DIR, 'inc', 'fun', 'template-tags.php');
+	if (fs.existsSync(tagsPhp)) {
+		let s = fs.readFileSync(tagsPhp, 'utf8');
+		// 中文键 → 去掉该行（英文键同名项已在同一张表里保留）
+		s = s.replace(/^\t*'(微博|微信|邮箱|知乎|b站|抖音|豆瓣|今日头条)'\s*=>.*\n/gm, '');
+		fs.writeFileSync(tagsPhp, s);
+	}
+
+	// 6) error_log 的中文日志文本（inc/fun/user.php）：仅写入服务器日志，不输出到页面，
+	//    但同样是包内可见的中文字面量 —— 换成英文。
+	const userPhp = path.join(WPORG_DIR, 'inc', 'fun', 'user.php');
+	if (fs.existsSync(userPhp)) {
+		let s = fs.readFileSync(userPhp, 'utf8');
+		s = s.replace(
+			"'[jinyu] pending-email token 迁移完成，回填 %d 条。'",
+			"'[jinyu] pending-email token migration completed, %d rows backfilled.'"
+		);
+		fs.writeFileSync(userPhp, s);
+	}
+
+	// 7) HTML 注释（<!-- -->）里的中文：虽不渲染到访客可见文本，但仍是包内可见的中文字面量，
+	//    审核团队 grep 源码一定会看到。按显式对照表逐条替换为英文（见 WPORG_HTML_COMMENT_EN）。
+	const missing = [];
+	walkDir(WPORG_DIR, (file) => {
+		if (path.extname(file).toLowerCase() !== '.php') return;
+		let s = fs.readFileSync(file, 'utf8');
+		const before = s;
+		for (const [zh, en] of Object.entries(WPORG_HTML_COMMENT_EN)) {
+			if (s.includes(zh)) {
+				s = s.split(zh).join(en);
+			}
+		}
+		if (s !== before) fs.writeFileSync(file, s);
+	});
+	// 替换后若包内仍有含中文的 HTML 注释，说明对照表漏了条目 —— 硬失败，
+	// 不能带着漏网的注释出包（否则审核时又要解释一轮）。
+	walkDir(WPORG_DIR, (file) => {
+		if (path.extname(file).toLowerCase() !== '.php') return;
+		const s = fs.readFileSync(file, 'utf8');
+		const rest = s.match(/<!--[\s\S]*?-->/g) || [];
+		for (const c of rest) {
+			if (/[\u4e00-\u9fff]/.test(c)) {
+				missing.push(`${path.relative(WPORG_DIR, file)}: ${c.slice(0, 80)}`);
+			}
+		}
+	});
+	if (missing.length) {
+		return done(new Error('localizeWporg: 仍有含中文的 HTML 注释未英文化：\n' + missing.join('\n')));
+	}
+
+	done();
+}
+
 function walkDir(dir, cb) {
 	for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
 		const p = path.join(dir, e.name);
@@ -310,6 +476,9 @@ function renameWporg(done) {
 			// （Theme URI 可选；若保留则必须指向 wp.org 托管的本主题页，故直接删去最稳妥。）
 			s = s.replace(/^Theme URI: .*$/m, '');
 			s = s.replace(/^Description: .*$/m, `Description: ${WPORG_DESC}`);
+			// 作者名是中文「金玉」：w.org 要求主题头可读性为英文，中文作者名会被审核挑出。
+			// 自托管版保留原样（站长自己的站），只在发行变体英文化。
+			s = s.replace(/^Author: .*$/m, 'Author: Jinyu');
 		}
 		if (s !== before) fs.writeFileSync(file, s);
 	});
@@ -368,7 +537,7 @@ async function zipWporg() {
 		.pipe(gulp.dest('release'));
 }
 
-const buildWporg = gulp.series(versionCheck, copyWporg, flagWporg, renameWporg, zipWporg);
+const buildWporg = gulp.series(versionCheck, copyWporg, flagWporg, renameWporg, localizeWporg, zipWporg);
 
 // 两个后台样式都必须进这条链，否则 gulp build 不会产出它们（watch 重建后与线上不一致）
 const buildTasks = gulp.parallel(
