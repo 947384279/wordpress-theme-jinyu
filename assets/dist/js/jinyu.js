@@ -1,0 +1,5582 @@
+"use strict";
+
+/**
+ * 金玉主题 · 前端主脚本
+ *
+ * 约定：
+ *  - 全站事件统一走事件委托，避免逐个元素绑定
+ *  - 所有模块通过 MODULES 数组注册，新增功能只需追加一个函数
+ *  - 主题色模式由 <html data-theme> 驱动，PHP 已按 cookie 预渲染，避免首屏闪烁
+ */
+(function (window, document) {
+  'use strict';
+
+  var CFG = window.JINYU_CONFIG || {};
+  var doc = document;
+  var root = doc.documentElement;
+  function $(sel, ctx) {
+    return (ctx || doc).querySelector(sel);
+  }
+  function $$(sel, ctx) {
+    return Array.prototype.slice.call((ctx || doc).querySelectorAll(sel));
+  }
+
+  // 前端可翻译文案：优先用 PHP 经 wp_localize_script 注入的 window.JINYU_I18N，
+  // 未配置翻译时回退到内置中文，保证默认语言零破绽。
+  var JINYU_I18N = window.JINYU_I18N || {};
+  function _t(key, fallback) {
+    return JINYU_I18N[key] || fallback;
+  }
+
+  /**
+   * 把 sprintf 风格占位符填进可翻译文案。
+   * PHP 侧用编号占位符（%1$d / %2$s），.po / JS 翻译 JSON 里可能被替换成裸 %d / %s，
+   * 所以两种写法都兼容，避免改了 PHP 忘记改前端，又出现「把 %1$d 原样显示出来」。
+   */
+  function _tFill(str, map) {
+    if (!str) {
+      return '';
+    }
+    Object.keys(map || {}).forEach(function (key) {
+      str = str.split(key).join(map[key]);
+    });
+    return str;
+  }
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var finePointer = window.matchMedia('(pointer: fine)').matches;
+
+  /* ======================================================================
+     工具
+     ====================================================================== */
+  var Util = {
+    ajax: function ajax(action, data, cb) {
+      var build = function build() {
+        var body = ['action=' + encodeURIComponent(action)];
+        // 优先用懒加载到位的 fresh nonce；缺失时回退到调用方传入的（兼容极少数直传场景）
+        if (CFG.nonce) body.push('_ajax_nonce=' + encodeURIComponent(CFG.nonce));else if (data && data._ajax_nonce) body.push('_ajax_nonce=' + encodeURIComponent(data._ajax_nonce));
+        for (var k in data) {
+          if (!Object.prototype.hasOwnProperty.call(data, k)) continue;
+          if (k === '_ajax_nonce') continue; // 已在上方按优先级处理，避免重复写入
+          body.push(encodeURIComponent(k) + '=' + encodeURIComponent(data[k]));
+        }
+        return body.join('&');
+      };
+      var fire = function fire() {
+        fetch(CFG.ajax_url || '/wp-admin/admin-ajax.php', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+          },
+          body: build()
+        }).then(function (r) {
+          return r.json();
+        }).then(function (res) {
+          cb(null, res);
+        })["catch"](function (err) {
+          cb(err);
+        });
+      };
+      if (CFG.nonce) {
+        fire();
+      } else {
+        Util.refreshNonce().then(fire)["catch"](fire);
+      }
+    },
+    /**
+     * 从 jinyu_nonce 端点拉取当下有效的 jinyu_front nonce，写入 JINYU_CONFIG.nonce。
+     * 缓存 Promise，避免重复请求。nonce 为应下发给客户端的令牌，无泄露风险。
+     */
+    refreshNonce: function refreshNonce() {
+      if (window.__jinyuNonceP) return window.__jinyuNonceP;
+      if (!CFG.nonce_endpoint) return Promise.resolve();
+      window.__jinyuNonceP = fetch(CFG.nonce_endpoint, {
+        credentials: 'same-origin'
+      }).then(function (r) {
+        return r.json();
+      }).then(function (res) {
+        if (res && res.nonce) {
+          window.JINYU_CONFIG.nonce = res.nonce;
+        }
+        return res;
+      })["catch"](function () {/* 失败保留空值，下次调用再尝试 */});
+      return window.__jinyuNonceP;
+    },
+    copy: function copy(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        return navigator.clipboard.writeText(text);
+      }
+      return Promise.reject(new Error('clipboard unavailable'));
+    },
+    toast: function toast(msg) {
+      var el = doc.createElement('div');
+      el.className = 'jinyu-toast';
+      el.textContent = msg;
+      doc.body.appendChild(el);
+      requestAnimationFrame(function () {
+        el.classList.add('jinyu-toast-in');
+      });
+      setTimeout(function () {
+        el.classList.remove('jinyu-toast-in');
+        setTimeout(function () {
+          el.remove();
+        }, 300);
+      }, 2000);
+    },
+    onScroll: function onScroll(fn) {
+      var ticking = false;
+      window.addEventListener('scroll', function () {
+        if (ticking) return;
+        ticking = true;
+        window.requestAnimationFrame(function () {
+          fn();
+          ticking = false;
+        });
+      }, {
+        passive: true
+      });
+    },
+    /**
+     * 以 multipart/form-data 提交（用于带文件的表单 / 头像上传）
+     */
+    ajaxForm: function ajaxForm(action, formData, cb) {
+      if (CFG.nonce && !formData.has('_ajax_nonce')) {
+        formData.append('_ajax_nonce', CFG.nonce);
+      }
+      formData.append('action', action);
+      fetch(CFG.ajax_url || '/wp-admin/admin-ajax.php', {
+        method: 'POST',
+        credentials: 'same-origin',
+        body: formData
+      }).then(function (r) {
+        return r.json();
+      }).then(function (res) {
+        cb(null, res);
+      })["catch"](function (err) {
+        cb(err);
+      });
+    },
+    /**
+     * 在 tip 元素上展示结果（ok / err 状态）
+     */
+    showTip: function showTip(tip, msg, ok) {
+      if (!tip) return;
+      tip.textContent = msg || '';
+      if (ok === true) tip.setAttribute('data-jinyu-state', 'ok');else if (ok === false) tip.setAttribute('data-jinyu-state', 'err');else tip.removeAttribute('data-jinyu-state');
+    }
+  };
+
+  // 轻量 HTML 转义（用于把接口返回的纯文本安全插进 innerHTML）
+  function escHtml(s) {
+    var d = doc.createElement('div');
+    d.textContent = s == null ? '' : String(s);
+    return d.innerHTML;
+  }
+
+  /* ======================================================================
+     模块：明暗主题
+     ====================================================================== */
+  function theme() {
+    var STORE_KEY = 'jinyu-theme';
+    var btn = $('[data-jinyu-theme-toggle]');
+    var mq = window.matchMedia('(prefers-color-scheme: dark)');
+    function stored() {
+      try {
+        return localStorage.getItem(STORE_KEY);
+      } catch (e) {
+        return null;
+      }
+    }
+    // 仅 'light' / 'dark' 视为用户已手动选择；其余（含 null）视为「未选，跟随系统」
+    function isExplicit() {
+      var s = stored();
+      return s === 'light' || s === 'dark';
+    }
+    function systemDark() {
+      return mq.matches;
+    }
+    function defaultDark() {
+      // theme_mode = auto → 跟随系统；否则取后台设定值
+      if (CFG.theme_mode === 'auto') return systemDark();
+      return CFG.theme_mode === 'dark';
+    }
+    function isDark() {
+      var s = stored();
+      if (s === 'dark') return true;
+      if (s === 'light') return false;
+      return defaultDark();
+    }
+    function apply(dark) {
+      root.setAttribute('data-theme', dark ? 'dark' : 'light');
+    }
+    function syncIcon() {
+      if (!btn) return;
+      var dark = isDark();
+      var icon = btn.querySelector('i');
+      btn.setAttribute('aria-pressed', dark ? 'true' : 'false');
+      btn.setAttribute('title', dark ? 'Switch to light mode' : 'Switch to dark mode');
+      if (icon) icon.className = dark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+    }
+    function set(dark) {
+      try {
+        localStorage.setItem(STORE_KEY, dark ? 'dark' : 'light');
+      } catch (e) {/* 隐私模式忽略 */}
+      apply(dark);
+      // cookie 供服务端预渲染，避免首屏闪烁
+      doc.cookie = STORE_KEY + '=' + (dark ? 'dark' : 'light') + ';path=/;max-age=' + 60 * 60 * 24 * 365 + ';samesite=lax';
+      syncIcon();
+    }
+    if (btn) {
+      // 两态切换：亮 ⇄ 暗，每次点击必有变化（修复原三态「自动」与「亮」同形导致首点无反应）
+      btn.addEventListener('click', function () {
+        set(!isDark());
+      });
+    }
+
+    // 系统主题变化：开启「跟随系统」且用户尚未手动选择时才跟随
+    var onSchemeChange = function onSchemeChange() {
+      if (CFG.theme_mode === 'auto' && !isExplicit()) {
+        apply(systemDark());
+        syncIcon();
+      }
+    };
+    if (mq.addEventListener) mq.addEventListener('change', onSchemeChange);else if (mq.addListener) mq.addListener(onSchemeChange);
+    apply(isDark());
+    syncIcon();
+  }
+
+  /* ======================================================================
+     模块：全站灰度（哀悼模式）
+     ====================================================================== */
+  function greyMode() {
+    if (CFG.grey) root.classList.add('jinyu-grey');
+  }
+
+  /* ======================================================================
+     模块：移动端导航（全屏浮层面板 + 手风琴子菜单）
+      设计要点（为什么不直接切 body overflow 就完事）：
+      - 状态单一来源：面板的 .jinyu-menu-open 与汉堡的 aria-expanded 同步写入；
+        morph 图标、面板动画全部由 CSS 依据 aria 属性驱动，杜绝「类和视觉不同步」。
+      - 滚动锁只用 overflow:hidden，不用 iOS 常见的 position:fixed 方案 ——
+        后者会把 body 钉到负值，sticky 头部随之移出视口，反而看不到汉堡按钮。
+        同时补偿滚动条宽度，避免窄桌面窗口打开菜单时内容横向跳动。
+      - Esc 关闭、Tab 焦点在「汉堡 → 面板」之间成环、关闭后焦点归还汉堡按钮。
+      - 断点用 matchMedia 监听（旧代码是 resize + 写死 992，与实际的 1240 折叠断点不一致）。
+     ====================================================================== */
+  function nav() {
+    var toggle = $('[data-jinyu-nav-toggle]');
+    var panel = $('[data-jinyu-nav-panel]');
+    if (!toggle || !panel) return;
+    var mqDesktop = window.matchMedia('(min-width: 1241px)');
+    var labelOpen = toggle.getAttribute('data-label-open') || 'Open menu';
+    var labelClose = toggle.getAttribute('data-label-close') || 'Close menu';
+    var opened = false;
+    var padRight = '';
+    var headerPadRight = '';
+    var header = document.querySelector('.jinyu-header');
+
+    /* 开菜单时头部会被强制 fixed（见 common.less ≤1240 段），其 top 取 --jinyu-ab-h。
+       窄屏下 WP 把管理栏降级为 absolute：页面滚过它之后就随页离开（此时该按 0 让位），
+       但在页面顶部开菜单时它仍压在最上面（此时又必须让出 46px）。静态 CSS 表达不了这种
+       「随滚动变化」的让位，故在开菜单这一刻按管理栏的真实底边校正，滚过它时自然归零。
+       仅窄屏且确实有管理栏时才写，避免污染宽屏的 sticky 偏移。 */
+    function syncNavAdminBarOffset() {
+      if (!header || mqDesktop.matches || !doc.body.classList.contains('admin-bar')) return;
+      var bar = doc.getElementById('wpadminbar');
+      if (!bar) return;
+      var bottom = Math.max(0, Math.round(bar.getBoundingClientRect().bottom));
+      header.style.setProperty('--jinyu-ab-h', bottom + 'px');
+    }
+    function resetNavAdminBarOffset() {
+      if (header) header.style.removeProperty('--jinyu-ab-h');
+    }
+
+    /* ---------- 子菜单：注入展开按钮 + 手风琴 ---------- */
+    $$('li', panel).forEach(function (li) {
+      var sub = li.querySelector(':scope > ul');
+      if (!sub) return;
+      li.classList.add('jinyu-has-sub');
+      if (li.querySelector(':scope > .jinyu-sub-toggle')) return; // 幂等：重复初始化不叠加按钮
+      var label = li.querySelector(':scope > a');
+      var btn = doc.createElement('button');
+      btn.type = 'button';
+      btn.className = 'jinyu-sub-toggle';
+      btn.setAttribute('aria-expanded', 'false');
+      btn.setAttribute('aria-label', (label ? label.textContent.trim() : '') + ' submenu');
+      btn.innerHTML = '<i class="fa-solid fa-chevron-down" aria-hidden="true"></i>';
+      li.insertBefore(btn, sub);
+    });
+
+    /* ---------- 滚动锁 ---------- */
+    var savedScrollTop = 0;
+    function lockScroll() {
+      savedScrollTop = window.scrollY || doc.documentElement.scrollTop;
+      var gap = window.innerWidth - root.clientWidth;
+      if (gap > 0) {
+        padRight = doc.body.style.paddingRight;
+        doc.body.style.paddingRight = gap + 'px';
+        if (header) {
+          headerPadRight = header.style.paddingRight;
+          header.style.paddingRight = gap + 'px';
+        }
+      }
+      doc.body.style.overflow = 'hidden';
+      root.style.overflow = 'hidden';
+    }
+    function unlockScroll() {
+      doc.body.style.overflow = '';
+      root.style.overflow = '';
+      doc.body.style.paddingRight = padRight;
+      if (header) {
+        header.style.paddingRight = headerPadRight;
+        headerPadRight = '';
+      }
+      padRight = '';
+      window.scrollTo(0, savedScrollTop);
+    }
+
+    /* ---------- 焦点环：汉堡按钮 + 面板内可见可聚焦元素 ---------- */
+    function focusRing() {
+      var items = [toggle];
+      var list = $$('a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])', panel);
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].offsetParent !== null) items.push(list[i]);
+      }
+      return items;
+    }
+    function openNav() {
+      if (opened) return;
+      opened = true;
+      panel.classList.add('jinyu-menu-open');
+      panel.setAttribute('role', 'dialog');
+      panel.setAttribute('aria-modal', 'true');
+      panel.setAttribute('tabindex', '-1');
+      toggle.setAttribute('aria-expanded', 'true');
+      toggle.setAttribute('aria-label', labelClose);
+      lockScroll();
+      doc.body.classList.add('jinyu-nav-opened');
+      syncNavAdminBarOffset();
+      // 焦点交给面板本身：读屏能进入对话框，也不会像聚焦首个链接那样画出一圈描边
+      panel.focus({
+        preventScroll: true
+      });
+    }
+    function closeNav(returnFocus) {
+      if (!opened) return;
+      opened = false;
+      panel.classList.remove('jinyu-menu-open');
+      panel.removeAttribute('role');
+      panel.removeAttribute('aria-modal');
+      panel.removeAttribute('tabindex');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', labelOpen);
+      unlockScroll();
+      doc.body.classList.remove('jinyu-nav-opened');
+      resetNavAdminBarOffset();
+      if (returnFocus !== false) toggle.focus({
+        preventScroll: true
+      });
+    }
+
+    /* ---------- 交互 ---------- */
+    toggle.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (opened) closeNav();else openNav();
+    });
+    panel.addEventListener('click', function (e) {
+      var subBtn = e.target.closest ? e.target.closest('.jinyu-sub-toggle') : null;
+      if (subBtn) {
+        e.preventDefault();
+        var li = subBtn.parentElement;
+        var isOpen = li.classList.toggle('jinyu-sub-open');
+        subBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        return;
+      }
+      // 点了菜单里的链接：关闭面板让新页面/锚点露出来
+      if (e.target.closest('a')) closeNav(false);
+    });
+    doc.addEventListener('keydown', function (e) {
+      if (!opened) return;
+      if (e.key === 'Escape') {
+        closeNav();
+        return;
+      }
+      if (e.key !== 'Tab') return;
+      var ring = focusRing();
+      if (!ring.length) return;
+      var first = ring[0],
+        last = ring[ring.length - 1];
+      if (e.shiftKey && doc.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && doc.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    });
+
+    /* ---------- 桌面自适应：平铺 + 流体缩放 + 工具区兜底 ----------
+       桌面端（≥1241）菜单始终平铺，绝不藏项、不切汉堡。空间不够时按三级策略自适应：
+       1) 流体缩放：菜单字号与项间距沿 14px→13px / 2px→1px 平滑收缩（CSS 变量 --jinyu-nav-fs / --jinyu-nav-gap 驱动），
+          中间宽度区间平滑过渡，无「突然多一个更多」的跳变；
+       2) 工具区兜底：缩到地板仍放不下时，给 <html> 加 .jinyu-tools-compact，收起用户名/下拉箭头（只留头像）、
+          隐藏社交图标，把固定宽度的工具区让出来，菜单可再平铺一截；
+       3) 极端兜底：compact + 地板字号仍放不下（菜单项极多）时，菜单整条可横向滚动（隐藏滚动条），项全可见、可横向拖看。
+       移动端（≤1240）保持汉堡浮层：fitNav 先清理所有内联样式/类，交回 CSS 媒体查询的浮层。
+       JS 不可用时降级：菜单按 14px 平铺（可能裁剪），不顶飞工具区。 */
+    var navEl = panel.querySelector('.jinyu-nav');
+    /* 地板 12px/0 间距：实测 1440 视口 10 个带 emoji 的菜单项在 13px 仍差 ~45px，
+       若地板过高会跌入横向滚动兜底（overflow 裁剪下拉菜单）。12px 仍可读，优先保下拉可用。 */
+    var FS_BASE = 14,
+      FS_MIN = 12,
+      GAP_BASE = 2,
+      GAP_MIN = 0;
+    function setFluid(fs, gap) {
+      navEl.style.setProperty('--jinyu-nav-fs', fs + 'px');
+      navEl.style.setProperty('--jinyu-nav-gap', gap + 'px');
+    }
+    function resetFluid() {
+      navEl.style.removeProperty('--jinyu-nav-fs');
+      navEl.style.removeProperty('--jinyu-nav-gap');
+      navEl.classList.remove('jinyu-nav-scroll');
+      navEl.style.overflowX = '';
+      navEl.style.maxWidth = '';
+      root.classList.remove('jinyu-tools-compact');
+    }
+
+    // 测菜单自然宽（脱离 flex 收缩，按当前字号/间距渲染 max-content）；调用期间临时改 width，结束即还原
+    function measureNav() {
+      var prevW = navEl.style.width,
+        prevMin = navEl.style.minWidth,
+        prevOf = navEl.style.overflow;
+      navEl.style.width = 'max-content';
+      navEl.style.minWidth = '0';
+      navEl.style.overflow = 'visible';
+      var w = navEl.getBoundingClientRect().width;
+      navEl.style.width = prevW;
+      navEl.style.minWidth = prevMin;
+      navEl.style.overflow = prevOf;
+      return w;
+    }
+
+    // 从基础字号向下缩到地板，能放进 avail 返回 true（期间已写入最终字号/间距）
+    function shrinkToFit(avail) {
+      var fs = FS_BASE,
+        gap = GAP_BASE;
+      setFluid(fs, gap);
+      if (measureNav() <= avail) return true;
+      while (fs > FS_MIN || gap > GAP_MIN) {
+        fs = Math.max(FS_MIN, fs - 0.5);
+        gap = Math.max(GAP_MIN, gap - 0.5);
+        setFluid(fs, gap);
+        if (measureNav() <= avail) return true;
+      }
+      return false;
+    }
+    function computeAvailable() {
+      var inner = doc.querySelector('.jinyu-header-inner');
+      var logo = doc.querySelector('.jinyu-logo');
+      var tools = doc.querySelector('.jinyu-header-tools');
+      if (!inner || !logo || !tools) return 0;
+      var ics = getComputedStyle(inner);
+      var contentW = inner.clientWidth - (parseFloat(ics.paddingLeft) || 0) - (parseFloat(ics.paddingRight) || 0);
+      var innerGap = parseFloat(ics.columnGap) || 0;
+      // 内联模式横向占宽：Logo + 菜单 + 工具区 + logo↔panel、panel↔tools 两个 inner 列间距。
+      // 工具区已在面板外（面板只装菜单 DOM），不再扣 panel 内部 gap —— 多扣会低估可用宽度，误触发滚动兜底。
+      return contentW - logo.getBoundingClientRect().width - tools.getBoundingClientRect().width - innerGap * 2;
+    }
+    function fitNav() {
+      if (!mqDesktop.matches) {
+        resetFluid(); // 移动端：清理内联样式与类，交回汉堡浮层
+        return;
+      }
+      if (opened) closeNav(false); // 浮层（移动端）切回桌面时收起打开的菜单
+      resetFluid();
+      var avail = computeAvailable();
+      if (shrinkToFit(avail)) return; // 1) 仅靠流体缩放即可放下
+      root.classList.add('jinyu-tools-compact'); // 2) 工具区兜底：收起用户名/社交，再试
+      avail = computeAvailable();
+      if (shrinkToFit(avail)) return;
+      // 3) 极端兜底：整条横向滚动，项全可见（隐藏滚动条）
+      navEl.classList.add('jinyu-nav-scroll');
+      navEl.style.maxWidth = avail + 'px';
+      if (navEl.__jinyuBlobReposition) navEl.__jinyuBlobReposition(); // 流体缩放/滚动兜底后重定位液态光标
+    }
+    var fitTimer = 0;
+    function onFitResize() {
+      clearTimeout(fitTimer);
+      fitTimer = setTimeout(fitNav, 100);
+    }
+    window.addEventListener('resize', onFitResize);
+    window.addEventListener('orientationchange', onFitResize);
+    window.addEventListener('load', fitNav); // Logo 等资源到位后再校一次
+    if (doc.fonts && doc.fonts.ready) doc.fonts.ready.then(fitNav);
+    if (mqDesktop.addEventListener) mqDesktop.addEventListener('change', fitNav);else if (mqDesktop.addListener) mqDesktop.addListener(fitNav);
+    fitNav();
+
+    /* ---------- 滚动兜底态的下拉修正 ----------
+       .jinyu-nav-scroll 是 overflow 滚动容器，absolute 下拉会被裁剪看不见。
+       hover 时把子菜单临时切成 fixed 定位钉在触发项正下方（ul 仍是 li 的子节点，
+       :hover 链不断，展开态 CSS 照常生效）；离开时还原 inline style。 */
+    $$('li.jinyu-has-sub', navEl).forEach(function (li) {
+      var sub = li.querySelector(':scope > ul');
+      if (!sub) return;
+      li.addEventListener('mouseenter', function () {
+        if (!navEl.classList.contains('jinyu-nav-scroll')) return;
+        var r = li.getBoundingClientRect();
+        sub.style.position = 'fixed';
+        sub.style.top = r.bottom + 'px';
+        sub.style.left = '0px';
+        sub.style.transform = 'none';
+        var lx = Math.max(8, Math.min(r.left, window.innerWidth - sub.offsetWidth - 8));
+        sub.style.left = lx + 'px';
+      });
+      li.addEventListener('mouseleave', function () {
+        sub.style.position = '';
+        sub.style.top = '';
+        sub.style.left = '';
+        sub.style.transform = '';
+      });
+    });
+
+    /* ---------- 桌面增强：液态光标（滑动背景） ----------
+       仅在桌面平铺态（mqDesktop）启用：注入 .jinyu-nav-blob（渐变实心 + 流动光带）与
+       .jinyu-nav-blob-ghost（模糊拖影，更长过渡形成液态拖尾）两枚光标，hover 在菜单项间
+       弹性滑动并有机形变；默认停在当前项。项宽因流体缩放/字体就绪而变化时由 fitNav 调
+       __jinyuBlobReposition 重定位。移动端浮层 / 极限横向滚动兜底态移除 .jinyu-nav-blob-on，
+       回落 CSS 无 JS 的当前项样式。 */
+    function navBlob() {
+      if (!navEl) return;
+      var RADII = ['14px', '18px 24px 16px 22px', '22px 16px 24px 18px', '16px 22px 18px 24px', '20px 16px 22px 18px'];
+      var main = null,
+        ghost = null,
+        current = null,
+        marked = null,
+        on = false;
+
+      // 仅取顶级 li（注入的 ghost/main 是 span，且子菜单 li 会让 :first-child / 全量查询失真）
+      function topLis() {
+        return Array.prototype.filter.call(navEl.children, function (el) {
+          return el.tagName === 'LI';
+        });
+      }
+      function liIndex(li) {
+        return topLis().indexOf(li);
+      }
+      function findCurrent() {
+        var lis = topLis(),
+          i,
+          li;
+        for (i = 0; i < lis.length; i++) {
+          li = lis[i];
+          if (li.classList.contains('current-menu-item') || li.classList.contains('current_page_item') || li.classList.contains('jinyu-active')) {
+            return li;
+          }
+        }
+        return lis[0] || null;
+      }
+      // 光标所停项标白字：不依赖 :hover / WP current 类（首页自定义链接 Home 常无 current 类）
+      function mark(li) {
+        if (marked === li) return;
+        if (marked) marked.classList.remove('jinyu-nav-cur');
+        marked = li;
+        if (marked) marked.classList.add('jinyu-nav-cur');
+      }
+      function place(li) {
+        if (!li || !on) return;
+        var x = li.offsetLeft,
+          w = li.offsetWidth,
+          h = li.offsetHeight;
+        var r = RADII[liIndex(li) % RADII.length];
+        main.style.opacity = ghost.style.opacity = '1';
+        main.style.width = ghost.style.width = w + 'px';
+        main.style.height = ghost.style.height = h + 'px';
+        main.style.transform = ghost.style.transform = 'translate(' + x + 'px, -50%)';
+        main.style.borderRadius = ghost.style.borderRadius = r;
+        mark(li);
+      }
+      function show() {
+        if (on) return;
+        on = true;
+        if (!main) {
+          ghost = doc.createElement('span');
+          ghost.className = 'jinyu-nav-blob-ghost';
+          main = doc.createElement('span');
+          main.className = 'jinyu-nav-blob';
+          navEl.insertBefore(ghost, navEl.firstChild);
+          navEl.insertBefore(main, ghost.nextSibling);
+          navEl.addEventListener('mouseleave', function () {
+            place(current);
+          });
+          topLis().forEach(function (li) {
+            li.addEventListener('mouseenter', function () {
+              place(li);
+            });
+          });
+        }
+        navEl.classList.add('jinyu-nav-blob-on');
+        reposition();
+      }
+      function hide() {
+        on = false;
+        navEl.classList.remove('jinyu-nav-blob-on');
+        if (marked) {
+          marked.classList.remove('jinyu-nav-cur');
+          marked = null;
+        }
+        if (main) {
+          main.style.opacity = '0';
+          ghost.style.opacity = '0';
+        }
+      }
+      function reposition() {
+        if (!on) return;
+        if (navEl.classList.contains('jinyu-nav-scroll')) {
+          main.style.opacity = '0';
+          ghost.style.opacity = '0';
+          return;
+        }
+        if (!current || !navEl.contains(current)) current = findCurrent();
+        place(current);
+      }
+      navEl.__jinyuBlobReposition = reposition;
+      if (mqDesktop.matches) show();
+      if (mqDesktop.addEventListener) mqDesktop.addEventListener('change', function (e) {
+        e.matches ? show() : hide();
+      });else if (mqDesktop.addListener) mqDesktop.addListener(function (e) {
+        e.matches ? show() : hide();
+      });
+    }
+    navBlob();
+  }
+
+  /* ======================================================================
+     模块：搜索弹窗
+     ====================================================================== */
+  function search() {
+    var openBtn = $('[data-jinyu-search-toggle]');
+    var mask = $('.jinyu-search-mask');
+    if (!openBtn || !mask) return;
+    var input = mask.querySelector('input[name="s"]');
+    function open() {
+      mask.hidden = false;
+      if (input) input.focus();
+      doc.body.style.overflow = 'hidden';
+    }
+    function close() {
+      // 先把焦点移出弹窗再隐藏：焦点落在将被 display:none 的输入框上时，
+      // 配合遮罩 backdrop-filter 在部分 GPU/驱动下可致渲染进程崩溃（整个标签页白屏）。
+      var ae = doc.activeElement;
+      if (ae && mask.contains(ae) && typeof ae.blur === 'function') {
+        try {
+          ae.blur();
+        } catch (e) {}
+      }
+      mask.hidden = true;
+      doc.body.style.overflow = '';
+    }
+    openBtn.addEventListener('click', open);
+    mask.addEventListener('click', function (e) {
+      if (e.target === mask || e.target.closest('[data-jinyu-search-close]')) close();
+    });
+    doc.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !mask.hidden) close();
+    });
+  }
+
+  /* ======================================================================
+     模块：阅读进度条
+     ====================================================================== */
+  function readProgress() {
+    if (!CFG.read_progress_enable) return;
+    var bar = $('.jinyu-read-bar');
+    if (!bar) return;
+    var inner = $('.jinyu-read-inner', bar);
+    if (!inner) return;
+    Util.onScroll(function () {
+      var h = doc.documentElement;
+      var max = h.scrollHeight - h.clientHeight;
+      var pct = max > 0 ? h.scrollTop / max * 100 : 0;
+      inner.style.width = Math.min(100, Math.max(0, pct)) + '%';
+    });
+  }
+
+  /* ======================================================================
+     模块：阅读进度提示（已读 X% · 预计还需 Y 分钟）
+     基于正文内容范围计算，比整页滚动更准确；浮于左下角，避开右下滚动工具组。
+     ====================================================================== */
+  function readEstimate() {
+    if (!CFG.read_progress_enable) return;
+    var content = $('.jinyu-article-content');
+    if (!content) return;
+    var totalMin = parseInt(content.getAttribute('data-jinyu-read-min'), 10);
+    if (!totalMin || isNaN(totalMin)) return;
+    var pill = doc.createElement('div');
+    pill.className = 'jinyu-read-estimate';
+    pill.setAttribute('aria-live', 'polite');
+    pill.innerHTML = '<i class="fa-regular fa-clock" aria-hidden="true"></i>' + '<span class="jinyu-read-estimate-text"></span>';
+    doc.body.appendChild(pill);
+    var label = $('.jinyu-read-estimate-text', pill);
+    function compute() {
+      var rect = content.getBoundingClientRect();
+      var vh = window.innerHeight || doc.documentElement.clientHeight;
+      // 已滚过正文底部的比例：内容进入视口下沿 → 离开视口下沿
+      var passed = vh - rect.top;
+      var frac = rect.height > 0 ? passed / rect.height : 0;
+      if (frac < 0) frac = 0;
+      if (frac > 1) frac = 1;
+      return frac;
+    }
+    function update() {
+      var frac = compute();
+      var pct = Math.round(frac * 100);
+      if (pct >= 100) {
+        label.textContent = _t('readDone', 'Finished ✓');
+        pill.classList.add('jinyu-done');
+      } else {
+        pill.classList.remove('jinyu-done');
+        var remain = totalMin * (1 - frac);
+        var remainTxt = remain < 1 ? _t('lessThanMinute', 'Less than 1 min') : _tFill(_t('aboutMinutes', 'About %d min'), {
+          '%d': Math.ceil(remain)
+        });
+        label.textContent = _tFill(_t('readProgress', 'Read %1$d%% · %2$s left'), {
+          '%1$d': pct,
+          '%2$s': remainTxt,
+          '%d': pct,
+          '%s': remainTxt
+        });
+      }
+    }
+    function onScroll() {
+      var y = window.scrollY || doc.documentElement.scrollTop;
+      pill.classList.toggle('jinyu-visible', y > 400);
+      update();
+    }
+    Util.onScroll(onScroll);
+    onScroll();
+  }
+
+  /* ======================================================================
+     模块：回到顶部 / 去底部（悬浮工具组，复用模板已有按钮，不重复注入）
+     ====================================================================== */
+  function backTop() {
+    if (!CFG.back_top_enable) return;
+    var group = $('.jinyu-scroll-util');
+    var topBtn = $('.jinyu-back-top');
+    var bottomBtn = $('.jinyu-go-bottom');
+    if (!group || !topBtn) return;
+    Util.onScroll(function () {
+      var y = window.scrollY || doc.documentElement.scrollTop;
+      var docH = doc.documentElement.scrollHeight;
+      var winH = window.innerHeight;
+      var nearBottom = y + winH >= docH - 48;
+      // 滚过一段距离才整体浮现
+      group.classList.toggle('jinyu-visible', y > 400);
+      group.setAttribute('aria-hidden', y > 400 ? 'false' : 'true');
+      // 已贴近底部时隐藏「去底部」
+      if (bottomBtn) bottomBtn.classList.toggle('jinyu-hidden', nearBottom);
+    });
+    topBtn.addEventListener('click', function () {
+      window.scrollTo({
+        top: 0,
+        behavior: reduceMotion ? 'auto' : 'smooth'
+      });
+    });
+    if (bottomBtn) {
+      bottomBtn.addEventListener('click', function () {
+        window.scrollTo({
+          top: doc.documentElement.scrollHeight,
+          behavior: reduceMotion ? 'auto' : 'smooth'
+        });
+      });
+    }
+  }
+
+  /* ======================================================================
+     模块：文章目录（生成 + 滚动高亮）
+     ====================================================================== */
+  function toc() {
+    if (!CFG.toc_enable) return;
+    var content = $('.jinyu-article-content');
+    if (!content) return;
+    var depth = CFG.toc_depth || 3;
+    var sel = 'h2';
+    if (depth >= 3) sel += ', h3';
+    if (depth >= 4) sel += ', h4';
+    var headings = $$(sel, content);
+    // 门槛降到 2：单节长文也有目录可用
+    if (headings.length < 2) return;
+    var wrap = doc.createElement('div');
+    wrap.className = 'jinyu-toc';
+    wrap.innerHTML = '<div class="jinyu-toc-title">' + '<span class="jinyu-toc-heading"><i class="fa-solid fa-list-ul jinyu-toc-ico" aria-hidden="true"></i>' + _t('tocHeading', 'Table of Contents') + '</span>' + '<span class="jinyu-toc-meta"><span class="jinyu-toc-cur"></span><span class="jinyu-toc-count"></span>' + '<button type="button" class="jinyu-toc-toggle" aria-label="Toggle table of contents" aria-expanded="false"><i class="fa-solid fa-chevron-down"></i></button></span>' + '</div>' + '<ul class="jinyu-toc-list"></ul>';
+    var list = $('.jinyu-toc-list', wrap);
+    var titleEl = $('.jinyu-toc-title', wrap);
+    var curEl = $('.jinyu-toc-cur', wrap);
+    var countEl = $('.jinyu-toc-count', wrap);
+    var toggleBtn = $('.jinyu-toc-toggle', wrap);
+    if (countEl) countEl.textContent = '0/' + headings.length;
+    var ids = [];
+    headings.forEach(function (h, i) {
+      if (!h.id) h.id = 'jinyu-h-' + i;
+      ids.push(h.id);
+      var li = doc.createElement('li');
+      if (h.tagName === 'H3') li.className = 'jinyu-toc-sub';
+      var a = doc.createElement('a');
+      a.href = '#' + h.id;
+      // 全文标题挂到 title：条目最多显示 2 行，被截断时悬停可看完整
+      a.title = h.textContent;
+      var dot = doc.createElement('span');
+      dot.className = 'jinyu-toc-dot';
+      var txt = doc.createElement('span');
+      txt.className = 'jinyu-toc-text';
+      txt.textContent = h.textContent;
+      // 圆点与文字同在链接内部，悬停/选中底色可完整包住整行
+      a.appendChild(dot);
+      a.appendChild(txt);
+      li.appendChild(a);
+      list.appendChild(li);
+    });
+
+    // 目录作为与右侧小工具同级的独立左列，插到 .jinyu-main-wrap 内、文章卡片之外
+    var mainWrap = content.closest('.jinyu-main-wrap') || content.parentNode && content.parentNode.parentNode;
+    if (mainWrap) {
+      var tocRef = mainWrap.querySelector('.jinyu-content') || mainWrap.firstChild;
+      mainWrap.insertBefore(wrap, tocRef);
+      mainWrap.classList.add('jinyu-has-toc');
+    } else {
+      content.parentNode.insertBefore(wrap, content);
+    }
+    var links = $$('a', list);
+    var items = $$('li', list);
+    list.addEventListener('click', function (e) {
+      var a = e.target.closest('a');
+      if (!a) return;
+      e.preventDefault();
+      var id = a.getAttribute('href').slice(1);
+      var target = doc.getElementById(id);
+      if (target) target.scrollIntoView({
+        behavior: reduceMotion ? 'auto' : 'smooth',
+        block: 'start'
+      });
+      if (history.replaceState) history.replaceState(null, '', '#' + id);
+      // 移动端：点选条目后自动收起，不遮挡正文
+      if (window.matchMedia('(max-width: 768px)').matches) setOpen(false);
+    });
+
+    // 移动端：标题整条可点击折叠/展开
+    var setOpen = function setOpen(open) {
+      wrap.classList.toggle('jinyu-toc-open', open);
+      if (toggleBtn) toggleBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    };
+    titleEl.addEventListener('click', function () {
+      setOpen(!wrap.classList.contains('jinyu-toc-open'));
+    });
+
+    // 滚动高亮 + 章节进度点 + URL hash 同步
+    if (!('IntersectionObserver' in window)) return;
+    var seen = {};
+    var syncActive = function syncActive() {
+      var cur = -1;
+      ids.forEach(function (id, i) {
+        if (seen[id]) cur = i;
+      });
+      if (cur < 0) return;
+      links.forEach(function (a, i) {
+        a.classList.toggle('jinyu-toc-active', i === cur);
+      });
+      items.forEach(function (li, i) {
+        li.classList.toggle('jinyu-toc-done', i <= cur);
+      });
+      // 折叠条上的实时进度：x/y + 当前章节名
+      if (countEl) countEl.textContent = cur + 1 + '/' + ids.length;
+      if (curEl) curEl.textContent = headings[cur].textContent;
+      if (history.replaceState) history.replaceState(null, '', '#' + ids[cur]);
+    };
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        seen[entry.target.id] = entry.isIntersecting;
+      });
+      syncActive();
+    }, {
+      rootMargin: '-80px 0px -70% 0px'
+    });
+    headings.forEach(function (h) {
+      observer.observe(h);
+    });
+  }
+
+  /* ======================================================================
+     模块：段落级复制（hover 段落右上角出现复制按钮，仅精确指针设备）
+     ====================================================================== */
+  function paraCopy() {
+    var content = $('.jinyu-article-content');
+    if (!content) return;
+    if (window.matchMedia && !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    $$('p, blockquote, li, h2, h3, h4, td', content).forEach(function (el) {
+      if (el.closest('pre')) return; // 代码块自带复制按钮
+      if (el.dataset.jinyuParaCopy) return;
+      el.dataset.jinyuParaCopy = '1';
+      el.classList.add('jinyu-para');
+      var btn = doc.createElement('button');
+      btn.type = 'button';
+      btn.className = 'jinyu-para-copy';
+      btn.setAttribute('aria-label', 'Copy paragraph');
+      btn.innerHTML = '<i class="fa-regular fa-copy" aria-hidden="true"></i>';
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        Util.copy(el.innerText).then(function () {
+          var old = btn.innerHTML;
+          btn.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i>';
+          btn.classList.add('jinyu-copied');
+          setTimeout(function () {
+            btn.innerHTML = old;
+            btn.classList.remove('jinyu-copied');
+          }, 1400);
+        })["catch"](function () {
+          Util.toast(_t('copyFailed', 'Copy failed. Please select manually'));
+        });
+      });
+      el.appendChild(btn);
+    });
+  }
+
+  /* ======================================================================
+     模块：代码块（标题栏 + 复制）
+     ====================================================================== */
+  function codeBlock() {
+    $$('.jinyu-article-content pre').forEach(function (pre) {
+      if (pre.parentNode.classList.contains('jinyu-code-wrap')) return;
+      var wrap = doc.createElement('div');
+      wrap.className = 'jinyu-code-wrap';
+      pre.parentNode.insertBefore(wrap, pre);
+      wrap.appendChild(pre);
+      var bar = doc.createElement('div');
+      bar.className = 'jinyu-code-bar';
+      bar.innerHTML = '<span class="jinyu-code-dot r"></span><span class="jinyu-code-dot y"></span><span class="jinyu-code-dot g"></span>';
+      wrap.insertBefore(bar, pre);
+      var btn = doc.createElement('button');
+      btn.className = 'jinyu-code-copy';
+      btn.type = 'button';
+      btn.setAttribute('aria-label', 'Copy code');
+      btn.innerHTML = '<i class="fa-regular fa-copy" aria-hidden="true"></i><span class="jinyu-code-copy-label">Copy</span>';
+      wrap.appendChild(btn);
+      var label = btn.querySelector('.jinyu-code-copy-label');
+      btn.addEventListener('click', function () {
+        Util.copy(pre.innerText).then(function () {
+          if (label) label.textContent = _t('copied', 'Copied');
+          btn.classList.add('jinyu-copied');
+          setTimeout(function () {
+            if (label) label.textContent = _t('copy', 'Copy');
+            btn.classList.remove('jinyu-copied');
+          }, 1500);
+        })["catch"](function () {
+          Util.toast(_t('copyFailed', 'Copy failed. Please select manually'));
+        });
+      });
+    });
+  }
+
+  /* ======================================================================
+     模块：封面图裂图兜底（把 404 封面替换为渐变占位）
+     ====================================================================== */
+  function coverFallback() {
+    doc.addEventListener('error', function (e) {
+      var img = e.target;
+      if (!img || !img.classList.contains('jinyu-post-cover-img')) return;
+      var wrap = img.closest('.jinyu-post-cover-link') || img.parentNode;
+      if (!wrap) return;
+      var ph = doc.createElement('div');
+      ph.className = 'jinyu-post-cover-ph';
+      ph.innerHTML = '<i class="fa-solid fa-fire" aria-hidden="true"></i>';
+      wrap.replaceChild(ph, img);
+    }, true);
+  }
+
+  /* ======================================================================
+     模块：图片兜底（CSP 安全，全站替代内联 onerror）
+     - data-jinyu-fallback="url"   加载失败换兜底图（只换一次，防循环）
+     - data-jinyu-mirror="a|b|c"   加载失败依次换备用镜像，走完才轮到 fallback
+     - data-jinyu-fallback-remove  加载失败移除 <img>，露出底层图标
+     - data-jinyu-fallback-unset="cls" 配合 remove，同时移除最近祖先的 cls
+     error 事件不冒泡，必须捕获阶段监听；文档级委托对 AJAX/PJAX 动态图同样生效。
+     ====================================================================== */
+  function imgFallback() {
+    var MIRROR = 'data-jinyu-mirror';
+    function apply(img) {
+      var m = img.getAttribute(MIRROR);
+      if (m) {
+        // 国内头像镜像单点故障很常见（weavatar 回 500、v2ex 跨境连接超时），
+        // 逐个消耗备用源；链走完后属性为空，下次失败自然落到首字母占位图。
+        var list = m.split('|').filter(Boolean);
+        if (list.length > 1) {
+          img.setAttribute(MIRROR, list.slice(1).join('|'));
+        } else {
+          img.removeAttribute(MIRROR);
+        }
+        img.src = list[0];
+        return;
+      }
+      var fb = img.getAttribute('data-jinyu-fallback');
+      if (fb) {
+        img.removeAttribute('data-jinyu-fallback');
+        img.src = fb;
+        return;
+      }
+      if (img.hasAttribute('data-jinyu-fallback-remove')) {
+        var unset = img.getAttribute('data-jinyu-fallback-unset');
+        if (unset) {
+          var anc = img.closest('.' + unset);
+          if (anc) anc.classList.remove(unset);
+        }
+        if (img.parentNode) img.parentNode.removeChild(img);
+      }
+    }
+    // 首屏图可能在监听器挂上前就已 404 完毕（缓存 404/失败极快），boot 时补扫一次；
+    // complete + naturalWidth===0 只命中「已加载且失败」的图，加载中/懒加载未触发的不受影响。
+    $$('img').forEach(function (img) {
+      if (!img.hasAttribute('data-jinyu-fallback') && !img.hasAttribute(MIRROR) && !img.hasAttribute('data-jinyu-fallback-remove')) return;
+      if (img.complete && img.naturalWidth === 0 && img.getAttribute('src')) apply(img);
+    });
+    doc.addEventListener('error', function (e) {
+      var img = e.target;
+      if (!img || img.tagName !== 'IMG') return;
+      if (!img.hasAttribute('data-jinyu-fallback') && !img.hasAttribute(MIRROR) && !img.hasAttribute('data-jinyu-fallback-remove')) return;
+      apply(img);
+    }, true);
+  }
+
+  /* ======================================================================
+     模块：图片懒加载兜底（无原生 loading 支持时）
+     ====================================================================== */
+  function lazyImg() {
+    if (!('loading' in HTMLImageElement.prototype)) return;
+    $$('img[data-src]').forEach(function (img) {
+      img.loading = 'lazy';
+      img.src = img.dataset.src;
+      img.removeAttribute('data-src');
+    });
+  }
+
+  /* ======================================================================
+     模块：图片 blur-up 淡入
+     配合 PHP 端给媒体图 / 正文图加的 .jinyu-blur-img 类与 data-ph（缩略图 LQIP
+     占位）。未加载时图隐藏并以模糊占位呈现，加载完成后从模糊淡入清晰。
+     ====================================================================== */
+  function blurImg() {
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) return; // 减少动效：不做模糊淡入（CSS 也不隐藏，图直接显示）
+
+    // 给首屏（视口内及紧随其后一屏）的图打「豁免 blur」标记：它们本来就是 LCP 候选，
+    // 若先隐藏再淡入，LCP 要等到 load 事件 + 过渡结束才记账，凭空多扣一段 JS 依赖。
+    // 视口外的图照旧走 blur-up 懒加载，视觉策略不变。
+    function markViewportEager() {
+      var vh = window.innerHeight || 0;
+      var list = $$('img.jinyu-blur-img');
+      for (var i = 0; i < list.length; i++) {
+        var box = list[i].getBoundingClientRect();
+        if (box.bottom > 0 && box.top < vh * 1.5) {
+          list[i].classList.add('jinyu-blur-eager');
+        }
+      }
+    }
+    markViewportEager();
+    doc.documentElement.classList.add('jinyu-blur-ready');
+    function setup(img) {
+      if (img.dataset.blurDone) return;
+      img.dataset.blurDone = '1';
+      var ph = img.getAttribute('data-ph');
+      if (ph) img.style.backgroundImage = 'url("' + ph + '")';
+      if (img.complete && img.naturalWidth > 0) {
+        img.classList.add('is-loaded');
+        return;
+      }
+      img.addEventListener('load', function () {
+        img.classList.add('is-loaded');
+      });
+      // 加载失败也标记已加载，避免占位色永久停留
+      img.addEventListener('error', function () {
+        img.classList.add('is-loaded');
+      });
+    }
+    $$('img.jinyu-blur-img').forEach(setup);
+
+    // 动态注入内容（pjax / 加载更多 / AJAX）兜底
+    if (window.MutationObserver) {
+      var mo = new MutationObserver(function (muts) {
+        muts.forEach(function (m) {
+          m.addedNodes.forEach(function (n) {
+            if (n.nodeType !== 1) return;
+            if (n.matches && n.matches('img.jinyu-blur-img')) setup(n);
+            if (n.querySelectorAll) {
+              var list = n.querySelectorAll('img.jinyu-blur-img');
+              for (var i = 0; i < list.length; i++) setup(list[i]);
+            }
+          });
+        });
+      });
+      mo.observe(doc.body, {
+        childList: true,
+        subtree: true
+      });
+    }
+  }
+
+  /* ======================================================================
+     模块：点赞 / 收藏
+     ====================================================================== */
+  function postActions() {
+    doc.addEventListener('click', function (e) {
+      // 点赞
+      var like = e.target.closest('.jinyu-like-btn');
+      if (like) {
+        e.preventDefault();
+        if (like.classList.contains('jinyu-loading')) return;
+        var willLike = !like.classList.contains('jinyu-liked');
+        like.classList.add('jinyu-loading');
+        Util.ajax('jinyu_like', {
+          post_id: like.dataset.postId,
+          action_type: willLike ? 'like' : 'unlike'
+        }, function (err, res) {
+          like.classList.remove('jinyu-loading');
+          if (err || !res || !res.success) {
+            // 已点赞 / 限流 / 网络异常：给出可见反馈，避免“点了没反应”
+            Util.toast(res && res.data ? res.data : 'Operation failed. Please try again later.');
+            return;
+          }
+          like.classList.toggle('jinyu-liked', willLike);
+          like.setAttribute('aria-pressed', willLike ? 'true' : 'false');
+          var count = like.querySelector('.jinyu-like-count');
+          if (count) {
+            var from = parseInt(count.textContent, 10) || 0;
+            var to = parseInt(res.data, 10);
+            if (!isNaN(to)) {
+              animateCount(count, from, to);
+              if (willLike) popLike(like); // 仅点赞触发弹跳 + 粒子，取消赞只滚动数字
+            } else {
+              count.textContent = res.data;
+            }
+          }
+        });
+        return;
+      }
+
+      // 收藏（登录用户写服务端，未登录降级到本地）
+      var fav = e.target.closest('.jinyu-fav-btn');
+      if (fav) {
+        e.preventDefault();
+        var label = fav.querySelector('.jinyu-fav-label');
+        var willFav = !fav.classList.contains('jinyu-faved');
+        if (!CFG.logged_in) {
+          applyFavState(fav, label, toggleLocalFav(fav.dataset.postId, fav.dataset.title, willFav));
+          return;
+        }
+        Util.ajax('jinyu_fav', {
+          post_id: fav.dataset.postId,
+          fav: willFav ? '1' : '0'
+        }, function (err, res) {
+          if (err || !res || !res.success) return;
+          applyFavState(fav, label, !!res.data);
+        });
+      }
+    });
+    function applyFavState(btn, label, faved) {
+      btn.classList.toggle('jinyu-faved', faved);
+      if (label) label.textContent = faved ? 'Saved' : 'Save';
+    }
+    function toggleLocalFav(id, title, willFav) {
+      var KEY = 'jinyu_favs';
+      var list = [];
+      try {
+        list = JSON.parse(localStorage.getItem(KEY) || '[]');
+      } catch (e) {
+        list = [];
+      }
+      var idx = -1;
+      list.forEach(function (f, i) {
+        if (String(f.id) === String(id)) idx = i;
+      });
+      if (willFav && idx < 0) list.push({
+        id: id,
+        title: title,
+        time: Date.now()
+      });
+      if (!willFav && idx >= 0) list.splice(idx, 1);
+      try {
+        localStorage.setItem(KEY, JSON.stringify(list));
+      } catch (e) {/* 忽略 */}
+      return willFav;
+    }
+
+    /* 计数滚动：从旧值缓动到新值（easeOutCubic） */
+    function animateCount(el, from, to) {
+      if (from === to) {
+        el.textContent = to;
+        return;
+      }
+      var dur = 420,
+        start = null;
+      function step(ts) {
+        if (start === null) start = ts;
+        var p = Math.min(1, (ts - start) / dur);
+        var eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(from + (to - from) * eased);
+        if (p < 1) requestAnimationFrame(step);else el.textContent = to;
+      }
+      requestAnimationFrame(step);
+    }
+
+    /* 点赞成功：心跳弹跳 + 心形粒子迸发 */
+    function popLike(btn) {
+      btn.classList.remove('jinyu-like-pop');
+      void btn.offsetWidth; // 强制回流以重启动画
+      btn.classList.add('jinyu-like-pop');
+      setTimeout(function () {
+        btn.classList.remove('jinyu-like-pop');
+      }, 560);
+      spawnParticles(btn);
+    }
+    function spawnParticles(btn) {
+      var icon = btn.querySelector('.fa-heart');
+      if (!icon || !doc.createElement) return;
+      var br = btn.getBoundingClientRect();
+      var ir = icon.getBoundingClientRect();
+      var cx = ir.left + ir.width / 2 - br.left;
+      var cy = ir.top + ir.height / 2 - br.top;
+      for (var i = 0; i < 6; i++) {
+        var p = doc.createElement('span');
+        p.className = 'jinyu-like-particle';
+        p.textContent = '♥';
+        var ang = -Math.PI / 2 + (Math.random() - 0.5) * Math.PI * 1.1; // 向上扇形
+        var dist = 18 + Math.random() * 22;
+        p.style.left = cx + 'px';
+        p.style.top = cy + 'px';
+        p.style.setProperty('--dx', (Math.cos(ang) * dist).toFixed(1) + 'px');
+        p.style.setProperty('--dy', (Math.sin(ang) * dist).toFixed(1) + 'px');
+        p.style.fontSize = (8 + Math.random() * 8).toFixed(1) + 'px';
+        btn.appendChild(p);
+        (function (el) {
+          el.addEventListener('animationend', function () {
+            el.remove();
+          });
+        })(p);
+      }
+    }
+
+    // 已点赞 / 已收藏状态回填
+    $$('.jinyu-like-btn').forEach(function (btn) {
+      if (CFG.liked_posts && CFG.liked_posts.indexOf(Number(btn.dataset.postId)) > -1) {
+        btn.classList.add('jinyu-liked');
+      }
+    });
+    $$('.jinyu-fav-btn').forEach(function (btn) {
+      if (CFG.fav_posts && CFG.fav_posts.indexOf(Number(btn.dataset.postId)) > -1) {
+        btn.classList.add('jinyu-faved');
+        var label = btn.querySelector('.jinyu-fav-label');
+        if (label) label.textContent = _t('favorited', 'Saved');
+      }
+    });
+
+    /* 点赞数水合：页面缓存把 jinyu_likes 烤死在静态 HTML 里，刷新会显示旧值。
+       加载时批量拉取真实计数+已赞态覆盖，保证与 DB 一致（文章页按钮 / 列表计数通用）。 */
+    var likeNodes = [];
+    $$('.jinyu-like-count[data-post-id]').forEach(function (n) {
+      likeNodes.push({
+        node: n,
+        pid: n.dataset.postId
+      });
+    });
+    $$('.jinyu-like-btn[data-post-id]').forEach(function (btn) {
+      var c = btn.querySelector('.jinyu-like-count');
+      if (c && !c.hasAttribute('data-post-id')) {
+        c.setAttribute('data-post-id', btn.dataset.postId);
+        likeNodes.push({
+          node: c,
+          pid: btn.dataset.postId
+        });
+      }
+    });
+    if (likeNodes.length) {
+      var ids = [];
+      likeNodes.forEach(function (x) {
+        if (ids.indexOf(x.pid) < 0) ids.push(x.pid);
+      });
+      Util.ajax('jinyu_like_state', {
+        ids: ids.join(',')
+      }, function (err, res) {
+        if (err || !res || !res.success) return;
+        var data = res.data || {};
+        likeNodes.forEach(function (x) {
+          var info = data[x.pid];
+          if (!info) return;
+          x.node.textContent = info.count;
+          var btn = x.node.closest('.jinyu-like-btn');
+          if (btn) btn.classList.toggle('jinyu-liked', !!info.liked);
+        });
+      });
+    }
+  }
+
+  /* ======================================================================
+     模块：分享弹窗
+     ====================================================================== */
+  var SHARE_TARGETS = {
+    weibo: {
+      label: 'Weibo',
+      icon: 'fa-brands fa-weibo',
+      url: function url(u, t) {
+        return 'https://service.weibo.com/share/share.php?url=' + encodeURIComponent(u) + '&title=' + encodeURIComponent(t);
+      }
+    },
+    qq: {
+      label: 'QQ',
+      icon: 'fa-brands fa-qq',
+      url: function url(u, t) {
+        return 'https://connect.qq.com/widget/shareqq/index.html?url=' + encodeURIComponent(u) + '&title=' + encodeURIComponent(t);
+      }
+    },
+    qzone: {
+      label: 'Qzone',
+      icon: 'fa-solid fa-star',
+      url: function url(u, t) {
+        return 'https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=' + encodeURIComponent(u) + '&title=' + encodeURIComponent(t);
+      }
+    },
+    wechat: {
+      label: 'WeChat',
+      icon: 'fa-brands fa-weixin',
+      url: null
+    },
+    link: {
+      label: 'Copy link',
+      icon: 'fa-solid fa-link',
+      url: null
+    }
+  };
+  function share() {
+    doc.addEventListener('click', function (e) {
+      if (!e.target.closest('[data-jinyu-share]')) return;
+      var url = location.href;
+      var title = doc.title;
+      var mask = doc.createElement('div');
+      mask.className = 'jinyu-mask';
+      var box = doc.createElement('div');
+      box.className = 'jinyu-share-box';
+      box.innerHTML = '<div class="jinyu-share-title">Share to</div><div class="jinyu-share-btns"></div>';
+      var btns = $('.jinyu-share-btns', box);
+      var enabled = (CFG.share_channels || '').split(',').map(function (s) {
+        return s.trim();
+      }).filter(Boolean);
+      Object.keys(SHARE_TARGETS).forEach(function (key) {
+        if (enabled.length && enabled.indexOf(key) === -1) return;
+        var t = SHARE_TARGETS[key];
+        var b = doc.createElement('button');
+        b.type = 'button';
+        b.setAttribute('data-share', key);
+        b.innerHTML = '<i class="' + t.icon + '"></i><span>' + t.label + '</span>';
+        btns.appendChild(b);
+      });
+      box.appendChild(btns);
+      mask.appendChild(box);
+      doc.body.appendChild(mask);
+      function close() {
+        mask.remove();
+      }
+      mask.addEventListener('click', function (ev) {
+        if (ev.target === mask) close();
+      });
+      btns.addEventListener('click', function (ev) {
+        var b = ev.target.closest('[data-share]');
+        if (!b) return;
+        var key = b.getAttribute('data-share');
+        var target = SHARE_TARGETS[key];
+        if (key === 'wechat') {
+          showWechatShare(url);
+          close();
+          return;
+        }
+        if (!target.url) {
+          Util.copy(url).then(function () {
+            Util.toast(_t('linkCopied', 'Link copied'));
+          })["catch"](function () {
+            window.prompt('Copy this link: ', url);
+          });
+        } else {
+          window.open(target.url(url, title), '_blank', 'width=600,height=500');
+        }
+        close();
+      });
+      doc.addEventListener('keydown', function handler(ev) {
+        if (ev.key === 'Escape') {
+          close();
+          doc.removeEventListener('keydown', handler);
+        }
+      });
+    });
+  }
+
+  /* 微信分享：微信内无法直接拉起分享，给右上角菜单引导；其它环境给文章二维码「扫一扫」 */
+  function showWechatShare(pageUrl) {
+    var ua = navigator.userAgent || '';
+    if (/MicroMessenger/i.test(ua)) {
+      var ov = doc.createElement('div');
+      ov.className = 'jinyu-poster-fullscreen';
+      ov.innerHTML = '<div class="jinyu-wechat-guide">' + '<div class="jinyu-wechat-guide-arrow">···</div>' + '<div class="jinyu-wechat-guide-tip">Tap <b>···</b> in the top-right corner<br>to share with friends or on Moments</div>' + '</div>';
+      ov.addEventListener('click', function (e) {
+        if (e.target === ov) ov.remove();
+      });
+      doc.body.appendChild(ov);
+      return;
+    }
+    var mask = doc.createElement('div');
+    mask.className = 'jinyu-mask';
+    mask.innerHTML = '<div class="jinyu-modal-card jinyu-wechat-qr-card">' + '<div class="jinyu-modal-head">' + '<span class="jinyu-modal-title">Scan with WeChat to open</span>' + '<button type="button" class="jinyu-modal-close" data-jinyu-modal-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button>' + '</div>' + '<div class="jinyu-modal-body" style="text-align:center">' + '<div class="jinyu-wechat-qr-box" id="jinyu-wechat-qr"></div>' + '<p class="jinyu-qr-url">Scan the QR code above with WeChat to open this post in WeChat.<br>On mobile, screenshot it and scan from your gallery; or close this dialog, tap "Copy link" in the share bar and paste it into WeChat.</p>' + '</div>' + '</div>';
+    mask.addEventListener('click', function (e) {
+      if (e.target === mask || e.target.closest('[data-jinyu-modal-close]')) mask.remove();
+    });
+    doc.body.appendChild(mask);
+    try {
+      if (typeof window.qrcode === 'function') {
+        var qr = window.qrcode(0, 'M');
+        qr.addData(pageUrl.split('#')[0]);
+        qr.make();
+        var n = qr.getModuleCount(),
+          size = 220,
+          cell = size / n;
+        var cv = doc.createElement('canvas');
+        cv.width = size;
+        cv.height = size;
+        var cx = cv.getContext('2d');
+        cx.fillStyle = '#ffffff';
+        cx.fillRect(0, 0, size, size);
+        cx.fillStyle = '#111827';
+        for (var r = 0; r < n; r++) {
+          for (var c = 0; c < n; c++) {
+            if (qr.isDark(r, c)) cx.fillRect(c * cell, r * cell, cell + .5, cell + .5);
+          }
+        }
+        var holder = mask.querySelector('#jinyu-wechat-qr');
+        if (holder) holder.appendChild(cv);
+      }
+    } catch (e) {/* 二维码失败不阻断 */}
+  }
+
+  /* ======================================================================
+     模块：瀑布流列均衡（JS 增强）
+     CSS 多列（column-count）按「列序」填充、底口靠 column-fill 估算平衡，
+     底部参差感强且阅读顺序变成竖排。这里改为显式列容器 + 「最短列优先」
+     投放：任意时刻各列底差最多一张卡，阅读顺序恢复横向时间序。
+     无 JS / 脚本异常时仍走 common.less 的 column-count 兜底。
+     ====================================================================== */
+  function masonry() {
+    var grid = $('.jinyu-layout-masonry .jinyu-post-grid');
+    if (!grid || grid.dataset.masonryReady) return;
+    grid.dataset.masonryReady = '1';
+
+    /* 断点须与 common.less 的媒体查询一致：>992 三列、>576 两列、其余单列 */
+    function colCount() {
+      if (window.matchMedia('(max-width: 576px)').matches) return 1;
+      return window.matchMedia('(max-width: 992px)').matches ? 2 : 3;
+    }
+
+    /* 卡片搬进列容器后 nth-child 序号（按列内重新计数）会失真，封面比例
+       轮换（4n+k）随之错乱：投放前把每张封面 computed 的 aspect-ratio
+       固化为内联样式。先纯读后纯写（与 reveal() 同一纪律），避免读写
+       交替触发强制重排。 */
+    function pinRatios(list) {
+      var covers = [],
+        ratios = [];
+      list.forEach(function (card) {
+        var cover = card.querySelector('.jinyu-post-cover');
+        covers.push(cover);
+        ratios.push(cover ? getComputedStyle(cover).aspectRatio : 'auto');
+      });
+      list.forEach(function (card, i) {
+        if (covers[i] && ratios[i] && ratios[i] !== 'auto') {
+          covers[i].style.aspectRatio = ratios[i];
+        }
+      });
+    }
+    var cards = Array.prototype.filter.call(grid.children, function (el) {
+      return el.classList.contains('jinyu-post-card');
+    });
+    if (cards.length < 2) return;
+    pinRatios(cards);
+    var cols = [];
+    var lastCount = 0;
+    function layout() {
+      var n = colCount();
+      lastCount = n;
+      while (grid.firstChild) grid.removeChild(grid.firstChild);
+      grid.classList.add('jinyu-masonry-js');
+      cols = [];
+      for (var i = 0; i < n; i++) {
+        var col = doc.createElement('div');
+        col.className = 'jinyu-masonry-col';
+        cols.push(col);
+        grid.appendChild(col);
+      }
+      /* 逐卡「最短列优先」：每张卡投放到当前最矮的列，使各列累计高度
+         尽量接近。外层 .jinyu-masonry-js 用 align-items:flex-start（不拉伸），
+         故 offsetHeight 即列内容真实高度，贪心能正确区分空列与已填列、
+         不会退化成单列。投放完成后由下方代码把三列设为等高、列内
+         space-between 均摊缝隙，实现顶/底对齐；中间因封面比例轮换
+         （3:4/1:1/4:3/3:2）与摘要长短不一而呈现瀑布流错落。封面已固化
+         aspect-ratio、列宽一致，卡高投放即稳定。 */
+      cards.forEach(function (card) {
+        var t = 0;
+        for (var j = 1; j < cols.length; j++) {
+          if (cols[j].offsetHeight < cols[t].offsetHeight) t = j;
+        }
+        cols[t].appendChild(card);
+      });
+      /* 顶/底对齐：量出最大内容高度，给每列设等高（flex-start 下
+         offsetHeight=内容高，未被拉伸干扰），列内 space-between 把
+         多出的高度均摊成缝隙 → 各列底部齐平，无整块空白。 */
+      var maxH = 0;
+      cols.forEach(function (c) {
+        if (c.offsetHeight > maxH) maxH = c.offsetHeight;
+      });
+      if (maxH > 0) cols.forEach(function (c) {
+        c.style.height = maxH + 'px';
+      });
+    }
+
+    /* 中文字体加载会改变摘要换行与卡高，就绪后按真实高度重排一次 */
+    if (doc.fonts && doc.fonts.ready && doc.fonts.ready.then) {
+      doc.fonts.ready.then(function () {
+        if (grid.isConnected) layout();
+      });
+    }
+
+    /* 窗口尺寸跨断点才重建，列数不变时的微调不值得整版重排 */
+    var rsTimer = null;
+    window.addEventListener('resize', function () {
+      if (!grid.isConnected) return;
+      clearTimeout(rsTimer);
+      rsTimer = setTimeout(function () {
+        if (colCount() !== lastCount) layout();
+      }, 150);
+    });
+
+    /* 「加载更多」把新卡片追加在 grid 末尾（列容器之后），这里收编进
+       cards 并整体重排。loadMore() 在插入后派发 jinyu:grid-appended。 */
+    doc.addEventListener('jinyu:grid-appended', function () {
+      if (!grid.isConnected) return;
+      var fresh = [];
+      Array.prototype.forEach.call(grid.children, function (el) {
+        if (el.classList && el.classList.contains('jinyu-post-card')) fresh.push(el);
+      });
+      if (!fresh.length) return;
+      pinRatios(fresh);
+      fresh.forEach(function (el) {
+        cards.push(el);
+      });
+      layout();
+    });
+    layout();
+  }
+
+  /* ======================================================================
+     模块：滚动入场动画
+     ====================================================================== */
+  function reveal() {
+    var els = $$('.jinyu-post-card, .jinyu-widget, .jinyu-relevant-card, .jinyu-single, .jinyu-pagination');
+    if (!els.length) return;
+    var show = function show(el) {
+      el.classList.add('jinyu-visible');
+    };
+    if (reduceMotion || !('IntersectionObserver' in window)) {
+      els.forEach(show);
+      return;
+    }
+
+    /* 读写必须分成两趟，中途不能交替。
+       旧实现是「给所有元素加 .jinyu-reveal」与「逐个 getBoundingClientRect」
+       两个 forEach 前后相接地写在一起，而 .jinyu-reveal 带 transform:translateY(30px)：
+       刚写完就读，读到的 rect 已被位移（首屏下沿的卡片会被误判成不可见），
+       并且首次读取强制浏览器同步重算样式+布局（forced reflow，实测 ~109ms）。
+       现在先纯读、后纯写，中间不再有任何写操作触发布局失效。 */
+    var vh = window.innerHeight || doc.documentElement.clientHeight || 0;
+    var above = [];
+    var below = [];
+    els.forEach(function (el) {
+      (el.getBoundingClientRect().top < vh ? above : below).push(el);
+    });
+
+    /* 首屏元素「同一帧内」直接置为可见，且刻意不加 .jinyu-reveal。
+       1) 加了 reveal 会先渲染 opacity:0，下一帧才开始过渡，首屏卡片在 FCP
+          之后还要淡入近 1s——Speed Index 按屏截图采样，这段空窗期直接把它拖低
+          一档（实测 1821ms → 明显下降）。同帧加两个 class 浏览器只算最终样式，
+          但这里更彻底：不挂 reveal 就不存在过渡，直接是最终态。
+       2) .jinyu-visible 只在 .jinyu-reveal 下才有样式，首屏卡片不必挂它也能正常显示。 */
+    above.forEach(show);
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        show(entry.target);
+        io.unobserve(entry.target);
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '0px 0px -40px 0px'
+    });
+
+    // 只给首屏之外的元素挂入场动画，首屏那批完全不参与（少一批样式失效）
+    below.forEach(function (el) {
+      el.classList.add('jinyu-reveal');
+      io.observe(el);
+    });
+
+    // 安全兜底：load 后与固定延时后强制显现全部，彻底杜绝 IO 失效时内容不可见
+    var safety = function safety() {
+      els.forEach(show);
+    };
+    if (doc.readyState === 'complete') setTimeout(safety, 1200);else window.addEventListener('load', function () {
+      setTimeout(safety, 400);
+    });
+    setTimeout(safety, 2500);
+  }
+
+  /* ======================================================================
+     模块：头部滚动态
+     ====================================================================== */
+  function headerScroll() {
+    var header = $('.jinyu-header');
+    if (!header) return;
+    Util.onScroll(function () {
+      header.classList.toggle('jinyu-header-scrolled', window.scrollY > 20);
+    });
+  }
+
+  /* ======================================================================
+     模块：加载更多
+     ====================================================================== */
+  function loadMore() {
+    var btn = $('.jinyu-load-more');
+    if (!btn) return;
+    var page = Number(btn.dataset.page || 1);
+    var loading = false;
+    var done = false;
+    function load() {
+      if (loading || done) return;
+      loading = true;
+      btn.disabled = true;
+      btn.textContent = _t('loading', 'Loading…');
+      Util.ajax('jinyu_load_more', {
+        page: page
+      }, function (err, res) {
+        loading = false;
+        btn.disabled = false;
+        if (err || !res || !res.success) {
+          done = true;
+          btn.textContent = _t('noMore', 'No more posts');
+          btn.disabled = true;
+          return;
+        }
+        var wrap = $(btn.dataset.target || '.jinyu-post-grid');
+        if (wrap && res.data.html) {
+          wrap.insertAdjacentHTML('beforeend', res.data.html);
+          /* 瀑布流列均衡模块监听此事件，把新卡片收编进最短列 */
+          try {
+            doc.dispatchEvent(new CustomEvent('jinyu:grid-appended'));
+          } catch (e) {/* 旧浏览器忽略 */}
+        }
+        page = Number(res.data.page || page + 1);
+        btn.dataset.page = page;
+        if (res.data.has_more) {
+          btn.textContent = _t('loadMore', 'Load more');
+        } else {
+          done = true;
+          btn.textContent = _t('noMore', 'No more posts');
+          btn.disabled = true;
+        }
+      });
+    }
+    btn.addEventListener('click', load);
+    if (CFG.load_more_infinite && 'IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        if (entries[0].isIntersecting) load();
+      }, {
+        rootMargin: '200px'
+      });
+      io.observe(btn);
+    }
+  }
+
+  /* ======================================================================
+     模块：分页页码直达（输入页码跳到指定页）
+     ====================================================================== */
+  function pageJump() {
+    var forms = doc.querySelectorAll('.jinyu-pagination-jump');
+    if (!forms.length) return;
+    Array.prototype.forEach.call(forms, function (form) {
+      if (!form.dataset.base) return;
+      var btn = $('.jinyu-jump-btn', form);
+      var input = $('.jinyu-page-jump-input', form);
+      if (!input) return;
+      var max = parseInt(input.getAttribute('max'), 10) || parseInt(form.dataset.total, 10) || 0;
+      var cur = parseInt(form.dataset.current, 10) || 0;
+      var leaveTimer = null;
+      function clamp(n) {
+        if (!n || isNaN(n) || n < 1) return 1;
+        if (max && n > max) return max;
+        return n;
+      }
+      function open() {
+        form.classList.add('is-open');
+        clearTimeout(leaveTimer);
+        // 等过渡起来再聚焦，避免 panel 尚为 hidden 时 focus 失败
+        leaveTimer = setTimeout(function () {
+          try {
+            input.focus();
+            input.select();
+          } catch (e) {}
+        }, 120);
+      }
+      function close() {
+        clearTimeout(leaveTimer);
+        form.classList.remove('is-open');
+        input.value = '';
+        // 收起时让输入框失焦，否则 :focus-within 会撑着面板不收
+        try {
+          if (doc.activeElement === input) input.blur();
+        } catch (e) {}
+      }
+
+      // 点击按钮（触屏 / 无 hover 场景）展开并聚焦
+      if (btn) btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        open();
+      });
+
+      // 鼠标移入整个区域即展开（含移到按钮上）
+      form.addEventListener('mouseenter', open);
+
+      // 鼠标移出：延迟收回，给「移动到 panel 上」留出时间。
+      // 注意：不能因为输入框仍聚焦就跳过收回，否则 hover 过后面板永远展开。
+      form.addEventListener('mouseleave', function () {
+        clearTimeout(leaveTimer);
+        leaveTimer = setTimeout(function () {
+          form.classList.remove('is-open');
+          input.value = '';
+          try {
+            if (doc.activeElement === input) input.blur();
+          } catch (e) {}
+        }, 180);
+      });
+
+      // 输入过程中实时纠正到合法区间
+      input.addEventListener('input', function () {
+        var v = input.value.replace(/[^0-9]/g, '');
+        if (v !== input.value) input.value = v;
+        var n = parseInt(v, 10);
+        if (!isNaN(n) && n > max) input.value = String(max);
+        if (!isNaN(n) && n < 1) input.value = '1';
+      });
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+          close();
+          if (btn) {
+            try {
+              btn.focus();
+            } catch (e2) {}
+          }
+        }
+      });
+
+      // 失焦即纠正越界/非法输入，避免输入框长期显示无效页码
+      input.addEventListener('blur', function () {
+        input.value = clamp(parseInt(input.value, 10));
+      });
+
+      // 触屏：点表单外部收回
+      doc.addEventListener('click', function (e) {
+        if (!form.contains(e.target)) close();
+      });
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var raw = input.value.trim();
+        if (!raw) {
+          try {
+            input.focus();
+          } catch (e2) {}
+          flash(form, 'Enter a page number');
+          return;
+        }
+        var n = clamp(parseInt(raw, 10));
+        input.value = n;
+        if (n === cur) {
+          flash(form, 'Already on page ' + n + '');
+          return;
+        }
+        location.assign(form.dataset.base.replace('__PAGE__', n));
+      });
+      function flash(el, text) {
+        var old = el.querySelector('.jinyu-jump-tip');
+        if (old) old.remove();
+        var t = doc.createElement('span');
+        t.className = 'jinyu-jump-tip';
+        t.textContent = text;
+        el.appendChild(t);
+        requestAnimationFrame(function () {
+          t.style.opacity = '1';
+          t.style.transform = 'translateX(-50%) translateY(-4px)';
+        });
+        setTimeout(function () {
+          t.style.opacity = '0';
+          setTimeout(function () {
+            try {
+              t.remove();
+            } catch (e2) {}
+          }, 240);
+        }, 1500);
+      }
+    });
+  }
+
+  /* ======================================================================
+     模块：短代码交互（选项卡 / 折叠）
+     ====================================================================== */
+  function shortcodes() {
+    doc.addEventListener('click', function (e) {
+      // 代码块复制（pre 短代码）
+      var preCopy = e.target.closest('[data-copy]');
+      if (preCopy) {
+        var preBox = preCopy.closest('.jinyu-pre');
+        var codeEl = preBox && preBox.querySelector('.jinyu-pre-code');
+        if (codeEl) {
+          Util.copy(codeEl.innerText).then(function () {
+            preCopy.textContent = _t('copied', 'Copied');
+            preCopy.classList.add('jinyu-copied');
+            setTimeout(function () {
+              preCopy.textContent = _t('copy', 'Copy');
+              preCopy.classList.remove('jinyu-copied');
+            }, 1500);
+          })["catch"](function () {
+            Util.toast(_t('copyFailed', 'Copy failed. Please select manually'));
+          });
+        }
+        return;
+      }
+
+      // 选项卡
+      var tab = e.target.closest('.jinyu-tab-btn');
+      if (tab) {
+        var nav = tab.closest('.jinyu-tabs');
+        if (!nav) return;
+        var idx = Array.prototype.indexOf.call(nav.querySelectorAll('.jinyu-tab-btn'), tab);
+        $$('.jinyu-tab-btn', nav).forEach(function (b, i) {
+          b.classList.toggle('jinyu-tab-active', i === idx);
+        });
+        $$('.jinyu-tab-pane', nav).forEach(function (p, i) {
+          p.classList.toggle('jinyu-tab-active', i === idx);
+        });
+        return;
+      }
+    });
+  }
+
+  /* ======================================================================
+     模块：Ajax 评论
+     ====================================================================== */
+  function ajaxComment() {
+    var form = $('.jinyu-comment-respond form, #commentform');
+    if (!form) return;
+    // 幂等：避免重初始化时在同一表单上重复绑定 submit（双发评论）
+    if (form.getAttribute('data-jy-ajax')) return;
+    form.setAttribute('data-jy-ajax', '1');
+    var tip = doc.createElement('div');
+    tip.className = 'jinyu-comment-tip';
+    form.appendChild(tip);
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var submit = form.querySelector('input[type="submit"]');
+      var originText = submit ? submit.value : '';
+      if (submit) {
+        submit.disabled = true;
+        submit.value = _t('submitting', 'Submitting…');
+      }
+      var payload = new FormData(form);
+      payload.append('action', 'jinyu_comment');
+      if (CFG.nonce) payload.append('_ajax_nonce', CFG.nonce);
+      fetch(CFG.ajax_url, {
+        method: 'POST',
+        credentials: 'same-origin',
+        body: payload
+      }).then(function (r) {
+        return r.json();
+      }).then(function (res) {
+        if (submit) {
+          submit.disabled = false;
+          submit.value = originText;
+        }
+        if (!res || !res.success) {
+          tip.className = 'jinyu-comment-tip jinyu-comment-tip-err';
+          tip.textContent = res && res.data ? res.data : _t('submitFailed', 'Submission failed. Please try again later.');
+          return;
+        }
+        tip.className = 'jinyu-comment-tip jinyu-comment-tip-ok';
+        tip.textContent = res.data.message || _t('commentPosted', 'Comment submitted');
+        var list = $('.jinyu-comment-list');
+        if (list && res.data.html) {
+          list.insertAdjacentHTML('beforeend', res.data.html);
+        }
+        form.querySelector('textarea[name="comment"]').value = '';
+      })["catch"](function () {
+        if (submit) {
+          submit.disabled = false;
+          submit.value = originText;
+        }
+        tip.className = 'jinyu-comment-tip jinyu-comment-tip-err';
+        tip.textContent = _t('networkError', 'Network error. Please try again later.');
+      });
+    });
+  }
+
+  /* ======================================================================
+     模块：头部用户菜单
+     ====================================================================== */
+  function userMenu() {
+    var menu = $('[data-jinyu-user-menu]');
+    if (!menu) return;
+    var toggle = $('[data-jinyu-user-toggle]', menu);
+    var drop = $('[data-jinyu-user-drop]', menu);
+    if (!toggle || !drop) return;
+    toggle.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var open = drop.hidden;
+      drop.hidden = !open;
+      toggle.setAttribute('aria-expanded', String(open));
+    });
+    doc.addEventListener('click', function (e) {
+      if (!menu.contains(e.target) && !drop.hidden) {
+        drop.hidden = true;
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
+  /* ======================================================================
+     模块：登录 / 注册 / 找回密码弹窗
+     ====================================================================== */
+  function auth() {
+    userMenu();
+    var modal = $('.jinyu-auth-mask');
+    if (!modal) return;
+
+    // 打开
+    $$('[data-jinyu-auth-open]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        openAuth(modal, btn.getAttribute('data-jinyu-auth-open') || 'login');
+      });
+    });
+
+    // 关闭：点遮罩 / 关闭按钮 / Esc
+    modal.addEventListener('click', function (e) {
+      if (e.target === modal || e.target.closest('[data-jinyu-auth-close]')) {
+        closeAuth(modal);
+      }
+    });
+    doc.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !modal.hidden) closeAuth(modal);
+    });
+
+    // Tab 切换
+    var authTabButtons = $$('[data-jinyu-auth-tab]', modal);
+    authTabButtons.forEach(function (t, i) {
+      t.addEventListener('click', function () {
+        switchAuthTab(modal, t.getAttribute('data-jinyu-auth-tab'));
+      });
+      // 方向键导航（ARIA tablist 键盘模式：←/→ 循环，Home/End 跳首尾）。
+      // 非选中 tab 用 tabindex="-1"，故这里需手动把焦点带过去。
+      t.addEventListener('keydown', function (e) {
+        var k = e.key,
+          n = null;
+        if (k === 'ArrowRight' || k === 'ArrowDown') {
+          n = authTabButtons[(i + 1) % authTabButtons.length];
+        } else if (k === 'ArrowLeft' || k === 'ArrowUp') {
+          n = authTabButtons[(i - 1 + authTabButtons.length) % authTabButtons.length];
+        } else if (k === 'Home') {
+          n = authTabButtons[0];
+        } else if (k === 'End') {
+          n = authTabButtons[authTabButtons.length - 1];
+        }
+        if (!n) return;
+        e.preventDefault();
+        switchAuthTab(modal, n.getAttribute('data-jinyu-auth-tab'));
+        n.focus();
+      });
+    });
+
+    // 面板内快捷跳转（如「忘记密码？」→ 找回密码）
+    $$('[data-jinyu-auth-goto]', modal).forEach(function (l) {
+      l.addEventListener('click', function () {
+        switchAuthTab(modal, l.getAttribute('data-jinyu-auth-goto'));
+      });
+    });
+
+    // 密码显示 / 隐藏切换
+    modal.addEventListener('click', function (e) {
+      var toggle = e.target.closest('[data-jinyu-pw-toggle]');
+      if (!toggle) return;
+      var field = toggle.closest('.jinyu-field');
+      var input = field ? field.querySelector('input') : null;
+      if (!input) return;
+      var show = input.type === 'password';
+      input.type = show ? 'text' : 'password';
+      toggle.setAttribute('aria-pressed', String(show));
+      toggle.setAttribute('aria-label', show ? _t('hidePassword', 'Hide password') : _t('showPassword', 'Show password'));
+      var icon = toggle.querySelector('i');
+      if (icon) icon.className = show ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+      input.focus();
+    });
+
+    // 验证码：刷新 / 点图换一张
+    modal.addEventListener('click', function (e) {
+      var trigger = e.target.closest('[data-jinyu-captcha-refresh], .jinyu-captcha-img');
+      if (trigger) refreshCaptcha(trigger.closest('[data-jinyu-captcha]'));
+    });
+
+    // 提交
+    $$('.jinyu-auth-form', modal).forEach(function (form) {
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        submitAuth(form);
+      });
+    });
+    var lastFocus = null;
+    var closeTimer = null;
+
+    // Tab 滑动指示器：胶囊背景在三个 tab 间平滑滑动
+    var tabsBox = $('[data-jinyu-auth-tabs]', modal);
+    var indicator = null;
+    if (tabsBox) {
+      indicator = doc.createElement('span');
+      indicator.className = 'jinyu-auth-tabs-indicator';
+      tabsBox.appendChild(indicator);
+    }
+    function moveIndicator() {
+      if (!indicator || !tabsBox) return;
+      var active = $('.is-active', tabsBox);
+      if (!active) return;
+      indicator.style.width = active.offsetWidth + 'px';
+      indicator.style.transform = 'translateX(' + active.offsetLeft + 'px)';
+    }
+    window.addEventListener('resize', function () {
+      moveIndicator();
+      fitAuth();
+    });
+
+    // 超高自适应兜底：面板比视口还高时整体等比缩小（不出滚动条），下限 0.75
+    var authCard = $('.jinyu-auth', modal);
+    function fitAuth() {
+      if (!authCard) return;
+      authCard.style.setProperty('--jinyu-auth-fit', '1');
+      var avail = window.innerHeight - 40; // 遮罩上下 padding 32 + 8px 安全边
+      var h = authCard.offsetHeight;
+      if (h > avail) {
+        var s = Math.max(avail / h, 0.75);
+        authCard.style.setProperty('--jinyu-auth-fit', s.toFixed(3));
+      }
+    }
+    function openAuth(m, tab) {
+      if (closeTimer) {
+        clearTimeout(closeTimer);
+        closeTimer = null;
+        m.classList.remove('is-closing');
+      }
+      lastFocus = doc.activeElement;
+      doc.body.style.overflow = 'hidden';
+      m.hidden = false;
+      switchAuthTab(m, tab || 'login');
+      requestAnimationFrame(moveIndicator);
+      requestAnimationFrame(fitAuth);
+      var pane = $('.jinyu-auth-form:not([hidden])', m);
+      var first = pane ? pane.querySelector('input:not([type="hidden"])') : null;
+      if (first) first.focus();
+    }
+    function closeAuth(m) {
+      var done = function done() {
+        m.hidden = true;
+        m.classList.remove('is-closing');
+        doc.body.style.overflow = '';
+      };
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        done();
+      } else {
+        m.classList.add('is-closing');
+        closeTimer = setTimeout(done, 180);
+      }
+      if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();
+    }
+    // 焦点陷阱：Tab / Shift+Tab 循环限制在弹窗内，不漏到背景页面
+    doc.addEventListener('keydown', function (e) {
+      if (e.key !== 'Tab' || modal.hidden) return;
+      var list = Array.prototype.filter.call(modal.querySelectorAll('button:not([disabled]), input:not([disabled]):not([type="hidden"]), select, textarea, a[href]'), function (el) {
+        return el.offsetParent !== null;
+      });
+      if (!list.length) return;
+      var first = list[0],
+        last = list[list.length - 1];
+      if (e.shiftKey && doc.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && doc.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    });
+    function switchAuthTab(m, tab) {
+      $$('[data-jinyu-auth-tab]', m).forEach(function (t) {
+        var on = t.getAttribute('data-jinyu-auth-tab') === tab;
+        t.classList.toggle('is-active', on);
+        // 同步 ARIA 状态：选中项可 Tab 聚焦（tabindex 缺省即 0），其余移出 Tab 序列。
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+        t.setAttribute('tabindex', on ? '0' : '-1');
+      });
+      $$('.jinyu-auth-form', m).forEach(function (f) {
+        f.hidden = f.getAttribute('data-jinyu-auth-pane') !== tab;
+      });
+      // 切换面板时清空各面板遗留的错误/成功提示
+      $$('[data-jinyu-auth-tip]', m).forEach(function (t) {
+        t.textContent = '';
+      });
+      moveIndicator();
+      fitAuth();
+      var pane = $('.jinyu-auth-form[data-jinyu-auth-pane="' + tab + '"]', m);
+      var cap = pane ? $('[data-jinyu-captcha]', pane) : null;
+      var img = cap ? cap.querySelector('.jinyu-captcha-img') : null;
+      if (img && img.hidden) refreshCaptcha(cap);
+    }
+    function refreshCaptcha(cap) {
+      if (!cap) return;
+      var img = cap.querySelector('.jinyu-captcha-img');
+      img.hidden = false;
+      img.src = cap.getAttribute('data-jinyu-captcha-src') + '&r=' + Date.now();
+    }
+    // 前端即时校验：减少一次无谓的服务器往返，返回 {msg, name} 便于标记出错字段
+    function validateAuth(form, pane) {
+      var val = function val(name) {
+        var el = form.querySelector('[name="' + name + '"]');
+        return el ? el.value.trim() : '';
+      };
+      var need = function need(msg, name) {
+        return {
+          msg: msg,
+          name: name || ''
+        };
+      };
+      if (pane === 'login') {
+        if (!val('log')) return need(_t('fillUser', 'Please enter your username or email address'), 'log');
+        if (!val('pwd')) return need(_t('fillPwd', 'Please enter your password'), 'pwd');
+        return null;
+      }
+      if (pane === 'register') {
+        var log = val('log');
+        if (log.length < 3 || log.length > 30) return need(_t('userNameLen', 'Username must be 3-30 characters'), 'log');
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val('email'))) return need(_t('emailBad', 'Invalid email address'), 'email');
+        if (val('pwd').length < 6) return need(_t('pwdShort', 'Password must be at least 6 characters'), 'pwd');
+        if (val('pwd') !== val('pwd2')) return need(_t('pwdMismatch', 'Passwords do not match'), 'pwd2');
+        return null;
+      }
+      return val('log') ? null : need(_t('fillUser', 'Please enter your username or email address'), 'log');
+    }
+    function clearFieldErrors(form) {
+      $$('.jinyu-field.is-error', form).forEach(function (f) {
+        f.classList.remove('is-error');
+      });
+    }
+    function markFieldError(form, name) {
+      clearFieldErrors(form);
+      if (!name) return;
+      var el = form.querySelector('[name="' + name + '"]');
+      var field = el ? el.closest('.jinyu-field') : null;
+      if (field) field.classList.add('is-error');
+    }
+    // 输入即清除该字段错误标红
+    modal.addEventListener('input', function (e) {
+      var field = e.target.closest ? e.target.closest('.jinyu-field') : null;
+      if (field) field.classList.remove('is-error');
+    });
+
+    // Caps Lock 提示：密码框检测大写锁定，悬出小徽标；失焦即清除
+    ['keydown', 'keyup'].forEach(function (evt) {
+      modal.addEventListener(evt, function (e) {
+        var t = e.target;
+        if (!t || t.tagName !== 'INPUT' || t.type !== 'password') return;
+        var field = t.closest('.jinyu-field');
+        if (!field) return;
+        var on = !!(e.getModifierState && e.getModifierState('CapsLock'));
+        var badge = field.querySelector('.jinyu-caps-badge');
+        if (on && !badge) {
+          badge = doc.createElement('span');
+          badge.className = 'jinyu-caps-badge';
+          badge.textContent = _t('capsOn', 'Caps Lock is on');
+          field.appendChild(badge);
+        } else if (!on && badge) {
+          badge.remove();
+        }
+      });
+    });
+    modal.addEventListener('focusout', function (e) {
+      var t = e.target;
+      if (!t || t.tagName !== 'INPUT' || t.type !== 'password') return;
+      var field = t.closest('.jinyu-field');
+      var badge = field ? field.querySelector('.jinyu-caps-badge') : null;
+      if (badge) badge.remove();
+    });
+
+    // 密码强度条（仅注册面板，纯前端提示，不拦截提交）
+    var regForm = $('.jinyu-auth-form[data-jinyu-auth-pane="register"]', modal);
+    var regPwd = regForm ? regForm.querySelector('[name="pwd"]') : null;
+    if (regForm && regPwd) {
+      var meter = doc.createElement('div');
+      meter.className = 'jinyu-pwd-meter';
+      meter.hidden = true;
+      meter.innerHTML = '<span class="jinyu-pwd-bars"><i></i><i></i><i></i><i></i></span><span class="jinyu-pwd-label"></span>';
+      regPwd.closest('.jinyu-field').after(meter);
+      regPwd.addEventListener('input', function () {
+        var v = regPwd.value;
+        if (!v) {
+          meter.hidden = true;
+          return;
+        }
+        meter.hidden = false;
+        var score = 0;
+        if (v.length >= 6) score++;
+        if (v.length >= 10) score++;
+        if (/[a-z]/.test(v) && /[A-Z]/.test(v)) score++;
+        if (/\d/.test(v)) score++;
+        if (/[^A-Za-z0-9]/.test(v)) score++;
+        var level = score <= 1 ? 0 : score === 2 ? 1 : score === 3 ? 2 : 3;
+        var labels = [_t('pwdWeak', 'Weak'), _t('pwdMid', 'Fair'), _t('pwdStrong', 'Strong'), _t('pwdVStrong', 'Very strong')];
+        meter.setAttribute('data-level', String(level));
+        $('.jinyu-pwd-label', meter).textContent = labels[level];
+      });
+    }
+    function submitAuth(form) {
+      var tip = $('[data-jinyu-auth-tip]', form);
+      var btn = form.querySelector('.jinyu-auth-submit');
+      var pane = form.getAttribute('data-jinyu-auth-pane');
+      var action = pane === 'login' ? 'jinyu_login' : pane === 'register' ? 'jinyu_register' : 'jinyu_reset_password';
+      var fail = validateAuth(form, pane);
+      if (fail) {
+        Util.showTip(tip, fail.msg, false);
+        markFieldError(form, fail.name);
+        form.classList.remove('is-shake');
+        void form.offsetWidth; // 强制重排，让动画可重复播放
+        form.classList.add('is-shake');
+        return;
+      }
+      clearFieldErrors(form);
+      var data = {};
+      Array.prototype.forEach.call(form.querySelectorAll('input, select, textarea'), function (el) {
+        if (el.name) data[el.name] = el.value;
+      });
+      Util.showTip(tip, '');
+      if (btn) {
+        btn.disabled = true;
+        btn.classList.add('is-loading');
+        var label = btn.textContent;
+        btn.textContent = _t('processing', 'Processing…');
+      }
+      Util.ajax(action, data, function (err, res) {
+        if (btn) {
+          btn.disabled = false;
+          btn.classList.remove('is-loading', 'is-success');
+          btn.textContent = label;
+        }
+        if (err || !res || !res.success) {
+          Util.showTip(tip, res && res.data ? res.data : 'Request failed. Please try again later.', false);
+          var cap = form.querySelector('[data-jinyu-captcha]');
+          if (cap) refreshCaptcha(cap);
+          return;
+        }
+        // 成功态：按钮保持禁用变绿打勾，稍后跳转（防重复提交）
+        if (btn) {
+          btn.disabled = true;
+          btn.classList.add('is-success');
+          btn.textContent = '✓ ' + (res.data.message || _t('opSuccess', 'Operation successful'));
+        }
+        Util.showTip(tip, res.data.message || _t('opSuccess', 'Operation successful'), true);
+        setTimeout(function () {
+          if (res.data && res.data.redirect) location.href = res.data.redirect;else location.reload();
+        }, 600);
+      });
+    }
+  }
+
+  /* ======================================================================
+     模块：data-jinyu-confirm 通用二次确认（退出登录等危险链接）
+     ====================================================================== */
+  function confirmGuard() {
+    // 注意：doc 是 document 对象，本身没有 dataset（dataset 仅存在于 Element 上）。
+    // 防重复绑定标记必须挂在 <html> 元素（root = doc.documentElement）上。
+    if (root.dataset.jinyuConfirmBound) return;
+    root.dataset.jinyuConfirmBound = '1';
+    doc.addEventListener('click', function (e) {
+      var el = e.target.closest('[data-jinyu-confirm]');
+      if (el && !window.confirm(el.getAttribute('data-jinyu-confirm'))) e.preventDefault();
+    });
+  }
+
+  /* ======================================================================
+     模块：用户中心表单（资料 / 密码 / 投稿 / 头像）
+     ====================================================================== */
+  function userForms() {
+    var wrap = $('.jinyu-user-center');
+    if (!wrap) return;
+
+    // 资料更新
+    var pf = $('[data-jinyu-profile]', wrap);
+    if (pf) pf.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var tip = $('[data-jinyu-profile-tip]', pf);
+      var fd = new FormData(pf);
+      Util.ajaxForm('jinyu_update_profile', fd, function (err, res) {
+        if (err || !res || !res.success) {
+          Util.showTip(tip, res && res.data ? res.data : 'Save failed', false);
+          return;
+        }
+        Util.showTip(tip, res.data.message, true);
+        var url = (fd.get('avatar_url') || '').toString();
+        if (url) {
+          var p = $('.jinyu-avatar-preview', wrap);
+          if (p) p.src = url;
+          // 同步侧栏用户卡头像
+          var side = $('.jinyu-user-card-avatar', wrap);
+          if (side) side.src = url;
+        }
+      });
+    });
+
+    // 修改密码
+    var pw = $('[data-jinyu-password]', wrap);
+    if (pw) pw.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var tip = $('[data-jinyu-password-tip]', pw);
+      Util.ajaxForm('jinyu_update_password', new FormData(pw), function (err, res) {
+        if (err || !res || !res.success) {
+          Util.showTip(tip, res && res.data ? res.data : 'Update failed', false);
+        } else {
+          Util.showTip(tip, res.data.message, true);
+          pw.reset();
+        }
+      });
+    });
+
+    // 第三方账号解绑：确认 → AJAX → 行内切回「去绑定」
+    $$('[data-jinyu-unbind]', wrap).forEach(function (btn) {
+      if (btn.dataset.unbindBound) return;
+      btn.dataset.unbindBound = '1';
+      btn.addEventListener('click', function () {
+        if (btn.dataset.loading) return;
+        var platform = btn.getAttribute('data-jinyu-unbind');
+        if (!window.confirm(btn.getAttribute('data-bind-label') || 'Unbind this platform?')) return;
+        btn.dataset.loading = '1';
+        Util.ajax('jinyu_sl_unbind', {
+          platform: platform,
+          nonce: btn.getAttribute('data-nonce')
+        }, function (err, res) {
+          delete btn.dataset.loading;
+          if (err || !res || !res.success) {
+            window.alert(res && res.data && res.data.msg || 'Unbind failed. Please try again later.');
+            return;
+          }
+          Util.toast(res.data.msg || 'Unbound successfully');
+          // 行内切回「去绑定」链接（绑定 URL 预置在 data-bind-url）
+          var a = doc.createElement('a');
+          a.className = 'jinyu-bind-go';
+          a.href = btn.getAttribute('data-bind-url');
+          a.textContent = 'Bind now';
+          btn.parentNode.replaceChild(a, btn);
+        });
+      });
+    });
+
+    // 修改密码：强度条 + CapsLock 提示（与登录弹窗同款交互）；userForms 会重跑，dataset 防重复绑
+    if (pw && !pw.dataset.meterBound) {
+      pw.dataset.meterBound = '1';
+      var newPwd = pw.querySelector('[name="new_pwd"]');
+      if (newPwd) {
+        var meter = doc.createElement('div');
+        meter.className = 'jinyu-pwd-meter';
+        meter.hidden = true;
+        meter.innerHTML = '<span class="jinyu-pwd-bars"><i></i><i></i><i></i><i></i></span><span class="jinyu-pwd-label"></span>';
+        newPwd.closest('.jinyu-field').after(meter);
+        newPwd.addEventListener('input', function () {
+          var v = newPwd.value;
+          if (!v) {
+            meter.hidden = true;
+            return;
+          }
+          meter.hidden = false;
+          var score = 0;
+          if (v.length >= 6) score++;
+          if (v.length >= 10) score++;
+          if (/[a-z]/.test(v) && /[A-Z]/.test(v)) score++;
+          if (/\d/.test(v)) score++;
+          if (/[^A-Za-z0-9]/.test(v)) score++;
+          var level = score <= 1 ? 0 : score === 2 ? 1 : score === 3 ? 2 : 3;
+          meter.setAttribute('data-level', String(level));
+          $('.jinyu-pwd-label', meter).textContent = ['Weak', 'Fair', 'Strong', 'Very strong'][level];
+        });
+      }
+      ['keydown', 'keyup'].forEach(function (evt) {
+        pw.addEventListener(evt, function (e) {
+          var t = e.target;
+          if (!t || t.tagName !== 'INPUT' || t.type !== 'password') return;
+          var field = t.closest('.jinyu-field');
+          if (!field) return;
+          var on = !!(e.getModifierState && e.getModifierState('CapsLock'));
+          var badge = field.querySelector('.jinyu-caps-badge');
+          if (on && !badge) {
+            badge = doc.createElement('span');
+            badge.className = 'jinyu-caps-badge';
+            badge.textContent = 'Caps Lock is on';
+            field.appendChild(badge);
+          } else if (!on && badge) {
+            badge.remove();
+          }
+        });
+      });
+      pw.addEventListener('focusout', function (e) {
+        var t = e.target;
+        var field = t && t.closest ? t.closest('.jinyu-field') : null;
+        var badge = field ? field.querySelector('.jinyu-caps-badge') : null;
+        if (badge) badge.remove();
+      });
+    }
+
+    // 字数计数器（投稿标题/正文）：实时反馈，区间内计数、越界标红
+    $$('[data-jinyu-count]', wrap).forEach(function (counter) {
+      var input = wrap.querySelector('[name="' + counter.getAttribute('data-jinyu-count') + '"]');
+      if (!input || input.dataset.countBound) return;
+      input.dataset.countBound = '1';
+      var min = parseInt(counter.getAttribute('data-min'), 10) || 0;
+      var max = parseInt(counter.getAttribute('data-max'), 10) || 0;
+      function updateCount() {
+        var n = input.value.trim().length;
+        counter.textContent = max ? n + ' / ' + max : String(n);
+        var ok = n >= min && (!max || n <= max);
+        counter.classList.toggle('is-ok', ok && n > 0);
+        counter.classList.toggle('is-bad', n > 0 && !ok);
+      }
+      input.addEventListener('input', updateCount);
+      updateCount();
+    });
+
+    // 投稿
+    var sp = $('[data-jinyu-submit-post]', wrap);
+    if (sp) sp.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var tip = $('[data-jinyu-submit-tip]', sp);
+      if (tip) Util.showTip(tip, '', null);
+
+      // —— 提交前前端字段校验（避免无谓请求 + 即时反馈）——
+      var title = sp.querySelector('[name="post_title"]');
+      var content = sp.querySelector('[name="post_content"]');
+      var firstError = '';
+      $$('.jinyu-field.is-error', sp).forEach(function (f) {
+        f.classList.remove('is-error');
+      });
+      if (content) content.classList.remove('is-error');
+      var t = (title && title.value || '').trim();
+      if (t.length < 4 || t.length > 100) {
+        if (title) {
+          var tf = title.closest('.jinyu-field');
+          if (tf) tf.classList.add('is-error');
+        }
+        firstError = 'Title must be 4-100 characters';
+      }
+      var c = (content && content.value || '').trim();
+      if (c.length < 20) {
+        if (content) content.classList.add('is-error');
+        firstError = firstError || 'Content must be at least 20 characters';
+      }
+      if (firstError) {
+        if (tip) Util.showTip(tip, firstError, false);
+        var bad = sp.querySelector('.is-error');
+        if (bad) bad.focus();
+        return;
+      }
+      var btn = sp.querySelector('button[type="submit"]');
+      if (btn) {
+        btn.disabled = true;
+        var l = btn.textContent;
+        btn.textContent = _t('submitting', 'Submitting…');
+      }
+      Util.ajaxForm('jinyu_submit_post', new FormData(sp), function (err, res) {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = l;
+        }
+        if (err || !res || !res.success) {
+          if (tip) Util.showTip(tip, res && res.data ? res.data : _t('submitFailed', 'Submission failed. Please try again later.'), false);
+          return;
+        }
+        // 成功 → 渲染「审核中」成功面板，完成投稿闭环
+        showSubmitSuccess(sp, res.data && res.data.message || 'Submitted successfully');
+      });
+    });
+
+    // 投稿成功面板：展示「审核中」状态并给出去「我的文章」查看进度的入口
+    function showSubmitSuccess(form, msg) {
+      var card = doc.createElement('div');
+      card.className = 'jinyu-submit-success';
+      card.innerHTML = '<i class="fa-solid fa-circle-check" aria-hidden="true"></i>' + '<h3>' + escHtml(msg) + '</h3>' + '<p>Your post has entered the review queue and will be published once approved. You can check the progress under "My Posts" in the meantime.</p>' + '<div class="jinyu-submit-success-actions">' + '<a class="jinyu-btn jinyu-btn-primary" href="' + escHtml(jinyuTabUrl('posts')) + '">View my posts</a>' + '<button type="button" class="jinyu-btn" data-jinyu-submit-again>Submit another</button>' + '</div>';
+      form.style.display = 'none';
+      if (form.parentNode) form.parentNode.insertBefore(card, form.nextSibling);
+      var again = card.querySelector('[data-jinyu-submit-again]');
+      if (again) again.addEventListener('click', function () {
+        if (card.parentNode) card.parentNode.removeChild(card);
+        form.style.display = '';
+        form.reset();
+        var tip = form.querySelector('[data-jinyu-submit-tip]');
+        if (tip) Util.showTip(tip, '', null);
+      });
+    }
+
+    // 同页切换用户中心页签（server-render 的 tab），带上当前 query 其它参数
+    function jinyuTabUrl(tab) {
+      try {
+        var u = new URL(location.href);
+        u.searchParams.set('tab', tab);
+        return u.pathname + u.search;
+      } catch (e) {
+        return location.pathname + '?tab=' + encodeURIComponent(tab);
+      }
+    }
+
+    // 撤回 / 删除待审核投稿
+    $$('.jinyu-post-del', wrap).forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var pid = btn.getAttribute('data-post-id');
+        if (!pid) return;
+        var confirmMsg = btn.getAttribute('data-confirm') || 'Withdraw this submission? This cannot be undone.';
+        if (!window.confirm(confirmMsg)) return;
+        btn.disabled = true;
+        var fd = new FormData();
+        fd.append('post_id', pid);
+        Util.ajaxForm('jinyu_delete_post', fd, function (err, res) {
+          if (err || !res || !res.success) {
+            btn.disabled = false;
+            Util.toast(res && res.data ? res.data : 'Operation failed');
+            return;
+          }
+          var item = btn.closest('.jinyu-user-post-item');
+          if (item) item.remove();
+          Util.toast(res.data.message);
+        });
+      });
+    });
+
+    // 头像上传
+    var pick = $('[data-jinyu-avatar]', wrap);
+    if (pick) pick.addEventListener('change', function () {
+      if (!pick.files || !pick.files[0]) return;
+      var fd = new FormData();
+      fd.append('avatar', pick.files[0]);
+      var tip = $('[data-jinyu-profile-tip]', wrap);
+      Util.ajaxForm('jinyu_upload_avatar', fd, function (err, res) {
+        if (err || !res || !res.success) {
+          Util.showTip(tip, res && res.data ? res.data : 'Upload failed', false);
+        } else {
+          Util.showTip(tip, res.data.message, true);
+          if (res.data.url) {
+            var p = $('.jinyu-avatar-preview', wrap);
+            if (p) p.src = res.data.url;
+            var urlInput = $('input[name="avatar_url"]', wrap);
+            if (urlInput) urlInput.value = res.data.url;
+          }
+        }
+      });
+    });
+
+    // 投稿封面图：拖拽/点击上传 + 本地预览 + 悬浮「更换 / 移除」（文件随 FormData 一起提交，服务端建附件设特色图）
+    var coverInput = $('input[name="post_cover"]', wrap);
+    if (coverInput) {
+      var setCoverState = function setCoverState(has) {
+        if (coverDrop) coverDrop.classList.toggle('has-file', has);
+        if (coverEmpty) coverEmpty.hidden = has;
+        if (coverMask) coverMask.hidden = !has;
+      };
+      var resetCover = function resetCover() {
+        coverInput.value = '';
+        if (coverPreview) {
+          coverPreview.hidden = true;
+          coverPreview.removeAttribute('src');
+        }
+        if (coverUrl) {
+          URL.revokeObjectURL(coverUrl);
+          coverUrl = '';
+        }
+        setCoverState(false);
+      };
+      var acceptCover = function acceptCover(f) {
+        if (!f) {
+          resetCover();
+          return;
+        }
+        if (coverUrl) {
+          URL.revokeObjectURL(coverUrl);
+          coverUrl = '';
+        }
+        coverUrl = URL.createObjectURL(f);
+        if (coverPreview) {
+          coverPreview.src = coverUrl;
+          coverPreview.hidden = false;
+        }
+        setCoverState(true);
+      };
+      var coverDrop = coverInput.closest('.jinyu-cover-drop');
+      var coverPreview = $('.jinyu-cover-preview', wrap);
+      var coverMask = $('.jinyu-cover-mask', wrap);
+      var coverEmpty = $('[data-jinyu-cover-empty]', wrap);
+      var coverClear = $('.jinyu-cover-clear', wrap);
+      var coverUrl = '';
+      coverInput.addEventListener('change', function () {
+        acceptCover(coverInput.files && coverInput.files[0]);
+      });
+      if (coverClear) coverClear.addEventListener('click', function (e) {
+        e.stopPropagation();
+        resetCover();
+      });
+      if (coverDrop) {
+        // 点击空白区 / 「更换」都唤起选择器；「移除」已在上方 stopPropagation
+        coverDrop.addEventListener('click', function (e) {
+          if (e.target.closest('.jinyu-cover-clear')) return;
+          coverInput.click();
+        });
+        // 拖拽上传
+        ['dragover', 'dragenter'].forEach(function (ev) {
+          coverDrop.addEventListener(ev, function (e) {
+            e.preventDefault();
+            coverDrop.classList.add('is-dragover');
+          });
+        });
+        coverDrop.addEventListener('dragleave', function () {
+          coverDrop.classList.remove('is-dragover');
+        });
+        coverDrop.addEventListener('drop', function (e) {
+          e.preventDefault();
+          coverDrop.classList.remove('is-dragover');
+          var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+          if (!f || f.type.indexOf('image/') !== 0) return;
+          try {
+            var dt = new DataTransfer();
+            dt.items.add(f);
+            coverInput.files = dt.files;
+            acceptCover(f);
+          } catch (err) {/* 老浏览器不支持 DataTransfer 赋值，忽略拖拽 */}
+        });
+      }
+    }
+  }
+
+  /* ======================================================================
+     模块：用户中心 tab 无刷新切换
+     侧栏页签点击 → jinyu_get_tab 拉服务端渲染的 tab HTML → 替换主区，
+     pushState 同步 URL；后退/前进按 URL 重新拉取。失败降级整页跳转。
+     内容置换后重跑 userForms()（其只绑元素级事件，可安全重复调用）。
+     ====================================================================== */
+  function userTabs() {
+    function currentTab() {
+      var m = /[?&]tab=([^&]+)/.exec(location.search);
+      return m ? decodeURIComponent(m[1]) : 'dashboard';
+    }
+    function loadTab(tab, href, push, extra) {
+      var wrap = $('.jinyu-user-center');
+      if (!wrap) return;
+      var main = $('[data-jinyu-user-main]', wrap);
+      if (!main || main.dataset.loading) return;
+      main.dataset.loading = '1';
+      main.classList.add('is-switching');
+      var data = {
+        tab: tab
+      };
+      if (extra) {
+        for (var k in extra) {
+          if (extra[k]) data[k] = extra[k];
+        }
+      }
+      Util.ajax('jinyu_get_tab', data, function (err, res) {
+        delete main.dataset.loading;
+        main.classList.remove('is-switching');
+        if (err || !res || !res.success) {
+          if (href) location.href = href; // 降级整页跳转
+          return;
+        }
+        main.innerHTML = res.data.html;
+        $$('.jinyu-user-nav-item', wrap).forEach(function (a) {
+          var m2 = /[?&]tab=([^&]+)/.exec(a.getAttribute('href') || '');
+          a.classList.toggle('is-active', (m2 ? decodeURIComponent(m2[1]) : 'dashboard') === tab);
+        });
+        if (push && href && window.history && history.pushState) {
+          try {
+            history.pushState({
+              jinyuTab: tab
+            }, '', href);
+          } catch (e2) {/* 忽略 */}
+        }
+        // 重绑 tab 内表单（资料/密码/投稿/头像/封面/撤回均为元素级绑定）
+        try {
+          userForms();
+        } catch (e3) {/* 单模块异常不阻断 */}
+        // 通知模块监听该事件：进入消息 tab 时拉取列表
+        doc.dispatchEvent(new CustomEvent('jinyu:tab-loaded'));
+        // 移动端切完页签滚动到主区顶部，避免停留在侧栏
+        if (window.innerWidth <= 768) {
+          var top = main.getBoundingClientRect().top + window.pageYOffset - 84;
+          window.scrollTo({
+            top: top,
+            behavior: reduceMotion ? 'auto' : 'smooth'
+          });
+        }
+      });
+    }
+
+    // 解析 query 里的 tab / sub / compose / 分页参数（侧栏页签、互动子页签、分页共用）
+    function parseTabParams(search) {
+      var out = {
+        tab: 'dashboard',
+        extra: {}
+      };
+      (search || '').replace(/^\?/, '').split('&').forEach(function (kv) {
+        if (!kv) return;
+        var p = kv.split('=');
+        var k = decodeURIComponent(p[0] || '');
+        var v = p[1] !== undefined ? decodeURIComponent(p[1].replace(/\+/g, '%20')) : '';
+        if (k === 'tab') {
+          out.tab = v || 'dashboard';
+        } else if (k === 'sub' || k === 'compose' || k === 'paged' || k === 'page') {
+          if (v) out.extra[k] = v;
+        }
+      });
+      return out;
+    }
+
+    // 无刷新点击统一出口：主区不存在或环境不支持时放行整页跳转
+    function userCenterAjaxClick(e, selector) {
+      var item = e.target.closest(selector);
+      if (!item || item.classList.contains('jinyu-user-nav-logout')) return;
+      var wrap = $('.jinyu-user-center');
+      var main = wrap ? $('[data-jinyu-user-main]', wrap) : null;
+      if (!main || !window.history || !history.pushState) return;
+      var href = item.getAttribute('href') || '';
+      var parsed = parseTabParams(href.split('?')[1] || '');
+      var ex = parsed.extra;
+      if (item.classList.contains('is-active') && parsed.tab === currentTab() && !ex.sub && !ex.compose && !ex.paged) return; // 完全同页：走原生跳转
+      e.preventDefault();
+      loadTab(parsed.tab, href, true, ex);
+    }
+
+    // 侧栏页签
+    doc.addEventListener('click', function (e) {
+      userCenterAjaxClick(e, '.jinyu-user-nav-item');
+    });
+    // 互动 tab 内的子页签（评论 / 收藏 / 关注）
+    doc.addEventListener('click', function (e) {
+      userCenterAjaxClick(e, '.jinyu-user-sub-item');
+    });
+
+    // 分页链接：与 tab 切换同一套无刷新置换（href 带 paged/page/sub 参数，随 AJAX 透传）
+    doc.addEventListener('click', function (e) {
+      var link = e.target.closest('.jinyu-user-pagination a.page-numbers');
+      if (!link) return;
+      var wrap = $('.jinyu-user-center');
+      var main = wrap ? $('[data-jinyu-user-main]', wrap) : null;
+      if (!main || !window.history || !history.pushState) return; // 环境不支持则放行整页跳转
+      e.preventDefault();
+      var href = link.getAttribute('href') || '';
+      var parsed = parseTabParams(href.split('?')[1] || '');
+      loadTab(parsed.tab, href, true, parsed.extra);
+    });
+
+    // 浏览器前进 / 后退：按 URL 重新拉对应 tab（含 sub/compose/分页），不重复推栈
+    window.addEventListener('popstate', function () {
+      var wrap = $('.jinyu-user-center');
+      if (!wrap) return;
+      var parsed = parseTabParams(location.search);
+      loadTab(parsed.tab, null, false, parsed.extra);
+    });
+  }
+
+  /* ======================================================================
+     启动
+     ====================================================================== */
+  /* ======================================================================
+     模块：通用模态框（海报 / 二维码 / 打赏 复用）
+     ====================================================================== */
+  function openModal(opts) {
+    closeModal();
+    var m = doc.createElement('div');
+    m.id = 'jinyu-generic-modal';
+    m.className = 'jinyu-mask jinyu-generic-modal' + (opts.className ? ' ' + opts.className : '');
+    m.setAttribute('role', 'dialog');
+    m.setAttribute('aria-modal', 'true');
+    m.innerHTML = '<div class="jinyu-modal-card">' + '<div class="jinyu-modal-head">' + '<span class="jinyu-modal-title">' + (opts.title || '') + '</span>' + '<button type="button" class="jinyu-modal-close" data-jinyu-modal-close aria-label="' + (CFG.i18n && CFG.i18n.close ? CFG.i18n.close : 'Close') + '"><i class="fa-solid fa-xmark"></i></button>' + '</div>' + '<div class="jinyu-modal-body">' + (opts.body || '') + '</div>' + '</div>';
+    doc.body.appendChild(m);
+    doc.body.style.overflow = 'hidden';
+    m.addEventListener('click', function (e) {
+      if (e.target === m || e.target.closest('[data-jinyu-modal-close]')) closeModal();
+    });
+    doc.addEventListener('keydown', escClose);
+    return m;
+  }
+  function escClose(e) {
+    if (e.key === 'Escape') closeModal();
+  }
+  /* 关闭必须分两帧拆除（硬规则）：
+     实测 devicePixelRatio>1（125%/150% 缩放屏）时，把「大图解码位图」和「节点 remove」
+     放在同一 tick，Chromium 渲染进程必崩 STATUS_BREAKPOINT；先摘 src 让合成器先释放
+     raster、隔两帧再删节点则不崩。任何内含大图/Canvas 的浮层都按此模式拆。 */
+  function closeModal() {
+    var m = $('#jinyu-generic-modal');
+    if (m) {
+      // 立即失联：去 id（防止延迟窗口内重开模态出现重复 id）+ 淡出 + 恢复页面滚动
+      m.removeAttribute('id');
+      m.style.opacity = '0';
+      m.style.pointerEvents = 'none';
+      doc.removeEventListener('keydown', escClose);
+
+      // 阶段一：摘掉 canvas 纹理与 img 解码位图（此刻不删节点、不 revoke blob）
+      try {
+        m.querySelectorAll('canvas').forEach(function (c) {
+          c.width = 1;
+          c.height = 1;
+        });
+        m.querySelectorAll('img').forEach(function (im) {
+          im.removeAttribute('src');
+        });
+      } catch (e) {/* 释放失败不阻断关闭 */}
+
+      // 阶段二：隔两帧 + 一个宏任务，等 raster 真正释放后再删节点并回收 blob
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          setTimeout(function () {
+            try {
+              (m._jinyuBlobUrls || []).forEach(function (u) {
+                URL.revokeObjectURL(u);
+              });
+              m.querySelectorAll('a[href]').forEach(function (a) {
+                a.removeAttribute('href');
+              });
+              m.innerHTML = '';
+            } catch (e2) {/* 忽略 */}
+            m.remove();
+            // 滚动锁最后恢复：实测「remove 节点 + 恢复 body 滚动」同 tick 会在
+            // 分数级 DPR 下触发整页重绘崩溃，错开到节点拆完之后
+            doc.body.style.overflow = '';
+          }, 80);
+        });
+      });
+      return;
+    }
+    doc.body.style.overflow = '';
+    doc.removeEventListener('keydown', escClose);
+  }
+
+  /* ======================================================================
+     模块：文章海报（前端 Canvas 生成）
+     服务端 GD 无中文字体必乱码（服务器无法保证装字体），改由访客浏览器
+     渲染：中文完美、封面不变形、标题自动换行、二维码直接画进海报。
+     ====================================================================== */
+  function poster() {
+    $$('[data-jinyu-poster]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var pid = btn.getAttribute('data-post-id');
+        var m = openModal({
+          title: 'Post poster',
+          className: 'jinyu-poster-modal',
+          body: '<div class="jinyu-modal-loading"><i class="fa-solid fa-spinner fa-spin"></i> Generating…</div>'
+        });
+        var body = m.querySelector('.jinyu-modal-body');
+        var tEl = doc.querySelector('.jinyu-article-title') || doc.querySelector('h1');
+        var coverSrc = btn.getAttribute('data-cover') || '';
+        loadImg(coverSrc, 8000).then(function (cover) {
+          var canvas;
+          try {
+            canvas = drawPoster((tEl ? tEl.textContent : doc.title).trim(), cover);
+          } catch (err) {
+            body.innerHTML = '<p class="jinyu-empty">Poster generation failed: ' + (err && err.message ? err.message : 'Render error') + '</p>';
+            return;
+          }
+          body.innerHTML = '';
+
+          // 用真实 <img> 展示：避开 iOS/微信 在 backdrop-filter 祖先里渲染 <canvas> 空白的坑，且支持长按保存
+          var img = doc.createElement('img');
+          img.className = 'jinyu-poster-img';
+          img.alt = 'Post poster';
+          var actions = doc.createElement('div');
+          actions.className = 'jinyu-poster-actions';
+          var ua = navigator.userAgent || '';
+          var isMobile = /Mobi|Android|iPhone|iPad|iPod|HarmonyOS|Windows Phone/i.test(ua) || 'ontouchstart' in window && Math.min(screen.width, screen.height) < 820;
+
+          // 画布用完立即缩成 1x1 释放 GPU 纹理（必须在导出之后）
+          var shrink = function shrink() {
+            try {
+              canvas.width = 1;
+              canvas.height = 1;
+            } catch (e2) {}
+          };
+
+          // 导出地址登记到模态：closeModal 等 raster 释放后才 revoke，避免提前回收
+          var track = function track(u) {
+            if (/^blob:/i.test(u)) {
+              m._jinyuBlobUrls = (m._jinyuBlobUrls || []).concat([u]);
+            }
+            return u;
+          };
+
+          /* 组装 UI。src 可能为：blob URL（桌面优先，全程不产生数 MB base64）、
+             dataURL（移动端长按保存兼容优先）、空串（画布被污染时直接展示 canvas）。*/
+          var startUI = function startUI(src) {
+            if (src) {
+              img.src = src;
+            } else {
+              canvas.className = 'jinyu-poster-img';
+              body.appendChild(canvas);
+            }
+            if (src && !isMobile) {
+              // 桌面端：原生下载
+              var dl = doc.createElement('a');
+              dl.className = 'jinyu-btn jinyu-btn-primary';
+              dl.innerHTML = '<i class="fa-solid fa-download" aria-hidden="true"></i> Download poster';
+              dl.setAttribute('download', 'poster-' + pid + '.png');
+              dl.href = src;
+              actions.appendChild(dl);
+            } else if (src) {
+              // 移动端（含华为 QQ 浏览器等忽略 <a download> 的环境）：
+              // 全屏放大图片，用户长按即可保存到相册，所有手机浏览器通用
+              var save = doc.createElement('button');
+              save.type = 'button';
+              save.className = 'jinyu-btn jinyu-btn-primary';
+              save.innerHTML = '<i class="fa-solid fa-download" aria-hidden="true"></i> Save image';
+              save.addEventListener('click', function () {
+                showFullscreenPoster(src);
+              });
+              actions.appendChild(save);
+            } else {
+              // 画布被污染无法导出：禁用下载并说明
+              var noDl = doc.createElement('span');
+              noDl.className = 'jinyu-btn jinyu-btn-disabled';
+              noDl.innerHTML = '<i class="fa-solid fa-ban" aria-hidden="true"></i> Download not supported';
+              actions.appendChild(noDl);
+            }
+            var close = doc.createElement('button');
+            close.type = 'button';
+            close.className = 'jinyu-btn';
+            close.setAttribute('data-jinyu-modal-close', '');
+            close.innerHTML = '<i class="fa-solid fa-xmark" aria-hidden="true"></i> Close';
+            actions.appendChild(close);
+            if (src && isMobile) {
+              var tip = doc.createElement('p');
+              tip.className = 'jinyu-poster-tip';
+              tip.textContent = _t('saveHint', 'Tap "Save image" to enlarge it, then press and hold the image to save it to your album');
+              actions.appendChild(tip);
+            }
+            if (src) body.appendChild(img);
+            body.appendChild(actions);
+          };
+          if (!isMobile && typeof canvas.toBlob === 'function') {
+            // 桌面端：直接 toBlob → object URL，全程不生成巨型 base64 字符串
+            canvas.toBlob(function (b) {
+              shrink();
+              startUI(b ? track(URL.createObjectURL(b)) : '');
+            }, 'image/png');
+          } else {
+            // 移动端 / 老浏览器：dataURL（长按保存兼容）
+            var dataUrl = '';
+            try {
+              dataUrl = canvas.toDataURL('image/png');
+            } catch (e) {
+              dataUrl = '';
+            }
+            shrink();
+            startUI(dataUrl);
+          }
+        })["catch"](function () {
+          body.innerHTML = '<p class="jinyu-empty">Poster generation failed. Refresh and try again</p>';
+        });
+      });
+    });
+    function loadImg(src, timeout) {
+      return new Promise(function (resolve) {
+        if (!src) {
+          resolve(null);
+          return;
+        }
+        var done = false;
+        var finish = function finish(v) {
+          if (done) return;
+          done = true;
+          resolve(v);
+        };
+        // 用 fetch + CORS 取干净 blob：避开「页面已用普通 <img> 加载并缓存了无 CORS 头的同一张图」
+        // 导致的画布污染——命中缓存的非 CORS 响应会让 crossOrigin 判定失败 → 画布被污染 → toDataURL 抛错 → 下载禁用。
+        // blob: URL 同源，drawImage 不会污染画布，下载永远可用（cdn 已开 CORS *，fetch 必然成功）。
+        if (typeof fetch === 'function') {
+          fetch(src, {
+            mode: 'cors',
+            cache: 'no-store'
+          }).then(function (res) {
+            if (!res.ok) throw new Error('bad');
+            return res.blob();
+          }).then(function (blob) {
+            var bu = URL.createObjectURL(blob);
+            var im = new Image();
+            im.onload = function () {
+              URL.revokeObjectURL(bu);
+              finish(im);
+            };
+            im.onerror = function () {
+              URL.revokeObjectURL(bu);
+              finish(null);
+            };
+            im.src = bu;
+          })["catch"](function () {
+            // 无 CORS 的跨域图：回退普通 <img>（能显示但画布会被污染，下载降级为禁用，属可接受的边缘情况）
+            var im = new Image();
+            im.crossOrigin = 'anonymous';
+            im.onload = function () {
+              finish(im);
+            };
+            im.onerror = function () {
+              finish(null);
+            };
+            im.src = src;
+          });
+        } else {
+          var img = new Image();
+          img.crossOrigin = 'anonymous';
+          img.onload = function () {
+            finish(img);
+          };
+          img.onerror = function () {
+            finish(null);
+          };
+          img.src = src;
+        }
+        setTimeout(function () {
+          finish(null);
+        }, timeout || 12000);
+      });
+    }
+
+    /* 移动端保存：全屏放大海报图片，用户长按即可保存到相册（绕开各浏览器对 <a download> 的限制） */
+    function showFullscreenPoster(src) {
+      var ov = doc.createElement('div');
+      ov.className = 'jinyu-poster-fullscreen';
+      ov.innerHTML = '<div class="jinyu-poster-fs-inner">' + '<img src="' + src + '" alt="Post poster">' + '<p class="jinyu-poster-fs-tip">Long-press the image and choose "Save image / Save to album"</p>' + '</div>';
+      ov.addEventListener('click', function (e) {
+        if (e.target === ov || e.target.classList && e.target.classList.contains('jinyu-poster-fs-tip')) {
+          // 两阶段拆除（同 closeModal）：先摘 src 释放解码位图，隔两帧再删节点，
+          // 避免 DPR>1 时「释放 raster + remove 节点」同帧触发渲染进程崩溃
+          ov.style.opacity = '0';
+          ov.style.pointerEvents = 'none';
+          try {
+            var fim = ov.querySelector('img');
+            if (fim) fim.removeAttribute('src');
+          } catch (err) {/* 忽略 */}
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              setTimeout(function () {
+                try {
+                  ov.innerHTML = '';
+                } catch (err2) {}
+                ov.remove();
+              }, 80);
+            });
+          });
+        }
+      });
+      doc.body.appendChild(ov);
+    }
+    function rr(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y, x + w, y, r);
+      ctx.closePath();
+    }
+    function wrapLines(ctx, text, maxW, maxLines) {
+      var lines = [],
+        line = '',
+        truncated = false;
+      for (var i = 0; i < text.length; i++) {
+        var t = line + text.charAt(i);
+        if (line && ctx.measureText(t).width > maxW) {
+          if (lines.length === maxLines - 1) {
+            truncated = true;
+            break;
+          }
+          lines.push(line);
+          line = text.charAt(i);
+        } else {
+          line = t;
+        }
+      }
+      if (!truncated && line) lines.push(line);
+      if (truncated) lines.push(line.replace(/[\s，、。；：！？,.;:!?]+$/, '') + '…');
+      return lines;
+    }
+    function drawPoster(title, cover) {
+      var W = 750,
+        H = 1080;
+      var canvas = doc.createElement('canvas');
+      canvas.width = W;
+      canvas.height = H;
+      var ctx = canvas.getContext('2d');
+      var primary = getComputedStyle(doc.documentElement).getPropertyValue('--jinyu-c-primary').trim() || '#FF6B35';
+      var FONT = "'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif";
+      var M = 56;
+
+      // 背景
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, W, H);
+
+      // 顶部主色头带：站名 + 日期
+      ctx.fillStyle = primary;
+      ctx.fillRect(0, 0, W, 150);
+      ctx.textBaseline = 'alphabetic';
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '700 32px ' + FONT;
+      ctx.fillText(CFG.site_name || '', M, 96);
+      ctx.fillStyle = 'rgba(255,255,255,.85)';
+      ctx.font = '400 20px ' + FONT;
+      ctx.textAlign = 'right';
+      ctx.fillText(new Date().toLocaleDateString('zh-CN'), W - M, 96);
+      ctx.textAlign = 'left';
+
+      // 封面：圆角裁剪 + 轻描边（无封面给占位）
+      var coverTop = 190,
+        coverW = W - 2 * M,
+        coverH = 400;
+      if (cover) {
+        ctx.save();
+        rr(ctx, M, coverTop, coverW, coverH, 22);
+        ctx.clip();
+        var s = Math.max(coverW / cover.width, coverH / cover.height);
+        var dw = cover.width * s,
+          dh = cover.height * s;
+        ctx.drawImage(cover, M + (coverW - dw) / 2, coverTop + (coverH - dh) / 2, dw, dh);
+        ctx.restore();
+        rr(ctx, M, coverTop, coverW, coverH, 22);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'rgba(0,0,0,.06)';
+        ctx.stroke();
+      } else {
+        rr(ctx, M, coverTop, coverW, coverH, 22);
+        ctx.fillStyle = '#f2f3f5';
+        ctx.fill();
+        ctx.fillStyle = 'rgba(0,0,0,.25)';
+        ctx.font = '400 24px ' + FONT;
+        ctx.textAlign = 'center';
+        ctx.fillText(_t('noCover', 'No cover'), W / 2, coverTop + coverH / 2);
+        ctx.textAlign = 'left';
+      }
+
+      // 标题区：主色小装饰条 + 自动换行（最多 3 行/无封面 4 行）
+      var titleTop = coverTop + coverH + 52;
+      rr(ctx, M, titleTop - 36, 46, 8, 4);
+      ctx.fillStyle = primary;
+      ctx.fill();
+      ctx.fillStyle = '#1f2329';
+      ctx.font = '700 42px ' + FONT;
+      var maxLines = cover ? 3 : 4;
+      var lineH = 60;
+      var lines = wrapLines(ctx, title, W - 2 * M, maxLines);
+      lines.forEach(function (ln, i) {
+        ctx.fillText(ln, M, titleTop + i * lineH);
+      });
+
+      // 底部卡片：二维码 + 引导文案
+      var cardX = 40,
+        cardW = W - 80,
+        cardY = 900,
+        cardH = 160;
+      rr(ctx, cardX, cardY, cardW, cardH, 22);
+      ctx.fillStyle = '#f7f8fa';
+      ctx.fill();
+      var qrSize = 140,
+        qrX = cardX + 26,
+        qrY = cardY + (cardH - qrSize) / 2;
+      rr(ctx, qrX - 8, qrY - 8, qrSize + 16, qrSize + 16, 16);
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+      ctx.strokeStyle = '#eef0f2';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      try {
+        if (typeof window.qrcode === 'function') {
+          var qr = window.qrcode(0, 'M');
+          qr.addData(location.href.split('#')[0]);
+          qr.make();
+          var n = qr.getModuleCount();
+          var cell = qrSize / n;
+          var ox = qrX,
+            oy = qrY;
+          ctx.fillStyle = '#1f2329';
+          for (var r = 0; r < n; r++) {
+            for (var c = 0; c < n; c++) {
+              if (qr.isDark(r, c)) ctx.fillRect(ox + c * cell, oy + r * cell, cell + .5, cell + .5);
+            }
+          }
+        }
+      } catch (e) {/* 二维码失败不阻断海报 */}
+      var tx = qrX + qrSize + 28;
+      ctx.textBaseline = 'alphabetic';
+      ctx.fillStyle = '#1f2329';
+      ctx.font = '700 30px ' + FONT;
+      ctx.fillText(_t('scanToRead', 'Long-press or scan the QR code to read'), tx, qrY + 56);
+      ctx.fillStyle = '#6b7280';
+      ctx.font = '400 22px ' + FONT;
+      ctx.fillText(CFG.site_name || location.host, tx, qrY + 96);
+      ctx.fillStyle = '#9ca3af';
+      ctx.font = '400 18px ' + FONT;
+      ctx.fillText(location.host, tx, qrY + 126);
+
+      // 底部主色收尾条
+      ctx.fillStyle = primary;
+      ctx.fillRect(0, H - 10, W, 10);
+      return canvas;
+    }
+  }
+
+  /* ======================================================================
+     模块：文章二维码（本地 qrcode 库，无外部依赖）
+     ====================================================================== */
+  function qrcodeModule() {
+    $$('[data-jinyu-qr]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var url = btn.getAttribute('data-url') || location.href;
+        var m = openModal({
+          title: 'Scan to read',
+          className: 'jinyu-qr-modal',
+          body: '<div class="jinyu-qr-box" id="jinyu-qr-canvas"></div><p class="jinyu-qr-url">' + url + '</p>'
+        });
+        var box = m.querySelector('#jinyu-qr-canvas');
+        try {
+          if (typeof window.qrcode !== 'function') throw new Error('lib missing');
+          var qr = window.qrcode(0, 'M');
+          qr.addData(url);
+          qr.make();
+          box.innerHTML = qr.createSvgTag({
+            cellSize: 6,
+            margin: 2,
+            scalable: true
+          });
+        } catch (e) {
+          // 本地方案不可用时只给文本提示：绝不把访问 URL 外发给 api.qrserver.com 这类第三方
+          box.innerHTML = '<p class="jinyu-qr-url">Failed to generate the QR code. Copy the link to share instead</p>';
+        }
+      });
+    });
+  }
+
+  /* ======================================================================
+     模块：文章打赏
+     ====================================================================== */
+  function donate() {
+    var btn = $('[data-jinyu-donate]');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var wx = btn.getAttribute('data-wx') || '';
+      var ali = btn.getAttribute('data-ali') || '';
+      var body = '';
+      if (wx) body += '<div class="jinyu-donate-item"><div class="jinyu-donate-name">WeChat</div><img src="' + wx + '" alt="wechat"><span>Scan with WeChat</span></div>';
+      if (ali) body += '<div class="jinyu-donate-item"><div class="jinyu-donate-name">Alipay</div><img src="' + ali + '" alt="alipay"><span>Scan with Alipay</span></div>';
+      if (!body) body = '<p class="jinyu-empty">No payment QR code configured yet</p>';
+      if (CFG.reward_text) body = '<p class="jinyu-donate-text">' + CFG.reward_text + '</p>' + body;
+      openModal({
+        title: CFG.reward_title || 'Reward the author',
+        className: 'jinyu-donate-modal',
+        body: body
+      });
+    });
+  }
+
+  /* ======================================================================
+     模块：文章图片灯箱（Viewer.js）
+     作用域：.jinyu-article-content 内的图片，点击放大并支持相册切换
+     ====================================================================== */
+  function lightbox() {
+    if (!window.Viewer) return;
+    $$('.jinyu-article-content').forEach(function (container) {
+      if (container.dataset.viewerReady) return;
+      container.dataset.viewerReady = '1';
+
+      /* WordPress 正文图常被默认包进 <a href="原图">，Viewer.js 的 click 不 preventDefault，
+         导致点图时浏览器直接跳走看原图、灯箱不弹出。捕获阶段拦截「图片指向图片文件」的
+         默认跳转，保留真实外链（指向文章的链接照常跳转），让 Viewer 正常接管放大。 */
+      container.addEventListener('click', function (e) {
+        var a = e.target.closest && e.target.closest('a');
+        if (!a) return;
+        var img = e.target.closest && e.target.closest('img');
+        var href = a.getAttribute('href') || '';
+        if (img && a.contains(img) && /\.(png|jpe?g|gif|webp|svg|bmp|avif)(\?|#|$)/i.test(href)) {
+          e.preventDefault();
+        }
+      }, true);
+
+      /* eslint-disable no-new */
+      new Viewer(container, {
+        navbar: false,
+        title: function title(image) {
+          return image.alt || (image.src || '').split('/').pop();
+        },
+        toolbar: {
+          zoomIn: 1,
+          zoomOut: 1,
+          oneToOne: 1,
+          reset: 1,
+          prev: 1,
+          next: 1,
+          rotateLeft: 1,
+          rotateRight: 1,
+          flipHorizontal: 0,
+          flipVertical: 0,
+          play: 0
+        },
+        movable: true,
+        rotatable: true,
+        scalable: true,
+        zoomable: true,
+        fullscreen: true,
+        transition: true,
+        tooltip: true
+      });
+    });
+  }
+
+  /* ======================================================================
+     模块：代码高亮（highlight.js）
+     对正文 <pre><code> 进行语法高亮，明暗主题随 html[data-theme] 自动切换
+     ====================================================================== */
+  function codeHighlight() {
+    if (!CFG.code_highlight_enable) return;
+    if (!window.hljs) return;
+    $$('.jinyu-article-content pre code').forEach(function (block) {
+      if (block.classList.contains('hljs')) return;
+      try {
+        hljs.highlightElement(block);
+      } catch (e) {/* 忽略个别语言解析异常 */}
+    });
+  }
+
+  /* ======================================================================
+     模块：首页轮播（主题自研，替代原 Swiper bundle）
+     - 位移 / 淡入淡出两种过渡
+     - 触屏与鼠标拖拽跟手、箭头、圆点、方向键、滚轮切换
+     - 无 JS 时 track 是原生横向滚动，内容可读可点，属渐进增强
+     - 循环无缝：先动画移到目标位，动画结束后无动画归位到取模下标
+     ====================================================================== */
+  function JinyuCarousel(root) {
+    this.root = root;
+    this.track = $('.jinyu-carousel-track', root);
+    this.slides = this.track ? $$('.jinyu-carousel-slide', this.track) : [];
+    this.dots = $$('.jinyu-carousel-dot', root);
+    this.prevBtn = $('.jinyu-carousel-arrow-prev', root);
+    this.nextBtn = $('.jinyu-carousel-arrow-next', root);
+    this.status = $('[data-jinyu-carousel-status]', root);
+    this.count = this.slides.length;
+    this.index = 0;
+    this.width = 0;
+    this.timer = null;
+    this.rt = null;
+    this.hovered = false;
+    this.focused = false;
+    this.drag = null;
+    this.dragMoved = 0;
+    this.wheelAt = 0;
+    if (!this.count) return;
+    this.loop = root.dataset.loop === '1';
+    this.autoplay = parseInt(root.dataset.autoplay || '0', 10) || 0;
+    this.fade = root.dataset.effect === 'fade';
+    this.wheel = root.dataset.mousewheel === '1';
+    this._buildClones();
+    this._measure();
+    this._paint();
+    this._initEvents();
+    if (!this.width) {
+      // 首帧样式尚未落地（脚本在 </body> 前执行）：下一帧补测一次
+      var self = this;
+      window.requestAnimationFrame(function () {
+        self._measure();
+        self._paint();
+      });
+    }
+    this.root.setAttribute('data-jinyu-carousel-ready', '1');
+    this.root.tabIndex = 0;
+    if (this.count > 1) this._startAuto();
+  }
+  var CP = JinyuCarousel.prototype;
+  CP._measure = function () {
+    this.width = this.track.clientWidth || this.root.clientWidth || 0;
+  };
+
+  /** 当前可见下标（index 可能是越界的循环计数） */
+  CP._active = function () {
+    var i = this.index % this.count;
+    return i < 0 ? i + this.count : i;
+  };
+
+  /** 跳到指定可见下标（圆点点击用） */
+  CP._moveTo = function (i) {
+    this.index = (i % this.count + this.count) % this.count;
+    this._paint();
+  };
+
+  /**
+   * 主动解码当前张与后两张。
+   * 图片虽是 eager，但解码是异步的：不预解码的话，切过去的第一帧
+   * 可能还没解码完，仍会闪一下灰底。
+   */
+  CP._preload = function () {
+    for (var k = 0; k <= 2; k++) {
+      var node = this.slides[((this.index + k) % this.count + this.count) % this.count];
+      if (!node || node.dataset.jinyuDecoded === '1') continue;
+      node.dataset.jinyuDecoded = '1';
+      var img = node.querySelector('img');
+      if (img && img.decode) {
+        try {
+          img.decode();
+        } catch (err) {/* 解码失败不阻塞切换 */}
+      }
+    }
+  };
+
+  /** 上/下一张：循环模式下允许下标越界，靠克隆副本保持视觉连续 */
+  CP._next = function () {
+    this.index = this.loop || this.index < this.count - 1 ? this.index + 1 : this.count - 1;
+    this._paint();
+  };
+  CP._prev = function () {
+    this.index = this.loop || this.index > 0 ? this.index - 1 : 0;
+    this._paint();
+  };
+
+  /**
+   * 循环模式在 track 末尾追加一份全部幻灯片的克隆。
+   * 位移到 -count*w 时视口落在克隆首张上，动画结束后无动画归位到下标 0，
+   * 视觉与真实首张完全一致——替代 Swiper 的 loop 克隆机制。
+   */
+  CP._buildClones = function () {
+    if (!this.loop || this.fade) return;
+    var tpl = doc.createElement('template');
+    var sources = [];
+    for (var i = 0; i < this.count; i++) sources.push(this.slides[i].outerHTML);
+    tpl.innerHTML = sources.join('');
+    var frag = doc.createDocumentFragment();
+    var nodes = Array.prototype.slice.call(tpl.content.children);
+    for (var n = 0; n < nodes.length; n++) {
+      nodes[n].setAttribute('aria-hidden', 'true');
+      nodes[n].removeAttribute('aria-label');
+      var links = nodes[n].querySelectorAll('a');
+      for (var l = 0; l < links.length; l++) links[l].tabIndex = -1;
+      // 克隆位于视口外，若是 lazy 则在循环到它时还没加载完，这里直接置为 eager
+      // （与原图同 src，命中缓存，不会增加请求）
+      var imgs = nodes[n].querySelectorAll('img');
+      for (var m = 0; m < imgs.length; m++) imgs[m].setAttribute('loading', 'eager');
+      frag.appendChild(nodes[n]);
+    }
+    this.track.appendChild(frag);
+  };
+  CP._paint = function () {
+    var act = this._active();
+    var i, on;
+    if (this.fade) {
+      for (i = 0; i < this.count; i++) {
+        this.slides[i].classList.toggle('is-current', i === act);
+      }
+    } else if (this.width) {
+      this.track.style.transform = 'translateX(' + -this.index * this.width + 'px)';
+    }
+
+    // 非当前幻灯片的链接移出 Tab 序列，避免键盘跳进视口外把轮播顶歪
+    for (i = 0; i < this.count; i++) this._setFocusable(this.slides[i], i === act);
+    for (i = 0; i < this.dots.length; i++) {
+      on = i === act;
+      this.dots[i].classList.toggle('is-active', on);
+      if (on) this.dots[i].setAttribute('aria-current', 'true');else this.dots[i].removeAttribute('aria-current');
+    }
+    if (this.prevBtn) this.prevBtn.hidden = !this.loop && act === 0;
+    if (this.nextBtn) this.nextBtn.hidden = !this.loop && act === this.count - 1;
+    if (this.status) this.status.textContent = act + 1 + ' / ' + this.count;
+    this._preload();
+  };
+  CP._setFocusable = function (slide, on) {
+    var link = slide.querySelector('a');
+    if (link) link.tabIndex = on ? 0 : -1;
+  };
+  CP._paused = function () {
+    return this.count < 2 || this.autoplay <= 0 || !!this.drag || this.hovered || this.focused || doc.hidden;
+  };
+  CP._startAuto = function () {
+    var self = this;
+    if (this.timer) clearInterval(this.timer);
+    this.timer = setInterval(function () {
+      if (!self._paused()) self._next();
+    }, this.autoplay);
+  };
+  CP._stopAuto = function () {
+    if (this.timer) {
+      clearInterval(this.timer);
+      this.timer = null;
+    }
+  };
+  CP._restartAuto = function () {
+    if (this._paused()) {
+      this._stopAuto();
+      return;
+    }
+    this._startAuto();
+  };
+  CP._initEvents = function () {
+    var self = this;
+    if (this.nextBtn) this.nextBtn.addEventListener('click', function () {
+      self._stopAuto();
+      self._next();
+      self._restartAuto();
+    });
+    if (this.prevBtn) this.prevBtn.addEventListener('click', function () {
+      self._stopAuto();
+      self._prev();
+      self._restartAuto();
+    });
+    this.dots.forEach(function (dot, i) {
+      dot.addEventListener('click', function () {
+        self._stopAuto();
+        self._moveTo(i);
+        self._restartAuto();
+      });
+    });
+    this.root.addEventListener('keydown', function (e) {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      e.preventDefault();
+      self._stopAuto();
+      if (e.key === 'ArrowLeft') self._prev();else self._next();
+      self._restartAuto();
+    });
+    this.track.addEventListener('pointerdown', function (e) {
+      self._onDown(e);
+    });
+    this.track.addEventListener('pointermove', function (e) {
+      self._onMove(e);
+    });
+    this.track.addEventListener('pointerup', function (e) {
+      self._onUp(e);
+    });
+    this.track.addEventListener('pointercancel', function (e) {
+      self._onUp(e);
+    });
+
+    // 拖拽后抑制这一次点击，避免松手即跳转
+    this.track.addEventListener('click', function (e) {
+      if (!self.dragMoved) return;
+      e.preventDefault();
+      e.stopPropagation();
+    }, true);
+    this.track.addEventListener('transitionend', function (e) {
+      if (e.propertyName !== 'transform' || self.drag) return;
+      // 循环模式越界播放完毕：静默归位到等效下标，视觉不跳
+      if (self.index >= self.count || self.index < 0) {
+        self.index = self.index >= self.count ? self.index - self.count : self.index + self.count;
+        self._paint();
+      }
+    });
+    this.root.addEventListener('mouseenter', function () {
+      self.hovered = true;
+      self._stopAuto();
+    });
+    this.root.addEventListener('mouseleave', function () {
+      self.hovered = false;
+      self._restartAuto();
+    });
+    this.root.addEventListener('focusin', function () {
+      self.focused = true;
+      self._stopAuto();
+    });
+    this.root.addEventListener('focusout', function () {
+      self.focused = false;
+      self._restartAuto();
+    });
+    if (this.wheel) this.root.addEventListener('wheel', function (e) {
+      self._onWheel(e);
+    }, {
+      passive: false
+    });
+    window.addEventListener('resize', function () {
+      clearTimeout(self.rt);
+      self.rt = setTimeout(function () {
+        self._measure();
+        self._paint();
+      }, 150);
+    });
+  };
+  CP._onWheel = function (e) {
+    if (this.fade) return;
+    // 只有接近满屏的轮播才接管滚轮，否则会吞掉页面正常滚动
+    if (this.root.clientHeight < window.innerHeight * 0.8) return;
+    if (Date.now() - this.wheelAt < 700) return;
+    if (Math.abs(e.deltaY) < 8) return;
+    this.wheelAt = Date.now();
+    e.preventDefault();
+    if (e.deltaY > 0) this._next();else this._prev();
+  };
+  CP._onDown = function (e) {
+    if (this.fade || e.button > 0 || this.drag) return;
+    if (!this.width) this._measure();
+    this.dragMoved = 0;
+    this.drag = {
+      id: e.pointerId,
+      x: e.clientX,
+      y: e.clientY,
+      locked: false
+    };
+    this._stopAuto();
+  };
+  CP._onMove = function (e) {
+    if (!this.drag || e.pointerId !== this.drag.id) return;
+    var dx = e.clientX - this.drag.x;
+    var dy = e.clientY - this.drag.y;
+    if (!this.drag.locked) {
+      if (Math.abs(dx) < 4) return;
+      // 纵向意图明显则放弃接管，交还页面滚动
+      if (Math.abs(dy) > Math.abs(dx)) {
+        this.drag = null;
+        return;
+      }
+      this.drag.locked = true;
+      this.root.classList.add('is-dragging');
+      if (this.track.setPointerCapture) {
+        try {
+          this.track.setPointerCapture(e.pointerId);
+        } catch (err) {/* 兼容性兜底 */}
+      }
+    }
+    this.dragMoved = Math.abs(dx);
+    this.track.style.transform = 'translateX(' + (-this.index * this.width + dx) + 'px)';
+  };
+  CP._onUp = function (e) {
+    if (!this.drag || e && e.pointerId !== this.drag.id) return;
+    var dx = e && typeof e.clientX === 'number' ? e.clientX - this.drag.x : 0;
+    var moved = this.dragMoved;
+    var locked = this.drag.locked;
+    this.drag = null;
+    this.dragMoved = 0;
+    this.root.classList.remove('is-dragging');
+    if (locked) {
+      var threshold = Math.min(80, this.width * 0.2);
+      if (dx <= -threshold) this._next();else if (dx >= threshold) this._prev();else this._paint();
+    } else {
+      this._paint(); // 只是点击，回正
+    }
+    if (moved > 6) {
+      // 抑制紧随松手的那次 click，避免误跳转
+      var _swallow = function swallow(ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        doc.removeEventListener('click', _swallow, true);
+      };
+      doc.addEventListener('click', _swallow, true);
+    }
+    this._restartAuto();
+  };
+  function carousel() {
+    $$('[data-jinyu-carousel]').forEach(function (el) {
+      if (el.dataset.jinyuCarouselReady) return;
+      el.dataset.jinyuCarouselReady = '1';
+      try {
+        new JinyuCarousel(el);
+      } catch (err) {
+        if (window.console && console.error) console.error('[jinyu] carousel init failed', err);
+      }
+    });
+  }
+
+  /* ======================================================================
+     模块：PJAX 无刷新导航（默认关闭，需在后台开启）
+     ====================================================================== */
+  function pjax() {
+    if (!CFG.pjax) return;
+    if (!('fetch' in window) || !('history' in window)) return;
+    var mainSelector = '.jinyu-content';
+    function isInternal(href) {
+      if (!href) return false;
+      var a = doc.createElement('a');
+      a.href = href;
+      if (a.hostname !== location.hostname) return false;
+      if (a.protocol !== location.protocol) return false;
+      if (a.pathname.indexOf('/wp-admin') === 0) return false;
+      if (/\.(pdf|zip|rar|tar|gz|docx?|xlsx?|pptx?|jpg|png|gif|mp3|mp4)$/i.test(a.pathname)) return false;
+      return true;
+    }
+    function load(url, push) {
+      fetch(url, {
+        credentials: 'same-origin',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      }).then(function (r) {
+        if (!r.ok) throw new Error('http ' + r.status);
+        return r.text();
+      }).then(function (html) {
+        var doc2 = doc.implementation.createHTMLDocument('');
+        doc2.documentElement.innerHTML = html;
+        var fresh = doc2.querySelector(mainSelector);
+        var cur = $(mainSelector);
+        if (!fresh || !cur) {
+          location.href = url;
+          return;
+        }
+        cur.innerHTML = fresh.innerHTML;
+        var title = doc2.querySelector('title');
+        if (title) document.title = title.textContent;
+
+        // 更新导航高亮
+        $$('.jinyu-nav a').forEach(function (link) {
+          link.classList.toggle('current', link.getAttribute('href') === url);
+        });
+        if (push !== false) history.pushState({
+          jy_pjax: 1
+        }, '', url);
+        window.scrollTo(0, 0);
+        if (window.jinyuReinit) window.jinyuReinit();
+      })["catch"](function () {
+        location.href = url;
+      });
+    }
+    doc.addEventListener('click', function (e) {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      var link = e.target.closest('a');
+      if (!link) return;
+      if (link.target && link.target !== '_self') return;
+      if (link.hasAttribute('download')) return;
+      if (link.closest('[data-jinyu-no-pjax]')) return;
+      if (link.getAttribute('data-jinyu-no-pjax') !== null) return;
+      var href = link.getAttribute('href');
+      if (!href || href.charAt(0) === '#' || !isInternal(href)) return;
+      if (href === location.pathname + location.search + location.hash) return;
+      e.preventDefault();
+      load(href, true);
+    });
+    window.addEventListener('popstate', function () {
+      if (history.state && history.state.jy_pjax) load(location.href, false);
+    });
+  }
+
+  /**
+   * 内容置换后重新初始化依赖 DOM 的模块（PJAX / 加载更多后调用）
+   */
+  /* ======================================================================
+     模块：手气不错（随机文章跳转）
+     ====================================================================== */
+  function luck() {
+    doc.addEventListener('click', function (e) {
+      var btn = e.target.closest && e.target.closest('#jinyu-luck-btn');
+      if (!btn) return;
+      e.preventDefault();
+      if (btn.classList.contains('jinyu-loading')) return;
+      btn.classList.add('jinyu-loading');
+      Util.ajax('jinyu_random_post', {}, function (err, res) {
+        btn.classList.remove('jinyu-loading');
+        if (err || !res || !res.success || !res.data || !res.data.url) {
+          Util.toast(_t('noJumpPost', 'No post to jump to'));
+          return;
+        }
+        window.location.href = res.data.url;
+      });
+    });
+  }
+
+  /* ======================================================================
+     模块：动态 favicon 未读角标（仅管理员可见）
+     ====================================================================== */
+  function faviconBadge() {
+    if (!CFG.favicon_badge) return;
+    Util.ajax('jinyu_favicon_count', {}, function (err, res) {
+      if (err || !res || !res.success) return;
+      var count = parseInt(res.data && res.data.count || 0, 10);
+      if (count <= 0) return;
+      drawFaviconBadge(count);
+    });
+    function drawFaviconBadge(count) {
+      var link = doc.querySelector('link[rel~="icon"]');
+      if (!link) return;
+      var size = 64;
+      var img = new Image();
+      img.onload = function () {
+        var canvas = doc.createElement('canvas');
+        canvas.width = canvas.height = size;
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, size, size);
+        var r = size * 0.26;
+        var cx = size - r,
+          cy = r;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.fillStyle = '#e53935';
+        ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold ' + Math.round(size * 0.28) + 'px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(count > 99 ? '99+' : String(count), cx, cy + 1);
+        try {
+          link.href = canvas.toDataURL('image/png');
+        } catch (e) {/* 忽略污染画布 */}
+      };
+      img.src = link.href;
+    }
+  }
+
+  /* ======================================================================
+     模块：首屏骨架屏（页面加载完成后移除占位）
+     ====================================================================== */
+  /* 首屏骨架屏：header.php 里的内联脚本已在解析阶段就把节点摘掉了（实测它能挡住
+     真实首屏直到 DCL，拖慢 FCP/Speed Index）。这里只是兜底——万一内联脚本被 CSP
+     拦掉、或节点被服务端条件渲染省略，本函数仍会在 load 后移除残留的遮罩。 */
+  function skeleton() {
+    var el = doc.getElementById('jinyu-skeleton');
+    if (!el) return;
+    function hide() {
+      if (el._jinyuHidden) return;
+      el._jinyuHidden = 1;
+      if (el.parentNode) el.parentNode.removeChild(el);
+    }
+    if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', hide);else hide();
+    window.addEventListener('load', hide);
+    setTimeout(hide, 2000);
+  }
+
+  /* ======================================================================
+     模块：评论表情选择器（点击插入表情到评论文本框光标处）
+     ====================================================================== */
+  function commentSmiley() {
+    var btn = doc.querySelector('.jinyu-comment-smiley-btn');
+    var panel = doc.getElementById('jinyu-smiley-panel');
+    if (!btn || !panel) return;
+    // 幂等：PJAX 换页后同一 DOM 重复初始化则跳过
+    if (btn.getAttribute('data-jy-ready')) return;
+    btn.setAttribute('data-jy-ready', '1');
+    var emojis = ['😀', '😁', '😂', '🤣', '😊', '😍', '😘', '😎', '🤔', '😅', '😭', '😡', '👍', '👎', '👏', '🙏', '💪', '🎉', '❤️', '💔', '🔥', '✨', '🌟', '🍻'];
+    emojis.forEach(function (e) {
+      var b = doc.createElement('button');
+      b.type = 'button';
+      b.className = 'jinyu-smiley-item';
+      b.setAttribute('data-emoji', e);
+      b.textContent = e;
+      panel.appendChild(b);
+    });
+    function setOpen(open) {
+      panel.hidden = !open;
+      btn.setAttribute('aria-expanded', String(open));
+    }
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation(); // 不冒泡到 document，避免外部点击判定误关面板
+      setOpen(panel.hidden);
+    });
+    panel.addEventListener('click', function (e) {
+      var t = e.target.closest('.jinyu-smiley-item');
+      if (!t) return;
+      insertEmojiAtCursor(t.getAttribute('data-emoji'));
+      setOpen(false);
+    });
+
+    // 判定必须用 contains：点按钮内 <i> 图标时 e.target 是图标而非按钮本身
+    doc.addEventListener('click', function (e) {
+      if (!panel.hidden && !btn.contains(e.target) && !panel.contains(e.target)) setOpen(false);
+    });
+    doc.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !panel.hidden) setOpen(false);
+    });
+    function insertEmojiAtCursor(text) {
+      var ta = doc.getElementById('comment');
+      if (!ta) return;
+      var start = ta.selectionStart || 0,
+        end = ta.selectionEnd || 0;
+      ta.value = ta.value.slice(0, start) + text + ta.value.slice(end);
+      var pos = start + text.length;
+      ta.selectionStart = ta.selectionEnd = pos;
+      ta.focus();
+      // 触发 input：让计数器/自动增高联动
+      ta.dispatchEvent(new Event('input', {
+        bubbles: true
+      }));
+    }
+  }
+
+  /* ======================================================================
+     模块：评论字数计数（实时更新工具栏计数，超长提示）
+     ====================================================================== */
+  function commentCounter() {
+    var ta = doc.getElementById('comment');
+    var box = doc.querySelector('[data-jinyu-counter]');
+    if (!ta || !box) return;
+    if (box.getAttribute('data-jy-ready')) return;
+    box.setAttribute('data-jy-ready', '1');
+    var MAX = 1000;
+    var firstRun = true;
+    // 输入框随内容自动增高
+    function fit() {
+      ta.style.height = 'auto';
+      ta.style.height = Math.max(ta.scrollHeight, ta.offsetHeight) + 'px';
+    }
+    function update() {
+      var len = ta.value.length;
+      box.textContent = len + ' / ' + MAX;
+      box.classList.toggle('is-over', len > MAX);
+      // 数字跳动微动效（跳过首次渲染；移除→强制回流→再加回以重置动画）
+      if (firstRun) {
+        firstRun = false;
+      } else {
+        box.classList.remove('is-bump');
+        void box.offsetWidth;
+        box.classList.add('is-bump');
+      }
+      fit();
+    }
+    ta.addEventListener('input', update);
+    window.addEventListener('resize', fit);
+    fit();
+    update();
+  }
+
+  /* ======================================================================
+     模块：实时搜索下拉（输入即预读结果）
+     ====================================================================== */
+  function liveSearch() {
+    var forms = $$('form[role="search"]');
+    if (!forms.length) return;
+    forms.forEach(function (form) {
+      var input = form.querySelector('input[name="s"]');
+      if (!input) return;
+      // pjax 重跑时跳过已初始化的表单，避免重复面板
+      if (form.querySelector('.jinyu-search-suggest')) return;
+      var panel = doc.createElement('div');
+      panel.className = 'jinyu-search-suggest';
+      panel.hidden = true;
+      form.appendChild(panel);
+      var timer = null;
+      var lastQ = '';
+      function hide() {
+        panel.hidden = true;
+      }
+      function render(res) {
+        if (!res || !res.success) {
+          hide();
+          return;
+        }
+        var html = res.data.html;
+        if (!html) {
+          panel.innerHTML = '<div class="jinyu-search-suggest-empty">No related posts found</div>';
+        } else {
+          panel.innerHTML = html + '<a class="jinyu-search-sg-more" href="' + (res.data.more || '#') + '">View all ' + (res.data.count || 0) + ' results ›</a>';
+        }
+        panel.classList.remove('jinyu-search-suggest--up');
+        panel.style.maxHeight = '';
+        panel.hidden = false;
+
+        // 默认显示在搜索框「下方」。仅当下方可用空间明显不足（<220px）且上方更宽裕时，
+        // 才翻转到输入框上方，避免长页面滚动到侧栏搜索框时下拉被顶到框上方、又被限高裁短。
+        // 高度直接占满可用空间（不写死最小值），结果多时可完整滚动浏览。
+        var formRect = form.getBoundingClientRect();
+        var pr = panel.getBoundingClientRect();
+        var spaceBelow = window.innerHeight - (formRect.bottom + 8);
+        var spaceAbove = formRect.top - 8;
+        if (pr.bottom > window.innerHeight - 8) {
+          if (spaceAbove > spaceBelow && spaceAbove > 220) {
+            panel.classList.add('jinyu-search-suggest--up');
+            pr = panel.getBoundingClientRect();
+            panel.style.maxHeight = Math.max(0, spaceAbove - 8) + 'px';
+          } else {
+            panel.style.maxHeight = Math.max(0, spaceBelow - 8) + 'px';
+          }
+        }
+      }
+      function query(q) {
+        if (q === lastQ) return;
+        lastQ = q;
+        if (q.length < 1) {
+          hide();
+          return;
+        }
+        Util.ajax('jinyu_search', {
+          q: q
+        }, function (err, res) {
+          if (err) {
+            hide();
+            return;
+          }
+          render(res);
+        });
+      }
+      input.addEventListener('input', function () {
+        clearTimeout(timer);
+        var q = input.value.trim();
+        timer = setTimeout(function () {
+          query(q);
+        }, 250);
+      });
+      input.addEventListener('focus', function () {
+        if (lastQ && input.value.trim()) query(input.value.trim());
+      });
+      // 点击建议项：阻止默认提交，直接跳转（链接本身已带 href）
+      panel.addEventListener('mousedown', function (e) {
+        var a = e.target.closest('a.jinyu-search-sg');
+        if (a) e.preventDefault();
+      });
+      form.addEventListener('submit', hide);
+      doc.addEventListener('click', function (e) {
+        if (!form.contains(e.target)) hide();
+      });
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+          hide();
+        }
+      });
+    });
+  }
+
+  /* ======================================================================
+     模块：阅读字号调节（A⁻/A⁺/默认，记忆到 localStorage）
+     ====================================================================== */
+  function fontScale() {
+    var content = $('.jinyu-article-content');
+    if (!content) return;
+    var btns = $$('[data-jinyu-fs]');
+    if (!btns.length) return;
+    var KEY = 'jinyu_fs_scale';
+    var MIN = 0.85,
+      MAX = 1.4,
+      STEP = 0.1,
+      DEF = 1;
+    function updateState(scale) {
+      var el = $('[data-jinyu-fs-state]');
+      if (!el) return;
+      var pct = Math.round(scale * 100);
+      el.textContent = pct + '%';
+      // 直观提示当前是放大 / 缩小 / 默认，便于用户判断是否点过头
+      el.classList.toggle('jinyu-fs-up', scale > DEF + 1e-6);
+      el.classList.toggle('jinyu-fs-down', scale < DEF - 1e-6);
+    }
+    function apply(scale) {
+      content.style.setProperty('--reader-scale', scale);
+      try {
+        localStorage.setItem(KEY, String(scale));
+      } catch (e) {}
+      updateState(scale);
+    }
+    try {
+      var saved = parseFloat(localStorage.getItem(KEY));
+      if (!isNaN(saved)) apply(Math.min(MAX, Math.max(MIN, saved)));else updateState(DEF);
+    } catch (e) {}
+    btns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var cur = parseFloat(getComputedStyle(content).getPropertyValue('--reader-scale')) || DEF;
+        var act = btn.getAttribute('data-jinyu-fs');
+        var next = act === 'inc' ? cur + STEP : act === 'dec' ? cur - STEP : DEF;
+        next = Math.min(MAX, Math.max(MIN, Math.round(next * 100) / 100));
+        apply(next);
+      });
+    });
+  }
+
+  /* ======================================================================
+     模块：站内链接悬停预览卡（Hover Card）
+     仅对正文内指向本站的链接生效；鼠标悬停 220ms 后拉取标题/摘要/封面，
+     浮层定位自动避让视口边缘；移入卡片本身不消失，便于点击。
+     ====================================================================== */
+  function hoverCard() {
+    var box = $('.jinyu-article-content');
+    if (!box || !finePointer) return;
+    if (box.dataset.jinyuHcReady) return;
+    box.dataset.jinyuHcReady = '1';
+    var site = (CFG.site_url || location.origin || '').replace(/\/+$/, '');
+    var card = null,
+      timer = null,
+      curLink = null,
+      cache = {};
+    function ensureCard() {
+      if (card) return card;
+      card = doc.createElement('div');
+      card.className = 'jinyu-hover-card';
+      card.hidden = true;
+      card.setAttribute('role', 'tooltip');
+      doc.body.appendChild(card);
+      return card;
+    }
+    function show(link) {
+      var href = link.href || '';
+      if (site && href.indexOf(site) !== 0) return; // 仅站内
+      if (/\.(png|jpe?g|gif|webp|mp4|pdf|zip)$/i.test(href)) return; // 排除媒体
+      if (link.closest('.jinyu-code-wrap')) return;
+      if (link.getAttribute('data-jinyu-no-pjax') !== null) return;
+      var cached = cache[href];
+      if (cached) {
+        render(cached);
+        return;
+      }
+      Util.ajax('jinyu_link_preview', {
+        url: href
+      }, function (err, res) {
+        if (err || !res || !res.success || !res.data || !res.data.ok) return;
+        cache[href] = res.data;
+        if (curLink === link) render(res.data);
+      });
+    }
+    function render(d) {
+      ensureCard();
+      card.innerHTML = '<a class="jinyu-hc-thumb" href="' + encodeURI(d.url || '') + '">' + (d.thumb ? '<img src="' + encodeURI(d.thumb) + '" alt="" loading="lazy" decoding="async">' : '') + '</a>' + '<div class="jinyu-hc-body">' + '<a class="jinyu-hc-title" href="' + encodeURI(d.url || '') + '">' + escHtml(d.title) + '</a>' + '<p class="jinyu-hc-excerpt">' + escHtml(d.excerpt) + '</p>' + '<span class="jinyu-hc-date">' + escHtml(d.date) + '</span>' + '</div>';
+      position();
+      card.hidden = false;
+    }
+    function position() {
+      if (!curLink) return;
+      var r = curLink.getBoundingClientRect();
+      card.style.visibility = 'hidden';
+      card.hidden = false;
+      var cw = card.offsetWidth,
+        ch = card.offsetHeight;
+      var top = r.bottom + 10;
+      if (top + ch > window.innerHeight - 8) top = r.top - ch - 10;
+      if (top < 8) top = 8;
+      var left = r.left;
+      if (left + cw > window.innerWidth - 8) left = window.innerWidth - cw - 8;
+      if (left < 8) left = 8;
+      card.style.top = top + 'px';
+      card.style.left = left + 'px';
+      card.style.visibility = 'visible';
+    }
+    function hide() {
+      if (card) card.hidden = true;
+      curLink = null;
+    }
+    box.addEventListener('mouseover', function (e) {
+      var link = e.target.closest('a');
+      if (!link) return;
+      curLink = link;
+      clearTimeout(timer);
+      timer = setTimeout(function () {
+        show(link);
+      }, 220);
+    });
+    box.addEventListener('mouseout', function (e) {
+      var to = e.relatedTarget;
+      if (to && card && card.contains(to)) return;
+      clearTimeout(timer);
+      hide();
+    });
+    if (card) {
+      card.addEventListener('mouseleave', hide);
+      window.addEventListener('scroll', hide, {
+        passive: true
+      });
+    }
+  }
+
+  /* ======================================================================
+     模块：协同过滤推荐「读过这篇的人还读了」
+     上报本次浏览的前驱文章（sessionStorage 记录上篇），服务端按共现频次
+     给出推荐；数据不足时由服务端回退到热门相关，保证区域常驻。
+     ====================================================================== */
+  function coView() {
+    var box = $('[data-jinyu-coview]');
+    if (!box || box.dataset.jinyuCoviewReady) return;
+    box.dataset.jinyuCoviewReady = '1';
+    var pid = parseInt(box.getAttribute('data-jinyu-post'), 10);
+    if (!pid) return;
+    var prev = '';
+    try {
+      prev = sessionStorage.getItem('jinyu_last_post') || '';
+    } catch (e) {}
+    if (prev && prev !== String(pid)) {
+      Util.ajax('jinyu_coview_track', {
+        prev: prev,
+        cur: pid
+      }, function () {});
+    }
+    try {
+      sessionStorage.setItem('jinyu_last_post', String(pid));
+    } catch (e) {}
+    Util.ajax('jinyu_coview', {
+      post_id: pid,
+      num: 4
+    }, function (err, res) {
+      if (err || !res || !res.success) {
+        box.style.display = 'none';
+        return;
+      }
+      var list = res.data && res.data.list || [];
+      if (!list.length) {
+        box.style.display = 'none';
+        return;
+      }
+      box.innerHTML = '<h3 class="jinyu-widget-title">' + _t('coviewHeading', 'People also read') + '</h3>' + '<div class="jinyu-coview-grid">' + list.map(function (it) {
+        return '<a class="jinyu-coview-card" href="' + encodeURI(it.url) + '">' + '<div class="jinyu-coview-cover">' + (it.thumb ? '<img class="jinyu-blur-img" src="' + encodeURI(it.thumb) + '" alt="" loading="lazy">' : '') + '</div>' + '<div class="jinyu-coview-title">' + escHtml(it.title) + '</div>' + '</a>';
+      }).join('') + '</div>';
+      if (window.jinyuBlurInit) {
+        try {
+          window.jinyuBlurInit(box);
+        } catch (e) {}
+      }
+    });
+  }
+
+  /* ======================================================================
+     模块：文末「这篇有帮助」投票
+     ====================================================================== */
+  function articleVote() {
+    var box = $('[data-jinyu-vote]');
+    if (!box || box.dataset.jinyuVoteReady) return;
+    box.dataset.jinyuVoteReady = '1';
+    var pid = parseInt(box.getAttribute('data-jinyu-post'), 10);
+    var yesBtn = $('[data-jinyu-vote-yes]', box);
+    var noBtn = $('[data-jinyu-vote-no]', box);
+    var yesNum = $('[data-jinyu-vote-yes-n]', box);
+    var noNum = $('[data-jinyu-vote-no-n]', box);
+    if (!pid || !yesBtn || !noBtn) return;
+    var KEY = 'jinyu_vote_' + pid;
+    var done = '';
+    try {
+      done = localStorage.getItem(KEY) || '';
+    } catch (e) {}
+    function paint() {
+      // aria-pressed 表达「投过没投过」给读屏；disabled 阻止二次提交。
+      // 两者都要：只有 disabled 时读屏用户不知道当前状态（WCAG 4.1.2）。
+      if (done === 'yes') {
+        yesBtn.classList.add('is-active');
+        noBtn.classList.remove('is-active');
+        yesBtn.setAttribute('aria-pressed', 'true');
+        noBtn.setAttribute('aria-pressed', 'false');
+        yesBtn.disabled = true;
+        noBtn.disabled = true;
+      } else if (done === 'no') {
+        noBtn.classList.add('is-active');
+        yesBtn.classList.remove('is-active');
+        noBtn.setAttribute('aria-pressed', 'true');
+        yesBtn.setAttribute('aria-pressed', 'false');
+        noBtn.disabled = true;
+        yesBtn.disabled = true;
+      }
+    }
+    paint();
+    var sending = false;
+    function vote(dir) {
+      // 双闸：done 防「已投过」，sending 防「请求未回时连点」——
+      // 后者缺了会让每次点击都发出一个并发请求（done 只在回调成功后才赋值）。
+      if (done || sending) return;
+      sending = true;
+      // 用 aria-busy 而非 disabled：disabled 会把按钮移出焦点序列，
+      // 请求返回后焦点丢失（WCAG 2.4.3），读屏也感知不到「处理中」。
+      box.setAttribute('aria-busy', 'true');
+      yesBtn.classList.add('is-loading');
+      noBtn.classList.add('is-loading');
+      Util.ajax('jinyu_vote', {
+        post_id: pid,
+        dir: dir
+      }, function (err, res) {
+        sending = false;
+        box.removeAttribute('aria-busy');
+        yesBtn.classList.remove('is-loading');
+        noBtn.classList.remove('is-loading');
+        if (err || !res || !res.success) {
+          Util.toast(_t('opFailed', 'Operation failed. Please try again later.'));
+          return;
+        }
+        if (yesNum) yesNum.textContent = res.data.yes;
+        if (noNum) noNum.textContent = res.data.no;
+        done = dir;
+        try {
+          localStorage.setItem(KEY, dir);
+        } catch (e) {}
+        paint();
+        Util.toast(dir === 'yes' ? _t('thanksSupport', 'Thanks for your support ♥') : _t('thanksFeedback', 'Thanks for your feedback'));
+      });
+    }
+    yesBtn.addEventListener('click', function () {
+      vote('yes');
+    });
+    noBtn.addEventListener('click', function () {
+      vote('no');
+    });
+  }
+
+  /* ======================================================================
+     模块：复制正文自动附带出处（防搬运 + 回流）
+     仅当选区落在正文内、且复制字数 ≥ 20 时追加「出自《站名》：链接」声明。
+     ====================================================================== */
+  function copyGuard() {
+    var box = $('.jinyu-article-content');
+    if (!box || box.dataset.jinyuCopyGuard) return;
+    box.dataset.jinyuCopyGuard = '1';
+    box.addEventListener('copy', function (e) {
+      var sel = window.getSelection();
+      if (!sel || sel.isCollapsed || !sel.rangeCount) return;
+      // 选区必须落在正文内
+      if (!box.contains(sel.anchorNode) || !box.contains(sel.focusNode)) return;
+      var text = sel.toString();
+      if (text.length < 20) return;
+      var site = box.getAttribute('data-jinyu-site') || CFG.site_name || doc.title || '';
+      var author = box.getAttribute('data-jinyu-author') || '';
+      var anno = '\n\n—— From "' + site + '": ' + location.href + (author ? ' (by ' + author + ')' : '');
+      var cd = e.clipboardData || window.clipboardData;
+      if (!cd) return;
+      e.preventDefault();
+      cd.setData('text/plain', text + anno);
+    });
+  }
+
+  /* ======================================================================
+     模块：最近浏览 / 继续阅读（匿名游客也记，存 localStorage）
+     ====================================================================== */
+  function recentViewed() {
+    var single = $('.jinyu-single');
+    if (single) {
+      var title = ($('.jinyu-article-title') || {}).textContent || doc.title;
+      var img = '';
+      var feat = $('.jinyu-featured');
+      if (feat && feat.src) img = feat.src;else {
+        var first = $('.jinyu-article-content img.jinyu-blur-img');
+        if (first && first.src) img = first.src;
+      }
+      var url = location.href;
+      var KEY = 'jinyu_recent';
+      try {
+        var list = JSON.parse(localStorage.getItem(KEY) || '[]');
+        if (!Array.isArray(list)) list = [];
+        list = list.filter(function (it) {
+          return it.url !== url;
+        });
+        list.unshift({
+          title: title,
+          url: url,
+          img: img
+        });
+        list = list.slice(0, 10);
+        localStorage.setItem(KEY, JSON.stringify(list));
+      } catch (e) {}
+    }
+
+    // 填充侧栏容器
+    $$('[data-jinyu-recent]').forEach(function (box) {
+      var list = [];
+      try {
+        list = JSON.parse(localStorage.getItem('jinyu_recent') || '[]');
+      } catch (e) {}
+      if (!list.length) {
+        box.innerHTML = '<div class="jinyu-rv-item--empty">Your reading history will appear here</div>';
+        return;
+      }
+      var html = list.map(function (it) {
+        return '<a class="jinyu-rv-item" href="' + encodeURI(it.url) + '">' + '<span class="jinyu-rv-cover">' + (it.img ? '<img src="' + encodeURI(it.img) + '" alt="" loading="lazy">' : '') + '</span>' + '<span class="jinyu-rv-title">' + (it.title || '').replace(/</g, '') + '</span></a>';
+      }).join('');
+      box.innerHTML = html;
+    });
+  }
+
+  /* 侧栏实时模块：时钟 / 运行时长 / 访客信息 / 站点性能，共享一次 Ajax 取回 */
+  function sidebarLive() {
+    var CFG = window.JINYU_CONFIG || {};
+    var boxes = {
+      visitor: document.querySelector('.jinyu-visitor[data-jinyu-live="visitor"]'),
+      perf: document.querySelector('.jinyu-perf[data-jinyu-live="perf"]'),
+      clock: document.querySelector('.jinyu-clock[data-jinyu-live="clock"]'),
+      uptime: document.querySelector('.jinyu-uptime[data-since]')
+    };
+    var hasLive = boxes.visitor || boxes.perf || boxes.clock || boxes.runinfo;
+    var hasUptime = boxes.uptime;
+    if (!hasLive && !hasUptime) return;
+    if (!CFG.ajax_url) return;
+    if (!CFG.nonce) {
+      Util.refreshNonce().then(sidebarLive);
+      return;
+    } // nonce 懒加载到位后再初始化
+
+    // pjax 重入：清掉上一轮的定时器
+    if (window.__jinyuLive && window.__jinyuLive.timer) {
+      clearInterval(window.__jinyuLive.timer);
+    }
+    var state = {
+      payload: null,
+      timer: null,
+      serverNow: 0,
+      fetchedAt: 0
+    };
+    window.__jinyuLive = state;
+
+    // 时钟 DOM 引用缓存一次（pjax 后 sidebarLive 重入会重建闭包 → 自然刷新）
+    var clockRefs = null;
+    function getClockRefs() {
+      if (!boxes.clock) return null;
+      if (!clockRefs) {
+        var c = boxes.clock;
+        clockRefs = {
+          hm: c.querySelector('[data-clock="hm"]'),
+          sec: c.querySelector('[data-clock="sec"]'),
+          date: c.querySelector('[data-clock="date"]'),
+          week: c.querySelector('[data-clock="week"]'),
+          bar: c.querySelector('.jinyu-clock-sweep > i')
+        };
+      }
+      return clockRefs;
+    }
+    function tickClock() {
+      var refs = getClockRefs();
+      if (!refs) return;
+      var now = state.serverNow ? state.serverNow + Math.floor((Date.now() - state.fetchedAt) / 1000) : Math.floor(Date.now() / 1000);
+      var off = state.payload ? state.payload.time.off : 0;
+      var local = now + off; // 站点本地 epoch（按 UTC 解释，避开访客本机时区）
+      var d = new Date(local * 1000);
+      var ss = d.getUTCSeconds();
+      var hm = ('0' + d.getUTCHours()).slice(-2) + ':' + ('0' + d.getUTCMinutes()).slice(-2);
+      if (hm !== state.lastHm) {
+        // 分/日/周每分钟才变，避免每秒无谓写 DOM
+        state.lastHm = hm;
+        if (refs.hm) refs.hm.textContent = hm;
+        if (refs.date) refs.date.textContent = d.getUTCFullYear() + '-' + (d.getUTCMonth() + 1) + '-' + d.getUTCDate();
+        if (refs.week) refs.week.textContent = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][d.getUTCDay()];
+      }
+      if (refs.sec) refs.sec.textContent = ('0' + ss).slice(-2);
+      if (refs.bar) refs.bar.style.transform = 'scaleX(' + (ss / 60).toFixed(4) + ')';
+    }
+
+    /* 光标跟随：指针悬停时钟时瞳孔朝指针方向微移（纯 transform，无布局抖动）。
+       仅真指针设备 + 未开启「减少动效」时绑定；触屏 / 降级条件下瞳孔恒居中（CSS 默认 0）。 */
+    function bindClockEyes() {
+      var c = boxes.clock;
+      if (!c || c.__jinyuEyeBound) return; // 防重复绑定（pjax 换节点后属性自然失效）
+      if (!window.matchMedia) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      if (!window.matchMedia('(hover: hover)').matches) return; // 触屏不做无意义跟随
+      c.__jinyuEyeBound = true;
+      var raf = 0,
+        tx = 0,
+        ty = 0;
+      function flush() {
+        raf = 0;
+        c.style.setProperty('--jc-px', tx.toFixed(3));
+        c.style.setProperty('--jc-py', ty.toFixed(3));
+      }
+      function onMove(e) {
+        var r = c.getBoundingClientRect();
+        if (!r.width || !r.height) return;
+        tx = Math.max(-1, Math.min(1, (e.clientX - (r.left + r.width / 2)) / (r.width / 2)));
+        ty = Math.max(-1, Math.min(1, (e.clientY - (r.top + r.height / 2)) / (r.height / 2)));
+        if (!raf) raf = requestAnimationFrame(flush);
+      }
+      function reset() {
+        tx = 0;
+        ty = 0;
+        if (!raf) raf = requestAnimationFrame(flush);
+      }
+      c.addEventListener('mousemove', onMove, {
+        passive: true
+      });
+      c.addEventListener('mouseleave', reset);
+    }
+    function tickUptime() {
+      var u = boxes.uptime;
+      if (!u) return;
+      var since = parseInt(u.getAttribute('data-since'), 10);
+      if (!since) return;
+      var now = state.serverNow ? state.serverNow + Math.floor((Date.now() - state.fetchedAt) / 1000) : Math.floor(Date.now() / 1000);
+      var diff = Math.max(0, now - since);
+      var day = Math.floor(diff / 86400);
+      var hh = Math.floor(diff % 86400 / 3600);
+      var mm = Math.floor(diff % 3600 / 60);
+      var ss = diff % 60;
+      var set = function set(k, v) {
+        var e = u.querySelector('[data-up="' + k + '"]');
+        if (e) e.textContent = v;
+      };
+      set('d', day);
+      set('h', ('0' + hh).slice(-2));
+      set('m', ('0' + mm).slice(-2));
+      set('s', ('0' + ss).slice(-2));
+    }
+    function fillVisitor(p) {
+      var v = boxes.visitor;
+      if (!v || !p.visitor) return;
+      var vis = p.visitor;
+      var setv = function setv(k, val) {
+        var e = v.querySelector('[data-vis="' + k + '"]');
+        if (e) e.textContent = val || '—';
+      };
+      setv('ip', vis.ip);
+      setv('os', vis.os);
+      setv('browser', (vis.browser + (vis.version ? ' ' + vis.version : '')).trim());
+      var greet = v.querySelector('[data-vis="greet"]');
+      if (greet) greet.textContent = vis.browser ? 'Hello, ' + vis.browser + ' user' : 'Hello, friend';
+      var loc = v.querySelector('[data-vis="loc"]');
+      if (loc) {
+        if (vis.loc) {
+          loc.textContent = vis.loc;
+          loc.hidden = false;
+        } else {
+          loc.hidden = true;
+        }
+      }
+    }
+
+    /* 毫秒 → 秒显示：≥1s 两位小数，≥0.1s 三位，其余四位（对齐 0.001877 秒的精度感） */
+    function fmtSec(msVal) {
+      var s = (Number(msVal) || 0) / 1000;
+      return s >= 1 ? s.toFixed(2) : s >= 0.1 ? s.toFixed(3) : s.toFixed(4);
+    }
+    /* 数值 + 小号单位写入 <b>：unit 走 <i class="unit">，样式见 widgets.less */
+    function setNumUnit(el, num, unit) {
+      if (!el) return;
+      el.textContent = num;
+      if (unit) {
+        var i = document.createElement('i');
+        i.className = 'unit';
+        i.textContent = unit;
+        el.appendChild(i);
+      }
+    }
+
+    /* 折线 → 平滑曲线：Catmull-Rom 转三次贝塞尔，比折线更有「仪表盘」质感。
+       入参是 viewBox(100×36) 坐标；过冲由 SVG 自身裁剪，不会溢出卡片。 */
+    function smoothPath(pts) {
+      if (!pts.length) return '';
+      var d = 'M' + pts[0][0].toFixed(2) + ' ' + pts[0][1].toFixed(2);
+      if (pts.length === 1) return d;
+      for (var i = 0; i < pts.length - 1; i++) {
+        var p0 = pts[i - 1] || pts[i];
+        var p1 = pts[i];
+        var p2 = pts[i + 1];
+        var p3 = pts[i + 2] || p2;
+        d += ' C' + (p1[0] + (p2[0] - p0[0]) / 6).toFixed(2) + ' ' + (p1[1] + (p2[1] - p0[1]) / 6).toFixed(2) + ' ' + (p2[0] - (p3[0] - p1[0]) / 6).toFixed(2) + ' ' + (p2[1] - (p3[1] - p1[1]) / 6).toFixed(2) + ' ' + p2[0].toFixed(2) + ' ' + p2[1].toFixed(2);
+      }
+      return d;
+    }
+
+    /* 趋势行。三个指标都是「越小越好」，故上涨=红、下降=绿——但只在站点已经
+       偏慢 / 拥堵时才上色：健康的站点每次采样都在 ±5% 抖动，一片红只会让人麻木。
+       变化 <2% 记「持平」，无上一采样记「—」（三张卡的第四行永远有内容，高度才齐）。 */
+    function paintTrend(el, cur, prev, alarm) {
+      if (!el) return;
+      var c = Number(cur) || 0;
+      var p = Number(prev);
+      if (!isFinite(p) || p <= 0) {
+        el.textContent = '—';
+        el.className = 'jinyu-perf-trend';
+        return;
+      }
+      var diff = (c - p) / p * 100;
+      if (Math.abs(diff) < 2) {
+        el.textContent = _t('flat', 'Flat');
+        el.className = 'jinyu-perf-trend';
+        return;
+      }
+      el.textContent = (diff > 0 ? '▲' : '▼') + Math.abs(Math.round(diff)) + '%';
+      el.className = 'jinyu-perf-trend' + (alarm ? diff > 0 ? ' is-up' : ' is-down' : '');
+      el.setAttribute('title', 'Last sample: ' + fmtSec(p) + 's');
+    }
+    function fillPerf(p) {
+      var el = boxes.perf;
+      if (!el || !p.perf) return;
+      var perf = p.perf;
+      // 双保险：即便 p.perf 是个缺字段的对象（如旧接口返回空数组），也不把数字写成 0/undefined，
+      // 而是保留服务端渲染进 HTML 的真实初始值（整页缓存站点永远有这个真实值）。
+      if (typeof perf.ms !== 'number' || typeof perf.q !== 'number') return;
+      var ms = el.querySelector('[data-perf="ms"]');
+      setNumUnit(ms, fmtSec(perf.ms), 's');
+      var q = el.querySelector('[data-perf="q"]');
+      setNumUnit(q, perf.q, 'queries');
+      var mem = el.querySelector('[data-perf="mem"]');
+      setNumUnit(mem, perf.mem, 'MB');
+      if (mem && perf.mem_max) mem.title = 'PHP limit: ' + perf.mem_max + 'MB, ' + perf.mem_pct + '%';
+
+      /* 状态：等级由服务端算好（阈值单点维护），前端只做「等级 → 文案」映射 */
+      var level = perf.level || 'ok';
+      el.setAttribute('data-level', level);
+      var status = el.querySelector('[data-perf="status"]');
+      var statusMap = {
+        fast: ['perfRealtime', 'Real-time'],
+        ok: ['perfRealtime', 'Real-time'],
+        warn: ['perfSlow', 'Slow'],
+        bad: ['perfBusy', 'Busy']
+      };
+      var st = statusMap[level] || statusMap.ok;
+      if (status) status.textContent = _t(st[0], st[1]);
+      var dot = el.querySelector('[data-perf="dot"]');
+      if (dot) dot.className = 'jinyu-perf-dot';
+      var samples = el.querySelector('[data-perf="samples"]');
+      if (samples && perf.samples) {
+        samples.textContent = _tFill(_t('nearSamples', 'Last %d samples'), {
+          '%d': perf.samples
+        });
+        samples.hidden = false;
+      }
+
+      /* 健康分环：r=17 → 周长 106.8，靠 dashoffset 收口 */
+      var scoreBox = el.querySelector('[data-perf="scorebox"]');
+      if (scoreBox && typeof perf.score === 'number') {
+        scoreBox.hidden = false;
+        var score = el.querySelector('[data-perf="score"]');
+        if (score) score.textContent = perf.score;
+        var ring = el.querySelector('[data-perf="ring"]');
+        if (ring) {
+          var C = 2 * Math.PI * 17;
+          var pct = Math.max(0, Math.min(100, perf.score));
+          ring.setAttribute('stroke-dasharray', C.toFixed(1));
+          ring.setAttribute('stroke-dashoffset', (C * (1 - pct / 100)).toFixed(1));
+        }
+      }
+
+      /* 指标卡的第四行：耗时/查询给趋势，内存给「占 PHP 上限多少」 */
+      var prev = perf.prev || null;
+      var alarm = level === 'warn' || level === 'bad';
+      paintTrend(el.querySelector('[data-perf="ms-trend"]'), perf.ms, prev && prev.ms, alarm);
+      paintTrend(el.querySelector('[data-perf="q-trend"]'), perf.q, prev && prev.q, alarm);
+      var memPct = el.querySelector('[data-perf="mem-pct"]');
+      if (memPct) memPct.textContent = perf.mem_max ? 'Mem: ' + perf.mem_pct + '%' : '—';
+
+      /* 底部元信息：均值 / 峰值 / 负载（负载取不到时降级为内存占用） */
+      var avgEl = el.querySelector('[data-perf="avg"]');
+      if (avgEl) avgEl.textContent = fmtSec(perf.avg || perf.ms) + 's';
+      var maxEl = el.querySelector('[data-perf="max"]');
+      if (maxEl) maxEl.textContent = fmtSec(perf.max || perf.ms) + 's';
+      var extra = el.querySelector('[data-perf="extra"]');
+      var extraLabel = el.querySelector('[data-perf="extra-label"]');
+      if (extra) {
+        if (typeof perf.load === 'number') {
+          extra.textContent = perf.load.toFixed(2);
+          if (extraLabel) extraLabel.textContent = _t('load', 'Load');
+        } else if (perf.mem_max) {
+          extra.textContent = perf.mem_pct + '%';
+          if (extraLabel) extraLabel.textContent = _t('memory', 'Memory');
+        } else {
+          extra.textContent = (perf.samples || 0) + ' samples';
+          if (extraLabel) extraLabel.textContent = _t('sample', 'Sample');
+        }
+      }
+
+      /* 心跳曲线 */
+      var beats = perf.beats || [];
+      var spark = el.querySelector('[data-perf="spark"]');
+      var area = el.querySelector('[data-perf="area"]');
+      var peak = el.querySelector('[data-perf="peak"]');
+      var avgLine = el.querySelector('[data-perf="avgline"]');
+      if (!spark || !beats.length) {
+        if (spark) spark.setAttribute('d', '');
+        if (area) area.setAttribute('d', '');
+        if (peak) peak.hidden = true;
+        if (avgLine) avgLine.hidden = true;
+        return;
+      }
+
+      // 量程取 p90 而不是最大值：一个 2s 级离群请求会把其余样本全压到贴底，
+      // 曲线退化成「一条平线 + 一根尖刺」（面积层会把这个缺陷放大成楔形）。
+      // 取 p90 并对超出部分削顶，正常流量才能占满纵向空间。
+      var n = beats.length;
+      var sorted = beats.slice().sort(function (a, b) {
+        return a - b;
+      });
+      // p90 作为量程上界：单个离群请求不会把曲线压成贴底平线。
+      var cap = sorted[Math.min(n - 1, Math.floor(n * 0.9))] || 1;
+      // 样本偏少时 p90 会等于最大值（如 5 个样本里夹一个冷启动 2.8s），
+      // 把量程拉爆 → 正常流量全贴底、曲线「假死」。此时只要最大值明显离群
+      // （> 其余样本均值 2.5 倍）就改用「剔除该离群后的最大值」做量程，曲线才立得起来；
+      // 若多个样本都慢，说明站点真慢，保留原量程不动。
+      if (n < 10) {
+        var rest = sorted.slice(0, n - 1);
+        var restAvg = rest.reduce(function (a, b) {
+          return a + b;
+        }, 0) / rest.length;
+        if (sorted[n - 1] > restAvg * 2.5) {
+          cap = Math.max(rest[rest.length - 1], 1);
+        }
+      }
+      if (cap < 1) cap = 1;
+      var H = 36,
+        PAD = 3;
+      var yOf = function yOf(b) {
+        return H - PAD - Math.min(b, cap) / cap * (H - PAD * 2);
+      };
+      var pts = beats.map(function (b, i) {
+        return [n === 1 ? 0 : i / (n - 1) * 100, yOf(b)];
+      });
+      if (n === 1) pts.push([100, pts[0][1]]); // 单样本也画成一条水平线
+      var line = smoothPath(pts);
+      spark.setAttribute('d', line);
+      if (area) area.setAttribute('d', line + ' L100,' + H + ' L0,' + H + ' Z');
+
+      // 峰值点用 HTML 元素绝对定位：viewBox 被非等比拉伸，SVG 里的圆会被压成椭圆
+      if (peak) {
+        var peakV = -1,
+          peakI = 0;
+        for (var i = 0; i < n; i++) {
+          if (beats[i] > peakV) {
+            peakV = beats[i];
+            peakI = i;
+          }
+        }
+        peak.hidden = false;
+        peak.style.left = (n === 1 ? 0 : peakI / (n - 1) * 100).toFixed(2) + '%';
+        peak.style.top = (yOf(peakV) / H * 100).toFixed(2) + '%';
+        peak.title = 'Peak: ' + fmtSec(peakV) + 's';
+      }
+      // 均值参考线：线在曲线下方即代表这次比平均快
+      if (avgLine) {
+        var avgV = perf.avg > 0 ? perf.avg : beats.reduce(function (a, b) {
+          return a + b;
+        }, 0) / n;
+        avgLine.hidden = false;
+        avgLine.style.top = (yOf(avgV) / H * 100).toFixed(2) + '%';
+      }
+    }
+    function onPayload(p) {
+      state.payload = p;
+      state.serverNow = p.time ? p.time.ts : Math.floor(Date.now() / 1000);
+      state.fetchedAt = Date.now();
+      fillVisitor(p);
+      fillPerf(p);
+      tickClock();
+      tickUptime();
+    }
+    var url = CFG.ajax_url + '?action=jinyu_sidebar_live&_ajax_nonce=' + encodeURIComponent(CFG.nonce);
+    fetch(url, {
+      credentials: 'same-origin'
+    }).then(function (r) {
+      return r.json();
+    }).then(function (j) {
+      if (j && j.success && j.data) {
+        onPayload(j.data);
+      } else {
+        state.serverNow = Math.floor(Date.now() / 1000);
+        tickClock();
+        tickUptime();
+      }
+    })["catch"](function () {
+      state.serverNow = Math.floor(Date.now() / 1000);
+      tickClock();
+      tickUptime();
+    });
+    bindClockEyes(); // 光标跟随（内含「减少动效 / 触屏」降级判断，未启用时瞳孔恒居中）
+    state.timer = setInterval(function () {
+      tickClock();
+      tickUptime();
+    }, 1000);
+  }
+
+  /* 小工具动效升级：进场淡入上浮（IntersectionObserver 错峰）。
+     纯 transform/opacity，零重排；无脚本 / 不支持 IO / 用户开启「减少动效」时自动降级为直接显示。
+     不改动任何小工具 PHP 逻辑与类名契约。 */
+  function widgetAnim() {
+    var root = doc.documentElement;
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce || !('IntersectionObserver' in window)) {
+      return; // 不挂 ready 类 → CSS 隐藏态不生效，小工具正常显示
+    }
+    var targets = doc.querySelectorAll('.jinyu-widget, .jinyu-footer-widget, .jinyu-single-widget');
+    if (!targets.length) return;
+    root.classList.add('jinyu-widget-anim-ready'); // 触发隐藏初始态
+
+    // 按父容器分组计算序号，实现「同一侧栏从上到下依次摆好」
+    var seen = {};
+    Array.prototype.forEach.call(targets, function (el) {
+      var p = el.parentElement;
+      var key = p ? p.className || p.tagName : 'x';
+      seen[key] = seen[key] || 0;
+      el.setAttribute('data-jinyu-anim-i', seen[key]);
+      seen[key]++;
+
+      // 标签云逐项错峰序号（CSS 用 transition-delay: calc(var(--jinyu-tag-i) * 26ms)）
+      // 用 setProperty 追加，不会覆盖 PHP 内联写入的 --jinyu-tag-ratio
+      Array.prototype.forEach.call(el.querySelectorAll('.jinyu-tag-cloud a'), function (a, ti) {
+        a.style.setProperty('--jinyu-tag-i', ti);
+      });
+    });
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        var el = entry.target;
+        var i = parseInt(el.getAttribute('data-jinyu-anim-i') || '0', 10);
+        el.style.transitionDelay = i * 70 + 'ms';
+        // 双 rAF 确保「隐藏态 → is-in」确实触发过渡，而非被浏览器合并跳过
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            el.classList.add('is-in');
+          });
+        });
+        var _clear = function clear() {
+          el.style.transitionDelay = '';
+          el.removeEventListener('transitionend', _clear);
+        };
+        el.addEventListener('transitionend', _clear);
+        setTimeout(_clear, 1400); // 兜底，防止 transitionend 漏触发导致 hover 残留延迟
+        io.unobserve(el);
+      });
+    }, {
+      rootMargin: '0px 0px -8% 0px',
+      threshold: 0.05
+    });
+    Array.prototype.forEach.call(targets, function (el) {
+      io.observe(el);
+    });
+  }
+
+  /* 每日一句「每次刷新随机」：句子在 HTML 静态缓存里是冻死的，
+     必须在客户端重抽才有效。语录表由 PHP 以 data-jinyu-quotes 下发，
+     只在 random 模式且语录 > 1 条时存在，daily 模式整个模块空转。
+     random 模式下另有「换一句」按钮，与首屏重抽共用同一套换句逻辑。 */
+  function hitokoto() {
+    var boxes = $$('.jinyu-hitokoto[data-jinyu-quotes]');
+    if (!boxes.length) return;
+
+    /* 抽一条与当前不同的下标。语录 ≥2 时必得不同值（在「总数 - 1」里抽，
+       当前下标之后的整体后移一位），保证点了「换一句」一定看得见变化。 */
+    function pickOther(box, list) {
+      var cur = parseInt(box.getAttribute('data-jinyu-quote-idx'), 10);
+      if (isNaN(cur) || cur < 0 || cur >= list.length) cur = -1;
+      var pick = Math.floor(Math.random() * (list.length - 1));
+      if (cur >= 0 && pick >= cur) pick++;
+      return pick;
+    }
+    function swapTo(box, list, pick) {
+      if (pick < 0 || pick >= list.length) return;
+      if (box.classList.contains('is-swapping')) return; // 连点：等这次淡出结束，别排队
+      var item = list[pick];
+      var textEl = $('.jinyu-hitokoto-text', box);
+      if (!textEl) return;
+      var fromEl = $('.jinyu-hitokoto-from', box);
+      box.setAttribute('data-jinyu-quote-idx', pick);
+      var apply = function apply() {
+        textEl.textContent = item.text || '';
+        if (item.from) {
+          if (fromEl) {
+            fromEl.textContent = item.from;
+          } else {
+            fromEl = doc.createElement('cite');
+            fromEl.className = 'jinyu-hitokoto-from';
+            fromEl.textContent = item.from;
+            var meta = $('.jinyu-hitokoto-meta', box);
+            (meta || box).appendChild(fromEl);
+          }
+        } else if (fromEl) {
+          fromEl.parentNode.removeChild(fromEl);
+        }
+        box.classList.remove('is-swapping');
+      };
+
+      // 首屏 swap 发生在小工具入场动画之前，看不到闪动；
+      // PJAX 换页时内容已可见，走一个短淡出再落字。
+      if (box.classList.contains('is-in') || !root.classList.contains('jinyu-widget-anim-ready')) {
+        box.classList.add('is-swapping');
+        setTimeout(apply, 160);
+      } else {
+        apply();
+      }
+    }
+    boxes.forEach(function (box) {
+      // 每个实例只初始化一次：PJAX 换页会换成新 DOM（无此标记 → 重抽首屏那条），
+      // 同一份 DOM 上重复调用（reinit）则直接跳过，避免二次随机与重复绑定。
+      if (box.hasAttribute('data-hitokoto-init')) return;
+      var list;
+      try {
+        list = JSON.parse(box.getAttribute('data-jinyu-quotes'));
+      } catch (e) {
+        return; // 数据异常就保持 PHP 首屏那条，不破坏渲染
+      }
+      if (!list || list.length < 2) return;
+      box.setAttribute('data-hitokoto-init', '1');
+      swapTo(box, list, pickOther(box, list));
+      var btn = $('[data-hitokoto-next]', box);
+      if (btn) {
+        btn.addEventListener('click', function () {
+          swapTo(box, list, pickOther(box, list));
+        });
+      }
+    });
+  }
+
+  /* ======================================================================
+     销售与变现触点（CTA 条 / 悬浮客服 / 订阅）
+     ====================================================================== */
+  function sales() {
+    // 全站悬浮 CTA 条：延迟出现 + 关闭
+    var ctaBar = $('#jinyu-cta-bar');
+    if (ctaBar) {
+      var delay = parseInt(ctaBar.getAttribute('data-delay'), 10);
+      if (isNaN(delay) || delay < 0) delay = 3;
+      setTimeout(function () {
+        ctaBar.hidden = false;
+        ctaBar.classList.add('is-visible');
+      }, delay * 1000);
+      var ctaClose = $('#jinyu-cta-close');
+      if (ctaClose) ctaClose.addEventListener('click', function () {
+        ctaBar.classList.remove('is-visible');
+        ctaBar.hidden = true;
+      });
+      var ctaText = $('.jinyu-cta-text', ctaBar);
+      var ctaLink = $('.jinyu-cta-link', ctaBar);
+      if (ctaLink) ctaLink.addEventListener('click', function () {
+        trackEvent('cta', ctaText ? ctaText.textContent.trim() : 'cta');
+      });
+    }
+
+    // 侧边悬浮客服 / 微信：点击切换，外部点击收起
+    var floatBtn = $('#jinyu-float-btn');
+    var floatPop = $('#jinyu-float-pop');
+    if (floatBtn && floatPop) {
+      floatBtn.addEventListener('click', function () {
+        if (floatPop.hasAttribute('hidden')) floatPop.removeAttribute('hidden');else floatPop.setAttribute('hidden', '');
+      });
+      doc.addEventListener('click', function (e) {
+        if (floatPop.hasAttribute('hidden')) return;
+        if (!floatPop.contains(e.target) && e.target !== floatBtn) {
+          floatPop.setAttribute('hidden', '');
+        }
+      });
+    }
+
+    // 邮件订阅表单（短代码 / 小工具 / 文末自动）
+    $$('[data-jinyu-subscribe]').forEach(function (box) {
+      var form = $('.jinyu-subscribe-form', box);
+      if (!form) return;
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var emailEl = form.querySelector('input[name="email"]');
+        var msg = $('.jinyu-subscribe-msg', box);
+        if (!emailEl || !emailEl.value) return;
+        var btn = form.querySelector('.jinyu-subscribe-btn');
+        if (btn) btn.disabled = true;
+        var srcEl = form.querySelector('input[name="source"]');
+        var source = srcEl ? srcEl.value : 'form';
+        Util.ajax('jinyu_subscribe', {
+          email: emailEl.value,
+          source: source,
+          nonce: CFG.nonce
+        }, function (res) {
+          if (btn) btn.disabled = false;
+          if (!msg) return;
+          if (res && res.success) {
+            msg.textContent = res.data && res.data.msg || 'Subscribed';
+            msg.setAttribute('data-ok', '1');
+            form.reset();
+          } else {
+            msg.textContent = res && res.data && res.data.msg || 'Subscription failed. Please retry';
+            msg.setAttribute('data-ok', '0');
+          }
+          msg.hidden = false;
+        });
+      });
+    });
+    function trackEvent(kind, meta) {
+      Util.ajax('jinyu_track_event', {
+        kind: kind,
+        meta: meta || '',
+        post_id: typeof CFG.post_id !== 'undefined' ? CFG.post_id : 0,
+        nonce: CFG.nonce
+      });
+    }
+  }
+  function social() {
+    doc.addEventListener('click', function (e) {
+      // 关注 / 取关（用户或系列）
+      var btn = e.target.closest('[data-jinyu-follow]');
+      if (btn) {
+        e.preventDefault();
+        if (!CFG.logged_in) {
+          if (window.jinyuAuthOpen) window.jinyuAuthOpen('login');
+          return;
+        }
+        if (btn.classList.contains('jinyu-loading')) return;
+        btn.classList.add('jinyu-loading');
+        Util.ajax('jinyu_toggle_follow', {
+          target: btn.dataset.target,
+          id: btn.dataset.id
+        }, function (err, res) {
+          btn.classList.remove('jinyu-loading');
+          if (err || !res || !res.success) {
+            if (res && res.data) Util.toast(res.data);
+            return;
+          }
+          var on = !!res.data.following;
+          btn.classList.toggle('is-following', on);
+          var span = btn.querySelector('span');
+          var icon = btn.querySelector('i');
+          if (btn.dataset.target === 'user') {
+            if (icon) icon.className = 'fa-solid ' + (on ? 'fa-user-check' : 'fa-user-plus');
+            if (span) span.textContent = on ? 'Following' : 'Follow';
+          } else {
+            if (span) span.textContent = on ? 'Series saved' : 'Save series';
+          }
+        });
+        return;
+      }
+
+      // 用户中心收藏卡片：取消收藏后局部刷新网格
+      var favRemove = e.target.closest('[data-jinyu-fav-remove]');
+      if (favRemove) {
+        e.preventDefault();
+        if (!CFG.logged_in) return;
+        if (favRemove.classList.contains('jinyu-loading')) return;
+        if (!window.confirm('Remove this post from favorites?')) return;
+        favRemove.classList.add('jinyu-loading');
+        Util.ajax('jinyu_fav', {
+          post_id: favRemove.dataset.postId,
+          fav: '0'
+        }, function (err, res) {
+          favRemove.classList.remove('jinyu-loading');
+          if (err || !res || !res.success) {
+            if (res && res.data) Util.toast(res.data);
+            return;
+          }
+          // 服务端渲染同结构网格（jinyu_fav_cell 出口），事件走委托无需重绑
+          var wrap = doc.querySelector('[data-jinyu-fav-list]');
+          if (wrap) {
+            Util.ajax('jinyu_fav_list', {}, function (err2, res2) {
+              if (!err2 && res2 && res2.success) wrap.innerHTML = res2.data.html;
+            });
+          }
+          // 同步侧栏「收藏」计数
+          var stat = doc.querySelector('[data-stat="favs"]');
+          if (stat) stat.textContent = String(Math.max(0, (parseInt(stat.textContent, 10) || 0) - 1));
+          Util.toast('Removed from favorites');
+        });
+        return;
+      }
+
+      // 全部已读
+      var readAll = e.target.closest('[data-jinyu-notif-readall]');
+      if (readAll) {
+        e.preventDefault();
+        if (!CFG.logged_in) return;
+        Util.ajax('jinyu_mark_read', {}, function (err, res) {
+          if (err || !res || !res.success) return;
+          var listEl = doc.querySelector('[data-jinyu-notif-list]');
+          if (listEl) {
+            var items = listEl.querySelectorAll('.jinyu-notif-item');
+            for (var i = 0; i < items.length; i++) items[i].classList.add('is-read');
+          }
+          updateNotifBadge(res.data.unread);
+          Util.toast(_t('allRead', 'All marked as read'));
+        });
+        return;
+      }
+    });
+
+    // 消息 tab 列表加载：首屏在消息 tab，或 tab 无刷新切换（jinyu:tab-loaded 事件）进入时触发
+    function initNotifTab() {
+      var listEl = doc.querySelector('[data-jinyu-notif-list]');
+      if (!listEl || listEl.dataset.loaded) return;
+      listEl.dataset.loaded = '1';
+      var notifPage = 1;
+      var moreBtn = doc.querySelector('[data-jinyu-notif-more]');
+
+      // 追加时只取 .jinyu-notif-item，避免把服务端可能返回的空态占位重复插入
+      function appendNotifs(html, append) {
+        if (!append) {
+          listEl.innerHTML = html;
+          return;
+        }
+        var tmp = doc.createElement('ul');
+        tmp.innerHTML = html;
+        var frag = doc.createDocumentFragment();
+        var items = tmp.querySelectorAll('.jinyu-notif-item');
+        for (var i = 0; i < items.length; i++) frag.appendChild(items[i]);
+        if (frag.childNodes.length) listEl.appendChild(frag);
+      }
+      function loadNotifs(page, append) {
+        Util.ajax('jinyu_get_notifications', {
+          page: page
+        }, function (err, res) {
+          if (moreBtn) moreBtn.disabled = false;
+          if (err || !res || !res.success) {
+            if (!append) {
+              listEl.innerHTML = '<li class="jinyu-empty">' + _t('notifLoadFailed', 'Load failed. Refresh and try again') + '</li>';
+            }
+            return;
+          }
+          appendNotifs(res.data.html, append);
+          updateNotifBadge(res.data.unread);
+          if (moreBtn) moreBtn.hidden = !res.data.has_more;
+        });
+      }
+      loadNotifs(1, false);
+      if (moreBtn) moreBtn.addEventListener('click', function () {
+        if (moreBtn.disabled) return;
+        moreBtn.disabled = true;
+        notifPage += 1;
+        loadNotifs(notifPage, true);
+      });
+
+      // 点开即读：点击未读消息跳转前顺手标记已读（不拦截跳转）。
+      // ids 用 'ids[]' 键名传数组（Util.ajax 平铺序列化），避免落空被后端按「全部已读」处理
+      listEl.addEventListener('click', function (e) {
+        var link = e.target.closest('.jinyu-notif-link');
+        if (!link) return;
+        var item = link.closest('.jinyu-notif-item');
+        if (!item || item.classList.contains('is-read') || !item.dataset.notifId) return;
+        var fd = {};
+        fd['ids[]'] = item.dataset.notifId;
+        Util.ajax('jinyu_mark_read', fd, function (err, res) {
+          if (err || !res || !res.success) return;
+          item.classList.add('is-read');
+          updateNotifBadge(res.data.unread);
+        });
+      });
+    }
+    initNotifTab();
+    doc.addEventListener('jinyu:tab-loaded', initNotifTab);
+    function updateNotifBadge(unread) {
+      // 侧栏导航与头部下拉都可能挂着 .jinyu-user-notif-link，全部同步
+      var links = doc.querySelectorAll('.jinyu-user-notif-link');
+      unread = parseInt(unread, 10) || 0;
+      for (var i = 0; i < links.length; i++) {
+        var link = links[i];
+        var badge = link.querySelector('.jinyu-badge');
+        if (unread > 0) {
+          if (!badge) {
+            badge = doc.createElement('span');
+            badge.className = 'jinyu-badge';
+            link.appendChild(badge);
+          }
+          badge.textContent = unread > 99 ? '99+' : String(unread);
+        } else if (badge) {
+          badge.parentNode.removeChild(badge);
+        }
+      }
+    }
+  }
+
+  /* 作者卡封面离子动画：轻量 canvas。性能要点：
+     - 预渲染发光精灵，避免每帧 shadowBlur（最贵的操作）；
+     - 单一共享 RAF，只绘制「可见」实例，离屏/切后台/减弱动画即停；
+     - 粒子数极少（20）、DPR 封顶 2、颜色读主题主色，暗亮主题自动和谐；
+     - 用模块级实例表，PJAX 后重复调用只追加新卡、不重复开循环。 */
+  var ionInstances = [];
+  var ionLoop = 0;
+  var ionHidden = document.visibilityState === 'hidden';
+  var ionBound = false;
+  function ionPrimaryRGB() {
+    var v = getComputedStyle(root).getPropertyValue('--jinyu-c-primary-rgb').trim();
+    return v || '124,58,237'; // 缺省紫，呼应头像
+  }
+  function ionMakeGlow(rgb, a) {
+    var s = 32,
+      c = doc.createElement('canvas');
+    c.width = c.height = s;
+    var g = c.getContext('2d');
+    var grd = g.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2);
+    grd.addColorStop(0, 'rgba(' + rgb + ',' + a + ')');
+    grd.addColorStop(0.3, 'rgba(' + rgb + ',' + a * 0.6 + ')');
+    grd.addColorStop(1, 'rgba(' + rgb + ',0)');
+    g.fillStyle = grd;
+    g.fillRect(0, 0, s, s);
+    return c;
+  }
+  function ionSize(inst) {
+    var rect = inst.cover.getBoundingClientRect();
+    var w = Math.max(1, Math.round(rect.width));
+    var h = Math.max(1, Math.round(rect.height));
+    inst.dpr = Math.min(window.devicePixelRatio || 1, 2);
+    inst.canvas.width = w * inst.dpr;
+    inst.canvas.height = h * inst.dpr;
+    inst.canvas.style.width = w + 'px';
+    inst.canvas.style.height = h + 'px';
+    inst.w = w;
+    inst.h = h;
+    inst.ctx.setTransform(inst.dpr, 0, 0, inst.dpr, 0, 0);
+  }
+  function ionSeed(inst) {
+    inst.particles = [];
+    for (var i = 0; i < 20; i++) {
+      inst.particles.push({
+        x: Math.random() * inst.w,
+        y: Math.random() * inst.h,
+        vx: (Math.random() - 0.5) * 0.25,
+        vy: (Math.random() - 0.5) * 0.25,
+        r: 1 + Math.random() * 2,
+        ph: Math.random() * Math.PI * 2,
+        sp: 0.01 + Math.random() * 0.02,
+        b: Math.random() < 0.5 ? inst.glowA : inst.glowB
+      });
+    }
+  }
+  function ionDraw(inst) {
+    var c = inst.ctx,
+      w = inst.w,
+      h = inst.h,
+      ps = inst.particles,
+      pr = inst.pr;
+    c.clearRect(0, 0, w, h);
+    var i, j, p, q, dx, dy, dist;
+    for (i = 0; i < ps.length; i++) {
+      p = ps[i];
+      for (j = i + 1; j < ps.length; j++) {
+        q = ps[j];
+        dx = p.x - q.x;
+        dy = p.y - q.y;
+        dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 40) {
+          c.globalAlpha = (1 - dist / 40) * 0.22;
+          c.strokeStyle = 'rgba(' + pr + ',1)';
+          c.lineWidth = 0.6;
+          c.beginPath();
+          c.moveTo(p.x, p.y);
+          c.lineTo(q.x, q.y);
+          c.stroke();
+        }
+      }
+    }
+    for (i = 0; i < ps.length; i++) {
+      p = ps[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.ph += p.sp;
+      if (p.x < -4) p.x = w + 4;else if (p.x > w + 4) p.x = -4;
+      if (p.y < -4) p.y = h + 4;else if (p.y > h + 4) p.y = -4;
+      var tw = 0.55 + 0.45 * Math.sin(p.ph);
+      var size = p.r * 6;
+      c.globalAlpha = tw;
+      c.drawImage(p.b, p.x - size / 2, p.y - size / 2, size, size);
+    }
+    c.globalAlpha = 1;
+  }
+  function ionFrame() {
+    ionLoop = 0;
+    var any = false;
+    for (var i = 0; i < ionInstances.length; i++) {
+      var inst = ionInstances[i];
+      if (inst.visible && !inst.reduce) {
+        any = true;
+        ionDraw(inst);
+      }
+    }
+    if (any && !ionHidden) ionLoop = requestAnimationFrame(ionFrame);
+  }
+  function ionEnsure() {
+    if (ionLoop || ionHidden) return;
+    for (var i = 0; i < ionInstances.length; i++) {
+      if (ionInstances[i].visible && !ionInstances[i].reduce) {
+        ionLoop = requestAnimationFrame(ionFrame);
+        break;
+      }
+    }
+  }
+  function coverIons() {
+    var covers = $$('.jinyu-author-cover');
+    if (!covers.length) return;
+    if (!window.requestAnimationFrame || !doc.createElement('canvas').getContext) return;
+    var pr = ionPrimaryRGB();
+    covers.forEach(function (cover) {
+      if (cover.querySelector('.jinyu-cover-ion')) return; // 已初始化
+      var canvas = doc.createElement('canvas');
+      canvas.className = 'jinyu-cover-ion';
+      cover.insertBefore(canvas, cover.firstChild);
+      var inst = {
+        cover: cover,
+        canvas: canvas,
+        ctx: canvas.getContext('2d'),
+        w: 0,
+        h: 0,
+        dpr: 1,
+        particles: [],
+        visible: true,
+        reduce: reduceMotion,
+        pr: pr,
+        glowA: ionMakeGlow(pr, 0.9),
+        glowB: ionMakeGlow('34,211,238', 0.85)
+      };
+      ionSize(inst);
+      ionSeed(inst);
+      if (inst.reduce) ionDraw(inst); // 减弱动画：画一帧静态即可
+      ionInstances.push(inst);
+      if ('IntersectionObserver' in window) {
+        var io = new IntersectionObserver(function (ents) {
+          ents.forEach(function (e) {
+            inst.visible = e.isIntersecting;
+            if (inst.visible) ionEnsure();
+          });
+        }, {
+          threshold: 0.05
+        });
+        io.observe(cover);
+      }
+    });
+    if (!ionBound) {
+      ionBound = true;
+      var rz;
+      window.addEventListener('resize', function () {
+        clearTimeout(rz);
+        rz = setTimeout(function () {
+          ionInstances.forEach(function (inst) {
+            ionSize(inst);
+            ionSeed(inst);
+            if (inst.reduce) ionDraw(inst);
+          });
+        }, 200);
+      });
+      document.addEventListener('visibilitychange', function () {
+        ionHidden = document.visibilityState === 'hidden';
+        if (!ionHidden) ionEnsure();
+      });
+    }
+    ionEnsure();
+  }
+
+  /* 申请友链页：本站信息一键复制 + 申请表单提交（验证码按需懒载，避免无表单的页面白白请求） */
+  function flinkApply() {
+    var wrap = $('.jinyu-flink-apply-page');
+    if (!wrap) return;
+    $$('[data-jinyu-copy]', wrap).forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var text = btn.getAttribute('data-jinyu-copy') || '';
+        if (!text) return;
+        var label = btn.querySelector('span');
+        var old = label ? label.textContent : '';
+        var done = function done(ok) {
+          if (!ok) {
+            window.prompt('Copy this content: ', text);
+            return;
+          }
+          btn.classList.add('is-done');
+          if (label) label.textContent = _t('copied', 'Copied');
+          setTimeout(function () {
+            btn.classList.remove('is-done');
+            if (label) label.textContent = old;
+          }, 1400);
+        };
+        Util.copy(text).then(function () {
+          done(true);
+        })["catch"](function () {
+          done(false);
+        });
+      });
+    });
+    var form = $('[data-jinyu-flink-apply]', wrap);
+    if (!form) return;
+    var cap = $('[data-jinyu-captcha]', form);
+    var capImg = cap ? cap.querySelector('.jinyu-captcha-img') : null;
+    function loadCaptcha() {
+      if (!cap || !capImg) return;
+      capImg.hidden = false;
+      capImg.src = cap.getAttribute('data-jinyu-captcha-src') + '&r=' + Date.now();
+    }
+    loadCaptcha();
+    if (cap) cap.addEventListener('click', function (e) {
+      if (e.target.closest('[data-jinyu-captcha-refresh], .jinyu-captcha-img')) loadCaptcha();
+    });
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var tip = $('[data-jinyu-flink-tip]', form);
+      var btn = form.querySelector('button[type="submit"]');
+      var label = btn ? btn.textContent : '';
+      function get(n) {
+        var el = form.querySelector('[name="' + n + '"]');
+        return el ? el.value.trim() : '';
+      }
+      $$('input.is-error', form).forEach(function (el) {
+        el.classList.remove('is-error');
+      });
+      var name = get('site_name'),
+        url = get('site_url'),
+        email = get('site_email');
+      var bad = '';
+      if (name.length < 2 || name.length > 50) bad = 'Site name must be 2-50 characters';else if (!/^https?:\/\/[^\s/$.?#][^\s]*$/i.test(url)) bad = 'Site URL must start with http:// or https://';else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) bad = 'Please enter a valid contact email';else if (capImg && !capImg.hidden && !get('captcha')) bad = 'Please enter the captcha';
+      if (bad) {
+        Util.showTip(tip, bad, false);
+        return;
+      }
+      var data = {};
+      ['site_name', 'site_url', 'site_desc', 'site_icon', 'site_email', 'captcha', 'jy_hp'].forEach(function (n) {
+        data[n] = get(n);
+      });
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = _t('submitting', 'Submitting…');
+      }
+      Util.showTip(tip, '');
+      Util.ajax('jinyu_flink_apply', data, function (err, res) {
+        if (err || !res || !res.success) {
+          if (btn) {
+            btn.disabled = false;
+            btn.textContent = label;
+          }
+          Util.showTip(tip, res && res.data ? res.data : 'Submission failed. Please try again later.', false);
+          loadCaptcha(); // 验证码一次性，失败后必须换一张
+          return;
+        }
+        var done = $('[data-jinyu-flink-done]', wrap);
+        form.hidden = true;
+        if (done) {
+          done.hidden = false;
+          done.scrollIntoView({
+            block: 'center',
+            behavior: reduceMotion ? 'auto' : 'smooth'
+          });
+        } else if (btn) {
+          btn.disabled = false;
+          btn.textContent = label;
+          Util.showTip(tip, res.data.message, true);
+        }
+      });
+    });
+  }
+  window.jinyuReinit = function () {
+    [toc, codeBlock, codeHighlight, lightbox, masonry, reveal, carousel, readProgress, backTop, loadMore, pageJump, headerScroll, coverFallback, liveSearch, fontScale, recentViewed, hoverCard, coView, articleVote, copyGuard, paraCopy, sidebarLive, widgetAnim, hitokoto, sales, social, coverIons, flinkApply, commentSmiley, ajaxComment, commentCounter, userForms, confirmGuard].forEach(function (fn) {
+      try {
+        fn();
+      } catch (e) {/* 单模块异常不阻断 */}
+    });
+  };
+
+  /* Web Vitals 采集：原生 PerformanceObserver，零依赖、零第三方。
+     浏览器仅向本站 admin-ajax 发同源请求，由服务端本地落库，供后台「性能优化中心」展示。
+     LCP/INP/CLS 为主指标，FCP/TTFB 辅助定位瓶颈。 */
+  function webVitals() {
+    if (typeof PerformanceObserver === 'undefined') return;
+    var m = {
+      lcp: 0,
+      inp: 0,
+      cls: 0,
+      fcp: 0,
+      ttfb: 0
+    };
+    var done = false;
+    function send() {
+      if (done) return;
+      if (!m.lcp && !m.inp && !m.cls && !m.fcp && !m.ttfb) return;
+      done = true;
+      var payload = {
+        lcp: Math.round(m.lcp),
+        inp: Math.round(m.inp),
+        cls: Math.round(m.cls * 1000) / 1000,
+        fcp: Math.round(m.fcp),
+        ttfb: Math.round(m.ttfb),
+        path: location.pathname
+      };
+      if (CFG.theme_version) payload.theme_version = CFG.theme_version;
+      // 同源发往本站 admin-ajax（action=jinyu_web_vitals）：服务端本地落库，供后台「性能优化中心」展示。无私有后端依赖。
+      try {
+        var fd = new URLSearchParams();
+        fd.set('action', 'jinyu_web_vitals');
+        fd.set('data', JSON.stringify(payload));
+        var url = CFG.ajax_url || '/wp-admin/admin-ajax.php';
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon(url, fd);
+        } else {
+          fetch(url, {
+            method: 'POST',
+            body: fd,
+            keepalive: true,
+            credentials: 'same-origin'
+          });
+        }
+      } catch (e) {/* 采集失败不应影响页面 */}
+    }
+    try {
+      new PerformanceObserver(function (list) {
+        var entries = list.getEntries();
+        if (entries.length) {
+          var last = entries[entries.length - 1];
+          m.lcp = last.renderTime || last.loadTime;
+        }
+      }).observe({
+        type: 'largest-contentful-paint',
+        buffered: true
+      });
+      var clsVal = 0;
+      new PerformanceObserver(function (list) {
+        var entries = list.getEntries();
+        for (var i = 0; i < entries.length; i++) {
+          if (!entries[i].hadRecentInput) clsVal += entries[i].value;
+        }
+        m.cls = clsVal;
+      }).observe({
+        type: 'layout-shift',
+        buffered: true
+      });
+      new PerformanceObserver(function (list) {
+        var entries = list.getEntries();
+        for (var i = 0; i < entries.length; i++) {
+          var v = entries[i].processingEnd - entries[i].startTime;
+          if (v > m.inp) m.inp = v;
+        }
+      }).observe({
+        type: 'event',
+        buffered: true,
+        durationThreshold: 16
+      });
+      new PerformanceObserver(function (list) {
+        var entries = list.getEntries();
+        if (entries.length) m.fcp = entries[0].startTime;
+      }).observe({
+        type: 'paint',
+        buffered: true
+      });
+      new PerformanceObserver(function (list) {
+        var entries = list.getEntries();
+        if (entries.length) m.ttfb = entries[0].responseStart;
+      }).observe({
+        type: 'navigation',
+        buffered: true
+      });
+    } catch (e) {
+      return; // 旧浏览器不支持，静默跳过
+    }
+
+    // 主上报：页面卸载时（INP/CLS 已充分累积，数据最完整）
+    window.addEventListener('pagehide', send);
+    // 兜底：切换标签 / 切入后台（覆盖只切走不关闭的场景）
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'hidden') send();
+    });
+    // 长停留兜底：加载后 10s 仍未卸载则上报，避免数据永不发出
+    // （10s 时 LCP/FCP/TTFB/CLS 已基本稳定，比原 1.5s 失真更小）
+    window.addEventListener('load', function () {
+      setTimeout(send, 10000);
+    });
+  }
+  var MODULES = [theme, greyMode, nav, search, readProgress, readEstimate, backTop, toc, liveSearch, fontScale, recentViewed, hoverCard, coView, articleVote, copyGuard, paraCopy, codeBlock, codeHighlight, coverFallback, imgFallback, lazyImg, blurImg, postActions, share, masonry, reveal, headerScroll, loadMore, pageJump, shortcodes, ajaxComment, auth, userForms, userTabs, commentCounter, confirmGuard, poster, qrcodeModule, donate, lightbox, carousel, pjax, luck, faviconBadge, sidebarLive, widgetAnim, hitokoto, sales, social, webVitals, coverIons, flinkApply];
+
+  /* 页脚运行信息（位于版权/备案行、备案号右侧）：
+     - 查询 / 页面生成时间：footer.php 内联本次 PHP 渲染的真实测量值（服务端口径）。
+     - 整页缓存命中时，内联值即"该页面 MISS 时真实生成成本"的快照，本身是有意义信息，
+       不再由 JS 改写：早期曾用 fetch 读 X-Jinyu-Cache 在命中时把数字强制归零，
+       既造成"闪烁变 0"又额外多发一次绕缓存请求，已彻底移除 runinfoRtt。 */
+
+  function boot() {
+    skeleton();
+    commentSmiley(); // 显式直接调用，避免被 terser 当 dead code 删除
+    MODULES.forEach(function (fn) {
+      try {
+        fn();
+      } catch (err) {
+        // 单个模块异常不应阻断其余功能
+        if (window.console && console.error) console.error('[jinyu] module failed:', fn.name, err);
+      }
+    });
+  }
+  if (doc.readyState === 'loading') {
+    doc.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+
+  /* 古老内核提示条关闭：仅当 <html> 带 jinyu-legacy（过旧内核）时才存在可见提示条，
+     点击 × 隐藏并记忆到 localStorage，避免反复打扰。无脚本 / 现代浏览器不会有该元素。 */
+  (function () {
+    var notice = doc.querySelector('.jinyu-legacy-notice');
+    if (!notice) return;
+    var btn = notice.querySelector('[data-jinyu-legacy-dismiss]');
+    if (btn) btn.addEventListener('click', function () {
+      notice.style.display = 'none';
+      doc.documentElement.classList.add('jinyu-legacy-notice-off');
+      try {
+        localStorage.setItem('jinyuLegacyNoticeDismissed', '1');
+      } catch (e) {}
+    });
+  })();
+})(window, document);

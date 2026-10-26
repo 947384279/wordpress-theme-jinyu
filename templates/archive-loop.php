@@ -35,4 +35,4 @@ if ( ! defined( 'ABSPATH' ) ) {
 	?>
 <?php else : ?>
 	<?php get_template_part( 'templates/content', 'none' ); ?>
-<?php endif; ?>
+<?php endif;

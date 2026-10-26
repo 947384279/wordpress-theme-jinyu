@@ -1,0 +1,1096 @@
+/* 「主色作文字」专用：亮色=主色本身，暗色=更亮的文字变体（见 tokens.less） */
+/* 「主色压在自己调出的淡底上」专用：亮色取深档，暗色取提亮档 */
+/* ==========================================================================
+   首屏关键 CSS（内联，避免阻塞渲染；其余样式由 style.min.css 延迟加载）
+   说明：本文件不含 light :root（品牌色变量由 dynamic-style.php 在 wp_head 注入，
+        确保与后台「主题色」设置一致）；仅补一份 dark 令牌，避免主样式加载前暗色闪烁。
+   ========================================================================== */
+/* ===== 基础重置 ===== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html {
+  -webkit-text-size-adjust: 100%;
+}
+/* 与 common.less 保持一致：离屏固定抽屉会撑宽布局视口，用 clip 兜底（勿用 hidden） */
+html,
+body {
+  overflow-x: clip;
+}
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Jinyu Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--jinyu-c-text-2);
+  background: var(--jinyu-c-bg);
+  -webkit-font-smoothing: antialiased;
+}
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+a {
+  color: var(--jinyu-c-primary-text);
+  text-decoration: none;
+}
+button {
+  font-family: inherit;
+}
+/* 跳转到主内容（WCAG 2.4.1）：与 common.less 同步。
+   该元素是 <body> 后第一个节点，不在首屏关键 CSS 里隐藏的话会先闪出来再跳走 */
+.jinyu-skip-link {
+  position: fixed;
+  top: -999px;
+  left: 8px;
+  z-index: 9999;
+  padding: 8px 16px;
+  border-radius: 6px;
+  background: var(--jinyu-c-primary);
+  color: #fff;
+  font-size: 14px;
+  text-decoration: none;
+  transition: top 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.jinyu-skip-link:focus,
+.jinyu-skip-link:active {
+  top: 8px;
+  color: #fff;
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+/* 仅供屏幕阅读器：视觉隐藏但保留在无障碍树中（勿改成 display:none / visibility:hidden） */
+/* .screen-reader-text 是 WP 核心类名（the_posts_pagination / searchform 等输出），前台无 admin CSS 提供样式，必须主题兜底 */
+.jinyu-sr-only,
+.screen-reader-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+/* ===== 布局骨架 ===== */
+.jinyu-container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 var(--jinyu-gutter, 20px);
+}
+.jinyu-main-wrap {
+  display: flex;
+  gap: 24px;
+  padding: 24px var(--jinyu-gutter, 20px) 48px;
+}
+.jinyu-content {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.jinyu-sidebar {
+  width: 300px;
+  flex-shrink: 0;
+  align-self: flex-start;
+  position: sticky;
+  top: calc(var(--jinyu-head-h, 65px) + var(--jinyu-ab-h, 0px) + 16px);
+}
+@media (max-width: 1024px) {
+  .jinyu-sidebar {
+    position: static;
+  }
+}
+body.jinyu-sidebar-left .jinyu-sidebar {
+  order: -1;
+}
+body.jinyu-no-sidebar .jinyu-sidebar {
+  display: none;
+}
+/* 手机 / 平板不显示侧栏小工具（与 screen.less 保持同源条件，避免首屏先闪出再消失） */
+@media (max-width: 1024px), (hover: none) and (max-width: 1240px) {
+  .jinyu-main-wrap {
+    flex-direction: column;
+  }
+  .jinyu-sidebar {
+    display: none;
+  }
+}
+/* 「无侧栏 → 单页 860 居中」仅桌面两栏布局需要（与 common.less 同步包进桌面媒体查询）：
+   窄屏/触摸设备 main-wrap 已变 column，margin:0 auto 属交叉轴 auto 边距，
+   会禁用 stretch、正文列收缩到 860px 造成横向溢出。 */
+@media (min-width: 1025px) {
+  body.jinyu-no-sidebar .jinyu-single-wrap {
+    max-width: 860px;
+    margin: 0 auto;
+  }
+}
+/* 无侧栏模板（关于 / 申请友链 / 文章归档 / 友链）版心铺满内容区，见 common.less「文章页」小节。
+   首屏关键 CSS 必须同步，否则会先按 880 画出再被主样式改宽（闪一下）。 */
+.jinyu-main-wrap > .jinyu-single-wrap.jinyu-wide-wrap {
+  max-width: none;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+/* ===== 顶部导航 ===== */
+.jinyu-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--jinyu-c-bg-header);
+  border-bottom: 1px solid var(--jinyu-c-border);
+  backdrop-filter: saturate(180%) blur(16px);
+  -webkit-backdrop-filter: saturate(180%) blur(16px);
+  transition: background 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.jinyu-header.jinyu-header-scrolled {
+  background: var(--jinyu-c-bg-header);
+  border-bottom-color: var(--jinyu-c-border);
+  box-shadow: var(--jinyu-shadow-header);
+}
+/* 关闭毛玻璃（后台「全局设置 › 导航栏毛玻璃效果」关闭）：与 common.less 同步 */
+body.jinyu-no-nav-blur .jinyu-header {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+/* 古老内核盾：JS 给 <html> 打 jinyu-legacy 后，拆除头部毛玻璃（@bg-header 已是关闭毛玻璃路径的兜底实底）。放 critical 内联 CSS 里，首帧即生效、无闪烁。 */
+html.jinyu-legacy .jinyu-header {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+body.admin-bar .jinyu-header {
+  top: 32px;
+}
+@media (max-width: 782px) {
+  body.admin-bar .jinyu-header {
+    top: 46px;
+  }
+}
+/* ≤600px 管理栏随页滚走：头部贴顶即可（核心的 html{margin-top} 已为未滚动态让位，勿再补 padding） */
+@media (max-width: 600px) {
+  body.admin-bar .jinyu-header {
+    top: 0;
+  }
+}
+.jinyu-header-inner {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  min-height: 64px;
+  gap: 24px;
+  min-width: 0;
+}
+.jinyu-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--jinyu-c-text-1);
+  flex-shrink: 0;
+  min-width: 0;
+  /* 站名 + 副标题纵向堆叠：副标题不再占用横向预算 */
+}
+.jinyu-logo .jinyu-logo-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--jinyu-c-primary), var(--jinyu-c-primary-dark));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--jinyu-c-text-invert);
+  font-size: 18px;
+  box-shadow: 0 4px 12px rgba(var(--jinyu-c-primary-rgb), 0.3);
+}
+.jinyu-logo .jinyu-logo-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 10px;
+}
+.jinyu-logo .jinyu-logo-text-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+}
+.jinyu-logo .jinyu-logo-text {
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.jinyu-logo .jinyu-logo-sub {
+  font-size: 12px;
+  color: var(--jinyu-c-text-3);
+  font-weight: 400;
+  line-height: 1.3;
+  margin-left: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.jinyu-logo .jinyu-logo-img {
+  height: 32px;
+  width: auto;
+}
+/* 双 Logo 切换：必须与 .jinyu-logo 同级（嵌进去会变成后代选择器，永匹配不到，两张会同时显示） */
+.jinyu-logo--dual .jinyu-logo-dark {
+  display: none;
+}
+html[data-theme="dark"] .jinyu-logo--dual .jinyu-logo-light {
+  display: none;
+}
+html[data-theme="dark"] .jinyu-logo--dual .jinyu-logo-dark {
+  display: block;
+}
+.jinyu-nav-panel {
+  margin-left: auto;
+  flex: 0 1 auto;
+  min-width: 0;
+}
+.jinyu-nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.jinyu-nav > li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  /* 当前页标识：改用深字 + 主色下划线。
+           主色 #ff6b35 在白底仅 2.84:1、在 @primary-light(#fff3ec) 上约 2.57:1，
+           作为正文色达不到 WCAG AA；保留主色下划线/底色以维持可辨识的当前页指示。 */
+}
+.jinyu-nav > li > a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  padding: 0 6px;
+  font-size: 14px;
+  color: var(--jinyu-c-text-2);
+  font-weight: 500;
+  border-radius: var(--jinyu-radius-sm, 6px);
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  line-height: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+.jinyu-nav > li > a:hover {
+  color: var(--jinyu-c-primary-text);
+  background: var(--jinyu-c-primary-light);
+}
+.jinyu-nav > li.current-menu-item > a,
+.jinyu-nav > li.current_page_item > a,
+.jinyu-nav > li.jinyu-active > a {
+  color: var(--jinyu-c-text-1);
+  background: var(--jinyu-c-primary-light);
+  font-weight: 700;
+  box-shadow: inset 0 -2px 0 var(--jinyu-c-primary);
+}
+.jinyu-header-tools {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+}
+.jinyu-header-tools .jinyu-icon-btn {
+  width: 40px;
+  height: 40px;
+  border: 0;
+  background: transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--jinyu-c-text-1);
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+.jinyu-header-tools .jinyu-icon-btn i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  line-height: 1;
+}
+.jinyu-header-tools .jinyu-icon-btn:hover {
+  color: var(--jinyu-c-primary-text);
+  background: var(--jinyu-c-bg-subtle);
+}
+.jinyu-header-tools .jinyu-icon-btn:active {
+  transform: scale(0.9);
+}
+.jinyu-header-tools .jinyu-icon-btn:focus-visible {
+  outline: 2px solid var(--jinyu-c-primary);
+  outline-offset: 1px;
+}
+.jinyu-header-tools .jinyu-icon-btn[aria-pressed='true'] {
+  color: var(--jinyu-c-primary-text);
+  background: var(--jinyu-c-primary-light);
+}
+.jinyu-header-tools .jinyu-icon-btn.jinyu-d-none {
+  display: none;
+}
+.jinyu-nav-toggle {
+  display: none;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  background: transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--jinyu-c-text-1);
+  align-items: center;
+  justify-content: center;
+}
+.jinyu-nav-toggle:hover {
+  color: var(--jinyu-c-primary-text);
+  background: var(--jinyu-c-bg-subtle);
+}
+.jinyu-nav-toggle:active {
+  transform: scale(0.9);
+}
+.jinyu-nav-toggle:focus-visible {
+  outline: 2px solid var(--jinyu-c-primary);
+  outline-offset: 1px;
+}
+/* 汉堡三条线的最小骨架：首屏关键 CSS 里必须有，否则主样式到位前按钮是空心的 */
+.jinyu-burger {
+  position: relative;
+  display: block;
+  width: 18px;
+  height: 12px;
+}
+.jinyu-burger span {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+}
+.jinyu-burger span:nth-child(1) {
+  top: 0;
+}
+.jinyu-burger span:nth-child(2) {
+  top: 5px;
+}
+.jinyu-burger span:nth-child(3) {
+  top: 10px;
+}
+/* 导航在容器收窄到放不下菜单时折叠为全屏浮层（overlay）。
+   两种入口共用同一份 mixin：静态断点 ≤1240、JS 自适应折叠 html.jinyu-nav-collapse
+   （jinyu.js 检测到内联菜单放不下时给 <html> 加类，见 common.less 同名块）。
+   规则统一挂在 .jinyu-header 作用域下（jinyu.js 把菜单克隆到 body 下测自然宽度，
+   挂在 header 下保证克隆节点匹配不到折叠样式）。必须与主样式保持一致，否则窄屏首屏会先闪出错位。
+   这里只放「不闪错位」所必需的最小集合：面板必须隐藏、必须从头部下沿开始、必须去掉毛玻璃。 */
+/* 头部高度变量（与 common.less 同源）：65 = .jinyu-header-inner 的 64px + header 1px 下边框。
+   admin-bar 偏移与 ≤768 的头部高度必须逐条同源，否则主样式未就位时首屏浮层 top 会偏 32~46px。 */
+@media (max-width: 1240px) {
+  :root {
+    --jinyu-head-h: 65px;
+    --jinyu-ab-h: 0px;
+  }
+  body.admin-bar {
+    --jinyu-ab-h: 32px;
+  }
+  .jinyu-header {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: var(--jinyu-c-bg-card);
+    /* 工具区常驻标题栏右侧：Logo(0) 居左 → 工具(1) → 汉堡(2) 压轴最右（与 common.less 一致，避免首屏闪错位） */
+    /* 菜单打开时把 sticky header 强制 fixed 钉在顶部：
+       body.overflow=hidden 会冻结滚动容器，sticky 在已滚动页面会脱粘滑出视口，
+       导致面板顶部露出背景内容。面板仍从 header 下沿开始，不覆盖 header 自身内容。 */
+  }
+  .jinyu-header .jinyu-nav-toggle {
+    display: inline-flex;
+  }
+  .jinyu-header .jinyu-logo {
+    order: 0;
+    margin-right: auto;
+  }
+  .jinyu-header .jinyu-header-tools {
+    order: 1;
+    margin: 0;
+  }
+  .jinyu-header .jinyu-nav-toggle {
+    order: 2;
+    margin-right: 0;
+  }
+  .jinyu-header .jinyu-nav-panel {
+    position: fixed;
+    top: calc(var(--jinyu-head-h) + var(--jinyu-ab-h));
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    margin-left: 0;
+    background: var(--jinyu-c-bg);
+    z-index: 9990;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(-10px);
+  }
+  .jinyu-header .jinyu-nav-panel.jinyu-menu-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+  .jinyu-header body.jinyu-nav-opened .jinyu-header {
+    position: fixed;
+    top: var(--jinyu-ab-h, 0px);
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 10000;
+  }
+  .jinyu-header .jinyu-nav {
+    flex: 1 1 auto;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+    padding: 16px 20px 20px;
+    overflow-y: auto;
+    /* 必须与 common.less 同形（带 > li）：触摸端 :hover 粘住时，只有同形且位于其后的规则才能靠源序胜出 */
+  }
+  .jinyu-header .jinyu-nav ul {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+  }
+  .jinyu-header .jinyu-nav > li.jinyu-has-sub.jinyu-sub-open > ul {
+    max-height: 1200px;
+    opacity: 1;
+  }
+}
+@media (max-width: 1240px) and (max-width: 782px) {
+  body.admin-bar {
+    --jinyu-ab-h: 46px;
+  }
+}
+@media (max-width: 1240px) and (max-width: 600px) {
+  body.admin-bar {
+    --jinyu-ab-h: 0px;
+  }
+}
+@media (max-width: 1240px) and (max-width: 768px) {
+  :root {
+    --jinyu-head-h: 59px;
+  }
+}
+/* 桌面端不再切浮层：菜单始终平铺，溢出由 jinyu.js 流体缩放 + 工具区兜底（.jinyu-tools-compact）消化，
+   见 jinyu.js nav 模块。此处仅保留移动端 ≤1240 的汉堡浮层。 */
+/* ===== 公告条：标题栏下方的独立圆角卡片行（与 common.less 镜像同步） ===== */
+.jinyu-top-notice {
+  padding: 16px 0;
+}
+.jinyu-top-notice .jinyu-top-notice-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 52px;
+  padding: 12px 16px;
+  background: var(--jinyu-c-bg-card);
+  border: 1px solid var(--jinyu-c-border);
+  border-radius: var(--jinyu-radius-md, 12px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+.jinyu-top-notice i {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--jinyu-c-text-invert);
+  background: linear-gradient(135deg, var(--jinyu-c-primary), var(--jinyu-c-primary-dark));
+}
+.jinyu-top-notice span {
+  color: var(--jinyu-c-text-1);
+  line-height: 1.6;
+  min-width: 0;
+}
+.jinyu-top-notice--scroll .jinyu-top-notice-viewport {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 1.6em;
+  overflow: hidden;
+  line-height: 1.6;
+}
+.jinyu-top-notice--scroll .jinyu-top-notice-track {
+  display: flex;
+  flex-direction: column;
+  will-change: transform;
+  animation: jinyu-notice-scroll 6s linear infinite;
+}
+.jinyu-top-notice--scroll .jinyu-top-notice-track > span {
+  height: 1.6em;
+  line-height: 1.6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.jinyu-top-notice--scroll .jinyu-top-notice-track:hover {
+  animation-play-state: paused;
+}
+@keyframes jinyu-notice-scroll {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-50%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .jinyu-top-notice--scroll .jinyu-top-notice-track {
+    animation: none;
+    transform: translateY(0);
+  }
+}
+/* ===== 面包屑 / 归档头部 ===== */
+.jinyu-breadcrumbs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  row-gap: 2px;
+  font-size: 13px;
+  color: var(--jinyu-c-text-4);
+  margin-bottom: 20px;
+  min-width: 0;
+}
+.jinyu-breadcrumbs a,
+.jinyu-breadcrumbs .jinyu-bread-current {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  max-width: 100%;
+  padding: 2px 8px;
+  border-radius: var(--jinyu-radius-sm, 6px);
+  line-height: 1.6;
+}
+.jinyu-breadcrumbs a {
+  color: var(--jinyu-c-text-3);
+  text-decoration: none;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+.jinyu-breadcrumbs a:hover {
+  color: var(--jinyu-c-primary-text);
+  background: var(--jinyu-c-bg);
+}
+.jinyu-breadcrumbs .jinyu-bread-home i {
+  font-size: 12px;
+  margin-right: 4px;
+  opacity: 0.75;
+}
+.jinyu-breadcrumbs .jinyu-bread-sep {
+  display: inline-flex;
+  align-items: center;
+  color: var(--jinyu-c-text-4);
+  opacity: 0.55;
+  font-size: 12px;
+}
+.jinyu-breadcrumbs .jinyu-bread-current {
+  color: var(--jinyu-c-text-2);
+  font-weight: 600;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.jinyu-term-header {
+  position: relative;
+  margin-bottom: 24px;
+  padding: 8px;
+  background: var(--jinyu-c-bg-card);
+  border: 1px solid var(--jinyu-c-border);
+  border-radius: var(--jinyu-radius-lg, 16px);
+  box-shadow: var(--jinyu-shadow-card);
+  min-width: 0;
+  overflow: hidden;
+}
+.jinyu-term-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle at 18% 85%, rgba(var(--jinyu-c-primary-rgb, 255, 107, 53), 0.05) 0, transparent 26%), radial-gradient(circle at 82% 18%, rgba(var(--jinyu-c-primary-rgb, 255, 107, 53), 0.06) 0, transparent 30%);
+  pointer-events: none;
+}
+.jinyu-term-header > .jinyu-breadcrumbs {
+  margin-bottom: 4px;
+  line-height: 1.25;
+}
+.jinyu-term-header .bg-letter {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 76px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--jinyu-c-primary-text);
+  opacity: 0.06;
+  pointer-events: none;
+  user-select: none;
+  letter-spacing: -4px;
+  z-index: 0;
+}
+.jinyu-term-header .jinyu-term-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.jinyu-term-header .jinyu-term-badge {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--jinyu-radius-md, 12px);
+  background: var(--jinyu-c-primary-light);
+  color: var(--jinyu-c-primary-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+}
+.jinyu-term-header .jinyu-term-badge svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+.jinyu-term-header .jinyu-term-body {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+.jinyu-term-header h1 {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--jinyu-c-text-1);
+  margin: 0;
+  line-height: 1.15;
+}
+.jinyu-term-header .jinyu-term-desc {
+  margin-top: 8px;
+  color: var(--jinyu-c-text-3);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.jinyu-term-header .jinyu-term-meta {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--jinyu-c-text-3);
+}
+.jinyu-term-header .jinyu-term-meta b {
+  color: var(--jinyu-c-primary-text);
+  font-weight: 600;
+}
+.jinyu-author-header .jinyu-author-avatar-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid var(--jinyu-c-bg-card);
+  box-shadow: var(--jinyu-shadow-card);
+}
+.jinyu-author-header .jinyu-author-meta {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+.jinyu-author-header h1 {
+  margin: 0;
+}
+/* ===== 文章卡片（首屏） ===== */
+.jinyu-post-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--jinyu-post-cols, 2), minmax(0, 1fr));
+  gap: 24px;
+}
+.jinyu-post-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--jinyu-c-bg-card);
+  border: 1px solid var(--jinyu-c-border);
+  border-radius: var(--jinyu-radius-md, 12px);
+  overflow: hidden;
+  box-shadow: var(--jinyu-shadow-card);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.15s ease;
+}
+.jinyu-post-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--jinyu-shadow-hover);
+  border-color: transparent;
+}
+.jinyu-post-card:hover .jinyu-post-cover img {
+  transform: scale(1.05);
+}
+.jinyu-post-card:hover .jinyu-post-title {
+  color: var(--jinyu-c-primary-text);
+}
+.jinyu-post-card:hover .jinyu-post-cover::after {
+  opacity: 1;
+}
+/* 置顶卡片：顶部 4px 品牌色描边 + 光晕（与 common.less 同步，勿再改回渐变） */
+.jinyu-post-card.is-sticky {
+  border: 1px solid rgba(var(--jinyu-c-primary-rgb), 0.5);
+  border-top: 4px solid var(--jinyu-c-primary);
+  background: var(--jinyu-c-bg-card);
+  box-shadow: 0 6px 26px rgba(var(--jinyu-c-primary-rgb), 0.16);
+}
+.jinyu-post-card.is-sticky:hover {
+  border-color: rgba(var(--jinyu-c-primary-rgb), 0.62);
+  border-top-color: var(--jinyu-c-primary-text);
+  box-shadow: 0 14px 38px rgba(var(--jinyu-c-primary-rgb), 0.28);
+}
+/* 标题行内「置顶」胶囊（与 common.less 同步） */
+.jinyu-post-pintag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  vertical-align: middle;
+  background: rgba(var(--jinyu-c-primary-rgb), 0.12);
+  color: var(--jinyu-c-primary-ink);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-right: 8px;
+}
+.jinyu-post-pintag i {
+  font-size: 11px;
+}
+.jinyu-post-cover {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--jinyu-c-bg-subtle);
+}
+.jinyu-post-cover .jinyu-post-cover-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.jinyu-post-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.jinyu-post-cover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 50%, rgba(0, 0, 0, 0.15) 100%);
+  opacity: 0;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+.jinyu-post-cover .jinyu-post-cover-ph {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(var(--jinyu-c-primary-rgb), 0.16), rgba(var(--jinyu-c-primary-rgb), 0.06));
+  color: var(--jinyu-c-primary-text);
+  font-size: 28px;
+  opacity: 0.9;
+}
+.jinyu-post-info {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.jinyu-post-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--jinyu-c-text-1);
+  line-height: 1.4;
+  margin: 0 0 8px;
+  transition: color 0.15s ease;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.jinyu-post-excerpt {
+  font-size: 13px;
+  color: var(--jinyu-c-text-3);
+  line-height: 1.6;
+  margin: 0 0 12px;
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.jinyu-post-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--jinyu-c-text-4);
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--jinyu-c-border);
+  /* ⚠️ @text-4 在 #f5f6f8 上仅 4.47 不达标，改用 @text-3（5.29） */
+}
+.jinyu-post-meta i {
+  margin-right: 4px;
+}
+.jinyu-post-meta > span {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: var(--jinyu-c-bg-subtle);
+  color: var(--jinyu-c-text-3);
+  line-height: 1.55;
+}
+.jinyu-post-meta .jinyu-post-meta-updated {
+  color: var(--jinyu-c-text-3);
+}
+.jinyu-post-meta-series {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  padding: 1px 6px;
+  border-radius: 999px;
+  color: var(--jinyu-c-primary-text);
+  background: rgba(var(--jinyu-c-primary-rgb), 0.12);
+  transition: background 0.15s ease;
+}
+.jinyu-post-meta-series:hover {
+  background: rgba(var(--jinyu-c-primary-rgb), 0.24);
+}
+.jinyu-post-meta-series .jinyu-post-meta-series-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.jinyu-post-meta-series .jinyu-post-meta-series-index {
+  margin-left: 4px;
+  flex: none;
+  opacity: 0.75;
+}
+.jinyu-post-cat {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  align-self: flex-start;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.6;
+  color: #fff;
+  background: var(--c, var(--jinyu-c-primary));
+  padding: 4px 10px;
+  min-height: 28px;
+  border-radius: var(--jinyu-radius-sm, 6px);
+  transition: opacity 0.15s ease, background 0.15s ease;
+}
+.jinyu-post-cat:hover {
+  opacity: 0.9;
+}
+.jinyu-post-cat i {
+  font-size: 11px;
+}
+/* 分类色板：引用 var.less 单一真相源（与 common.less 共用同一 mixin） */
+/* ⚠️ 白字对比度硬约束：12 色全部须 ≥4.5:1（WCAG AA 正文）。
+       下值由原色相压暗到刚好过线（实测 4.6~5.9），视觉色相不变。
+       新增色值请先用对比度公式验算，勿再引入浅色（浅色只能配深字）。 */
+.jinyu-cat-0 {
+  --c: #d83a00;
+  --c-rgb: 216, 58, 0;
+}
+/* 橙 4.64 */
+.jinyu-cat-1 {
+  --c: #1c60f3;
+  --c-rgb: 28, 96, 243;
+}
+/* 蓝 5.23 */
+.jinyu-cat-2 {
+  --c: #008557;
+  --c-rgb: 0, 133, 87;
+}
+/* 绿 4.67 */
+.jinyu-cat-3 {
+  --c: #9b59b6;
+  --c-rgb: 155, 89, 182;
+}
+/* 紫 4.67 */
+.jinyu-cat-4 {
+  --c: #10808b;
+  --c-rgb: 16, 128, 139;
+}
+/* 青 4.68 */
+.jinyu-cat-5 {
+  --c: #dd1b79;
+  --c-rgb: 221, 27, 121;
+}
+/* 粉 4.66 */
+.jinyu-cat-6 {
+  --c: #9d6a07;
+  --c-rgb: 157, 106, 7;
+}
+/* 琥珀 4.67 */
+.jinyu-cat-7 {
+  --c: #1f7ab2;
+  --c-rgb: 31, 122, 178;
+}
+/* 天蓝 4.68 */
+.jinyu-cat-8 {
+  --c: #df2e1b;
+  --c-rgb: 223, 46, 27;
+}
+/* 红 4.62 */
+.jinyu-cat-9 {
+  --c: #1e864a;
+  --c-rgb: 30, 134, 74;
+}
+/* 草绿 4.60 */
+.jinyu-cat-10 {
+  --c: #8e44ad;
+  --c-rgb: 142, 68, 173;
+}
+/* 深紫 5.87 */
+.jinyu-cat-11 {
+  --c: #be5702;
+  --c-rgb: 190, 87, 2;
+}
+/* 亮橙 4.61 */
+/* ===== 头部用户菜单（首屏） ===== */
+.jinyu-user-menu {
+  position: relative;
+}
+.jinyu-user-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: var(--jinyu-c-text-1);
+  vertical-align: middle;
+}
+.jinyu-user-btn i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.jinyu-user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--jinyu-c-bg-subtle);
+  display: inline-block;
+  vertical-align: middle;
+  box-shadow: 0 0 0 2px var(--jinyu-c-border-strong);
+}
+/* ===== 暗色令牌（主样式延迟加载期间避免暗色闪烁） ===== */
+html[data-theme='dark'] {
+  color-scheme: dark;
+  /* ⚠️ 必须与 tokens.less 的 .jinyu-dark-tokens() 保持一致：本块是首屏暗色防闪烁的兜底，
+       主样式加载后会被其覆盖；改 tokens.less 暗色时务必同步此处，否则首屏先旧色后新色闪烁。 */
+  --jinyu-c-primary: #ff8a5c;
+  --jinyu-c-primary-dark: #ff6b35;
+  --jinyu-c-primary-light: rgba(255, 107, 53, 0.14);
+  --jinyu-c-primary-rgb: 255, 138, 92;
+  --jinyu-c-bg: #3a4150;
+  --jinyu-c-bg-card: #434a5a;
+  --jinyu-c-bg-subtle: #4d5568;
+  --jinyu-c-bg-input: #333947;
+  --jinyu-c-bg-code: #2c313d;
+  --jinyu-c-bg-code-bar: #383e4c;
+  --jinyu-c-bg-header: rgba(58, 65, 80, 0.82);
+  --jinyu-c-bg-footer: #353b47;
+  --jinyu-c-bg-mask: rgba(0, 0, 0, 0.55);
+  --jinyu-c-text-1: #eef0f4;
+  --jinyu-c-text-2: #d6dae2;
+  --jinyu-c-text-3: #aab2c0;
+  --jinyu-c-text-4: #9aa3b3;
+  --jinyu-c-text-invert: #fff;
+  --jinyu-c-text-footer-strong: #fff;
+  --jinyu-c-text-footer: #aab2c0;
+  --jinyu-c-border: rgba(255, 255, 255, 0.12);
+  --jinyu-c-border-strong: rgba(255, 255, 255, 0.18);
+  --jinyu-c-border-footer: #4a515f;
+  --jinyu-shadow-card: 0 4px 20px rgba(0, 0, 0, 0.35);
+  --jinyu-shadow-hover: 0 12px 32px rgba(var(--jinyu-c-primary-rgb), 0.22);
+  --jinyu-shadow-float: 0 16px 44px rgba(0, 0, 0, 0.45);
+  --jinyu-shadow-header: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme='light']) {
+    color-scheme: dark;
+    /* 与上方 html[data-theme='dark'] 块保持一致（见其同步说明） */
+    --jinyu-c-primary: #ff8a5c;
+    --jinyu-c-primary-dark: #ff6b35;
+    --jinyu-c-primary-light: rgba(255, 107, 53, 0.14);
+    --jinyu-c-primary-rgb: 255, 138, 92;
+    --jinyu-c-bg: #3a4150;
+    --jinyu-c-bg-card: #434a5a;
+    --jinyu-c-bg-subtle: #4d5568;
+    --jinyu-c-bg-input: #333947;
+    --jinyu-c-bg-code: #2c313d;
+    --jinyu-c-bg-code-bar: #383e4c;
+    --jinyu-c-bg-header: rgba(58, 65, 80, 0.82);
+    --jinyu-c-bg-footer: #353b47;
+    --jinyu-c-bg-mask: rgba(0, 0, 0, 0.55);
+    --jinyu-c-text-1: #eef0f4;
+    --jinyu-c-text-2: #d6dae2;
+    --jinyu-c-text-3: #aab2c0;
+    --jinyu-c-text-4: #9aa3b3;
+    --jinyu-c-text-invert: #fff;
+    --jinyu-c-text-footer-strong: #fff;
+    --jinyu-c-text-footer: #aab2c0;
+    --jinyu-c-border: rgba(255, 255, 255, 0.12);
+    --jinyu-c-border-strong: rgba(255, 255, 255, 0.18);
+    --jinyu-c-border-footer: #4a515f;
+    --jinyu-shadow-card: 0 4px 20px rgba(0, 0, 0, 0.35);
+    --jinyu-shadow-hover: 0 12px 32px rgba(var(--jinyu-c-primary-rgb), 0.22);
+    --jinyu-shadow-float: 0 16px 44px rgba(0, 0, 0, 0.45);
+    --jinyu-shadow-header: 0 4px 24px rgba(0, 0, 0, 0.4);
+  }
+}

@@ -61,8 +61,8 @@ try{if(localStorage.getItem('jinyuLegacyNoticeDismissed')==='1')document.documen
 <?php wp_body_open(); ?>
 
 <div class="jinyu-legacy-notice" role="alert">
-	<span><?php esc_html_e( '您的浏览器版本过旧，部分视觉效果已自动降级以保障稳定。建议升级浏览器以获得最佳体验。', 'jinyu' ); ?></span>
-	<button type="button" data-jinyu-legacy-dismiss aria-label="<?php esc_attr_e( '关闭提示', 'jinyu' ); ?>">&times;</button>
+	<span><?php esc_html_e( 'Your browser is outdated. Some visual effects have been downgraded automatically for stability. Please upgrade your browser for the best experience.', 'jinyu' ); ?></span>
+	<button type="button" data-jinyu-legacy-dismiss aria-label="<?php esc_attr_e( 'Dismiss', 'jinyu' ); ?>">&times;</button>
 </div>
 
 <a href="#jinyu-content" class="jinyu-skip-link"><?php esc_html_e( 'Skip to content', 'jinyu' ); ?></a>

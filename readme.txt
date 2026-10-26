@@ -4,7 +4,7 @@ Tags: blog, custom-colors, custom-logo, custom-menu, editor-style, featured-imag
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.3.2
+Stable tag: 1.3.3
 License: GPL v3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -74,6 +74,12 @@ License URI: https://www.gnu.org/licenses/gpl-3.0.html
 每个设置分组面板头部都有「重置本组」按钮，仅清空该分组、回退默认值，不影响其它设置。
 
 == Changelog ==
+
+= 1.3.3 =
+* WordPress.org 合规：按官方主题审核要求全面自查并修正（截图真实渲染、Theme URI 处理、前台串国际化、压缩文件附未压缩源码、长标题在内容区内折行）。
+* 新增 Font Awesome 许可证文件（assets/fonts/fa/license.txt），补全第三方资源授权声明。
+* 修正模板文件末尾 PHP 闭合标签（符合 WPCS 规范）。
+* 构建产物补足未压缩伴侣文件（style.css / critical.css / jinyu.js / ai-chat.js / admin-alert.css），与对应 .min 文件一同分发。
 
 = 1.3.2 =
 * 新增顶部公告重构：后台「顶部公告」改为多行 textarea（每行一条），新增独立总开关「显示公告条」与「滚动显示公告」复选框，多条开启滚动时垂直上下无缝轮播；仅一条或未开启滚动时静态平铺展示。

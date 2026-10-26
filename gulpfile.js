@@ -26,6 +26,7 @@ function versionCheck(done) {
 function buildStyle() {
     return gulp.src('assets/style/style.less')
         .pipe(less())
+        .pipe(gulp.dest('assets/dist/style'))            // unminified companion (wp.org REQUIRED: minified must ship with its original)
         .pipe(cleanCSS({ compatibility: 'ie8' }))
         .pipe(rename({ basename: 'style.min' }))
         .pipe(gulp.dest('assets/dist/style'));
@@ -43,6 +44,7 @@ function buildAdminStyle() {
 function buildAlertStyle() {
     return gulp.src('assets/style/admin-alert.less')
         .pipe(less())
+        .pipe(gulp.dest('assets/dist/style'))            // unminified companion (wp.org REQUIRED)
         .pipe(cleanCSS({ compatibility: 'ie8' }))
         .pipe(rename({ basename: 'admin-alert.min' }))
         .pipe(gulp.dest('assets/dist/style'));
@@ -51,6 +53,7 @@ function buildAlertStyle() {
 function buildJs() {
     return gulp.src(['assets/js/*.js', '!assets/js/admin.js'])
         .pipe(babel({ presets: ['@babel/preset-env'] }))
+        .pipe(gulp.dest('assets/dist/js'))               // unminified companion (wp.org REQUIRED)
         .pipe(uglify())
         .pipe(rename({ suffix: '.min' }))
         .pipe(gulp.dest('assets/dist/js'));
@@ -67,6 +70,7 @@ function buildAdminJs() {
 function buildCritical() {
     return gulp.src('assets/style/critical.less')
         .pipe(less())
+        .pipe(gulp.dest('assets/dist/style'))            // unminified companion (wp.org REQUIRED)
         .pipe(cleanCSS())
         .pipe(rename({ basename: 'critical.min' }))
         .pipe(gulp.dest('assets/dist/style'));

@@ -4,7 +4,7 @@ Tags: blog, custom-colors, custom-logo, custom-menu, editor-style, featured-imag
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.3.2
+Stable tag: 1.3.3
 License: GPL v3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -22,7 +22,7 @@ Key features:
 * Content enhancements: table of contents (TOC), breadcrumbs, back-to-top, code highlighting, reading progress bar, related posts, and previous/next post navigation.
 * Post interactions: like, bookmark, share, poster generation, and QR code.
 * Comment enhancements: user-agent parsing, emoji picker, comment pagination, and brute-force rate limiting.
-* SEO: built-in Open Graph / Twitter Card / JSON-LD structured data.
+* Social sharing: one-click share, poster generation, and a QR code for each post.
 * Layouts: list / large-image / card styles, two-column and three-column, sidebar that can be switched left or right; a "Full Width Page" template is provided.
 * 6 Gutenberg block patterns, insertable directly from the "Jinyu" category in the editor.
 * PHP 8.0+ / WordPress 6.0+; assets are loaded on demand, critical CSS is inlined, and HTML minification is optional.
@@ -47,7 +47,7 @@ All of them are under **Appearance → Customize**, grouped into panels: Basic, 
 
 = What if I need server-side features (caching, hardening, etc.)? =
 
-Those are outside the theme's responsibility; please implement them with the appropriate plugins. The theme itself does no object caching, writes no statistics, and injects no code.
+Those are outside the theme's responsibility; please implement them with the appropriate plugins. The theme itself does no object caching and injects no code; it stores only local, non-personally-identifying interaction data (see the Privacy section) and sends nothing to third parties.
 
 = Does the front end work completely without plugins? =
 
@@ -63,7 +63,7 @@ Only two cases produce an external request, and both require the site owner to o
 
 == Privacy ==
 
-This theme collects and reports no statistics and sends no visitor data to third parties. The distribution contains no code path that sends visitor data to third parties (IP geolocation lookups and other self-hosted-only features have been removed entirely).
+This theme collects no visitor-identifying data and sends no visitor data to third parties. It stores only local, anonymous interaction statistics (see below) inside this site's own database; the distribution contains no code path that sends visitor data to third parties (IP geolocation lookups and other self-hosted-only features have been removed entirely).
 
 **Data stored locally by this theme (all inside this site's own database, never sent out):**
 
@@ -107,6 +107,12 @@ All of the above are provided as uncompressed source paired with their minified 
 The remaining scripts and styles (homepage carousel, table of contents, likes, reading progress, etc.) are original implementations of this theme, with no third-party code or licensing obligations.
 
 == Changelog ==
+
+= 1.3.3 =
+* WordPress.org review compliance: addressed all points raised in the theme review (screenshot accuracy, Theme URI handling, front-end string internationalization, shipping unminified sources alongside minified files, and long-title wrapping within the content area).
+* Added the Font Awesome license file (assets/fonts/fa/license.txt) to declare third-party asset licensing.
+* Removed the trailing PHP closing tag from the archive loop template (WPCS).
+* Build output now ships unminified companion files (style.css / critical.css / jinyu.js / ai-chat.js / admin-alert.css) alongside their .min counterparts.
 
 = 1.3.2 =
 * Rebuilt the site notice banner: the "Site Notice" field now accepts one notice per line, with a dedicated toggle to show or hide the banner and a second toggle to scroll multiple notices vertically in a seamless loop. A single notice is displayed statically.
