@@ -3392,6 +3392,8 @@ html.jinyu-tools-compact .jinyu-header-social {
   line-height: 1.75;
   font-family: inherit;
   color: var(--jinyu-c-text-1);
+  /* 键盘聚焦必须有可见描边：上方 outline:none 会盖掉全局 :focus-visible，
+           这里用更高优先级补回（WCAG 2.4.7 / wp.org Keyboard Navigation 要求）。 */
 }
 .jinyu-comment-editor textarea::placeholder {
   color: var(--jinyu-c-text-3);
@@ -3399,6 +3401,11 @@ html.jinyu-tools-compact .jinyu-header-social {
 }
 .jinyu-comment-editor textarea:focus {
   background: transparent;
+}
+.jinyu-comment-editor textarea:focus-visible {
+  outline: 2px solid var(--jinyu-c-primary);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 /* 底部工具栏：表情 + 字数计数 + 提交 */
 .jinyu-comment-toolbar {

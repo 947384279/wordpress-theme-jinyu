@@ -1,12 +1,12 @@
 === Jinyu Lite ===
 Contributors: jinyu888
-Tags: blog, custom-colors, custom-logo, custom-menu, editor-style, featured-images, microformats, post-formats, rtl-language-support, sticky-post, threaded-comments, translation-ready, two-columns, three-columns, block-styles, wide-blocks, full-width-template, custom-background, theme-options
+Tags: blog, custom-colors, custom-logo, custom-menu, editor-style, featured-images, microformats, rtl-language-support, sticky-post, threaded-comments, translation-ready, two-columns, three-columns, block-styles, wide-blocks, full-width-template, custom-background, theme-options
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.3.3
-License: GPL v3 or later
-License URI: https://www.gnu.org/licenses/gpl-3.0.html
+Stable tag: 1.3.5
+License: GPL-2.0-or-later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 A clean, responsive blog theme for content sites: dark mode, multiple homepage sections, likes & bookmarks, table of contents and code highlighting. Pure presentation layer, no code injection, and no visitor data is sent to third parties.
 
@@ -102,11 +102,18 @@ This theme bundles the following third-party assets under `assets/`, licensed as
 * Highlight.js 11.9.0 (`assets/js/vendor/highlight.js`, code highlighting) — BSD-3-Clause, https://github.com/highlightjs/highlight.js/blob/main/LICENSE, copyright the Highlight.js contributors; the bundled GitHub color scheme (`assets/css/vendor/highlight.css`) belongs to the same project under the same license.
 * Viewer.js 1.11.7 (`assets/js/vendor/viewer.js`, image lightbox) — MIT, https://github.com/fengyuanchen/viewerjs/blob/main/LICENSE, copyright Chen Fengyuan.
 * QRCode.js (`assets/js/vendor/qrcode.js`, share QR code) — MIT, https://github.com/davidshimjs/qrcodejs, copyright Kazuhiko Arase / davidshimjs.
+* Noto Sans SC / Source Han Sans (`assets/dist/fonts/jinyu-text/jinyu-text-latin.woff2`, Latin subset; CSS font-family alias "Jinyu Sans") — SIL OFL 1.1, Copyright 2014-2021 Adobe, with Reserved Font Name "Source". The full license text ships at `assets/dist/fonts/jinyu-text/OFL.txt`.
 
 All of the above are provided as uncompressed source paired with their minified versions, readable and verifiable directly; all licenses are GPL-compatible (MIT / BSD-3-Clause / CC BY 4.0 / SIL OFL 1.1).
 The remaining scripts and styles (homepage carousel, table of contents, likes, reading progress, etc.) are original implementations of this theme, with no third-party code or licensing obligations.
 
 == Changelog ==
+
+= 1.3.5 =
+* License standardized to GPL-2.0-or-later across the theme header, both readmes, and the full license text; the translation template domain now matches the lite slug.
+* Accessibility: restored visible keyboard focus in the comment editor, removed aria-hidden from a container with focusable buttons, added accessible names to user-center fields and carousel links, and localized the modal close button.
+* Internationalization: translated 22 hard-coded strings across 5 block patterns, refreshed the translation files (900 to 922 entries), and removed Chinese punctuation from English strings.
+* Privacy and branding: removed embedded watermarks from 54 category cover images, deleted dead telemetry code and its setting copy, bundled the OFL license for the included font, and skipped the Gravatar probe in the wp.org build.
 
 = 1.3.3 =
 * WordPress.org review compliance: addressed all points raised in the theme review (screenshot accuracy, Theme URI handling, front-end string internationalization, shipping unminified sources alongside minified files, and long-title wrapping within the content area).

@@ -403,7 +403,10 @@ msgid "Dismiss"
 msgstr "关闭提示"
 
 #: header.php:64
-msgid "Your browser is outdated. Some visual effects have been downgraded automatically for stability. Please upgrade your browser for the best experience."
+msgid ""
+"Your browser is outdated. Some visual effects have been downgraded "
+"automatically for stability. Please upgrade your browser for the best "
+"experience."
 msgstr "您的浏览器版本过旧，部分视觉效果已自动降级以保障稳定。建议升级浏览器以获得最佳体验。"
 
 #: inc/ajax/index.php:418
@@ -2707,16 +2710,6 @@ msgid ""
 " other advanced configurations."
 msgstr "第三方服务接入、兼容性开关、AI 对话与主题更新等非常规配置。"
 
-#: inc/setting/options/Jinyu_OptionExtend.php:42
-msgid ""
-"⚠️ Privacy note: when enabled, sidebar real-time data sends the visitor's IP"
-" to a third-party service (whois.pconline.com.cn) for location lookup. Off "
-"by default; only locally available IP/OS/browser info is shown. Results are "
-"cached for 12 hours; sending stops immediately when disabled"
-msgstr ""
-"⚠️ 隐私提示：开启后侧栏实时数据会把访客 IP 发往第三方服务（whois.pconline.com.cn）查询归属地。默认关闭，仅显示访客本机可得的"
-" IP/系统/浏览器信息。结果缓存 12 小时，关闭后立即停止外发"
-
 #: inc/setting/options/Jinyu_OptionFooter.php:32
 msgid "About This Site"
 msgstr "关于本站"
@@ -3583,8 +3576,8 @@ msgid "tags"
 msgstr "个标签"
 
 #: pages/template-user-tabs.php:46
-msgid "%1$s，%2$s"
-msgstr "%1$s，%2$s"
+msgid "%1$s, %2$s"
+msgstr "%1$s, %2$s"
 
 #: pages/template-user-tabs.php:186
 msgid "Back to list"
@@ -3945,3 +3938,109 @@ msgstr "本文由 %1$s 创作，转载请注明来源：%2$s（%3$s）"
 #: templates/post-relevant.php:22
 msgid "Related posts"
 msgstr "相关文章"
+
+#: patterns/faq.php:20
+msgid "Frequently Asked Questions"
+msgstr "常见问题"
+
+#: patterns/faq.php:24
+msgid "Which PHP versions are supported?"
+msgstr "支持哪些 PHP 版本？"
+
+#: patterns/faq.php:28
+msgid ""
+"PHP 8.0 or above is required; 8.2+ is recommended for the best performance."
+msgstr "需要 PHP 8.0 或更高版本；推荐 8.2+ 以获得最佳性能。"
+
+#: patterns/faq.php:32
+msgid "Can I use it commercially?"
+msgstr "可以用于商业用途吗？"
+
+#: patterns/faq.php:36
+msgid ""
+"The theme is released under the GPL v2 or later, so commercial use and "
+"modification are allowed."
+msgstr "本主题以 GPL v2 或更高版本发布，允许商业使用与修改。"
+
+#: patterns/faq.php:40
+msgid "How do I get support?"
+msgstr "如何获得支持？"
+
+#: patterns/faq.php:44
+msgid ""
+"Post in the theme support forum, or reach us through the contact options on "
+"this site."
+msgstr "在主题支持论坛发帖，或通过本站的联系方式联系我们。"
+
+#: patterns/cta.php:20
+msgid "Enjoying the content?"
+msgstr "喜欢这些内容吗？"
+
+#: patterns/cta.php:24
+msgid "Subscribe and get every new post delivered straight to your inbox."
+msgstr "订阅后每篇新文章都会直接送达收件箱。"
+
+#: patterns/cta.php:29
+msgid "Subscribe now"
+msgstr "立即订阅"
+
+#: patterns/features.php:25
+msgid "Blazing Fast"
+msgstr "极速流畅"
+
+#: patterns/features.php:29
+msgid ""
+"Assets load on demand, critical CSS is inlined, and the first screen opens "
+"in seconds."
+msgstr "资源按需加载，关键 CSS 内联，首屏秒开。"
+
+#: patterns/features.php:39
+msgid "Dark Mode"
+msgstr "深色模式"
+
+#: patterns/features.php:43
+msgid ""
+"Switch manually or follow the system; colors are derived automatically for "
+"comfortable night reading."
+msgstr "可手动切换或跟随系统；配色自动生成，夜间阅读舒适。"
+
+#: patterns/features.php:53
+msgid "Fully Responsive"
+msgstr "完全自适应"
+
+#: patterns/features.php:57
+msgid "One layout that stays tidy on phones, tablets, and desktops alike."
+msgstr "同一套布局在手机、平板与桌面上都整齐美观。"
+
+#: patterns/image-text.php:20
+msgid "Build a Personal Blog from Scratch"
+msgstr "从零搭建个人博客"
+
+#: patterns/image-text.php:24
+msgid ""
+"Write your intro text here. After inserting this pattern, replace the image "
+"on the left and this copy with your own — layout, spacing, and mobile "
+"responsiveness are all handled for you."
+msgstr "在此填写简介。插入此版式后，替换左侧图片与本文字即可——布局、间距与移动端自适应都已为你处理好。"
+
+#: patterns/author-card.php:20
+msgid "Author Name"
+msgstr "作者名称"
+
+#: patterns/author-card.php:24
+msgid ""
+"Introduce yourself in two or three sentences: what you write about, your "
+"background, and what readers will get here."
+msgstr "用两三句话介绍自己：你写什么、你的背景，以及读者能在这里收获什么。"
+
+#: patterns/author-card.php:29
+msgid "View all posts"
+msgstr "查看全部文章"
+
+#: pages/template-user-tabs.php:218
+msgid "Category"
+msgstr "分类"
+
+#: pages/template-user-tabs.php:525
+msgid "New password"
+msgstr "新密码"

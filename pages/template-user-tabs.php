@@ -43,7 +43,7 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 	<div class="jinyu-user-welcome">
 	<div>
 		<?php /* translators: %s: 占位符 */ ?>
-		<h3 class="jinyu-user-hello"><?php printf( esc_html__( '%1$s，%2$s', 'jinyu' ), esc_html( $jinyu_greet ), esc_html( $user->display_name ) ); ?></h3>
+		<h3 class="jinyu-user-hello"><?php printf( esc_html__( '%1$s, %2$s', 'jinyu' ), esc_html( $jinyu_greet ), esc_html( $user->display_name ) ); ?></h3>
 		<p class="jinyu-user-hello-sub">
 		<?php
 		if ( $jinyu_unread_dash > 0 ) {
@@ -211,11 +211,13 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 	<form class="jinyu-submit-form" data-jinyu-submit-post method="post" enctype="multipart/form-data">
 		<input type="hidden" name="_ajax_nonce" value="<?php echo esc_attr( $nonce ); ?>">
 		<label class="jinyu-field">
+		<span class="jinyu-sr-only"><?php esc_html_e( 'Title', 'jinyu' ); ?></span>
 		<input type="text" name="post_title" maxlength="100"
 				placeholder="<?php esc_attr_e( 'Title (4-100 characters)', 'jinyu' ); ?>">
 		</label>
 		<span class="jinyu-char-count" data-jinyu-count="post_title" data-min="4" data-max="100" aria-live="polite"></span>
 		<label class="jinyu-field">
+		<span class="jinyu-sr-only"><?php esc_html_e( 'Category', 'jinyu' ); ?></span>
 		<?php
 		wp_dropdown_categories(
 			[
@@ -246,7 +248,7 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 		<textarea name="post_content" rows="10" aria-label="<?php esc_attr_e( 'Body content', 'jinyu' ); ?>"
 				placeholder="<?php esc_attr_e( 'Body content (at least 20 characters)', 'jinyu' ); ?>"></textarea>
 		<span class="jinyu-char-count" data-jinyu-count="post_content" data-min="20" aria-live="polite"></span>
-		<input type="text" class="jinyu-field" name="post_tags"
+		<input type="text" class="jinyu-field" name="post_tags" aria-label="<?php esc_attr_e( 'Tags, separated by commas', 'jinyu' ); ?>"
 			placeholder="<?php esc_attr_e( 'Tags, separated by commas', 'jinyu' ); ?>">
 		<button type="submit" class="jinyu-btn jinyu-btn-primary"><?php esc_html_e( 'Submit post', 'jinyu' ); ?></button>
 		<p class="jinyu-auth-tip" data-jinyu-submit-tip aria-live="polite"></p>
@@ -493,9 +495,11 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 		</div>
 	</div>
 	<label class="jinyu-field jinyu-avatar-url">
+		<span class="jinyu-sr-only"><?php esc_html_e( 'Avatar image URL', 'jinyu' ); ?></span>
 		<input type="text" name="avatar_url" placeholder="<?php esc_attr_e( 'or enter an avatar image URL', 'jinyu' ); ?>">
 	</label>
 	<label class="jinyu-field">
+		<span class="jinyu-sr-only"><?php esc_html_e( 'Nickname', 'jinyu' ); ?></span>
 		<input type="text" name="display_name" value="<?php echo esc_attr( $user->display_name ); ?>"
 			placeholder="<?php esc_attr_e( 'Nickname', 'jinyu' ); ?>">
 	</label>
@@ -505,6 +509,7 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 	</label>
 	<p class="jinyu-field-hint"><?php esc_html_e( 'Email changes require verification: after submitting, a confirmation link is sent to the new address, and the change takes effect once you click it.', 'jinyu' ); ?></p>
 	<label class="jinyu-field">
+		<span class="jinyu-sr-only"><?php esc_html_e( 'Website', 'jinyu' ); ?></span>
 		<input type="url" name="user_url" value="<?php echo esc_attr( $user->user_url ); ?>"
 			placeholder="<?php esc_attr_e( 'Website', 'jinyu' ); ?>">
 	</label>
@@ -518,14 +523,17 @@ $nonce     = wp_create_nonce( 'jinyu_front' );
 	<form class="jinyu-profile-form" data-jinyu-password method="post">
 	<input type="hidden" name="_ajax_nonce" value="<?php echo esc_attr( $nonce ); ?>">
 	<label class="jinyu-field">
+		<span class="jinyu-sr-only"><?php esc_html_e( 'Current password', 'jinyu' ); ?></span>
 		<input type="password" name="old_pwd" autocomplete="current-password"
 			placeholder="<?php esc_attr_e( 'Current password', 'jinyu' ); ?>">
 	</label>
 	<label class="jinyu-field">
+		<span class="jinyu-sr-only"><?php esc_html_e( 'New password', 'jinyu' ); ?></span>
 		<input type="password" name="new_pwd" autocomplete="new-password"
 			placeholder="<?php esc_attr_e( 'New password (at least 6 characters)', 'jinyu' ); ?>">
 	</label>
 	<label class="jinyu-field">
+		<span class="jinyu-sr-only"><?php esc_html_e( 'Confirm new password', 'jinyu' ); ?></span>
 		<input type="password" name="new_pwd2" autocomplete="new-password"
 			placeholder="<?php esc_attr_e( 'Confirm new password', 'jinyu' ); ?>">
 	</label>

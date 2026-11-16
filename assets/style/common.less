@@ -2776,6 +2776,9 @@ html.jinyu-tools-compact {
 
         &::placeholder { color: @text-3; transition: color .25s ease; }
         &:focus { background: transparent; }
+        /* 键盘聚焦必须有可见描边：上方 outline:none 会盖掉全局 :focus-visible，
+           这里用更高优先级补回（WCAG 2.4.7 / wp.org Keyboard Navigation 要求）。 */
+        &:focus-visible { outline: 2px solid @primary; outline-offset: 2px; border-radius: 2px; }
     }
 }
 

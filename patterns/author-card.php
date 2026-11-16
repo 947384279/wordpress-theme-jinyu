@@ -17,16 +17,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 <!-- wp:media-text {"align":"wide","mediaPosition":"right","className":"jy-pat-author"} -->
 <div class="wp-block-media-text alignwide is-stacked-on-mobile has-media-on-the-right jy-pat-author"><figure class="wp-block-media-text__media"></figure><div class="wp-block-media-text__content"><!-- wp:heading {"level":3} -->
-<h3 class="wp-block-heading">Author Name</h3>
+<h3 class="wp-block-heading"><?php esc_html_e( 'Author Name', 'jinyu' ); ?></h3>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p>Introduce yourself in two or three sentences: what you write about, your background, and what readers will get here.</p>
+<p><?php esc_html_e( 'Introduce yourself in two or three sentences: what you write about, your background, and what readers will get here.', 'jinyu' ); ?></p>
 <!-- /wp:paragraph -->
 
 <!-- wp:buttons -->
 <div class="wp-block-buttons"><!-- wp:button {"className":"is-style-outline"} -->
-<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="<?php echo esc_url( home_url( '/' ) ); ?>">View all posts</a></div>
+<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php esc_html_e( 'View all posts', 'jinyu' ); ?></a></div>
 <!-- /wp:button --></div>
 <!-- /wp:buttons --></div></div>
 <!-- /wp:media-text -->

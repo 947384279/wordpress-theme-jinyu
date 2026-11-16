@@ -1,10 +1,14 @@
 // ============================================================================
-// 自托管字体
+// 自托管字体（Noto Sans SC / Source Han Sans 拉丁子集，SIL OFL 1.1）
 // 作用：拉丁字符（英文/数字/标点）统一走 Noto Sans SC 的 latin 子集，
 //      跨平台字形一致、消除 CLS；中文回退到系统字体（PingFang SC / 微软雅黑）。
+// 许可：该 woff2 是 Google / Adobe 的 Noto Sans SC（思源黑体）拉丁子集，
+//      采用 SIL OFL 1.1，随包许可见 assets/dist/fonts/jinyu-text/OFL.txt，
+//      并在 readme.txt 的 Resources 段声明。保留字体名 Jinyu Sans 仅为 CSS
+//      family 别名，不改变其开源许可与来源。
 // 注意：CJK 全量字形体积庞大（数 MB），未随包发布。若要中文也自托管，
 //      把「思源黑体 / Noto Sans SC 可变字体」subset 后的 woff2 放到
-//      assets/fonts/jinyu-text/jinyu-text-cjk.woff2，
+//      assets/dist/fonts/jinyu-text/jinyu-text-cjk.woff2，
 //      并取消下方「CJK（可选）」注释块即可（font-display:swap 保证不阻塞首屏）。
 // ============================================================================
 

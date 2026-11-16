@@ -491,6 +491,11 @@ add_filter(
 add_action(
 	'shutdown',
 	function () {
+		// wp.org 发行变体只保留官方 gravatar（无镜像可选），且 readme 承诺默认零外发；
+		// 该探测对访客无意义，直接跳过，确保"仅两种需 opt-in 的外发"声明成立。
+		if ( function_exists( 'jinyu_is_wporg' ) && jinyu_is_wporg() ) {
+			return;
+		}
 		if ( wp_doing_cron() || ( function_exists( 'wp_doing_ajax' ) && wp_doing_ajax() ) ) {
 			return;
 		}

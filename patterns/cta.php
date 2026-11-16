@@ -17,16 +17,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 <!-- wp:group {"className":"jy-pat-cta"} -->
 <div class="wp-block-group jy-pat-cta"><!-- wp:heading {"textAlign":"center","level":3} -->
-<h3 class="wp-block-heading has-text-align-center">Enjoying the content?</h3>
+<h3 class="wp-block-heading has-text-align-center"><?php esc_html_e( 'Enjoying the content?', 'jinyu' ); ?></h3>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph {"align":"center"} -->
-<p class="has-text-align-center">Subscribe and get every new post delivered straight to your inbox.</p>
+<p class="has-text-align-center"><?php esc_html_e( 'Subscribe and get every new post delivered straight to your inbox.', 'jinyu' ); ?></p>
 <!-- /wp:paragraph -->
 
 <!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
 <div class="wp-block-buttons"><!-- wp:button -->
-<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="<?php echo esc_url( home_url( '/' ) ); ?>">Subscribe now</a></div>
+<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php esc_html_e( 'Subscribe now', 'jinyu' ); ?></a></div>
 <!-- /wp:button --></div>
 <!-- /wp:buttons --></div>
 <!-- /wp:group -->

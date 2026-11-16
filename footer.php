@@ -113,7 +113,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	</div>
 </footer>
 
-<div class="jinyu-scroll-util" aria-hidden="true">
+<div class="jinyu-scroll-util">
 	<button type="button" class="jinyu-scroll-btn jinyu-go-bottom" title="<?php esc_attr_e( 'To bottom', 'jinyu' ); ?>" aria-label="<?php esc_attr_e( 'To bottom', 'jinyu' ); ?>">
 	<i class="fa-solid fa-arrow-down" aria-hidden="true"></i>
 	</button>

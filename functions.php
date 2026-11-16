@@ -17,6 +17,12 @@ if ( ! defined( 'JINYU_CUR_VER' ) ) {
 }
 const JINYU_OPT = 'jinyu_options';
 
+// 内容最大宽度（Theme Check 推荐项）。主题未显式声明时 WP 回退到 625，
+// 此处按主内容栏实际可用宽度设定，供嵌入、画廊、编辑器等内容自适应使用。
+if ( ! isset( $content_width ) ) {
+	$content_width = 800;
+}
+
 // w.org 专用发行变体标志。仅由 `gulp build:wporg` 生成的发行包内存在此文件；
 // 日常源码与自托管/GitHub/Gitee 版无此文件，故恒为 false（保留独立设置页与代码注入）。
 if ( file_exists( JINYU_ABS_DIR . '/inc/jinyu-wporg.php' ) ) {
@@ -419,6 +425,7 @@ add_action(
 				'readProgress'   => __( 'Read %1$d%% · %2$s left', 'jinyu' ),
 				'tocHeading'     => __( 'Table of Contents', 'jinyu' ),
 				'coviewHeading'  => __( 'People also read', 'jinyu' ),
+				'close'          => __( 'Close', 'jinyu' ),
 			]
 		);
 	// 注意：不要再加 wp_set_script_translations( 'jinyu-main' ) —— 主题 JS 不调用 wp.i18n，

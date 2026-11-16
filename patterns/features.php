@@ -22,11 +22,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 <!-- /wp:html -->
 
 <!-- wp:heading {"level":3} -->
-<h3 class="wp-block-heading">Blazing Fast</h3>
+<h3 class="wp-block-heading"><?php esc_html_e( 'Blazing Fast', 'jinyu' ); ?></h3>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p>Assets load on demand, critical CSS is inlined, and the first screen opens in seconds.</p>
+<p><?php esc_html_e( 'Assets load on demand, critical CSS is inlined, and the first screen opens in seconds.', 'jinyu' ); ?></p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:column -->
 
@@ -36,11 +36,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 <!-- /wp:html -->
 
 <!-- wp:heading {"level":3} -->
-<h3 class="wp-block-heading">Dark Mode</h3>
+<h3 class="wp-block-heading"><?php esc_html_e( 'Dark Mode', 'jinyu' ); ?></h3>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p>Switch manually or follow the system; colors are derived automatically for comfortable night reading.</p>
+<p><?php esc_html_e( 'Switch manually or follow the system; colors are derived automatically for comfortable night reading.', 'jinyu' ); ?></p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:column -->
 
@@ -50,11 +50,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 <!-- /wp:html -->
 
 <!-- wp:heading {"level":3} -->
-<h3 class="wp-block-heading">Fully Responsive</h3>
+<h3 class="wp-block-heading"><?php esc_html_e( 'Fully Responsive', 'jinyu' ); ?></h3>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p>One layout that stays tidy on phones, tablets, and desktops alike.</p>
+<p><?php esc_html_e( 'One layout that stays tidy on phones, tablets, and desktops alike.', 'jinyu' ); ?></p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:column --></div>
 <!-- /wp:columns -->

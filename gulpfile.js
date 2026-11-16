@@ -419,6 +419,20 @@ function localizeWporg(done) {
 		fs.writeFileSync(userPhp, s);
 	}
 
+	// 8) 死开关：live_ip_location（侧栏访客归属地查询）在 w.org 变体里功能文件 live.php
+	//    已被物理剔除，开关本身是空的；但它描述里写着"把访客 IP 发往 whois.pconline.com.cn"，
+	//    与 readme 的"零外发"声明直接冲突，审核 grep 即命中。构建期整体移除该字段块。
+	const extendPhp = path.join(WPORG_DIR, 'inc', 'setting', 'options', 'Jinyu_OptionExtend.php');
+	if (fs.existsSync(extendPhp)) {
+		let s = fs.readFileSync(extendPhp, 'utf8');
+		const LIVE_FIELD = /\n\s*\[\s*\n\s*'id'\s*=>\s*'live_ip_location',[\s\S]*?\n\s*\],(?=\n\s*\],\n)/;
+		if (!LIVE_FIELD.test(s)) {
+			return done(new Error('localizeWporg: 未能移除 live_ip_location 死开关块，whois 外发文案会残留在包内'));
+		}
+		s = s.replace(LIVE_FIELD, '');
+		fs.writeFileSync(extendPhp, s);
+	}
+
 	// 7) HTML 注释（<!-- -->）里的中文：虽不渲染到访客可见文本，但仍是包内可见的中文字面量，
 	//    审核团队 grep 源码一定会看到。按显式对照表逐条替换为英文（见 WPORG_HTML_COMMENT_EN）。
 	const missing = [];
@@ -518,6 +532,16 @@ function renameWporg(done) {
 			if (f.startsWith('jinyu') && !f.startsWith(WPORG_SLUG)) {
 				fs.renameSync(path.join(langDir, f), path.join(langDir, WPORG_SLUG + f.slice(5)));
 			}
+		}
+		// POT 头里的 X-Domain / Project-Id-Version 仍是源的 `jinyu`，
+		// 必须与变体 text domain 对齐（否则审核按 domain 核对 pot 时会挑）。
+		// .pot 是纯文本，改名后按新文件名读回改写这两个头字段。
+		const potFile = path.join(langDir, `${WPORG_SLUG}.pot`);
+		if (fs.existsSync(potFile)) {
+			let pot = fs.readFileSync(potFile, 'utf8');
+			pot = pot.replace(/"X-Domain: jinyu\\n"/, `"X-Domain: ${WPORG_SLUG}\\n"`);
+			pot = pot.replace(/Project-Id-Version: jinyu [^\\n]*/, `Project-Id-Version: ${WPORG_SLUG} 1.0`);
+			fs.writeFileSync(potFile, pot);
 		}
 	}
 	// 变体专属 readme：主 readme 描述的是自托管完整版（独立设置中心、代码注入等），

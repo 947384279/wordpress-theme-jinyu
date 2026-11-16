@@ -2816,7 +2816,7 @@
     m.className = 'jinyu-mask jinyu-generic-modal' + (opts.className ? ' ' + opts.className : '');
     m.setAttribute('role', 'dialog');
     m.setAttribute('aria-modal', 'true');
-    m.innerHTML = '<div class="jinyu-modal-card">' + '<div class="jinyu-modal-head">' + '<span class="jinyu-modal-title">' + (opts.title || '') + '</span>' + '<button type="button" class="jinyu-modal-close" data-jinyu-modal-close aria-label="' + (CFG.i18n && CFG.i18n.close ? CFG.i18n.close : 'Close') + '"><i class="fa-solid fa-xmark"></i></button>' + '</div>' + '<div class="jinyu-modal-body">' + (opts.body || '') + '</div>' + '</div>';
+    m.innerHTML = '<div class="jinyu-modal-card">' + '<div class="jinyu-modal-head">' + '<span class="jinyu-modal-title">' + (opts.title || '') + '</span>' + '<button type="button" class="jinyu-modal-close" data-jinyu-modal-close aria-label="' + _t('close', 'Close') + '"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>' + '</div>' + '<div class="jinyu-modal-body">' + (opts.body || '') + '</div>' + '</div>';
     doc.body.appendChild(m);
     doc.body.style.overflow = 'hidden';
     m.addEventListener('click', function (e) {
@@ -5431,115 +5431,7 @@
       } catch (e) {/* 单模块异常不阻断 */}
     });
   };
-
-  /* Web Vitals 采集：原生 PerformanceObserver，零依赖、零第三方。
-     浏览器仅向本站 admin-ajax 发同源请求，由服务端本地落库，供后台「性能优化中心」展示。
-     LCP/INP/CLS 为主指标，FCP/TTFB 辅助定位瓶颈。 */
-  function webVitals() {
-    if (typeof PerformanceObserver === 'undefined') return;
-    var m = {
-      lcp: 0,
-      inp: 0,
-      cls: 0,
-      fcp: 0,
-      ttfb: 0
-    };
-    var done = false;
-    function send() {
-      if (done) return;
-      if (!m.lcp && !m.inp && !m.cls && !m.fcp && !m.ttfb) return;
-      done = true;
-      var payload = {
-        lcp: Math.round(m.lcp),
-        inp: Math.round(m.inp),
-        cls: Math.round(m.cls * 1000) / 1000,
-        fcp: Math.round(m.fcp),
-        ttfb: Math.round(m.ttfb),
-        path: location.pathname
-      };
-      if (CFG.theme_version) payload.theme_version = CFG.theme_version;
-      // 同源发往本站 admin-ajax（action=jinyu_web_vitals）：服务端本地落库，供后台「性能优化中心」展示。无私有后端依赖。
-      try {
-        var fd = new URLSearchParams();
-        fd.set('action', 'jinyu_web_vitals');
-        fd.set('data', JSON.stringify(payload));
-        var url = CFG.ajax_url || '/wp-admin/admin-ajax.php';
-        if (navigator.sendBeacon) {
-          navigator.sendBeacon(url, fd);
-        } else {
-          fetch(url, {
-            method: 'POST',
-            body: fd,
-            keepalive: true,
-            credentials: 'same-origin'
-          });
-        }
-      } catch (e) {/* 采集失败不应影响页面 */}
-    }
-    try {
-      new PerformanceObserver(function (list) {
-        var entries = list.getEntries();
-        if (entries.length) {
-          var last = entries[entries.length - 1];
-          m.lcp = last.renderTime || last.loadTime;
-        }
-      }).observe({
-        type: 'largest-contentful-paint',
-        buffered: true
-      });
-      var clsVal = 0;
-      new PerformanceObserver(function (list) {
-        var entries = list.getEntries();
-        for (var i = 0; i < entries.length; i++) {
-          if (!entries[i].hadRecentInput) clsVal += entries[i].value;
-        }
-        m.cls = clsVal;
-      }).observe({
-        type: 'layout-shift',
-        buffered: true
-      });
-      new PerformanceObserver(function (list) {
-        var entries = list.getEntries();
-        for (var i = 0; i < entries.length; i++) {
-          var v = entries[i].processingEnd - entries[i].startTime;
-          if (v > m.inp) m.inp = v;
-        }
-      }).observe({
-        type: 'event',
-        buffered: true,
-        durationThreshold: 16
-      });
-      new PerformanceObserver(function (list) {
-        var entries = list.getEntries();
-        if (entries.length) m.fcp = entries[0].startTime;
-      }).observe({
-        type: 'paint',
-        buffered: true
-      });
-      new PerformanceObserver(function (list) {
-        var entries = list.getEntries();
-        if (entries.length) m.ttfb = entries[0].responseStart;
-      }).observe({
-        type: 'navigation',
-        buffered: true
-      });
-    } catch (e) {
-      return; // 旧浏览器不支持，静默跳过
-    }
-
-    // 主上报：页面卸载时（INP/CLS 已充分累积，数据最完整）
-    window.addEventListener('pagehide', send);
-    // 兜底：切换标签 / 切入后台（覆盖只切走不关闭的场景）
-    document.addEventListener('visibilitychange', function () {
-      if (document.visibilityState === 'hidden') send();
-    });
-    // 长停留兜底：加载后 10s 仍未卸载则上报，避免数据永不发出
-    // （10s 时 LCP/FCP/TTFB/CLS 已基本稳定，比原 1.5s 失真更小）
-    window.addEventListener('load', function () {
-      setTimeout(send, 10000);
-    });
-  }
-  var MODULES = [theme, greyMode, nav, search, readProgress, readEstimate, backTop, toc, liveSearch, fontScale, recentViewed, hoverCard, coView, articleVote, copyGuard, paraCopy, codeBlock, codeHighlight, coverFallback, imgFallback, lazyImg, blurImg, postActions, share, masonry, reveal, headerScroll, loadMore, pageJump, shortcodes, ajaxComment, auth, userForms, userTabs, commentCounter, confirmGuard, poster, qrcodeModule, donate, lightbox, carousel, pjax, luck, faviconBadge, sidebarLive, widgetAnim, hitokoto, sales, social, webVitals, coverIons, flinkApply];
+  var MODULES = [theme, greyMode, nav, search, readProgress, readEstimate, backTop, toc, liveSearch, fontScale, recentViewed, hoverCard, coView, articleVote, copyGuard, paraCopy, codeBlock, codeHighlight, coverFallback, imgFallback, lazyImg, blurImg, postActions, share, masonry, reveal, headerScroll, loadMore, pageJump, shortcodes, ajaxComment, auth, userForms, userTabs, commentCounter, confirmGuard, poster, qrcodeModule, donate, lightbox, carousel, pjax, luck, faviconBadge, sidebarLive, widgetAnim, hitokoto, sales, social, coverIons, flinkApply];
 
   /* 页脚运行信息（位于版权/备案行、备案号右侧）：
      - 查询 / 页面生成时间：footer.php 内联本次 PHP 渲染的真实测量值（服务端口径）。

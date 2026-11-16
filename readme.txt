@@ -4,9 +4,9 @@ Tags: blog, custom-colors, custom-logo, custom-menu, editor-style, featured-imag
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.3.3
-License: GPL v3 or later
-License URI: https://www.gnu.org/licenses/gpl-3.0.html
+Stable tag: 1.3.5
+License: GPL-2.0-or-later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 == Privacy ==
 
@@ -36,6 +36,10 @@ License URI: https://www.gnu.org/licenses/gpl-3.0.html
   https://github.com/fengyuanchen/viewerjs/blob/main/LICENSE ，版权归 Chen Fengyuan 所有。
 * QRCode.js（`assets/js/vendor/qrcode.js`，分享二维码）——MIT 许可，
   https://github.com/davidshimjs/qrcodejs ，版权归 Kazuhiko Arase / davidshimjs 所有。
+* Noto Sans SC / Source Han Sans（`assets/dist/fonts/jinyu-text/jinyu-text-latin.woff2`，
+  拉丁字符子集，CSS 字体别名 "Jinyu Sans"）——SIL OFL 1.1 许可，
+  Copyright 2014-2021 Adobe，保留字体名 "Source"。完整许可文本随附于
+  `assets/dist/fonts/jinyu-text/OFL.txt`。
 
 以上资源均以未压缩源码 + 压缩版成对提供，可直接阅读与核对；许可均为 GPL 兼容（MIT / BSD-3-Clause / CC BY 4.0 / SIL OFL 1.1）。
 其余脚本与样式（首页轮播、目录、点赞、阅读进度等）均为本主题自研实现，无第三方代码与许可义务。
@@ -74,6 +78,12 @@ License URI: https://www.gnu.org/licenses/gpl-3.0.html
 每个设置分组面板头部都有「重置本组」按钮，仅清空该分组、回退默认值，不影响其它设置。
 
 == Changelog ==
+
+= 1.3.5 =
+* WordPress.org 合规：许可证统一为 GPL-2.0-or-later（主题头部、两份 readme 与许可证全文同步更新），按审核反馈修正翻译模板域名。
+* 无障碍：修复评论框键盘焦点缺失、移除可聚焦按钮容器的 aria-hidden、用户中心表单补齐可访问名称、轮播链接补 aria-label、模态框关闭按钮接入本地化。
+* 国际化：5 个区块样式共 22 处硬编码英文接入翻译函数；同步 pot/po/mo（900→922 条），清除英文文案中的中文标点。
+* 隐私与品牌：清理 54 张分类封面内的品牌水印，移除已失效的上报代码与设置文案；随包字体补 OFL 许可，wp.org 变体跳过 gravatar 探测。
 
 = 1.3.3 =
 * WordPress.org 合规：按官方主题审核要求全面自查并修正（截图真实渲染、Theme URI 处理、前台串国际化、压缩文件附未压缩源码、长标题在内容区内折行）。

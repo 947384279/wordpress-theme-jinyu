@@ -59,7 +59,7 @@ $jinyu_car_seq = 0;
 				$slide_prio = ( $si === 0 ) ? ' fetchpriority="high"' : '';
 				?>
 			<div class="jinyu-carousel-slide" role="group" aria-roledescription="<?php esc_attr_e( 'slide', 'jinyu' ); ?>" aria-label="<?php echo esc_attr( sprintf( __( 'Slide %1$d of %2$d', 'jinyu' ), $si + 1, count( $slides ) ) ); /* phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment */ ?>">
-				<a class="jinyu-carousel-link" href="<?php echo esc_url( $s['url'] ?: '#' ); ?>">
+				<a class="jinyu-carousel-link" href="<?php echo esc_url( $s['url'] ?: '#' ); ?>" aria-label="<?php echo esc_attr( $s['title'] ); ?>">
 				<?php
 				// 轮播图通常是首页 LCP 元素，必须带 width/height：否则图片到达时撑开容器产生 CLS。
 				// 取不到尺寸（自定义 URL 且图头探测失败）时省略属性，行为与原来一致。
